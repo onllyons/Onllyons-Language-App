@@ -31,12 +31,14 @@ export default function BooksScreen({ navigation }) {
     fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_carousel.php')
       .then((response) => response.json())
       .then((responseData) => {
-        setData(responseData); // Setează direct datele primite în stare
+        const filteredData = responseData.filter(item => item.course_url === url);
+        setData(filteredData); // Setează direct datele filtrate în stare
       })
       .catch((error) => {
         console.error('Eroare la solicitarea HTTP: ', error);
       });
   }, []);
+
 
 
   // quiz btn

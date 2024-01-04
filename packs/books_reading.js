@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
+import { useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
@@ -22,6 +23,8 @@ export default function BooksScreen({ navigation }) {
   const [scrollY, setScrollY] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
+  const route = useRoute();
+  const url = route.params.url;
 
   const handleScroll = (event) => {
     const offsetY = event.nativeEvent.contentOffset.y;
@@ -50,8 +53,24 @@ useEffect(() => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [initialLoad, setInitialLoad] = useState(true);
 
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
+      .then(response => response.json())
+      .then(data => {
+        // Filtrează datele pentru a selecta doar elementele cu url egal cu url
+        const filteredData = data.filter(item => item.url === url);
+        setFilteredData(filteredData); // Folosește setFilteredData aici
+      })
+      .catch(error => console.error('Error:', error));
+  }, []);
+
+
+
+
   return (
-    <View style={globalCss.container}>
+    <View style={styles.container}>
       <TouchableOpacity onPress={goBackToBooks} style={styles.closeButton}>
         <FontAwesomeIcon icon={faTimes} size={30} color="red" />
       </TouchableOpacity>
@@ -66,23 +85,43 @@ useEffect(() => {
         />
       </View>
 
-      <Text style={styles.scrollPercentageText}>{`${Math.round(scrollProgress)}%`}</Text>
+      <Text style={styles.scrollPercentageText}>{isNaN(scrollProgress) ? '0%' : `${Math.round(scrollProgress)}%`}</Text>
 
-      <ScrollView onScroll={handleScroll} scrollEventThrottle={16} style={styles.scrollView}>
-        <Text style={styles.titleBook}>Title book</Text>
-        <Text style={styles.textBook}>
-          În decembrie, vântul rece sufla și Teresa Osborne își încrucișă
-          brațele în timp ce privea spre apă. Era singură pe plajă. Oceanul,
-          reflectând culoarea cerului, arăta ca un lichid de fier, iar valurile
-          se rostogoleau constant pe mal. Ea venise aici în dimineața aceasta
-          când luase decizia să vină.
-        </Text>
-      </ScrollView>
+<ScrollView onScroll={handleScroll} scrollEventThrottle={16} style={styles.ScrollView}>
+  <View style={styles.contentBooks}>
+    {filteredData.map((item, index) => (
+      <View key={item.id} style={styles.contentBooksRead}>
+        <Text style={styles.titleBook}>{item.title}</Text>
+        <Text style={styles.titleAuthor}>{item.author}</Text>
+        <Text style={styles.textBook}>{item.content}</Text>
+      </View>
+    ))}
+  </View>
+</ScrollView>
+
+<View>
+  {filteredData.length > 0 && (
+    <Text style={styles.textBook}>
+    https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/
+    {filteredData[0].audio_file}</Text>
+  )}
+</View>
+
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    paddingTop: 20,
+    paddingBottom: 20,
+    marginTop: '13%',
+  },
+  ScrollView:{
+    padding: '5%'
+  },
   closeButton: {
     position: 'absolute',
     top: 20,
@@ -104,10 +143,12 @@ const styles = StyleSheet.create({
   },
   titleBook: {
     fontSize: 21,
+  },
+  titleAuthor: {
+    fontSize: 16,
     marginBottom: 10,
   },
   textBook: {
     fontSize: 18,
-    lineHeight: 155,
   },
 });
