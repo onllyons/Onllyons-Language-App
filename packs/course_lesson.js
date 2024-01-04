@@ -21,24 +21,24 @@ export default function BooksScreen({ navigation }) {
   const swiperRef = useRef(null);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
   const [index, setIndex] = useState(0);
-  const totalSlides = 6;
+  const totalSlides = 7;
 
   const route = useRoute();
   const url = route.params.url;
 
   const [data, setData] = useState([]);
   useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_lesson.php')
+    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_carousel.php')
       .then((response) => response.json())
       .then((responseData) => {
-        // Extrageți 'rus_title' din datele primite și setați-l în stare
-        const rusTitles = responseData.map((item) => item.rus_title);
-        setData(rusTitles);
+        setData(responseData); // Setează direct datele primite în stare
       })
       .catch((error) => {
         console.error('Eroare la solicitarea HTTP: ', error);
       });
   }, []);
+
+
   // quiz btn
   const [isPressed, setIsPressed] = useState({
     review0: false,
@@ -114,6 +114,7 @@ export default function BooksScreen({ navigation }) {
         <Text style={styles.textOrig}>
          Сылка урока: ( {url} )
         </Text>
+        
 
         <Swiper
           ref={swiperRef}
@@ -122,6 +123,19 @@ export default function BooksScreen({ navigation }) {
           loop={false}
           onIndexChanged={handleSlideChange}
         >
+
+        <View style={styles.slide}>
+            <View style={styles.textCourse}>
+
+            {data.map((item, index) => (
+              <Text style={styles.textOrig} key={index}>{item.eng_title}</Text>
+            ))}
+              
+            
+            </View>
+          </View>
+
+
           <View style={styles.slide}>
             <View style={styles.containerVideoLesson}>
               <Text style={styles.text}>
@@ -129,14 +143,9 @@ export default function BooksScreen({ navigation }) {
               </Text>
             </View>
             <View style={styles.textCourse}>
-              <Text style={styles.textOrig}>
-                txt eng
-              </Text>
-              <Text style={styles.textLearn}>
-                txt rus
-              </Text>
+              <Text style={styles.textOrig}>en</Text>
+              <Text style={styles.textLearn}>ru</Text>
             </View>
-
           </View>
           <View style={styles.slide}>
             <View style={styles.containerAudioLesson}>
