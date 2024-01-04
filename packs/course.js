@@ -16,7 +16,7 @@ export default function CourseScreen({ navigation }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/HackTheSiteHere/packs/app/course_lesson.php')
+    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_lesson.php')
       .then(response => response.json())
       .then(data => setData(data))
       .catch(error => console.error('Error:', error));

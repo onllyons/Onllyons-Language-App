@@ -10,7 +10,7 @@ export default function FlashCardWords({ navigation }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/HackTheSiteHere/packs/app/flascard-words.php')
+    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words.php')
       .then(response => response.json())
       .then(data => setData(data))
       .catch(error => console.error('Error:', error));
