@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import globalCss from './css/globalCss';
-import { View, Text, Button, StyleSheet, Animated, ScrollView, TouchableOpacity } from 'react-native';
+import {View, Text, Button, StyleSheet, Animated, ScrollView, TouchableOpacity, Alert} from 'react-native';
 import { useAuth } from "./screens/ui/AuthProvider";
-import { useAlertConfirm } from "./screens/ui/AlertConfirmPrivider";
 import { ImageBackground } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 export default function CourseScreen({ navigation }) {
   const { isAuthenticated, getUser, logout } = useAuth();
-  const { setAlertConfirm, showAlertConfirm } = useAlertConfirm()
   const user = getUser()
 
   const [pressedCards, setPressedCards] = useState({});
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_lesson.php')
+    fetch('https://www.language.onllyons.com/ru/ru-en/HackTheSiteHere/packs/app/course_lesson.php')
       .then(response => response.json())
       .then(data => setData(data))
       .catch(error => console.error('Error:', error));
@@ -35,6 +33,7 @@ export default function CourseScreen({ navigation }) {
       <ImageBackground source={require('./images/background-app/course-start.png')} style={styles.bgImg}>
         {isAuthenticated() ?
           <View>
+            <Text>Id: {user.id}</Text>
             <Text>Имя пользователя: {user.username}</Text>
             <Text>Почта: {user.email}</Text>
             <Button
@@ -42,22 +41,22 @@ export default function CourseScreen({ navigation }) {
               onPress={() => {
                 logout()
                   .then(() => {
-                    setAlertConfirm({
-                      title: "Вы успешно вышли из аккаунта",
-                      message: "Вы будете перенаправлены на начальный экран",
-                      confirmBtn: {
-                        callback: () => navigation.navigate('StartPageScreen')
-                      }
-                    })
-                    showAlertConfirm()
+                    Alert.alert("Вы успешно вышли из аккаунта", "Вы будете перенаправлены на начальный экран", [
+                      {
+                        text: "Ок",
+                        onPress: () => navigation.navigate('StartPageScreen'),
+                        style: "default",
+                      },
+                    ]);
                   })
                   .catch(() => {
-                    setAlertConfirm({
-                      title: "Ошибка",
-                      message: "Не удалось выйти из аккаунта",
-                      errorStyle: true
-                    })
-                    showAlertConfirm()
+                    Alert.alert("Ошибка", "Не удалось выйти из аккаунта", [
+                      {
+                        text: "Ок",
+                        onPress: () => navigation.navigate('StartPageScreen'),
+                        style: "cancel",
+                      },
+                    ]);
                   })
               }}
             />

@@ -29,9 +29,6 @@ import MenuScreen from './packs/menu';
 import FirstMenu from './packs/screens/FirstMenuScreen';
 import SecondMenuScreen from './packs/screens/SecondMenuScreen';
 import {AuthProvider} from "./packs/screens/ui/AuthProvider";
-import {AlertLoadingProvider} from "./packs/screens/ui/AlertLoadingProvider";
-import {AlertConfirmProvider} from "./packs/screens/ui/AlertConfirmPrivider";
-import {AlertBaseProvider} from "./packs/screens/ui/AlertBasePrivider";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -134,17 +131,11 @@ function AppStack() {
 export default function App() {
     /* Alerts: loading, confirm (1 button) and base (2 buttons) */
     return (
-        <AlertLoadingProvider>
-            <AlertConfirmProvider>
-                <AlertBaseProvider>
-                    <AuthProvider>
-                        <NavigationContainer>
-                            <AppStack/>
-                            <StatusBar style="auto"/>
-                        </NavigationContainer>
-                    </AuthProvider>
-                </AlertBaseProvider>
-            </AlertConfirmProvider>
-        </AlertLoadingProvider>
+        <AuthProvider>
+            <NavigationContainer>
+                <AppStack/>
+                <StatusBar style="auto"/>
+            </NavigationContainer>
+        </AuthProvider>
     );
 }

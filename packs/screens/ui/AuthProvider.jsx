@@ -1,12 +1,11 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useAlertConfirm} from "./AlertConfirmPrivider";
+import {Alert} from "react-native";
 
 const AuthContext = createContext("user context doesnt exists");
 
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState({});
-    const {showAlertConfirm, setAlertConfirm} = useAlertConfirm()
 
     useEffect(() => {
         retrieveData();
@@ -21,12 +20,12 @@ export const AuthProvider = ({children}) => {
                 setUser(JSON.parse(storedUser))
             }
         } catch (error) {
-            setAlertConfirm({
-                title: "Ошибка",
-                errorStyle: true,
-                message: "Ошибка при загрузке данных пользователя"
-            })
-            showAlertConfirm()
+            Alert.alert("Ошибка", "Ошибка при загрузке данных пользователя", [
+                {
+                    text: "Ок",
+                    style: "cancel",
+                },
+            ]);
         }
     };
 

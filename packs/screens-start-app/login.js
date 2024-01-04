@@ -1,13 +1,12 @@
 import React, {useState} from "react";
-import {StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Alert} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
 import {useAuth} from "../screens/ui/AuthProvider";
-import {useAlertLoading} from "../screens/ui/AlertLoadingProvider";
-import {useAlertConfirm} from "../screens/ui/AlertConfirmPrivider";
 import axios from "axios";
+import Loader from "../components/Loader";
 
 export default function LoginScreen({navigation}) {
     const [PressSignIn, setPressSignIn] = useState(false);
@@ -15,10 +14,10 @@ export default function LoginScreen({navigation}) {
     const [showPassword, setShowPassword] = useState(false);
     const [userData, setUserData] = useState({username: "", password: ""})
 
+    const [loader, setLoader] = useState(false)
+
     // Auth
-    const {isAuthenticated, getUser, login, logout} = useAuth();
-    const {hideAlertLoading, showAlertLoading} = useAlertLoading()
-    const {hideAlertConfirm, showAlertConfirm, setAlertConfirm} = useAlertConfirm()
+    const {isAuthenticated, login} = useAuth();
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -26,6 +25,7 @@ export default function LoginScreen({navigation}) {
 
     return (
         <View style={styles.container}>
+            <Loader visible={loader}/>
             <View style={[styles.inputView, styles.inputContainer1]}>
                 <TextInput
                     placeholder="login"
@@ -58,47 +58,53 @@ export default function LoginScreen({navigation}) {
                 onPressOut={() => setPressSignIn(false)}
                 onPress={() => {
                     if (isAuthenticated()) {
-                        setAlertConfirm({
-                            title: "Вы уже авторизированы",
-                            message: "Вы будете перенаправлены на главную",
-                            errorStyle: true,
-                            confirmBtn: {
-                                callback: () => navigation.navigate('Main')
-                            }
-                        })
-                        showAlertConfirm()
+                        Alert.alert("Вы уже авторизированы", "Вы будете перенаправлены на главную", [
+                            {
+                                text: "Ок",
+                                onPress: () => navigation.navigate('Main'),
+                                style: "cancel",
+                            },
+                        ]);
                     } else {
-                        showAlertLoading()
+                        setLoader(true)
 
-                        axios.post("https://language.onllyons.com/ru/ru-en/packs/assest/user-signup/user_login.php", {...userData, fromMobile: true}, {
+                        axios.post("https://language.onllyons.com/ru/ru-en/packs/assest/user-signup/user_login.php", {
+                            ...userData,
+                            fromMobile: true
+                        }, {
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
                             },
                         })
                             .then(res => {
-                                const data = res.data
+                                setLoader(false)
 
-                                if (data.success) {
-                                    login(data.user)
+                                setTimeout(() => {
+                                    const data = res.data
 
-                                    setAlertConfirm({
-                                        title: "Вы успешно авторизированы",
-                                        message: "Вы будете перенаправлены на главную",
-                                        confirmBtn: {
-                                            callback: () => navigation.navigate('Main')
-                                        }
-                                    })
-                                    showAlertConfirm()
-                                } else {
-                                    setAlertConfirm({
-                                        title: "Ошибка",
-                                        errorStyle: true,
-                                        message: data.error_message
-                                    })
-                                    showAlertConfirm()
-                                }
+                                    if (data.success) {
+                                        login(data.user)
+
+                                        Alert.alert("Вы успешно авторизированы", "Вы будете перенаправлены на главную", [
+                                            {
+                                                text: "Ок",
+                                                onPress: () => navigation.navigate('Main'),
+                                                style: "default",
+                                            },
+                                        ]);
+                                    } else {
+                                        Alert.alert("Ошибка", data.error_message, [
+                                            {
+                                                text: "Ок",
+                                                style: "cancel",
+                                            },
+                                        ]);
+                                    }
+                                })
+                            }, 100)
+                            .catch(() => {
+                                setLoader(false)
                             })
-                            .finally(() => hideAlertLoading())
                     }
                 }}
                 activeOpacity={1}
