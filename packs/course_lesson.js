@@ -112,7 +112,7 @@ export default function BooksScreen({ navigation }) {
 
 
         <Text style={styles.textOrig}>
-         Сылка урока: {url}
+         Сылка урока: ( {url} )
         </Text>
 
         <Swiper
