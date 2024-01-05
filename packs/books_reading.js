@@ -26,6 +26,7 @@ export default function BooksScreen({ navigation }) {
   const route = useRoute();
   const url = route.params.url;
 
+
   const handleScroll = (event) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     const contentHeight = event.nativeEvent.contentSize.height;
@@ -59,12 +60,12 @@ useEffect(() => {
     fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
       .then(response => response.json())
       .then(data => {
-        // Filtrează datele pentru a selecta doar elementele cu url egal cu url
-        const filteredData = data.filter(item => item.url === url);
+        // Filtrează datele pentru a selecta doar elementul cu ID-ul corespunzător
+        const filteredData = data.filter(item => item.id === route.params.bookId);
         setFilteredData(filteredData); // Folosește setFilteredData aici
       })
       .catch(error => console.error('Error:', error));
-  }, []);
+  }, [route.params.bookId]);
 
 
 

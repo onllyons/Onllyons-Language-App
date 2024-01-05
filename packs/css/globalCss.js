@@ -21,6 +21,9 @@ const globalCss = StyleSheet.create({
   mb17:{
     marginBottom: '17%',
   },
+  mb11:{
+    marginBottom: '11%',
+  },
   mb3:{
     marginBottom: '3%',
   },
