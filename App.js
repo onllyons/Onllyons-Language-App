@@ -132,7 +132,6 @@ function AppStack() {
 
 
 export default function App() {
-    /* Alerts: loading, confirm (1 button) and base (2 buttons) */
     return (
         <AuthProvider>
             <NavigationContainer>
