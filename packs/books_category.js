@@ -20,22 +20,58 @@ export default function BooksCategoryScreen({ route }) {
       .catch(error => console.error('Error:', error));
   }, [category]);
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => navigation.navigate('books_reading', { url: item.id, bookId: item.id })}>
-      <View style={styles.item}>
-        <Image 
-          source={{
-            uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/img/${item.image}`,
-          }}
-          style={styles.image}
-        />
-        <View>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.author}>{item.author}</Text>
+  const getCategoryImageAndText = (categoryValue) => {
+    switch (categoryValue) {
+      case "1":
+        return {
+          imageSource: require('./images/icon/levelEasy.png'),
+          text: "Начальный уровень"
+        };
+      case "2":
+        return {
+          imageSource: require('./images/icon/levelMedium.png'),
+          text: "Средний уровень"
+        };
+      case "3":
+        return {
+          imageSource: require('./images/icon/levelHard.png'),
+          text: "Продвинутый уровень"
+        };
+      default:
+        return {
+          imageSource: null,
+          text: ""
+        };
+    }
+  };
+
+  const renderItem = ({ item }) => {
+    const categoryInfo = getCategoryImageAndText(item.category);
+
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate('books_reading', { url: item.id, bookId: item.id })}>
+        <View style={styles.item}>
+          <Image 
+            source={{
+              uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/img/${item.image}`,
+            }}
+            style={styles.image}
+          />
+          <View>
+            <Text style={styles.author}>{item.author}</Text>
+            <Text style={styles.title}>{item.title}</Text>
+            <View style={styles.levelHard}>
+              <Image
+                source={categoryInfo.imageSource}
+                style={styles.levelHardImg}
+              /> 
+              <Text style={styles.levelHardTxt}>{categoryInfo.text}</Text>
+            </View>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <ScrollView>
@@ -50,6 +86,7 @@ export default function BooksCategoryScreen({ route }) {
     </ScrollView>
   );
 }
+
 
 
 const styles = StyleSheet.create({
@@ -74,11 +111,27 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   title: {
-    fontSize: 16,
+    fontSize: 17,
+    marginTop: '2%',
     fontWeight: "bold",
   },
   author: {
     fontSize: 14,
+    marginTop: '2%',
     color: "gray",
   },
+  levelHard:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: '2%',
+    alignContent: 'flex-start',
+  },
+  levelHardImg:{
+    width: 25,
+    height: 25,
+  },
+  levelHardTxt:{
+    marginLeft: '3%'
+  },
+
 });
