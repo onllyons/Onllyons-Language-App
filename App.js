@@ -1,5 +1,4 @@
 import {StatusBar} from 'expo-status-bar';
-import {StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -85,7 +84,7 @@ function MainTabNavigator() {
     return (
         <Tab.Navigator
             screenOptions={({route}) => ({
-                tabBarIcon: ({focused, color, size}) => {
+                tabBarIcon: ({color, size}) => {
                     let iconName;
                     if (route.name === 'Курс') {
                         iconName = faGraduationCap;
