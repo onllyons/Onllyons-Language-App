@@ -34,6 +34,8 @@ import {AuthProvider} from "./packs/screens/ui/AuthProvider";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// test
+
 function MenuStack() {
     return (
         <Stack.Navigator>
