@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+// sergiu test 
+
 const globalCss = StyleSheet.create({
   NavTopStartApp:{
     
