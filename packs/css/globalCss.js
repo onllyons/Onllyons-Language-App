@@ -21,6 +21,9 @@ const globalCss = StyleSheet.create({
   mb17:{
     marginBottom: '17%',
   },
+  mb3:{
+    marginBottom: '3%',
+  },
   textAlignCenter:{
     textAlign: 'center'
   },

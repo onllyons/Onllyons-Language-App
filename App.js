@@ -17,6 +17,7 @@ import CourseScreen from './packs/course';
 import CourseLesson from './packs/course_lesson';
 
 import BooksScreen from './packs/books';
+import BooksCategory from './packs/books_category';
 import BooksReading from './packs/books_reading';
 
 import GamesScreen from './packs/games';
@@ -56,6 +57,7 @@ function MenuBooksReading() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Книги" component={BooksScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="books_category" component={BooksCategory}/>
             <Stack.Screen name="books_reading" component={BooksReading} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
