@@ -48,7 +48,7 @@ function MenuStack() {
 function MenuCourseLesson() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Курс" component={CourseScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="Course Screen" component={CourseScreen} options={{headerShown: false}}/>
             <Stack.Screen name="course_lesson" component={CourseLesson} options={{headerShown: false}}/>
         </Stack.Navigator>
     );

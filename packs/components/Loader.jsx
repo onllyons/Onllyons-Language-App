@@ -17,22 +17,13 @@ interface SpinnerPropTypes {
 }
 
 const Indicator = ({options}) => {
-    const [color, setColor] = useState("#57cc04");
-
-    useEffect(() => {
-        const id = setInterval(() => {
-            setColor((color) => color === "#57cc04" ? "#3ca6ff" : "#57cc04");
-        }, 1600);
-        return () => clearInterval(id);
-    }, []);
-
     return (
         // <ActivityIndicator
         //     color={color}
         //     size={options.size}
         //     style={[styles.activityIndicator, {...options.styles}]}
         // />
-        <SkypeIndicator size={options.size} minScale={0.5} color={color} style={[styles.activityIndicator]}/>
+        <SkypeIndicator size={options.size} minScale={0.5} color="#57cc04" style={[styles.activityIndicator]}/>
     );
 }
 
@@ -71,7 +62,9 @@ const Loader: React.FC<SpinnerPropTypes> = ({
                     <Indicator options={{size: size}}/>
                 )}
                 <View style={[styles.textContainer]}>
-                    <Text style={[styles.textContent, textStyle]}>{textContent}</Text>
+                    <View style={[styles.textContainerIn]}>
+                        <Text style={[styles.textContent, textStyle]}>{textContent}</Text>
+                    </View>
                 </View>
             </View>
         );
@@ -141,13 +134,15 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0
     },
+    textContainerIn: {
+        padding: 15,
+        top: 80,
+        borderRadius: 12,
+        backgroundColor: "white",
+    },
     textContent: {
         fontSize: 10,
         fontWeight: "bold",
-        top: 80,
         color: "#353535",
-        padding: 20,
-        backgroundColor: "white",
-        borderRadius: 12
     }
 });
