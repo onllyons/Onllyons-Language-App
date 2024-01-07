@@ -34,6 +34,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 // test
+// test2
 
 function MenuStack() {
     return (
