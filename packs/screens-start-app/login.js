@@ -7,6 +7,7 @@ import globalCss from '../css/globalCss';
 import {useAuth} from "../screens/ui/AuthProvider";
 import axios from "axios";
 import Loader from "../components/Loader";
+import Toast from "react-native-toast-message";
 
 export default function LoginScreen({navigation}) {
     const [PressSignIn, setPressSignIn] = useState(false);
@@ -17,15 +18,52 @@ export default function LoginScreen({navigation}) {
     const [loader, setLoader] = useState(false)
 
     // Auth
-    const {isAuthenticated, login} = useAuth();
+    const {isAuthenticated, login, getUserToken} = useAuth();
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+    const handleLogin = () => {
+        if (isAuthenticated()) {
+            navigation.navigate('MainTabNavigator')
+        } else {
+            setLoader(true)
+
+            axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user_login.php", {
+                ...userData,
+                mobileToken: getUserToken()
+            }, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            })
+                .then(async res => {
+                    setLoader(false)
+
+                    await new Promise(resolve => setTimeout(resolve, 100))
+
+                    const data = res.data
+
+                    if (data.success) {
+                        login(data.user)
+
+                        navigation.navigate('MainTabNavigator')
+                    } else {
+                        Toast.show({
+                            type: "error",
+                            text1: data.message
+                        });
+                    }
+                })
+                .catch(() => setLoader(false))
+        }
+    }
+
     return (
         <View style={styles.container}>
             <Loader visible={loader}/>
+
             <View style={[styles.inputView, styles.inputContainer1]}>
                 <TextInput
                     placeholder="login"
@@ -56,65 +94,15 @@ export default function LoginScreen({navigation}) {
                 style={[globalCss.button, PressSignIn ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
                 onPressIn={() => setPressSignIn(true)}
                 onPressOut={() => setPressSignIn(false)}
-                onPress={() => {
-                    if (isAuthenticated()) {
-                        Alert.alert("Вы уже авторизированы", "Вы будете перенаправлены на главную", [
-                            {
-                                text: "Ок",
-                                onPress: () => navigation.navigate('Main'),
-                                style: "cancel",
-                            },
-                        ]);
-                    } else {
-                        setLoader(true)
-
-                        axios.post("https://language.onllyons.com/ru/ru-en/packs/assest/user-signup/user_login.php", {
-                            ...userData,
-                            fromMobile: true
-                        }, {
-                            headers: {
-                                "Content-Type": "application/x-www-form-urlencoded",
-                            },
-                        })
-                            .then(res => {
-                                setLoader(false)
-
-                                setTimeout(() => {
-                                    const data = res.data
-
-                                    if (data.success) {
-                                        login(data.user)
-
-                                        Alert.alert("Вы успешно авторизированы", "Вы будете перенаправлены на главную", [
-                                            {
-                                                text: "Ок",
-                                                onPress: () => navigation.navigate('Main'),
-                                                style: "default",
-                                            },
-                                        ]);
-                                    } else {
-                                        Alert.alert("Ошибка", data.error_message, [
-                                            {
-                                                text: "Ок",
-                                                style: "cancel",
-                                            },
-                                        ]);
-                                    }
-                                })
-                            }, 100)
-                            .catch(() => {
-                                setLoader(false)
-                            })
-                    }
-                }}
+                onPress={handleLogin}
                 activeOpacity={1}
             >
                 <Text style={[globalCss.buttonText, globalCss.bold]}>ВХОД</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("Забыли пароль?")}>
+            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("PasswordScreen")}>
                 <Text style={[globalCss.link, globalCss.bold]}>ЗАБЫЛИ ПАРОЛЬ?</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("Изменить пароли")}>
+            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("ChangePasswordScreen")}>
                 <Text style={[globalCss.link, globalCss.bold]}>change password</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -126,7 +114,7 @@ export default function LoginScreen({navigation}) {
                 ]}
                 onPressIn={() => setIsPressGoogleProfile(true)}
                 onPressOut={() => setIsPressGoogleProfile(false)}
-                onPress={() => navigation.navigate("Introduction")}
+                onPress={() => navigation.navigate("IntroductionScreen")}
                 activeOpacity={1}
             >
                 <Text style={[globalCss.buttonText, globalCss.bold]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>

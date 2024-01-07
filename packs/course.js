@@ -1,11 +1,12 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useMemo} from 'react';
 import globalCss from './css/globalCss';
-import {View, Text, Button, StyleSheet, Animated, ScrollView, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, Button, StyleSheet, ScrollView, TouchableOpacity, Alert} from 'react-native';
 import {useAuth} from "./screens/ui/AuthProvider";
 import {ImageBackground} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 import Loader from "./components/Loader";
+import CourseLesson from "./course_lesson";
 
 export default function CourseScreen({navigation}) {
     const {isAuthenticated, getUser, logout} = useAuth();
@@ -37,6 +38,7 @@ export default function CourseScreen({navigation}) {
     return (
         <ScrollView style={styles.bgCourse}>
             <Loader visible={loader}/>
+
             <ImageBackground source={require('./images/background-app/course-start.png')} style={styles.bgImg}>
                 {isAuthenticated() ?
                     <View>
@@ -87,7 +89,7 @@ export default function CourseScreen({navigation}) {
                                               style={[{width: index % 3 === 0 ? '100%' : '50%'}, globalCss.alignItemsCenter, globalCss.mb17]}>
                                             <TouchableOpacity
                                                 style={[styles.card, pressedCards[item.id] ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-                                                onPress={() => navigation.navigate('course_lesson', {url: item.url})}
+                                                onPress={() => navigation.navigate('CourseLesson', {url: item.url})}
                                                 onPressIn={() => onPressIn(item.id)}
                                                 onPressOut={() => onPressOut(item.id)}
                                                 activeOpacity={1}

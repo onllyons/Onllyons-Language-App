@@ -1,75 +1,111 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import React, {useState} from "react";
+import {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard
+} from 'react-native';
 
 import globalCss from '../css/globalCss';
+import axios from "axios";
+import {useAuth} from "../screens/ui/AuthProvider";
+import Loader from "../components/Loader";
+import Toast from "react-native-toast-message";
 
-export default function PasswordScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [pressSignIn, setPressSignIn] = useState(false);
+export default function PasswordScreen({navigation}) {
+    const [email, setEmail] = useState("");
+    const [pressSignIn, setPressSignIn] = useState(false);
 
-  const handleRequestPassword = () => {
-    // Verifică dacă email-ul este valid folosind regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Ошибка", "Введите действительный адрес электронной почты.");
-      return;
-    }
-    // ...
-  };
+    const [loader, setLoader] = useState(false)
 
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        <View style={[styles.inputView, styles.inputContainer1]}>
-          <TextInput
-            placeholder="Адрес эл. почты"
-            placeholderTextColor="#a5a5a5"
-            style={globalCss.input}
-            onChangeText={setEmail}
-          />
-        </View>
+    const {getUserToken} = useAuth()
 
-        <TouchableOpacity
-          style={[
-            globalCss.button,
-            pressSignIn ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen,
-          ]}
-          onPressIn={() => setPressSignIn(true)}
-          onPressOut={() => setPressSignIn(false)}
-          onPress={handleRequestPassword}
-        >
-          <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUppercase]}>Получить ссылку</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableWithoutFeedback>
-  );
+    const handleRequestPassword = () => {
+        setLoader(true)
+
+        axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/password_request.php", {
+            email: email,
+            mobileToken: getUserToken()
+        }, {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        })
+            .then(async res => {
+                setLoader(false)
+
+                await new Promise(resolve => setTimeout(resolve, 100))
+
+                const data = res.data
+
+                if (data.success) {
+                    navigation.navigate('StartPageScreen')
+                } else {
+                    Toast.show({
+                        type: "error",
+                        text1: data.message
+                    });
+                }
+            })
+            .catch(() => setLoader(false))
+    };
+
+    return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <Loader visible={loader}/>
+            <View style={styles.container}>
+                <View style={[styles.inputView, styles.inputContainer1]}>
+                    <TextInput
+                        placeholder="Адрес эл. почты"
+                        placeholderTextColor="#a5a5a5"
+                        style={globalCss.input}
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                </View>
+
+                <TouchableOpacity
+                    style={[
+                        globalCss.button,
+                        pressSignIn ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen,
+                    ]}
+                    onPressIn={() => setPressSignIn(true)}
+                    onPressOut={() => setPressSignIn(false)}
+                    onPress={handleRequestPassword}
+                >
+                    <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUppercase]}>Получить ссылку</Text>
+                </TouchableOpacity>
+            </View>
+        </TouchableWithoutFeedback>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    padding: 20,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+        alignItems: 'center',
+        padding: 20,
+    },
 
-  inputView:{
-    borderBottomWidth: 2.1,
-    borderColor: '#e0e0e0',
-    flexDirection: 'row',
-    borderLeftWidth: 2.1,
-    borderRightWidth: 2.1,
-    paddingLeft: 12,
-  },
-  inputContainer1: {
-    borderTopWidth: 2.1,
-    borderRadius: 14,
-    paddingBottom: 17, 
-    paddingTop: 17, 
-    paddingRight: 12, 
-    marginBottom: 12, 
-  },
+    inputView: {
+        borderBottomWidth: 2.1,
+        borderColor: '#e0e0e0',
+        flexDirection: 'row',
+        borderLeftWidth: 2.1,
+        borderRightWidth: 2.1,
+        paddingLeft: 12,
+    },
+    inputContainer1: {
+        borderTopWidth: 2.1,
+        borderRadius: 14,
+        paddingBottom: 17,
+        paddingTop: 17,
+        paddingRight: 12,
+        marginBottom: 12,
+    },
 
 });

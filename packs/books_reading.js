@@ -17,7 +17,7 @@ const { width } = Dimensions.get("window");
 
 export default function BooksScreen({ navigation }) {
   const goBackToBooks = () => {
-    navigation.navigate("Книги");
+    navigation.navigate("MenuBooksReading");
   };
 
   const [scrollY, setScrollY] = useState(0);

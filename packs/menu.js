@@ -6,11 +6,11 @@ export default function MenuScreen({ navigation }) {
     <View style={styles.container}>
       <Button 
         title="Menu 1" 
-        onPress={() => navigation.navigate('First Menu')}
+        onPress={() => navigation.navigate('FirstMenu')}
       />
       <Button 
         title="Menu 2" 
-        onPress={() => navigation.navigate('Second Menu')}
+        onPress={() => navigation.navigate('SecondMenuScreen')}
       />
       <Button 
         title="Menu 3" 

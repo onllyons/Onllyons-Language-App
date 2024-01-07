@@ -29,19 +29,17 @@ import MenuScreen from './packs/menu';
 import FirstMenu from './packs/screens/FirstMenuScreen';
 import SecondMenuScreen from './packs/screens/SecondMenuScreen';
 import {AuthProvider} from "./packs/screens/ui/AuthProvider";
+import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// test
-// test2
-
 function MenuStack() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Menu" component={MenuScreen}/>
-            <Stack.Screen name="First Menu" component={FirstMenu}/>
-            <Stack.Screen name="Second Menu" component={SecondMenuScreen}/>
+            <Stack.Screen name="MenuScreen" component={MenuScreen}/>
+            <Stack.Screen name="FirstMenu" component={FirstMenu}/>
+            <Stack.Screen name="SecondMenuScreen" component={SecondMenuScreen}/>
         </Stack.Navigator>
     );
 }
@@ -49,8 +47,8 @@ function MenuStack() {
 function MenuCourseLesson() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Course Screen" component={CourseScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="course_lesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen name="CourseScreen" component={CourseScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -58,9 +56,9 @@ function MenuCourseLesson() {
 function MenuBooksReading() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Книги" component={BooksScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="books_category" component={BooksCategory}/>
-            <Stack.Screen name="books_reading" component={BooksReading} options={{headerShown: false}}/>
+            <Stack.Screen name="BooksScreen" component={BooksScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="BooksCategory" component={BooksCategory}/>
+            <Stack.Screen name="BooksReading" component={BooksReading} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -68,7 +66,7 @@ function MenuBooksReading() {
 function MenuGames() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Играть" component={GamesScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="GamesScreen" component={GamesScreen} options={{headerShown: false}}/>
             <Stack.Screen name="GamesQuiz" component={GamesQuiz}/>
         </Stack.Navigator>
     );
@@ -77,8 +75,8 @@ function MenuGames() {
 function MenuFlasCards() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Флэш-карты" component={FlashCardsScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords}/>
+            <Stack.Screen name="FlashCardsScreen" component={FlashCardsScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{title: "Флеш-карточка"}}/>
         </Stack.Navigator>
     );
 }
@@ -89,26 +87,26 @@ function MainTabNavigator() {
             screenOptions={({route}) => ({
                 tabBarIcon: ({color, size}) => {
                     let iconName;
-                    if (route.name === 'Курс') {
+                    if (route.name === 'MenuCourseLesson') {
                         iconName = faGraduationCap;
-                    } else if (route.name === 'Книги') {
+                    } else if (route.name === 'MenuBooksReading') {
                         iconName = faBook;
-                    } else if (route.name === 'Играть') {
+                    } else if (route.name === 'MenuGames') {
                         iconName = faGamepad;
-                    } else if (route.name === 'Флэш-карты') {
+                    } else if (route.name === 'MenuFlasCards') {
                         iconName = faDiamond;
-                    } else if (route.name === 'Меню') {
+                    } else if (route.name === 'MenuStack') {
                         iconName = faBars;
                     }
                     return <FontAwesomeIcon icon={iconName} size={size} color={color}/>;
                 },
             })}
         >
-            <Tab.Screen name="Курс" component={MenuCourseLesson} options={{headerShown: false}}/>
-            <Tab.Screen name="Книги" component={MenuBooksReading} options={{headerShown: false}}/>
-            <Tab.Screen name="Играть" component={MenuGames} options={{headerShown: false}}/>
-            <Tab.Screen name="Флэш-карты" component={MenuFlasCards} options={{headerShown: false}}/>
-            <Tab.Screen name="Меню" component={MenuStack} options={{headerShown: false}}/>
+            <Tab.Screen name="MenuCourseLesson" component={MenuCourseLesson} options={{title: "Курс", headerShown: false}}/>
+            <Tab.Screen name="MenuBooksReading" component={MenuBooksReading} options={{title: "Книги", headerShown: false}}/>
+            <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
+            <Tab.Screen name="MenuFlasCards" component={MenuFlasCards} options={{title: "Флэш-карты", headerShown: false}}/>
+            <Tab.Screen name="MenuStack" component={MenuStack} options={{title: "Меню", headerShown: false}}/>
         </Tab.Navigator>
     );
 }
@@ -121,24 +119,61 @@ function AppStack() {
                 headerStyle: globalCss.NavTopStartApp,
             }}
         >
-            <Stack.Screen name="StartPageScreen" component={StartPageScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="Введите данные" component={LoginScreen} options={{headerStyle: {backgroundColor: '#ffffff'}}}/>
-            <Stack.Screen name="Introduction" component={IntroductionScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="Забыли пароль?" component={PasswordScreen}/>
-            <Stack.Screen name="Изменить пароли" component={ChangePasswordScreen} options={{headerStyle: {backgroundColor: '#ffffff'}}}/>
-            <Stack.Screen name="Main" component={MainTabNavigator} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="StartPageScreen" name="StartPageScreen" component={StartPageScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="LoginScreen" component={LoginScreen} options={{title: "Введите данные", headerStyle: {backgroundColor: '#ffffff'}}}/>
+            <Stack.Screen navigationKey="IntroductionScreen" name="IntroductionScreen" component={IntroductionScreen} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="PasswordScreen" name="PasswordScreen" component={PasswordScreen} options={{title: "Забыли пароль?"}}/>
+            <Stack.Screen navigationKey="ChangePasswordScreen" name="ChangePasswordScreen" component={ChangePasswordScreen} options={{title: "Изменить пароли", headerStyle: {backgroundColor: '#ffffff'}}}/>
+            <Stack.Screen navigationKey="MainTabNavigator" name="MainTabNavigator" component={MainTabNavigator} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
 
+const toastConfig = {
+    success: (props) => (
+        <BaseToast
+            {...props}
+            style={{borderLeftColor: "#57cc04"}}
+            text1Style={{
+                fontSize: 12,
+                color: "#494949"
+            }}
+        />
+    ),
+
+    error: (props) => (
+        <ErrorToast
+            {...props}
+            style={{borderLeftColor: "#ca3431"}}
+            text1Style={{
+                fontSize: 12,
+                color: "#494949"
+            }}
+        />
+    ),
+
+    info: (props) => (
+        <ErrorToast
+            {...props}
+            style={{borderLeftColor: "#1cb0f6"}}
+            text1Style={{
+                fontSize: 12,
+                color: "#494949"
+            }}
+        />
+    )
+};
 
 export default function App() {
     return (
-        <AuthProvider>
-            <NavigationContainer>
-                <AppStack/>
-                <StatusBar style="auto"/>
-            </NavigationContainer>
-        </AuthProvider>
+        <>
+            <AuthProvider>
+                <NavigationContainer>
+                    <AppStack/>
+                    <StatusBar style="auto"/>
+                </NavigationContainer>
+            </AuthProvider>
+            <Toast position="bottom" config={toastConfig} onPress={() => Toast.hide()}/>
+        </>
     );
 }

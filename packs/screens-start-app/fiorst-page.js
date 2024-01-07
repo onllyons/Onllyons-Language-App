@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import globalCss from '../css/globalCss';
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 
 export default function StartPageScreen({ navigation }) {
   const [isPressedContinue, setIsPressedContinue] = useState(false);
@@ -19,7 +20,7 @@ export default function StartPageScreen({ navigation }) {
         style={[globalCss.button, isPressedReview ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
         onPressIn={() => setIsPressedReview(true)}
         onPressOut={() => setIsPressedReview(false)}
-        onPress={() => navigation.navigate("Введите данные")}
+        onPress={() => navigation.navigate("LoginScreen")}
         activeOpacity={1}
       >
         <Text style={globalCss.buttonText}>ВХОД</Text>
@@ -40,13 +41,13 @@ export default function StartPageScreen({ navigation }) {
           ]}
           onPressIn={() => setIsPressedContinue(true)}
           onPressOut={() => setIsPressedContinue(false)}
-          onPress={() => navigation.navigate("Introduction")}
+          onPress={() => navigation.navigate("IntroductionScreen")}
           activeOpacity={1}
         >
           <Text style={globalCss.buttonText}>НАЧАТЬ</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('Main')}><Text>home</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('MainTabNavigator')}><Text>home</Text></TouchableOpacity>
     </View>
   );
 }

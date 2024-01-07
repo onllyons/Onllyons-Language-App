@@ -3,6 +3,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
 
 import globalCss from "./css/globalCss";
+import BooksReading from "./books_reading";
 
 export default function BooksCategoryScreen({ route }) {
   const navigation = useNavigation();
@@ -49,7 +50,7 @@ export default function BooksCategoryScreen({ route }) {
     const categoryInfo = getCategoryImageAndText(item.category);
 
     return (
-      <TouchableOpacity onPress={() => navigation.navigate('books_reading', { url: item.id, bookId: item.id })}>
+      <TouchableOpacity onPress={() => navigation.navigate('BooksReading', { url: item.id, bookId: item.id })}>
         <View style={styles.item}>
           <Image 
             source={{
