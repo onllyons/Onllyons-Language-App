@@ -1,5 +1,5 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert} from 'react-native';
+import React, {useState, useRef, useCallback} from 'react';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import Swiper from 'react-native-swiper';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -28,7 +28,7 @@ export default function IntroductionScreen({navigation}) {
 
     const [loader, setLoader] = useState(false)
 
-    const {isAuthenticated, login, getMobileToken} = useAuth();
+    const {isAuthenticated, login, getUserToken} = useAuth();
 
     const [userData, setUserData] = useState({
         selectedLevel: 0,
@@ -58,13 +58,18 @@ export default function IntroductionScreen({navigation}) {
 
     const handleRegister = () => {
         if (isAuthenticated()) {
+            Toast.show({
+                type: "error",
+                text1: "Вы уже авторизированы"
+            });
+
             navigation.navigate('MainTabNavigator')
         } else {
             setLoader(true)
 
             axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user_signup.php", {
                 ...userData,
-                mobileToken: getMobileToken()
+                token: getUserToken()
             }, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -78,7 +83,7 @@ export default function IntroductionScreen({navigation}) {
                     const data = res.data
 
                     if (data.success) {
-                        login(data.user)
+                        login(data.userData)
 
                         navigation.navigate('MainTabNavigator')
                     } else {
