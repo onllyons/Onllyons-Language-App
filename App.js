@@ -66,7 +66,7 @@ function MenuGames() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="GamesScreen" component={GamesScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="GamesQuiz" component={GamesQuiz}/>
+            <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
