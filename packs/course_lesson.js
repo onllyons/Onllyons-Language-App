@@ -1,243 +1,162 @@
-import React, {useState, useRef, useCallback, useEffect, Component} from 'react';
-import {useRoute} from '@react-navigation/native';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
-import Swiper from 'react-native-swiper';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faTimes, faVolumeHigh} from '@fortawesome/free-solid-svg-icons';
-import {Video, ResizeMode} from 'expo-av';
-
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Carousel from 'react-native-new-snap-carousel';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faTimes, faVolumeHigh } from '@fortawesome/free-solid-svg-icons';
+import { Video, ResizeMode } from 'expo-av';
 import globalCss from './css/globalCss';
 import Loader from "./components/Loader";
 
-const ProgressBar = ({currentIndex, totalCount}) => {
-    const progress = (currentIndex + 1) / totalCount;
-    return (
-        <View style={styles.progressBarContainer}>
-            <View style={[styles.progressBar, {width: `${progress * 100}%`}]}/>
-        </View>
-    );
+const { width } = Dimensions.get("window");
+const ProgressBar = ({ currentIndex, totalCount }) => {
+  const progress = (currentIndex + 1) / totalCount;
+  return (
+    <View style={styles.progressBarContainer}>
+      <View style={[styles.progressBar, { width: `${progress * 100}%` }]} />
+    </View>
+  );
 };
 
-export default function BooksScreen({navigation}) {
-    const videoRef = useRef(null);
-    const swiperRef = useRef(null);
-    const [isPressedContinue, setIsPressedContinue] = useState(false);
-    const [index, setIndex] = useState(0);
-    const totalSlides = 7;
+export default function BooksScreen({ navigation }) {
+  const [data, setData] = useState([]);
+  const videoRefs = useRef([]);
+  const swiperRef = useRef(null);
+  const [isPressedContinue, setIsPressedContinue] = useState(false);
+  const [index, setIndex] = useState(0);
+  const totalSlides = 7;
 
-    const [loader, setLoader] = useState(false)
+  const [loader, setLoader] = useState(false)
 
-    const route = useRoute();
-    const url = route.params.url;
+  const route = useRoute();
+  const url = route.params.url;
 
-    const [data, setData] = useState([]);
-    useEffect(() => {
-        setLoader(true)
+  useEffect(() => {
+    setLoader(true);
 
-        fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_carousel.php')
-            .then((response) => response.json())
-            .then((responseData) => {
-                const filteredData = responseData.filter(item => item.course_url === url);
-                setData(filteredData); // Setează direct datele filtrate în stare
-            })
-            .catch((error) => {
-                console.error('Eroare la solicitarea HTTP: ', error);
-            })
-            .finally(() => setLoader(false));
-    }, []);
+    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_carousel.php')
+      .then((response) => response.json())
+      .then((responseData) => {
+        const filteredData = responseData.filter(item => item.course_url === url);
+        setData(filteredData);
+      })
+      .catch((error) => {
+        console.error('Eroare la solicitarea HTTP: ', error);
+      })
+      .finally(() => setLoader(false));
+  }, [url]);
 
 
-    // quiz btn
-    const [isPressed, setIsPressed] = useState({
-        review0: false,
-        review1: false,
-        review2: false,
-        review3: false,
-        review4: false,
-        review5: false,
-        review6: false,
-        review7: false,
-        review8: false,
-        review9: false,
-        review10: false,
-        review11: false,
-        review12: false,
-    });
-    // Funcția pentru actualizarea stării
-    const handlePress = (buttonId, value) => {
-        setIsPressed({...isPressed, [buttonId]: value});
-    };
-    // Funcția pentru renderizarea butoanelor
-    const quizButtonConstruct = (id, buttonText) => (
-        <TouchableOpacity
-            style={[styles.button, isPressed['review' + id] ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
-            onPressIn={() => handlePress('review' + id, true)}
-            onPressOut={() => handlePress('review' + id, false)}
-            activeOpacity={1}
-        >
-            <Text style={globalCss.buttonText}>{buttonText}</Text>
+  const [isPressed, setIsPressed] = useState({
+    review0: false,
+    review1: false,
+    review2: false,
+    review3: false,
+    review4: false,
+    review5: false,
+    review6: false,
+    review7: false,
+    review8: false,
+    review9: false,
+    review10: false,
+    review11: false,
+    review12: false,
+  });
+  // Funcția pentru actualizarea stării
+  const handlePress = (buttonId, value) => {
+    setIsPressed({ ...isPressed, [buttonId]: value });
+  };
+  // Funcția pentru renderizarea butoanelor
+  const quizButtonConstruct = (id, buttonText) => (
+    <TouchableOpacity
+      style={[styles.button, isPressed['review' + id] ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
+      onPressIn={() => handlePress('review' + id, true)}
+      onPressOut={() => handlePress('review' + id, false)}
+      activeOpacity={1}
+    >
+      <Text style={globalCss.buttonText}>{buttonText}</Text>
+    </TouchableOpacity>
+  );
+
+  const quizButtonTyping = (id, buttonText) => (
+    <TouchableOpacity
+      style={[styles.quizButtonTyping, isPressed['review' + id] ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
+      onPressIn={() => handlePress('review' + id, true)}
+      onPressOut={() => handlePress('review' + id, false)}
+      activeOpacity={1}
+    >
+      <Text style={globalCss.buttonText}>{buttonText}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleBackButtonPress = () => {
+    navigation.goBack();
+  };
+
+  const handleRightButtonPress = useCallback(() => {
+    swiperRef.current?.snapToNext();
+  }, []);
+
+  const handleSlideChange = useCallback((newIndex) => {
+    console.log('Slide schimbat la indexul:', newIndex);
+    setIndex(newIndex);
+  }, []);
+
+  return (
+    <LinearGradient
+      colors={['#ecf7ff', '#f3faff', '#ecf7ff']}
+      locations={[0, 0.6, 1]}
+      start={[0, 0]}
+      end={[Math.cos(Math.PI / 12), 1]}
+      style={styles.swiperContent}>
+
+      <Loader visible={loader} />
+
+      <View style={styles.row}>
+        <TouchableOpacity onPress={handleBackButtonPress} style={styles.backBtn}>
+          <Text><FontAwesomeIcon icon={faTimes} size={30} style={globalCss.gry} /></Text>
         </TouchableOpacity>
-    );
+        <ProgressBar currentIndex={index} totalCount={totalSlides} />
+      </View>
 
-    const quizButtonTyping = (id, buttonText) => (
-        <TouchableOpacity
-            style={[styles.quizButtonTyping, isPressed['review' + id] ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
-            onPressIn={() => handlePress('review' + id, true)}
-            onPressOut={() => handlePress('review' + id, false)}
-            activeOpacity={1}
-        >
-            <Text style={globalCss.buttonText}>{buttonText}</Text>
-        </TouchableOpacity>
-    );
-
-    const handleBackButtonPress = () => {
-        navigation.goBack();
-    };
-
-    const handleRightButtonPress = useCallback(() => {
-        swiperRef.current?.scrollBy(1);
-    }, []);
-
-    const handleSlideChange = useCallback((newIndex) => {
-        console.log('Slide schimbat la indexul:', newIndex);
-        setIndex(newIndex);
-    }, []);
-
-    return (
-        <LinearGradient
-            colors={['#ecf7ff', '#f3faff', '#ecf7ff']}
-            locations={[0, 0.6, 1]}
-            start={[0, 0]}
-            end={[Math.cos(Math.PI / 12), 1]}
-            style={styles.swiperContent}>
-
-            <Loader visible={loader}/>
-
-            <View style={styles.row}>
-                <TouchableOpacity onPress={handleBackButtonPress} style={styles.backBtn}>
-                    <Text><FontAwesomeIcon icon={faTimes} size={30} style={globalCss.gry}/></Text>
-                </TouchableOpacity>
-                <ProgressBar currentIndex={index} totalCount={totalSlides}/>
+      <Carousel
+        ref={swiperRef}
+        data={data}
+        renderItem={({ item, index }) => (
+          <View style={styles.slide}>
+            <View style={styles.containerVideoLesson}>
+              <Video
+                ref={ref => (videoRefs.current[index] = ref)}
+                style={styles.video}
+                source={{
+                  uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/course/content/videos/${item.file_path}`,
+                }}
+                useNativeControls
+                resizeMode={ResizeMode.CONTAIN}
+                isLooping
+              />
             </View>
+            <View style={styles.textCourse}>
+              <Text style={styles.textOrig}>{item.eng_title}</Text>
+              <Text style={styles.textOrig}>{item.rus_title}</Text>
+            </View>
+          </View>
+        )}
 
+        sliderWidth={width}
+        itemWidth={width - 70}
+        layout={'default'}
+        loop={true}
+      />
 
-            <Text style={styles.textOrig}>
-                Сылка урока: ( {url} )
-            </Text>
-
-
-            <Swiper
-                ref={swiperRef}
-                showsButtons={false}
-                showsPagination={false}
-                loop={false}
-                onIndexChanged={handleSlideChange}
-            >
-
-                <View style={styles.slide}>
-                    <View style={styles.textCourse}>
-
-                        {data.map((item, index) => (
-                            <Text style={styles.textOrig} key={index}>{item.eng_title}</Text>
-                        ))}
-
-
-                    </View>
-                </View>
-
-
-                <View style={styles.slide}>
-                    <View style={styles.containerVideoLesson}>
-                        <Video
-                            ref={videoRef}
-                            style={styles.video}
-                            source={{
-                                uri: "https://www.language.onllyons.com/ru/ru-en/packs/assest/course/content/videos/hello.mp4",
-                            }}
-                            useNativeControls
-                            resizeMode={ResizeMode.CONTAIN}
-                            isLooping
-                        />
-                    </View>
-                    <View style={styles.textCourse}>
-                        <Text style={styles.textOrig}>en</Text>
-                        <Text style={styles.textLearn}>ru</Text>
-                    </View>
-                </View>
-                <View style={styles.slide}>
-                    <View style={styles.containerAudioLesson}>
-                        <Text style={styles.faVolumeHigh}>
-                            <FontAwesomeIcon icon={faVolumeHigh} size={70} style={styles.audio}/>
-                        </Text>
-                    </View>
-                    <View style={styles.textCourse}>
-                        <Text style={styles.textOrig}>
-                            txt eng
-                        </Text>
-                        <Text style={styles.textLearn}>
-                            txt rus
-                        </Text>
-                    </View>
-                </View>
-                <View style={styles.slide}>
-                    <View style={styles.containerAudioLesson}>
-                        <Text style={styles.faVolumeHigh}>
-                            <FontAwesomeIcon icon={faVolumeHigh} size={70} style={styles.audio}/>
-                        </Text>
-                    </View>
-                    <View style={styles.quizBtn}>
-
-                        {quizButtonConstruct(0, 'btn1')}
-                        {quizButtonConstruct(1, 'btn2')}
-                        {quizButtonConstruct(2, 'btn3')}
-                        {quizButtonConstruct(3, 'btn4')}
-
-                    </View>
-                </View>
-                <View style={styles.slide}>
-                    <View style={styles.containerQuizInput}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="сформулируйте правильный ответ"
-                        />
-                    </View>
-                    <View style={styles.quizBtnTyping}>
-
-                        {quizButtonTyping(4, 'a')}
-                        {quizButtonTyping(5, 'b')}
-                        {quizButtonTyping(6, 'c')}
-                        {quizButtonTyping(7, 'd')}
-                        {quizButtonTyping(8, 'e')}
-                        {quizButtonTyping(9, 'f')}
-                        {quizButtonTyping(10, 'g')}
-                        {quizButtonTyping(11, 'h')}
-                        {quizButtonTyping(12, 'i')}
-
-                    </View>
-                </View>
-                <View style={styles.slide}>
-                    <View style={styles.slideCourseLess}>
-                        <Text style={styles.text}>
-                            55555555555
-                        </Text>
-                    </View>
-                </View>
-                <View style={styles.slide}>
-                    <View style={styles.slideCourseLess}>
-                        <Text style={styles.text}>
-                            6666666666
-                        </Text>
-                    </View>
-                </View>
-            </Swiper>
-            <SwiperButtonsContainer
-                onRightPress={handleRightButtonPress}
-                isPressedContinue={isPressedContinue}
-                setIsPressedContinue={setIsPressedContinue}
-            />
-        </LinearGradient>
-    );
+      <SwiperButtonsContainer
+          onRightPress={handleRightButtonPress}
+          isPressedContinue={isPressedContinue}
+          setIsPressedContinue={setIsPressedContinue}
+      />
+    </LinearGradient>
+  );
 }
 
 const SwiperButtonsContainer = ({onRightPress, isPressedContinue, setIsPressedContinue}) => (
@@ -270,12 +189,14 @@ const styles = StyleSheet.create({
     },
     swiperContent: {
         height: '100%',
-        paddingBottom: '10%',
     },
     slide: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: "#fff",
+        height: 100,
+        borderRadius: 10,
     },
     containerVideoLesson: {
         width: '80%',

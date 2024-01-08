@@ -100,10 +100,12 @@ function MainTabNavigator() {
 
           const imageStyle = focused ? { 
             width: size + 10, 
-            height: size + 10 
+            height: size + 10,
+            color: '#8ac0e6'
           } : { 
             width: size + 10, 
             height: size + 10,
+            color: '#8ac0e6'
           };
           return (
             <Image
@@ -115,6 +117,8 @@ function MainTabNavigator() {
             />
           );
         },
+        tabBarActiveTintColor: '#8ac0e6',
+        tabBarInactiveTintColor: 'red',
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopLeftRadius: 20,
