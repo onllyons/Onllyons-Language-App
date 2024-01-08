@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 0,
+    marginLeft: 4, 
   },
   cardPressed:{
     shadowOffset: { width: 0, height: 0 },
