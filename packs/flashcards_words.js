@@ -1,126 +1,94 @@
 import React from "react";
-import {View} from "react-native";
-import Carousel from 'react-native-reanimated-carousel';
-import { FadeInRight } from "react-native-reanimated";
+import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
+import Carousel from 'react-native-new-snap-carousel';
 
-import { SBItem } from "./components/carousel/SBItem";
-import SButton from "./components/carousel/SButton";
+const { width } = Dimensions.get("window");
 
-const ElementsText = {
-    AUTOPLAY: "AutoPlay",
-};
+export default function BooksCategoryScreen({ route }) {
+  const data = [
+    {
+      id: 1,
+      author: "Autor 1",
+      title: "Titlu 1",
+    },
+    {
+      id: 2,
+      author: "Autor 2",
+      title: "Titlu 2",
+    },
+    {
+      id: 3,
+      author: "Autor 3",
+      title: "Titlu 3",
+    },
+    {
+      id: 4,
+      author: "Autor 4",
+      title: "Titlu 4",
+    },
+  ];
 
-export default function BooksScreen({navigation}) {
-    const [mode, setMode] = React.useState("horizontal-stack");
-    const [snapDirection, setSnapDirection] = React.useState("left");
-    const [pagingEnabled, setPagingEnabled] = React.useState(true);
-    const [snapEnabled, setSnapEnabled] = React.useState(true);
-    const [loop, setLoop] = React.useState(true);
-    const [autoPlay, setAutoPlay] = React.useState(false);
-    const [autoPlayReverse, setAutoPlayReverse] = React.useState(false);
+  const category = "Categoria Exemplu";
 
-    const data = React.useRef([...new Array(6).keys()]).current;
-    const viewCount = 5;
+  const renderItem = ({ item }) => (
+    <View style={styles.item}>
+      <Text style={styles.author}>{item.author}</Text>
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.category}>{category}</Text>
+    </View>
+  );
 
-    return (
-        <View style={{ flex: 1 }}>
-            <Carousel
-                style={{
-                    width: "100%",
-                    height: 240,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-                width={280}
-                height={210}
-                pagingEnabled={pagingEnabled}
-                snapEnabled={snapEnabled}
-                mode={mode}
-                loop={loop}
-                autoPlay={autoPlay}
-                autoPlayReverse={autoPlayReverse}
-                data={data}
-                modeConfig={{
-                    snapDirection,
-                    stackInterval: mode === "vertical-stack" ? 8 : 18,
-                }}
-                customConfig={() => ({ type: "positive", viewCount })}
-                renderItem={({ index }) => (
-                    <SBItem
-                        index={index}
-                        key={index}
-                        entering={FadeInRight.delay(
-                            (viewCount - index) * 100,
-                        ).duration(200)}
-                    />
-                )}
-            />
-            <View
-                style={{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    justifyContent: "space-evenly",
-                }}
-            >
-                <SButton
-                    onPress={() => {
-                        setMode("horizontal-stack");
-                    }}
-                >
-                    {"horizontal-stack"}
-                </SButton>
-                <SButton
-                    onPress={() => {
-                        setMode("vertical-stack");
-                    }}
-                >
-                    {"vertical-stack"}
-                </SButton>
-                <SButton
-                    onPress={() => {
-                        setAutoPlay(!autoPlay);
-                    }}
-                >
-                    {`${ElementsText.AUTOPLAY}:${autoPlay}`}
-                </SButton>
-                <SButton
-                    onPress={() => {
-                        setAutoPlayReverse(!autoPlayReverse);
-                    }}
-                >
-                    {`autoPlayReverse:${autoPlayReverse}`}
-                </SButton>
-                <SButton
-                    onPress={() => {
-                        setLoop(!loop);
-                    }}
-                >
-                    {`loop:${loop}`}
-                </SButton>
-                <SButton
-                    onPress={() => {
-                        setSnapDirection(
-                            snapDirection === "left" ? "right" : "left",
-                        );
-                    }}
-                >
-                    {snapDirection}
-                </SButton>
-                <SButton
-                    onPress={() => {
-                        setPagingEnabled(!pagingEnabled);
-                    }}
-                >
-                    {`pagingEnabled:${pagingEnabled}`}
-                </SButton>
-                <SButton
-                    onPress={() => {
-                        setSnapEnabled(!snapEnabled);
-                    }}
-                >
-                    {`snapEnabled:${snapEnabled}`}
-                </SButton>
-            </View>
-        </View>
-    );
+  return (
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.categoryTitle}>{category}</Text>
+        <Carousel
+          data={data}
+          renderItem={renderItem}
+          sliderWidth={width}
+          itemWidth={width - 70}
+          layout={'default'}
+          loop={true}
+          paginationStyle={styles.pagination}
+          contentContainerCustomStyle={styles.carouselContainer}
+        />
+      </View>
+    </ScrollView>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 16,
+  },
+  categoryTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  item: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 16,
+    height: 500,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  author: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  title: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  category: {
+    fontSize: 12,
+    marginTop: 4,
+    color: "#666",
+  },
+  pagination: {
+    marginTop: 16,
+  },
+});

@@ -1,9 +1,8 @@
 import {StatusBar} from 'expo-status-bar';
+import { Image } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faGraduationCap, faGamepad, faDiamond, faBars, faBook} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from './packs/css/globalCss';
 import StartPageScreen from './packs/screens-start-app/fiorst-page';
@@ -48,7 +47,7 @@ function MenuCourseLesson() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="CourseScreen" component={CourseScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{ tabBarVisible: false, headerShown: false }}/>
         </Stack.Navigator>
     );
 }
@@ -82,34 +81,58 @@ function MenuFlasCards() {
 }
 
 function MainTabNavigator() {
-    return (
-        <Tab.Navigator
-            screenOptions={({route}) => ({
-                tabBarIcon: ({color, size}) => {
-                    let iconName;
-                    if (route.name === 'MenuCourseLesson') {
-                        iconName = faGraduationCap;
-                    } else if (route.name === 'MenuBooksReading') {
-                        iconName = faBook;
-                    } else if (route.name === 'MenuGames') {
-                        iconName = faGamepad;
-                    } else if (route.name === 'MenuFlasCards') {
-                        iconName = faDiamond;
-                    } else if (route.name === 'MenuStack') {
-                        iconName = faBars;
-                    }
-                    return <FontAwesomeIcon icon={iconName} size={size} color={color}/>;
-                },
-            })}
-        >
-            <Tab.Screen name="MenuCourseLesson" component={MenuCourseLesson} options={{title: "Курс", headerShown: false}}/>
-            <Tab.Screen name="MenuBooksReading" component={MenuBooksReading} options={{title: "Книги", headerShown: false}}/>
-            <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
-            <Tab.Screen name="MenuFlasCards" component={MenuFlasCards} options={{title: "Флэш-карты", headerShown: false}}/>
-            <Tab.Screen name="MenuStack" component={MenuStack} options={{title: "Меню", headerShown: false}}/>
-        </Tab.Navigator>
-    );
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size, focused }) => {
+          let iconImage;
+          if (route.name === 'MenuCourseLesson') {
+            iconImage = require('./packs/images/nav-icon/course.png');
+          } else if (route.name === 'MenuBooksReading') {
+            iconImage = require('./packs/images/nav-icon/book-open.png');
+          } else if (route.name === 'MenuGames') {
+            iconImage = require('./packs/images/nav-icon/game.png');
+          } else if (route.name === 'MenuFlasCards') {
+            iconImage = require('./packs/images/nav-icon/flashcards.png');
+          } else if (route.name === 'MenuStack') {
+            iconImage = require('./packs/images/nav-icon/more.png');
+          }
+
+          const imageStyle = focused ? { 
+            width: size + 10, 
+            height: size + 10 
+          } : { 
+            width: size + 10, 
+            height: size + 10,
+          };
+          return (
+            <Image
+              source={iconImage}
+              style={[
+                imageStyle,
+                globalCss.navImage
+              ]}
+            />
+          );
+        },
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          height: 100,
+          paddingTop: 20,
+        }
+      })}
+    >
+      <Tab.Screen name="MenuCourseLesson" component={MenuCourseLesson} options={{title: "Курс", headerShown: false}}/>
+      <Tab.Screen name="MenuBooksReading" component={MenuBooksReading} options={{title: "Книги", headerShown: false}}/>
+      <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
+      <Tab.Screen name="MenuFlasCards" component={MenuFlasCards} options={{title: "Флэш-карты", headerShown: false}}/>
+      <Tab.Screen name="MenuStack" component={MenuStack} options={{title: "Меню", headerShown: false}}/>
+    </Tab.Navigator>
+  );
 }
+
 
 function AppStack() {
     return (

@@ -5,7 +5,7 @@ import globalCss from './css/globalCss';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons';
 import BooksReading from "./books_reading";
-// import Carousel from 'react-native-snap-carousel';
+import Carousel from 'react-native-new-snap-carousel';
 
 export default function BooksScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});

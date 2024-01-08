@@ -4,10 +4,9 @@ import globalCss from './css/globalCss';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
-export default function FlashCardWords({ navigation }) {
-
+const FlashCardWords = ({ navigation }) => {
   const [pressedCards, setPressedCards] = useState({});
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words.php')
@@ -17,47 +16,43 @@ export default function FlashCardWords({ navigation }) {
   }, []);
 
   const onPressIn = (id) => {
-    setPressedCards(prevState => ({...prevState, [id]: true}));
+    setPressedCards(prevState => ({ ...prevState, [id]: true }));
   };
 
   const onPressOut = (id) => {
-    setPressedCards(prevState => ({...prevState, [id]: false}));
+    setPressedCards(prevState => ({ ...prevState, [id]: false }));
   };
 
   return (
-    <ScrollView  style={globalCss.container}>
-
+    <ScrollView style={globalCss.container}>
       <View>
         <Text style={[globalCss.title, globalCss.textAlignCenter]}>Flash cards</Text>
       </View>
 
       <View style={styles.contentFlashCards}>
-        {data ? (
-          data.map((item, index) => (
-            <>
-              {(index % 3 === 0 || index === 0) && <View style={{ width: '100%' }}></View>}
-              <View key={item.id} style={[{ width: index % 3 === 0 ? '100%' : '50%' }, globalCss.alignItemsCenter]}>
-                <TouchableOpacity 
-                  style={[styles.card, pressedCards[item.id] ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-                  onPress={() => navigation.navigate('FlashCardsWords')}
-                  onPressIn={() => onPressIn(item.id)}
-                  onPressOut={() => onPressOut(item.id)}
-                  activeOpacity={1}
-                >
-                  <Text><FontAwesomeIcon icon={faStar} size={30} style={styles.iconFlash} /></Text>
-                </TouchableOpacity>
-                <Text>{item.title_category}</Text>
-              </View>
-            </>
-          ))
-        ) : (
-          <Text></Text>
-        )}
+        {data.map((item, index) => (
+          <View key={item.id} style={[{ width: index % 3 === 0 ? '100%' : '50%' }, globalCss.alignItemsCenter]}>
+            <TouchableOpacity
+              style={[
+                styles.card,
+                pressedCards[item.id] && styles.cardPressed,
+                styles.bgGry,
+                pressedCards[item.id] && styles.bgGryPressed,
+              ]}
+              onPress={() => navigation.navigate('FlashCardsWords')}
+              onPressIn={() => onPressIn(item.id)}
+              onPressOut={() => onPressOut(item.id)}
+              activeOpacity={1}
+            >
+              <Text><FontAwesomeIcon icon={faStar} size={30} style={styles.iconFlash} /></Text>
+            </TouchableOpacity>
+            <Text>{item.title_category}</Text>
+          </View>
+        ))}
       </View>
     </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   card: {
@@ -76,7 +71,7 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     elevation: 0,
   },
-  cardPressed:{
+  cardPressed: {
     shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
   },
@@ -89,17 +84,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
     borderColor: '#d8d8d8',
   },
-  contentFlashCards:{
-    flexDirection: 'row', 
+  contentFlashCards: {
+    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
   },
-
-  iconFlash:{
+  iconFlash: {
 
   },
-
-
 });
+
+export default FlashCardWords;

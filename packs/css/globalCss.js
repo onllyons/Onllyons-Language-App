@@ -6,6 +6,13 @@ const globalCss = StyleSheet.create({
   NavTopStartApp:{
     
   },
+  navBottomApp:{
+    borderBottomLeftRadius: 30,
+    backgroundColor: 'red'
+  },
+  navImage: {
+    alignSelf: 'center',
+  },
   alignItemsCenter:{
     alignItems: 'center',
   },
