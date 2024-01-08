@@ -15,7 +15,7 @@ import {useAuth} from "../screens/ui/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 
-export default function PasswordScreen({navigation}) {
+export default function PasswordScreen() {
     const [email, setEmail] = useState("");
     const [pressSignIn, setPressSignIn] = useState(false);
 
@@ -26,9 +26,9 @@ export default function PasswordScreen({navigation}) {
     const handleRequestPassword = () => {
         setLoader(true)
 
-        axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/password_request.php", {
+        axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/send_reset_mail.php", {
             email: email,
-            mobileToken: getUserToken()
+            token: getUserToken()
         }, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -42,7 +42,10 @@ export default function PasswordScreen({navigation}) {
                 const data = res.data
 
                 if (data.success) {
-                    navigation.navigate('StartPageScreen')
+                    Toast.show({
+                        type: "success",
+                        text1: data.message
+                    });
                 } else {
                     Toast.show({
                         type: "error",
@@ -55,8 +58,9 @@ export default function PasswordScreen({navigation}) {
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <Loader visible={loader}/>
             <View style={styles.container}>
+                <Loader visible={loader}/>
+
                 <View style={[styles.inputView, styles.inputContainer1]}>
                     <TextInput
                         placeholder="Адрес эл. почты"

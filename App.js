@@ -1,5 +1,5 @@
 import {StatusBar} from 'expo-status-bar';
-import { Image } from 'react-native';
+import {Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -47,7 +47,6 @@ function MenuCourseLesson() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="CourseScreen" component={CourseScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{ tabBarVisible: false, headerShown: false }}/>
         </Stack.Navigator>
     );
 }
@@ -81,60 +80,63 @@ function MenuFlasCards() {
 }
 
 function MainTabNavigator() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size, focused }) => {
-          let iconImage;
-          if (route.name === 'MenuCourseLesson') {
-            iconImage = require('./packs/images/nav-icon/course.png');
-          } else if (route.name === 'MenuBooksReading') {
-            iconImage = require('./packs/images/nav-icon/book-open.png');
-          } else if (route.name === 'MenuGames') {
-            iconImage = require('./packs/images/nav-icon/game.png');
-          } else if (route.name === 'MenuFlasCards') {
-            iconImage = require('./packs/images/nav-icon/flashcards.png');
-          } else if (route.name === 'MenuStack') {
-            iconImage = require('./packs/images/nav-icon/more.png');
-          }
+    return (
+        <Tab.Navigator
+            screenOptions={({route}) => ({
+                tabBarIcon: ({size, focused}) => {
+                    let iconImage;
+                    if (route.name === 'MenuCourseLesson') {
+                        iconImage = require('./packs/images/nav-icon/course.png');
+                    } else if (route.name === 'MenuBooksReading') {
+                        iconImage = require('./packs/images/nav-icon/book-open.png');
+                    } else if (route.name === 'MenuGames') {
+                        iconImage = require('./packs/images/nav-icon/game.png');
+                    } else if (route.name === 'MenuFlasCards') {
+                        iconImage = require('./packs/images/nav-icon/flashcards.png');
+                    } else if (route.name === 'MenuStack') {
+                        iconImage = require('./packs/images/nav-icon/more.png');
+                    }
 
-          const imageStyle = focused ? { 
-            width: size + 10, 
-            height: size + 10,
-            color: '#8ac0e6'
-          } : { 
-            width: size + 10, 
-            height: size + 10,
-            color: '#8ac0e6'
-          };
-          return (
-            <Image
-              source={iconImage}
-              style={[
-                imageStyle,
-                globalCss.navImage
-              ]}
-            />
-          );
-        },
-        tabBarActiveTintColor: '#8ac0e6',
-        tabBarInactiveTintColor: 'red',
-        tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          height: 100,
-          paddingTop: 20,
-        }
-      })}
-    >
-      <Tab.Screen name="MenuCourseLesson" component={MenuCourseLesson} options={{title: "Курс", headerShown: false}}/>
-      <Tab.Screen name="MenuBooksReading" component={MenuBooksReading} options={{title: "Книги", headerShown: false}}/>
-      <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
-      <Tab.Screen name="MenuFlasCards" component={MenuFlasCards} options={{title: "Флэш-карты", headerShown: false}}/>
-      <Tab.Screen name="MenuStack" component={MenuStack} options={{title: "Меню", headerShown: false}}/>
-    </Tab.Navigator>
-  );
+                    const imageStyle = focused ? {
+                        width: size + 10,
+                        height: size + 10,
+                        // color: '#8ac0e6'
+                    } : {
+                        width: size + 10,
+                        height: size + 10,
+                        // color: '#8ac0e6'
+                    };
+                    return (
+                        <Image
+                            source={iconImage}
+                            style={[
+                                imageStyle,
+                                globalCss.navImage
+                            ]}
+                        />
+                    );
+                },
+                tabBarActiveTintColor: '#8ac0e6',
+                tabBarInactiveTintColor: 'red',
+                tabBarStyle: {
+                    backgroundColor: '#ffffff',
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    height: 100,
+                    paddingTop: 20,
+                }
+            })}
+        >
+            <Tab.Screen name="MenuCourseLesson" component={MenuCourseLesson}
+                        options={{title: "Курс", headerShown: false}}/>
+            <Tab.Screen name="MenuBooksReading" component={MenuBooksReading}
+                        options={{title: "Книги", headerShown: false}}/>
+            <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
+            <Tab.Screen name="MenuFlasCards" component={MenuFlasCards}
+                        options={{title: "Флэш-карты", headerShown: false}}/>
+            <Tab.Screen name="MenuStack" component={MenuStack} options={{title: "Меню", headerShown: false}}/>
+        </Tab.Navigator>
+    );
 }
 
 
@@ -146,12 +148,23 @@ function AppStack() {
                 headerStyle: globalCss.NavTopStartApp,
             }}
         >
-            <Stack.Screen navigationKey="StartPageScreen" name="StartPageScreen" component={StartPageScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="LoginScreen" component={LoginScreen} options={{title: "Введите данные", headerStyle: {backgroundColor: '#ffffff'}}}/>
-            <Stack.Screen navigationKey="IntroductionScreen" name="IntroductionScreen" component={IntroductionScreen} options={{headerShown: false}}/>
-            <Stack.Screen navigationKey="PasswordScreen" name="PasswordScreen" component={PasswordScreen} options={{title: "Забыли пароль?"}}/>
-            <Stack.Screen navigationKey="ChangePasswordScreen" name="ChangePasswordScreen" component={ChangePasswordScreen} options={{title: "Изменить пароли", headerStyle: {backgroundColor: '#ffffff'}}}/>
-            <Stack.Screen navigationKey="MainTabNavigator" name="MainTabNavigator" component={MainTabNavigator} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="StartPageScreen" name="StartPageScreen" component={StartPageScreen}
+                          options={{headerShown: false}}/>
+            <Stack.Screen name="LoginScreen" component={LoginScreen}
+                          options={{title: "Введите данные", headerStyle: {backgroundColor: '#ffffff'}}}/>
+            <Stack.Screen navigationKey="IntroductionScreen" name="IntroductionScreen" component={IntroductionScreen}
+                          options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="PasswordScreen" name="PasswordScreen" component={PasswordScreen}
+                          options={{title: "Забыли пароль?"}}/>
+            <Stack.Screen navigationKey="ChangePasswordScreen" name="ChangePasswordScreen"
+                          component={ChangePasswordScreen}
+                          options={{title: "Изменить пароли", headerStyle: {backgroundColor: '#ffffff'}}}/>
+            <Stack.Screen navigationKey="MainTabNavigator" name="MainTabNavigator" component={MainTabNavigator}
+                          options={{headerShown: false}}/>
+
+            {/* Place screen here if you need to hide tab bar navigator */}
+            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson}
+                          options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, Alert} from 'react-native';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
@@ -26,19 +26,26 @@ export default function LoginScreen({navigation}) {
 
     const handleLogin = () => {
         if (isAuthenticated()) {
+            Toast.show({
+                type: "error",
+                text1: "Вы уже авторизированы"
+            });
+
             navigation.navigate('MainTabNavigator')
         } else {
             setLoader(true)
 
             axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user_login.php", {
                 ...userData,
-                mobileToken: getUserToken()
+                token: getUserToken()
             }, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
             })
                 .then(async res => {
+                    console.log(res.data)
+
                     setLoader(false)
 
                     await new Promise(resolve => setTimeout(resolve, 100))
@@ -46,7 +53,7 @@ export default function LoginScreen({navigation}) {
                     const data = res.data
 
                     if (data.success) {
-                        login(data.user)
+                        login(data.userData)
 
                         navigation.navigate('MainTabNavigator')
                     } else {
@@ -56,7 +63,10 @@ export default function LoginScreen({navigation}) {
                         });
                     }
                 })
-                .catch(() => setLoader(false))
+                .catch(reason => {
+                    console.log(reason)
+                    setLoader(false)
+                })
         }
     }
 
