@@ -1,4 +1,4 @@
-// sergiu
+// sergiu.
 import {StatusBar} from 'expo-status-bar';
 import { Image } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
