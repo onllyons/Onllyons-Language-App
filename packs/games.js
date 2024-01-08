@@ -1,51 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, Animated, TouchableOpacity, Alert } from 'react-native';
 import globalCss from './css/globalCss';
 
+const cardData = [
+  { id: 1, uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game.webp', text: 'Задачи' },
+  { id: 2, uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-write-with-keyboard.webp', text: 'Написать перевод' },
+  { id: 3, uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-write-translate.webp', text: 'Расшифруйте аудио' },
+  { id: 4, uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-change-eyes.webp', text: 'Переведите аудио' },
+  { id: 5, uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-true-false.webp', text: 'Верно - Не верно' },
+];
+
 export default function GamesScreen({ navigation }) {
-  const [isCardPressed1, setIsCardPressed1] = useState(false);
-  const [isCardPressed2, setIsCardPressed2] = useState(false);
-  const [isCardPressed3, setIsCardPressed3] = useState(false);
+  const [pressedCard, setPressedCard] = useState(null);
+
+  const handlePress = (id) => {
+    if (id === 1) {
+      setPressedCard(null); // Resetare înainte de navigație
+      navigation.navigate('GamesQuiz');
+    } else {
+      Alert.alert(
+        "Игра будет доступна в системе в ближайшее время. Благодарим за ваше терпение и понимание.",
+        "",
+        [{ text: "OK", onPress: () => setPressedCard(null) }] // Resetare după afișarea alertei
+      );
+    }
+  };
 
   return (
-
-    <View style={globalCss.row}>
-      <TouchableOpacity 
-        style={[styles.card, isCardPressed1 ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-        onPress={() => navigation.navigate('GamesQuiz')}
-        onPressIn={() => setIsCardPressed1(true)}
-        onPressOut={() => setIsCardPressed1(false)}
-        activeOpacity={1}
-      >
-        <Image
-          source={{ uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game.webp' }}
-          style={{ width: 100, height: 100 }}
+    <View style={[globalCss.row, styles.container]}>
+      {cardData.map((card) => (
+        <Card
+          key={card.id}
+          card={card}
+          isPressed={pressedCard === card.id}
+          onPress={() => handlePress(card.id)}
+          onPressIn={() => setPressedCard(card.id)}
+          onPressOut={() => setPressedCard(null)}
         />
-        <Text>game quiz puzzle</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity 
-        style={[styles.card, isCardPressed2 ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-        onPress={() => navigation.navigate('GamesQuiz')}
-        onPressIn={() => setIsCardPressed2(true)}
-        onPressOut={() => setIsCardPressed2(false)}
-        activeOpacity={1}
-      >
-        <Image
-          source={{ uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game.webp' }}
-          style={{ width: 100, height: 100 }}
-        />
-        <Text>game alphabet</Text>
-      </TouchableOpacity>
+      ))}
     </View>
-
   );
 }
+
+const Card = ({ card, isPressed, onPress, onPressIn, onPressOut }) => (
+  <TouchableOpacity
+    style={[styles.card, isPressed ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
+    onPress={onPress}
+    onPressIn={onPressIn}
+    onPressOut={onPressOut}
+    activeOpacity={1}
+  >
+    <Image
+      source={{ uri: card.uri }}
+      style={{ width: 100, height: 100 }}
+    />
+    <Text>{card.text}</Text>
+  </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
+  container:{
+    padding: 20,
+    marginTop: '13%',
+  },
   card: {
-    flex: 1,
-    // width: '40%',
-    height: 110,
+    flexBasis: '48%',
+    height: 150,
     marginBottom: '5%',
     borderRadius: 6,
     alignItems: 'center',
@@ -58,7 +78,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 0,
-    marginLeft: 4, 
+    marginVertical: '2%',
   },
   cardPressed:{
     shadowOffset: { width: 0, height: 0 },
