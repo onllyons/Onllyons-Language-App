@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import globalCss from './css/globalCss';
 
 export default function GamesScreen({ navigation }) {
@@ -7,52 +7,47 @@ export default function GamesScreen({ navigation }) {
   const [isCardPressed2, setIsCardPressed2] = useState(false);
   const [isCardPressed3, setIsCardPressed3] = useState(false);
 
-
   return (
 
-        <View>
-            <TouchableOpacity 
-              style={[styles.card, isCardPressed1 ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-              onPress={() => navigation.navigate('GamesQuiz')}
-              onPressIn={() => setIsCardPressed1(true)}
-              onPressOut={() => setIsCardPressed1(false)}
-              activeOpacity={1}
-            >
-              <Text>lesson 1</Text>
-            </TouchableOpacity>
+    <View style={globalCss.row}>
+      <TouchableOpacity 
+        style={[styles.card, isCardPressed1 ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
+        onPress={() => navigation.navigate('GamesQuiz')}
+        onPressIn={() => setIsCardPressed1(true)}
+        onPressOut={() => setIsCardPressed1(false)}
+        activeOpacity={1}
+      >
+        <Image
+          source={{ uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game.webp' }}
+          style={{ width: 100, height: 100 }}
+        />
+        <Text>game quiz puzzle</Text>
+      </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.card, isCardPressed2 ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-              onPress={() => navigation.navigate('GamesQuiz')}
-              onPressIn={() => setIsCardPressed2(true)}
-              onPressOut={() => setIsCardPressed2(false)}
-              activeOpacity={1}
-            >
-              <Text>lesson 2</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.card, isCardPressed3 ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-              onPress={() => navigation.navigate('GamesQuiz')}
-              onPressIn={() => setIsCardPressed3(true)}
-              onPressOut={() => setIsCardPressed3(false)}
-              activeOpacity={1}
-            >
-              <Text>lesson 3</Text>
-            </TouchableOpacity>
-
-        </View>
-
-
+      <TouchableOpacity 
+        style={[styles.card, isCardPressed2 ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
+        onPress={() => navigation.navigate('GamesQuiz')}
+        onPressIn={() => setIsCardPressed2(true)}
+        onPressOut={() => setIsCardPressed2(false)}
+        activeOpacity={1}
+      >
+        <Image
+          source={{ uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game.webp' }}
+          style={{ width: 100, height: 100 }}
+        />
+        <Text>game alphabet</Text>
+      </TouchableOpacity>
+    </View>
 
   );
 }
 const styles = StyleSheet.create({
   card: {
-    width: 110,
+    flex: 1,
+    // width: '40%',
     height: 110,
     marginBottom: '5%',
-    borderRadius: 60,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: 2,
