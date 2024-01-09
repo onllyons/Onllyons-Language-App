@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faXmark} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from "../css/globalCss";
 
-const SubscriptionOption = ({ title, price, imageUrl, isSelected, onPress }) => {
-
-	
-
+const SubscriptionOption = ({ title, price, imageUrl, isSelected, onPress, isCardPressed }) => {
   return (
     <TouchableOpacity
-      style={[styles.option, isSelected ? styles.optionSelected : null]}
-      onPress={onPress}
+      style={[styles.card, isCardPressed ? [globalCss.cardPressed, styles.bgGryPressed] : globalCss.bgGry]}
+      onPressIn={() => onPress(true)}
+      onPressOut={() => onPress(false)}
+      onPress={() => onPress(true)}
+      activeOpacity={1}
     >
       <Image source={imageUrl} style={styles.image} />
       <View style={styles.details}>
@@ -24,10 +24,29 @@ const SubscriptionOption = ({ title, price, imageUrl, isSelected, onPress }) => 
   );
 };
 
-export default function UserSubscriptionChoose({ navigation }) {
 
+export default function UserSubscriptionChoose({ navigation }) {
   const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
+  const [isCardPressed1, setIsCardPressed1] = useState(false);
+  const [isCardPressed2, setIsCardPressed2] = useState(false);
+  const [isCardPressed3, setIsCardPressed3] = useState(false);
+
+  const handleCardPress = (value, cardNumber) => {
+    if (cardNumber === 1) {
+      setIsCardPressed1(value);
+      setIsCardPressed2(false);
+      setIsCardPressed3(false);
+    } else if (cardNumber === 2) {
+      setIsCardPressed1(false);
+      setIsCardPressed2(value);
+      setIsCardPressed3(false);
+    } else if (cardNumber === 3) {
+      setIsCardPressed1(false);
+      setIsCardPressed2(false);
+      setIsCardPressed3(value);
+    }
+  };
 
   const handleContinuePress = () => {
     if (selectedSubscription) {
@@ -40,57 +59,38 @@ export default function UserSubscriptionChoose({ navigation }) {
   return (
     <ScrollView>
       <View style={styles.container}>
-
-      	
-
-	
-			<TouchableOpacity style={styles.closeBtn} onPress={() => navigation.navigate('MenuScreen')}>
-		      <Text><FontAwesomeIcon icon={faXmark} size={30} style={styles.iconClose}/></Text>
-		    </TouchableOpacity>
-			<Text style={styles.titlePageTxt}>Откройте для себя мир эксклюзивных преимуществ и уникальных возможностей</Text>
-
+        <TouchableOpacity style={styles.closeBtn} onPress={() => navigation.navigate('MenuScreen')}>
+          <Text><FontAwesomeIcon icon={faXmark} size={30} style={styles.iconClose} /></Text>
+        </TouchableOpacity>
+        <Text style={styles.titlePageTxt}>Откройте для себя мир эксклюзивных преимуществ и уникальных возможностей</Text>
 
         <SubscriptionOption
           title="By Monthly"
-          price="$9.90"
+          price="Try for free"
           imageUrl={require('../images/other_images/free.png')}
-          isSelected={selectedSubscription === "By Monthly"}
-          onPress={() => {
-            if (selectedSubscription === "By Monthly") {
-              setSelectedSubscription(null);
-            } else {
-              setSelectedSubscription("By Monthly");
-            }
-          }}
+          isSelected={selectedSubscription === "Free"}
+          onPress={(value) => handleCardPress(value, 1)}
+          isCardPressed={isCardPressed1}
         />
+
         <SubscriptionOption
           title="By Year"
-          price="$129.90"
+          price="€ 1.69 в месяц"
           imageUrl={require('../images/other_images/free.png')}
-          isSelected={selectedSubscription === "By Year"}
-          onPress={() => {
-            if (selectedSubscription === "By Year") {
-              setSelectedSubscription(null);
-            } else {
-              setSelectedSubscription("By Year");
-            }
-          }}
+          isSelected={selectedSubscription === "Pro"}
+          onPress={(value) => handleCardPress(value, 2)}
+          isCardPressed={isCardPressed2}
         />
         <SubscriptionOption
           title="Lifetime card"
-          price="$329.90"
+          price="€ 1.00 в месяц"
           imageUrl={require('../images/other_images/free.png')}
-          isSelected={selectedSubscription === "Lifetime card"}
-          onPress={() => {
-            if (selectedSubscription === "Lifetime card") {
-              setSelectedSubscription(null);
-            } else {
-              setSelectedSubscription("Lifetime card");
-            }
-          }}
+          isSelected={selectedSubscription === "Standard"}
+          onPress={(value) => handleCardPress(value, 3)}
+          isCardPressed={isCardPressed3}
         />
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[
             globalCss.button,
             isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedBlue] : globalCss.buttonBlue
@@ -105,7 +105,8 @@ export default function UserSubscriptionChoose({ navigation }) {
       </View>
     </ScrollView>
   );
-};
+}
+
 
 const styles = StyleSheet.create({
 	container: {
@@ -120,17 +121,32 @@ const styles = StyleSheet.create({
 	  fontWeight: 'bold',
 	  marginBottom: 20,
 	},
-	option: {
-	  flexDirection: 'row',
-	  alignItems: 'center',
-	  padding: 20,
-	  marginVertical: 8,
-	  borderWidth: 1,
-	  borderColor: '#ccc',
-	  borderRadius: 10,
+	card: {
+		flexDirection: 'row',
+	    marginBottom: '5%',
+	    paddingTop: 25,
+	    paddingBottom: 25,
+	    paddingLeft: 8,
+	    paddingRight: 8,
+	    borderRadius: 12,
+	    alignItems: 'center',
+	    justifyContent: 'center',
+	    borderTopWidth: 2,
+	    borderBottomWidth: 2,
+	    borderLeftWidth: 2,
+	    borderRightWidth: 2,
+	    shadowOffset: { width: 0, height: 2 },
+	    shadowOpacity: 1,
+	    shadowRadius: 0,
+	    elevation: 0,
+
 	},
+	bgGryPressed: {
+	    backgroundColor: '#f0f5ff',
+	    borderColor: '#1cb0f6',
+	  },
 	optionSelected: {
-	  backgroundColor: '#e0f7fa',
+	  backgroundColor: 'red',
 	},
 	image: {
 	  width: 50,
