@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View, Text, Image, Button, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 import { useAuth } from "./screens/ui/AuthProvider";
 import globalCss from './css/globalCss';
 
 export default function MenuScreen({ navigation }) {
   const { isAuthenticated, getUser, logout } = useAuth();
-    const user = getUser();
+  const user = getUser();
+  const [BtnLoggOut, setBtnLoggOut] = useState(false);
 
   return (
     <ScrollView style={styles.container}>
@@ -48,8 +50,12 @@ export default function MenuScreen({ navigation }) {
             </Text>
           </LinearGradient>
 
-          <Text style={styles.username}>{user.username}</Text>
-          <Text style={styles.email}>{user.email}</Text>
+          {/*<Text style={styles.username}>{user.username}</Text>*/}
+          {/*<Text style={styles.email}>{user.email}</Text>*/}
+          <View style={styles.gameRating}>
+            <Text style={styles.gameRatingTxt}>1536</Text>
+            <View style={styles.gameRatingIcon}><FontAwesomeIcon icon={faStar} size={19} style={styles.icongameRating} /></View>
+          </View>
 
 
           
@@ -59,45 +65,45 @@ export default function MenuScreen({ navigation }) {
       )}
 
     <View style={styles.sectionMenuUrl}>
-      <Text style={styles.headerText}>Setări</Text>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Cont</Text>
+        <Text style={styles.sectionTitle}>Мой профиль</Text>
 
         <View style={styles.sectionMenu}>
-          <TouchableOpacity style={styles.btnMenuProfile} onPress={() => navigation.navigate('FirstMenu')}>
-            <Text style={styles.btnText}>Preferințe</Text>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('FirstMenu')}>
+            <Text style={styles.btnText}>Профиль</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnMenuProfile} onPress={() => navigation.navigate('SecondMenuScreen')}>
-            <Text style={styles.btnText}>Profil</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.btnMenuProfile}>
-            <Text style={styles.btnText}>Notificări</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.btnMenuProfile}>
-            <Text style={styles.btnText}>Duolingo for Schools</Text>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]} onPress={() => navigation.navigate('SecondMenuScreen')}>
+            <Text style={styles.btnText}>Настройки</Text>
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Abonament</Text>
+        <Text style={styles.sectionTitle}>Подписка</Text>
         <View style={styles.sectionMenu}>
-          <TouchableOpacity style={styles.btnMenuProfile}>
-            <Text style={styles.btnText}>Alege un plan</Text>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
+            <Text style={styles.btnText}>Выберите план</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnMenuProfile}>
-            <Text style={styles.btnText}>RESTABILEȘTE ABONAMENTUL</Text>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]}>
+            <Text style={styles.btnText}>Управление подпиской</Text>
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Asistență</Text>
+        <Text style={styles.sectionTitle}>Общая информация</Text>
         <View style={styles.sectionMenu}>
-          <TouchableOpacity style={styles.btnMenuProfile}>
-            <Text style={styles.btnText}>Centru de ajutor</Text>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
+            <Text style={styles.btnText}>Справка и поддержка</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
+            <Text style={styles.btnText}>Пол. соглашение</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]}>
+            <Text style={styles.btnText}>Пол. конфиденциаль.</Text>
+          </TouchableOpacity>
+        </View>
 
-          <TouchableOpacity
-          style={styles.exitButton}
+
+        <TouchableOpacity
           onPress={() => {
             logout()
               .then(() => {
@@ -110,12 +116,14 @@ export default function MenuScreen({ navigation }) {
                 });
               });
           }}
-        >
-          <Text style={styles.btnText}>Ieșire din cont</Text>
+
+          style={[globalCss.button, styles.buttonOut, BtnLoggOut ? [globalCss.buttonPressed, globalCss.bgGry] : globalCss.bgGry]}
+        onPressIn={() => setBtnLoggOut(true)}
+        onPressOut={() => setBtnLoggOut(false)}
+        activeOpacity={1}>
+          <Text style={styles.btnText}>Выйти</Text>
         </TouchableOpacity>
 
-
-        </View>
       </View>
       </View>
     </ScrollView>
@@ -129,11 +137,6 @@ const styles = StyleSheet.create({
   },
   sectionMenuUrl:{
     padding: 20,
-  },
-  headerText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginVertical: 10,
   },
   section: {
     marginVertical: 10,
@@ -155,19 +158,23 @@ const styles = StyleSheet.create({
   },
   btnMenuProfile: {
     backgroundColor: 'white',
-    borderRadius: 10,
-    marginVertical: 10,
-    marginHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: '5%',
+    paddingHorizontal: '5%',
     alignItems: 'flex-start',
   },
-  exitButton: {
-    backgroundColor: 'red',
-    borderRadius: 10,
-    marginVertical: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'flex-start',
+  btnBB: {
+    borderBottomWidth: 2,
+    borderColor: '#d8d8d8',
+    shadowColor: '#d8d8d8',
+    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  buttonOut:{
+    marginTop: '4%',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
   },
   btnText: {
     fontWeight: 'bold',
@@ -176,7 +183,7 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     paddingTop: '15%',
-    paddingHorizontal: 20,
+    paddingBottom: '10%',
     backgroundColor: '#539cff'
   },
   username: {
@@ -203,6 +210,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
   },
+  gameRating:{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: '4%'
+  },
+  gameRatingIcon:{
+    backgroundColor: '#fdb652',
+    borderRadius: 50,
+    padding: 5,
+    marginLeft: '2.5%'
+  },
+  gameRatingTxt:{
+    color: '#fdfe5b',
+    fontSize: 20,
+    fontWeight: '700',
+    alignSelf: 'center',
+  },
+  icongameRating:{
+    color: 'white',
+  },
   userContainerImageBorder:{
     width: 300,
     height: 300,
@@ -221,4 +248,17 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 1000,
   },
+  btnBTR:{
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  btnBBR:{
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
 });
+
+
+
+
+
