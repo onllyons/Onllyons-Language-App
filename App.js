@@ -55,8 +55,6 @@ function MenuBooksReading() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="BooksScreen" component={BooksScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="BooksCategory" component={BooksCategory}/>
-            <Stack.Screen name="BooksReading" component={BooksReading} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -65,7 +63,6 @@ function MenuGames() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="GamesScreen" component={GamesScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -74,7 +71,6 @@ function MenuFlasCards() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="FlashCardsScreen" component={FlashCardsScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{title: "Флеш-карточка"}}/>
         </Stack.Navigator>
     );
 }
@@ -163,8 +159,12 @@ function AppStack() {
                           options={{headerShown: false}}/>
 
             {/* Place screen here if you need to hide tab bar navigator */}
-            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson}
-                          options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="GamesQuiz" name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="FlashCardsWords" name="FlashCardsWords" component={FlashCardsWords} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="BooksCategory" name="BooksCategory" component={BooksCategory} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="BooksReading" name="BooksReading" component={BooksReading} options={{headerShown: false}}/>
+            
         </Stack.Navigator>
     );
 }
