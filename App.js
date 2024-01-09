@@ -33,10 +33,10 @@ import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function MenuStack() {
+function UserProfileMenu() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="MenuScreen" component={MenuScreen}/>
+            <Stack.Screen name="MenuScreen" component={MenuScreen} options={{headerShown: false}}/>
             <Stack.Screen name="FirstMenu" component={FirstMenu}/>
             <Stack.Screen name="SecondMenuScreen" component={SecondMenuScreen}/>
         </Stack.Navigator>
@@ -55,6 +55,8 @@ function MenuBooksReading() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="BooksScreen" component={BooksScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="BooksCategory" component={BooksCategory}/>
+            <Stack.Screen name="BooksReading" component={BooksReading} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -63,6 +65,7 @@ function MenuGames() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="GamesScreen" component={GamesScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -71,6 +74,7 @@ function MenuFlasCards() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="FlashCardsScreen" component={FlashCardsScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{title: "Флеш-карточка"}}/>
         </Stack.Navigator>
     );
 }
@@ -89,7 +93,7 @@ function MainTabNavigator() {
                         iconImage = require('./packs/images/nav-icon/game.png');
                     } else if (route.name === 'MenuFlasCards') {
                         iconImage = require('./packs/images/nav-icon/flashcards.png');
-                    } else if (route.name === 'MenuStack') {
+                    } else if (route.name === 'UserProfileMenu') {
                         iconImage = require('./packs/images/nav-icon/more.png');
                     }
 
@@ -130,7 +134,7 @@ function MainTabNavigator() {
             <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
             <Tab.Screen name="MenuFlasCards" component={MenuFlasCards}
                         options={{title: "Флэш-карты", headerShown: false}}/>
-            <Tab.Screen name="MenuStack" component={MenuStack} options={{title: "Меню", headerShown: false}}/>
+            <Tab.Screen name="UserProfileMenu" component={UserProfileMenu} options={{title: "Меню", headerShown: false}}/>
         </Tab.Navigator>
     );
 }
@@ -159,12 +163,8 @@ function AppStack() {
                           options={{headerShown: false}}/>
 
             {/* Place screen here if you need to hide tab bar navigator */}
-            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
-            <Stack.Screen navigationKey="GamesQuiz" name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
-            <Stack.Screen navigationKey="FlashCardsWords" name="FlashCardsWords" component={FlashCardsWords} options={{headerShown: false}}/>
-            <Stack.Screen navigationKey="BooksCategory" name="BooksCategory" component={BooksCategory} options={{headerShown: false}}/>
-            <Stack.Screen navigationKey="BooksReading" name="BooksReading" component={BooksReading} options={{headerShown: false}}/>
-            
+            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson}
+                          options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }

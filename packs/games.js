@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, StyleSheet, Animated, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Button, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import globalCss from './css/globalCss';
 
 const cardData = [
