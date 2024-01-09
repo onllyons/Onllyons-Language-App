@@ -43,7 +43,6 @@ function UserProfileMenu() {
             <Stack.Screen name="MenuScreen" component={MenuScreen} options={{ headerShown: false }}/>
             <Stack.Screen name="UserData" component={UserData} options={{ title: "Профиль", headerBackTitle: 'Назад',}}/>
             <Stack.Screen name="UserSettings" component={UserSettings} options={{ title: "Настройки", headerBackTitle: 'Назад',}}/>
-            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{ title: "Выберите план", headerBackTitle: 'Назад',}}/>
             <Stack.Screen name="UserSubscriptionManage" component={UserSubscriptionManage} options={{ title: "Управление подпиской", headerBackTitle: 'Назад',}}/>
         </Stack.Navigator>
     );
@@ -169,8 +168,9 @@ function AppStack() {
                           options={{headerShown: false}}/>
 
             {/* Place screen here if you need to hide tab bar navigator */}
-            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson}
-                          options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen navigationKey="UserSubscriptionChoose" name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{headerShown: false}}/>
+
         </Stack.Navigator>
     );
 }
