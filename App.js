@@ -25,8 +25,12 @@ import FlashCardsScreen from './packs/flashcards';
 import FlashCardsWords from './packs/flashcards_words';
 
 import MenuScreen from './packs/menu';
-import FirstMenu from './packs/screens/FirstMenuScreen';
-import SecondMenuScreen from './packs/screens/SecondMenuScreen';
+import UserData from './packs/user-profile/userData';
+import UserSettings from './packs/user-profile/userSettings';
+import UserSubscriptionChoose from './packs/user-profile/userSubscriptionChoose';
+import UserSubscriptionManage from './packs/user-profile/userSubscriptionManage';
+
+
 import {AuthProvider} from "./packs/screens/ui/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 
@@ -36,9 +40,11 @@ const Stack = createStackNavigator();
 function UserProfileMenu() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="MenuScreen" component={MenuScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="FirstMenu" component={FirstMenu}/>
-            <Stack.Screen name="SecondMenuScreen" component={SecondMenuScreen}/>
+            <Stack.Screen name="MenuScreen" component={MenuScreen} options={{ headerShown: false }}/>
+            <Stack.Screen name="UserData" component={UserData} options={{ title: "Профиль", headerBackTitle: 'Назад',}}/>
+            <Stack.Screen name="UserSettings" component={UserSettings} options={{ title: "Настройки", headerBackTitle: 'Назад',}}/>
+            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{ title: "Выберите план", headerBackTitle: 'Назад',}}/>
+            <Stack.Screen name="UserSubscriptionManage" component={UserSubscriptionManage} options={{ title: "Управление подпиской", headerBackTitle: 'Назад',}}/>
         </Stack.Navigator>
     );
 }

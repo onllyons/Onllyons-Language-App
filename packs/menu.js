@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, Image, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, Linking, View, Text, Image, Button, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -69,10 +69,10 @@ export default function MenuScreen({ navigation }) {
         <Text style={styles.sectionTitle}>Мой профиль</Text>
 
         <View style={styles.sectionMenu}>
-          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('FirstMenu')}>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('UserData')}>
             <Text style={styles.btnText}>Профиль</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]} onPress={() => navigation.navigate('SecondMenuScreen')}>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]} onPress={() => navigation.navigate('UserSettings')}>
             <Text style={styles.btnText}>Настройки</Text>
           </TouchableOpacity>
         </View>
@@ -80,10 +80,10 @@ export default function MenuScreen({ navigation }) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Подписка</Text>
         <View style={styles.sectionMenu}>
-          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('UserSubscriptionChoose')}>
             <Text style={styles.btnText}>Выберите план</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]}>
+          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]} onPress={() => navigation.navigate('UserSubscriptionManage')}>
             <Text style={styles.btnText}>Управление подпиской</Text>
           </TouchableOpacity>
         </View>
@@ -91,13 +91,33 @@ export default function MenuScreen({ navigation }) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Общая информация</Text>
         <View style={styles.sectionMenu}>
-          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
+          <TouchableOpacity
+            style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}
+            onPress={() => {
+              const url = 'https://www.language.onllyons.com/contact-us/';
+              // Deschide URL-ul într-un browser extern
+              Linking.openURL(url);
+            }}
+          >
             <Text style={styles.btnText}>Справка и поддержка</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
+
+          <TouchableOpacity
+            style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}
+            onPress={() => {
+              const url = 'https://www.language.onllyons.com/term/';
+              Linking.openURL(url);
+            }}
+          >
             <Text style={styles.btnText}>Пол. соглашение</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]}>
+          <TouchableOpacity
+            style={[styles.btnMenuProfile, styles.btnBBR]}
+            onPress={() => {
+              const url = 'https://www.language.onllyons.com/privacy/';
+              Linking.openURL(url);
+            }}
+          >
             <Text style={styles.btnText}>Пол. конфиденциаль.</Text>
           </TouchableOpacity>
         </View>
