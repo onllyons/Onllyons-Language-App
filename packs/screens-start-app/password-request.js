@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     StyleSheet,
     Text,
@@ -15,13 +15,17 @@ import {useAuth} from "../screens/ui/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 
-export default function PasswordScreen() {
+export default function PasswordScreen({navigation}) {
     const [email, setEmail] = useState("");
     const [pressSignIn, setPressSignIn] = useState(false);
 
     const [loader, setLoader] = useState(false)
 
-    const {getUserToken} = useAuth()
+    const {getUserToken, isAuthenticated} = useAuth()
+
+    useEffect(() => {
+        if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+    }, []);
 
     const handleRequestPassword = () => {
         setLoader(true)

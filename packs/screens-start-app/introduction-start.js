@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import Swiper from 'react-native-swiper';
@@ -29,6 +29,10 @@ export default function IntroductionScreen({navigation}) {
     const [loader, setLoader] = useState(false)
 
     const {isAuthenticated, login, getUserToken} = useAuth();
+
+    useEffect(() => {
+        if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+    }, []);
 
     const [userData, setUserData] = useState({
         selectedLevel: 0,

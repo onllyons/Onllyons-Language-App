@@ -31,8 +31,9 @@ import UserSubscriptionChoose from './packs/user-profile/userSubscriptionChoose'
 import UserSubscriptionManage from './packs/user-profile/userSubscriptionManage';
 
 
-import {AuthProvider} from "./packs/screens/ui/AuthProvider";
+import {AuthProvider, useAuth} from "./packs/screens/ui/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
+import {useEffect, useState} from "react";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -40,10 +41,12 @@ const Stack = createStackNavigator();
 function UserProfileMenu() {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="MenuScreen" component={MenuScreen} options={{ headerShown: false }}/>
-            <Stack.Screen name="UserData" component={UserData} options={{ title: "Профиль", headerBackTitle: 'Назад',}}/>
-            <Stack.Screen name="UserSettings" component={UserSettings} options={{ title: "Настройки", headerBackTitle: 'Назад',}}/>
-            <Stack.Screen name="UserSubscriptionManage" component={UserSubscriptionManage} options={{ title: "Управление подпиской", headerBackTitle: 'Назад',}}/>
+            <Stack.Screen name="MenuScreen" component={MenuScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="UserData" component={UserData} options={{title: "Профиль", headerBackTitle: 'Назад',}}/>
+            <Stack.Screen name="UserSettings" component={UserSettings}
+                          options={{title: "Настройки", headerBackTitle: 'Назад',}}/>
+            <Stack.Screen name="UserSubscriptionManage" component={UserSubscriptionManage}
+                          options={{title: "Управление подпиской", headerBackTitle: 'Назад',}}/>
         </Stack.Navigator>
     );
 }
@@ -139,40 +142,61 @@ function MainTabNavigator() {
             <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
             <Tab.Screen name="MenuFlasCards" component={MenuFlasCards}
                         options={{title: "Флэш-карты", headerShown: false}}/>
-            <Tab.Screen name="UserProfileMenu" component={UserProfileMenu} options={{title: "Меню", headerShown: false}}/>
+            <Tab.Screen name="UserProfileMenu" component={UserProfileMenu}
+                        options={{title: "Меню", headerShown: false}}/>
         </Tab.Navigator>
     );
 }
 
 
 function AppStack() {
-    return (
+    const {isAuthenticated, setSuccessCallback} = useAuth()
+    const [callbackComplete, setCallbackComplete] = useState(false)
+
+    useEffect(() => {
+        setSuccessCallback(() => setCallbackComplete(true))
+    }, []);
+
+    return callbackComplete ? (
         <Stack.Navigator
             screenOptions={{
                 headerBackTitleVisible: false,
                 headerStyle: globalCss.NavTopStartApp,
             }}
         >
-            <Stack.Screen navigationKey="StartPageScreen" name="StartPageScreen" component={StartPageScreen}
-                          options={{headerShown: false}}/>
+
+            {!isAuthenticated()
+                ? <>
+                    <Stack.Screen name="StartPageScreen" component={StartPageScreen}
+                                  options={{headerShown: false}}/>
+                    <Stack.Screen name="MainTabNavigator" component={MainTabNavigator}
+                                  options={{headerShown: false}}/>
+                </>
+                : <>
+                    <Stack.Screen name="MainTabNavigator" component={MainTabNavigator}
+                                  options={{headerShown: false}}/>
+                    <Stack.Screen name="StartPageScreen" component={StartPageScreen}
+                                  options={{headerShown: false}}/>
+                </>
+            }
+
             <Stack.Screen name="LoginScreen" component={LoginScreen}
                           options={{title: "Введите данные", headerStyle: {backgroundColor: '#ffffff'}}}/>
-            <Stack.Screen navigationKey="IntroductionScreen" name="IntroductionScreen" component={IntroductionScreen}
+            <Stack.Screen name="IntroductionScreen" component={IntroductionScreen}
                           options={{headerShown: false}}/>
-            <Stack.Screen navigationKey="PasswordScreen" name="PasswordScreen" component={PasswordScreen}
+            <Stack.Screen name="PasswordScreen" component={PasswordScreen}
                           options={{title: "Забыли пароль?"}}/>
-            <Stack.Screen navigationKey="ChangePasswordScreen" name="ChangePasswordScreen"
+            <Stack.Screen name="ChangePasswordScreen"
                           component={ChangePasswordScreen}
                           options={{title: "Изменить пароли", headerStyle: {backgroundColor: '#ffffff'}}}/>
-            <Stack.Screen navigationKey="MainTabNavigator" name="MainTabNavigator" component={MainTabNavigator}
-                          options={{headerShown: false}}/>
 
             {/* Place screen here if you need to hide tab bar navigator */}
-            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
-            <Stack.Screen navigationKey="UserSubscriptionChoose" name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{headerShown: false}}/>
+            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose}
+                          options={{headerShown: false}}/>
 
         </Stack.Navigator>
-    );
+    ) : (<></>);
 }
 
 const toastConfig = {

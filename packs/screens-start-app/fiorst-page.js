@@ -1,11 +1,17 @@
 import React, {useEffect, useState} from "react";
 import globalCss from '../css/globalCss';
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Toast from "react-native-toast-message";
+import {useAuth} from "../screens/ui/AuthProvider";
 
 export default function StartPageScreen({ navigation }) {
   const [isPressedContinue, setIsPressedContinue] = useState(false);
   const [isPressedReview, setIsPressedReview] = useState(false);
+
+  const {isAuthenticated} = useAuth()
+
+  useEffect(() => {
+    if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+  }, []);
 
   return (
     <View style={styles.container}>

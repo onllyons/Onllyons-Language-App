@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
@@ -19,6 +19,10 @@ export default function LoginScreen({navigation}) {
 
     // Auth
     const {isAuthenticated, login, getUserToken} = useAuth();
+
+    useEffect(() => {
+        if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+    }, []);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -44,8 +48,6 @@ export default function LoginScreen({navigation}) {
                 },
             })
                 .then(async res => {
-                    console.log(res.data)
-
                     setLoader(false)
 
                     await new Promise(resolve => setTimeout(resolve, 100))
@@ -63,10 +65,7 @@ export default function LoginScreen({navigation}) {
                         });
                     }
                 })
-                .catch(reason => {
-                    console.log(reason)
-                    setLoader(false)
-                })
+                .catch(() => setLoader(false))
         }
     }
 

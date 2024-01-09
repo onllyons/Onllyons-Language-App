@@ -70,6 +70,10 @@ export default function CourseScreen({navigation}) {
                         <Text>Имя пользователя: {user.username}</Text>
                         <Text>Почта: {user.email}</Text>
                         <Button
+                            title="Сменить пароль"
+                            onPress={() => navigation.navigate('ChangePasswordScreen')}
+                        />
+                        <Button
                             title="Выйти из аккаунта"
                             onPress={() => {
                                 logout()

@@ -1,12 +1,16 @@
-import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
+import React, {createContext, useContext, useMemo, useState} from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Alert} from "react-native";
 import * as Device from "expo-device";
 import axios from "axios";
 import Loader from "../../components/Loader";
 import Toast from "react-native-toast-message";
 
 const AuthContext = createContext("user context doesnt exists");
+
+const callback = {
+    callback: null,
+    complete: false
+}
 
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState({});
@@ -47,7 +51,45 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    const login = async userData => {
+        try {
+            // Save user data on local storage
+            await AsyncStorage.setItem("user", JSON.stringify(userData));
+            setUser(userData);
+
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject();
+        }
+    };
+
+    const logout = async () => {
+        try {
+            await AsyncStorage.removeItem("user");
+            setUser({});
+
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject();
+        }
+    };
+
+    const isAuthenticated = () => {
+        return !!Object.keys(user).length
+    }
+
+    const getUser = () => user
+
+    const getUserToken = () => token
+
+    const setSuccessCallback = func => {
+        if (callback.complete) func()
+        else callback.callback = func
+    }
+
     useMemo(() => {
+        callback.complete = false
+
         setLoader(true)
 
         recordFirstLaunchDate()
@@ -101,41 +143,15 @@ export const AuthProvider = ({children}) => {
                     text1: "Ошибка при обращении к серверу"
                 });
             })
+            .finally(() => {
+                if (callback.callback) callback.callback()
+
+                callback.complete = true
+            })
     }, []);
 
-    const login = async userData => {
-        try {
-            // Save user data on local storage
-            await AsyncStorage.setItem("user", JSON.stringify(userData));
-            setUser(userData);
-
-            return Promise.resolve();
-        } catch (error) {
-            return Promise.reject();
-        }
-    };
-
-    const logout = async () => {
-        try {
-            await AsyncStorage.removeItem("user");
-            setUser({});
-
-            return Promise.resolve();
-        } catch (error) {
-            return Promise.reject();
-        }
-    };
-
-    const isAuthenticated = () => {
-        return !!Object.keys(user).length
-    }
-
-    const getUser = () => user
-
-    const getUserToken = () => token
-
     return (
-        <AuthContext.Provider value={{isAuthenticated, getUser, getUserToken, login, logout}}>
+        <AuthContext.Provider value={{isAuthenticated, getUser, getUserToken, login, logout, setSuccessCallback}}>
             <Loader visible={loader}/>
             {children}
         </AuthContext.Provider>
