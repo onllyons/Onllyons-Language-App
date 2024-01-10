@@ -24,7 +24,7 @@ const ProgressBar = ({ currentIndex, totalCount }) => {
   );
 };
 
-export default function BooksScreen({ navigation }) {
+export default function CourseLessonQuiz({ navigation }) {
   const [data, setData] = useState([]);
   const videoRefs = useRef([]);
   const swiperRef = useRef(null);
@@ -88,7 +88,35 @@ useEffect(() => {
   };
 }, [data]);
 
+  const [extractedData, setExtractedData] = useState([]);
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_test.php');
+      const data = await response.json();
+
+      const filteredData = data.filter(item => item.course_url === url);
+      const organizedData = organizeData(filteredData);
+
+      // Extrage celula "v1" pentru fiecare serie
+      const extractedSeries = [];
+      organizedData.forEach((item, index) => {
+        if (item.quizSlide) {
+          const serie = Math.floor(index / 2) + 1; // Calculează seria corespunzătoare
+          extractedSeries.push(`carousel seria ${serie}`);
+          extractedSeries.push(`quiz series ${serie}`);
+        }
+      });
+
+      // Setează rezultatele extrase în variabila de stare
+      setExtractedData(extractedSeries);
+    } catch (error) {
+      console.error('Eroare la solicitarea HTTP sau parsarea datelor:', error);
+    }
+  };
+
+  // Apelați funcția fetchData pentru a extrage datele și afișa celula "v1".
+  fetchData();
 
   const [isPressed, setIsPressed] = useState({
     review0: false,
@@ -178,7 +206,7 @@ const renderItem = ({ item }) => {
     if (item.quizSlide) {
       return (
         <View style={styles.slide}>
-          <Text>Space for Quiz Course</Text>
+          <Text>v1 from course_test.php series 1, series 2, series 3 ..... series 5</Text>
         </View>
       );
     }
@@ -224,17 +252,26 @@ const renderItem = ({ item }) => {
         <ProgressBar currentIndex={index} totalCount={totalSlides} />
       </View>
 
-      <Carousel
-        ref={swiperRef}
-        data={data}
-        renderItem={renderItem}
-        sliderWidth={width}
-        itemWidth={width - 70}
-        layout={'default'}
-        onSnapToItem={handleSlideChange}
-        loop={false}
-      />
+      <View style={styles.carousel}>
+        <Carousel
+          ref={swiperRef}
+          data={data}
+          renderItem={renderItem}
+          sliderWidth={width}
+          itemWidth={width - 70}
+          layout={'default'}
+          onSnapToItem={handleSlideChange}
+          loop={false}
+        />
+      </View>
 
+      {/* Afișează rezultatele extrase în View și Text */}
+      {extractedData.map((item, index) => (
+        <View key={index}>
+          <Text>{item}</Text>
+        </View>
+      ))}
+      
       <SwiperButtonsContainer
           onRightPress={handleRightButtonPress}
           isPressedContinue={isPressedContinue}
@@ -262,32 +299,38 @@ const SwiperButtonsContainer = ({onRightPress, isPressedContinue, setIsPressedCo
 const styles = StyleSheet.create({
     video: {
         width: "100%",
-        height: "100%"
+        height: "100%",
+        borderRadius: "12"
+    },
+    carousel:{
+        height: "75%",
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        paddingTop: '12%',
     },
     gradient: {
         flex: 1,
     },
     row: {
         flexDirection: 'row',
-        marginTop: '20%',
-        height: '3%',
+        marginTop: '10%',
+        height: '7%',
+    },
+    slide: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        height: '90%'
     },
     swiperContent: {
         height: '100%',
     },
-    slide: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: "#fff",
-        height: 100,
-        borderRadius: 10,
-    },
+
     containerVideoLesson: {
         width: '90%',
         height: '50%',
-        backgroundColor: '#616161',
-        borderRadius: 14
     },
     containerAudioLesson: {
         width: '55%',
@@ -307,7 +350,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#3a464e',
         borderRadius: 10,
-        marginRight: '5%'
+        marginRight: '5%',
+        alignSelf: 'center',
+        height: '40%',
     },
     progressBar: {
         flex: 1,
@@ -318,12 +363,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'yellow',
+        alignSelf: 'center',
         width: '14%',
+        height: '100%',
         paddingLeft: '2%',
         paddingRight: '1%',
+        paddingTop: '1%',
         textAlign: 'center',
-        alignSelf: 'center'
     },
     image: {
         width: '50%',
@@ -359,8 +405,7 @@ const styles = StyleSheet.create({
     swiperButtonsContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        paddingHorizontal: 20,
-        marginTop: 10,
+        paddingHorizontal: '9%',
     },
     button: {
         paddingHorizontal: 20,

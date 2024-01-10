@@ -193,8 +193,9 @@ function AppStack() {
 
             {/* Place screen here if you need to hide tab bar navigator */}
 
-            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
-            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{headerShown: false}}/>
+
+            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{  headerShown: false,  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}/>
 
         </Stack.Navigator>
     ) : (<></>);
