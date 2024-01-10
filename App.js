@@ -1,7 +1,8 @@
 import {StatusBar} from 'expo-status-bar';
 import {Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import globalCss from './packs/css/globalCss';
@@ -191,9 +192,10 @@ function AppStack() {
                           options={{title: "Изменить пароли", headerStyle: {backgroundColor: '#ffffff'}}}/>
 
             {/* Place screen here if you need to hide tab bar navigator */}
-            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
-            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose}
-                          options={{headerShown: false}}/>
+
+
+            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{  headerShown: false,  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}/>
 
         </Stack.Navigator>
     ) : (<></>);
