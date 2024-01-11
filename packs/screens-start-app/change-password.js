@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
@@ -20,11 +20,11 @@ export default function ChangePasswordScreen({navigation}) {
         confirm_password: ""
     })
 
-    const {getUser, isAuthenticated, login, getUserToken} = useAuth();
+    const {getUser, isAuthenticated, getUserToken} = useAuth();
 
-    const handleBackToLogin = () => {
-        navigation.goBack();
-    };
+    useEffect(() => {
+        if (!isAuthenticated()) navigation.navigate("StartPageScreen")
+    }, []);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -43,10 +43,9 @@ export default function ChangePasswordScreen({navigation}) {
         } else {
             setLoader(true)
 
-            axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user_login.php", {
-                current_password: data.current_password,
-                new_password: data.new_password,
-                confirm_password: data.confirm_password,
+            console.log(data)
+            axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/change_password.php", {
+                ...data,
                 userId: getUser().id,
                 token: getUserToken()
             }, {
@@ -62,7 +61,10 @@ export default function ChangePasswordScreen({navigation}) {
                     const data = res.data
 
                     if (data.success) {
-                        login(data.userData)
+                        Toast.show({
+                            type: "success",
+                            text1: data.message
+                        });
 
                         navigation.navigate('MainTabNavigator')
                     } else {

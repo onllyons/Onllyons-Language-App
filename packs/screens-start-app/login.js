@@ -111,9 +111,6 @@ export default function LoginScreen({navigation}) {
             <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("PasswordScreen")}>
                 <Text style={[globalCss.link, globalCss.bold]}>ЗАБЫЛИ ПАРОЛЬ?</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("ChangePasswordScreen")}>
-                <Text style={[globalCss.link, globalCss.bold]}>change password</Text>
-            </TouchableOpacity>
             <TouchableOpacity
                 style={[
                     globalCss.button,
@@ -123,7 +120,7 @@ export default function LoginScreen({navigation}) {
                 ]}
                 onPressIn={() => setIsPressGoogleProfile(true)}
                 onPressOut={() => setIsPressGoogleProfile(false)}
-                onPress={() => navigation.navigate("IntroductionScreen")}
+                onPress={() => navigation.navigate("LoginGoogleScreen")}
                 activeOpacity={1}
             >
                 <Text style={[globalCss.buttonText, globalCss.bold]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
