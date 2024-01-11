@@ -1,69 +1,84 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 import Carousel from 'react-native-new-snap-carousel';
 
 const { width } = Dimensions.get("window");
 
-export default function BooksCategoryScreen({ route }) {
-  const data = [
-    {
-      id: 1,
-      author: "Autor 1",
-      title: "Titlu 1",
-    },
-    {
-      id: 2,
-      author: "Autor 2",
-      title: "Titlu 2",
-    },
-    {
-      id: 3,
-      author: "Autor 3",
-      title: "Titlu 3",
-    },
-    {
-      id: 4,
-      author: "Autor 4",
-      title: "Titlu 4",
-    },
-  ];
+export default function FlashCardsLearning({ route }) {
+  const { url } = route.params;
+  const [combinedData, setCombinedData] = useState([]);
 
-  const category = "Categoria Exemplu";
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseCarousel = await fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-carousel.php');
+        const dataCarousel = await responseCarousel.json();
 
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.author}>{item.author}</Text>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.category}>{category}</Text>
-    </View>
-  );
+        const responseQuiz = await fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-quiz.php');
+        const dataQuiz = await responseQuiz.json();
+
+        const filteredCarouselData = dataCarousel.filter((item) => item.url_display === url);
+        const filteredQuizData = dataQuiz.filter((item) => item.quiz_url === url);
+
+        // Adăugăm o proprietate "type" pentru a marca fiecare element ca aparținând "carousel" sau "quiz"
+        const combinedData = [
+          ...filteredCarouselData.map((item) => ({ ...item, type: "carousel" })),
+          ...filteredQuizData.map((item) => ({ ...item, type: "quiz" })),
+        ];
+
+        setCombinedData(combinedData);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchData();
+  }, [url]);
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.categoryTitle}>{category}</Text>
+
         <Carousel
-          data={data}
-          renderItem={renderItem}
+          data={combinedData}
+          renderItem={({ item }) => (
+            <View style={styles.item}>
+              {item.type === "carousel" ? (
+                <View>
+                  <Text style={styles.categoryTitle}>{item.word_en}</Text>
+                  <Text style={styles.categoryTitle}>{item.tophoneticsBritish}</Text>
+                  <Text style={styles.categoryTitle}>{item.tophoneticsAmerican}</Text>
+                  <Text style={styles.categoryTitle}>https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/{item.word_audio}</Text>
+                  <Text style={styles.categoryTitle}>{item.word_ru}</Text>
+                </View>
+              ) : (
+                <Text style={styles.categoryTitle}>quiz: {item.answer_1}</Text>
+              )}
+            </View>
+          )}
           sliderWidth={width}
           itemWidth={width - 70}
-          layout={'default'}
-          loop={true}
           paginationStyle={styles.pagination}
           contentContainerCustomStyle={styles.carouselContainer}
+          layout={'default'}
+          loop={false}
         />
+
       </View>
     </ScrollView>
   );
 }
 
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 16,
+    paddingTop: 116,
   },
   categoryTitle: {
-    fontSize: 24,
+    fontSize: 12,
     fontWeight: "bold",
     marginBottom: 16,
   },

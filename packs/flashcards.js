@@ -39,14 +39,14 @@ const FlashCardWords = ({ navigation }) => {
                 styles.bgGry,
                 pressedCards[item.id] && styles.bgGryPressed,
               ]}
-              onPress={() => navigation.navigate('FlashCardsWords')}
+              onPress={() => navigation.navigate('FlashCardsWordsCategory', { codeName: item.code_name })}
               onPressIn={() => onPressIn(item.id)}
               onPressOut={() => onPressOut(item.id)}
               activeOpacity={1}
             >
               <Text><FontAwesomeIcon icon={faStar} size={30} style={styles.iconFlash} /></Text>
             </TouchableOpacity>
-            <Text>{item.title_category}</Text>
+            <Text>{item.title_category} {item.code_name}</Text>
           </View>
         ))}
       </View>

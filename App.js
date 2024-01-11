@@ -23,6 +23,7 @@ import GamesScreen from './packs/games';
 import GamesQuiz from './packs/games_quiz';
 
 import FlashCardsScreen from './packs/flashcards';
+import FlashCardsWordsCategory from './packs/flashcards_category';
 import FlashCardsWords from './packs/flashcards_words';
 
 import MenuScreen from './packs/menu';
@@ -83,7 +84,7 @@ function MenuFlasCards() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="FlashCardsScreen" component={FlashCardsScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{title: "Флеш-карточка"}}/>
+            
         </Stack.Navigator>
     );
 }
@@ -196,6 +197,9 @@ function AppStack() {
 
             <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
             <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{  headerShown: false,  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}/>
+
+            <Stack.Screen name="FlashCardsWordsCategory" component={FlashCardsWordsCategory} options={{  headerShown: false }}/>
+            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{  headerShown: false }}/>
 
         </Stack.Navigator>
     ) : (<></>);
