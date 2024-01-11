@@ -1,8 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import {
-  View, Text, TouchableOpacity, Dimensions,
-  StyleSheet // Dacă ai stiluri separate, încarcă-le aici
-} from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel from 'react-native-new-snap-carousel';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
