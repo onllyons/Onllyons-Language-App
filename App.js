@@ -75,7 +75,6 @@ function MenuGames() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="GamesScreen" component={GamesScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -200,6 +199,7 @@ function AppStack() {
 
             <Stack.Screen name="FlashCardsWordsCategory" component={FlashCardsWordsCategory} options={{  headerShown: false }}/>
             <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{  headerShown: false }}/>
+            <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{  headerShown: false }}/>
 
         </Stack.Navigator>
     ) : (<></>);
