@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { DotIndicator } from "react-native-indicators"; // Importați DotIndicator sau alt tip de indicator dorit
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faTrophy, faClock, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from './css/globalCss';
 import Loader from "./components/Loader";
@@ -30,7 +32,8 @@ export default function GameQuiz({ navigation }) {
         
         setTimeout(() => {
           setLoading(false);
-        }, 2000);
+        }, 0);
+        // 2000
 
       })
       .catch((err) => {
@@ -97,12 +100,53 @@ export default function GameQuiz({ navigation }) {
   </View>
 </LinearGradient>
     );
-  }
+  } 
  
-  return (
+  return ( 
     <View style={styles.container}>
       <View style={styles.sectionTop}>
-        <Text style={styles.headerText}>ok</Text>
+
+        <View>
+        <Text>
+        <FontAwesomeIcon icon={faTrophy} size={30} style={globalCss.gry} />
+          1124 CR
+        </Text>
+      </View>
+      
+      <View>
+        <Text>
+          +4
+        </Text>
+      </View>
+      
+      <View>
+        <Text>
+
+        <FontAwesomeIcon icon={faClock} size={30} style={globalCss.gry} />
+          01:22
+        </Text>
+      </View>
+
+      <View>
+        <Text>
+          ser
+        </Text>
+      </View>
+
+      <View>
+        <Text>
+        <FontAwesomeIcon icon={faCheck} size={30} style={globalCss.gry} />
+          Cor
+        </Text>
+      </View>
+
+      <View>
+        <Text>
+        <FontAwesomeIcon icon={faXmark} size={30} style={globalCss.gry} />
+          Gres 
+        </Text>
+      </View>
+
       </View>
       {data.length > 0 && (
         <View style={styles.buttonGroup} key={data[currentQuestionIndex].id}>
@@ -190,7 +234,12 @@ const styles = StyleSheet.create({
   sectionTop:{
     width: '100%',
     paddingTop: '10%',
-    backgroundColor: 'red'
+    backgroundColor: 'red',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+
   },
   headerText: {
     fontSize: 24,
