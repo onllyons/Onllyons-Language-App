@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faTrophy,
   faClock,
-  faCheck,
-  faXmark,
+  faArrowLeft,
+  faFire,
   faLightbulb,
   faRotateLeft,
   faArrowRightLong,
@@ -52,10 +52,10 @@ const TimerComponent = () => {
   }, []);
 
   return (
-    <Text>
-      <FontAwesomeIcon icon={faClock} size={30} style={globalCss.gry} />
-      {formatTime(time)}
-    </Text>
+    <View style={[styles.itemNavTop, styles.itemClock]}>
+      <FontAwesomeIcon icon={faClock} size={26} style={styles.faTrophy} />
+      <Text style={[styles.itemTxtNavTop, styles.itemClockTxt]}>{formatTime(time)}</Text>
+    </View>
   );
 };
 
@@ -96,7 +96,7 @@ const handlePressOut = (answerIndex) => {
 
         setTimeout(() => {
           setLoading(false);
-        }, 5000);
+        }, 0); // 11111111111111
       })
       .catch((err) => {
         setError(err);
@@ -177,36 +177,24 @@ const handleRepeat = () => {
   return (
     <View style={styles.container}>
       <View style={styles.sectionTop}>
-        <View>
-          <Text>
-            <FontAwesomeIcon icon={faTrophy} size={30} style={globalCss.gry} />
-            1124 CR
-          </Text>
+
+        <TouchableOpacity onPress={() => navigation.navigate('GamesScreen')} style={[styles.itemNavTop, styles.itemNavBtnBack]}>
+          <FontAwesomeIcon icon={faArrowLeft} size={30} style={styles.faArrowLeft} />
+        </TouchableOpacity>
+
+        <View style={[styles.itemNavTop, styles.itemRatingGen]}>
+          <FontAwesomeIcon icon={faTrophy} size={26} style={styles.faTrophy} />
+          <Text style={styles.itemTxtNavTop}>1124</Text>
+          <Text style={[styles.itemTxtNavTop, styles.itemBonus]}>0</Text>
         </View>
 
-        <View>
-          <Text>+4</Text>
+        <View style={[styles.itemNavTop, styles.itemConsecutive]}>
+          <FontAwesomeIcon icon={faFire} size={26} style={styles.faTrophy} />
+          <Text style={[styles.itemTxtNavTop, styles.answerCons]}>14</Text>
         </View>
 
         <TimerComponent />
 
-        <View>
-          <Text>ser</Text>
-        </View>
-
-        <View>
-          <Text>
-            <FontAwesomeIcon icon={faCheck} size={30} style={globalCss.gry} />
-            Cor
-          </Text>
-        </View>
-
-        <View>
-          <Text>
-            <FontAwesomeIcon icon={faXmark} size={30} style={globalCss.gry} />
-            Gres
-          </Text>
-        </View>
       </View>
       {data.length > 0 && (
         <View style={styles.buttonGroup} key={data[currentQuestionIndex].id}>
@@ -315,7 +303,7 @@ const handleRepeat = () => {
                 isPressedNextBtn
                   ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
                   : globalCss.buttonGry,
-                (isAnswerCorrect || isHelpUsed) && styles.correct, // Adăugarea clasei "corect" aici
+                (isAnswerCorrect || isHelpUsed) && styles.correct,
               ]}
               onPressIn={() => setIsPressedNextBtn(true)}
               onPressOut={() => setIsPressedNextBtn(false)}
@@ -391,11 +379,29 @@ const styles = StyleSheet.create({
   sectionTop: {
     width: "100%",
     paddingTop: "10%",
-    backgroundColor: "red",
+    backgroundColor: "#eeeff0",
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignContent: "center",
+    // justifyContent: "center",
+    alignItems: "center",
+  },
+  itemNavTop: {
+    flexDirection: "row",
+    paddingTop: '5%',
+    paddingBottom: '5%',
+    alignItems: "center",
+    flex: 1
+  },
+  faTrophy:{
+    color: '#5e5e5e',
+  },
+  faArrowLeft:{
+    color: '#1cb0f6',
+  },
+  itemTxtNavTop:{
+    fontSize: 19,
+    color: '#5e5e5e',
+    fontWeight: '500',
+    marginLeft: '3%',
   },
   headerText: {
     fontSize: 24,
@@ -420,11 +426,95 @@ const styles = StyleSheet.create({
   correctTxt:{
     color: "white",
   },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  itemNavBtnBack:{
+    paddingLeft: '5%',
+    maxWidth: '16%',
+  },
+  itemRatingGen:{
+    maxWidth: '39%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  itemConsecutive:{
+    maxWidth: '22%',
+    paddingLeft: '1%'
+  },
+  itemClock:{
+    maxWidth: '23%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+
+
+
+
+  itemClockTxt:{
+    minWidth: '15%',
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  itemBonus:{
+    // color: '#ca3431',
+    color: '#81b344',
+    fontWeight: '700'
+  },
   incorrectTxt:{
     color: "white",
   },
   correct: {
     backgroundColor: "#81b344",
+  },
+  answerCons:{
+    marginLeft: 5,
   },
   incorrect: {
     backgroundColor: "#ca3431",

@@ -21,6 +21,9 @@ const globalCss = StyleSheet.create({
     padding: 20,
     marginTop: '13%',
   },
+  flex1:{
+    flex: 1,
+  },
   title: {
     color: '#494949',
     fontWeight: '700',
