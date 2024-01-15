@@ -3,16 +3,18 @@ import {
   View,
   Text,
   ScrollView,
+  Button,
   StyleSheet,
+  handleScroll,
   TouchableOpacity,
   Dimensions,
 } from "react-native";
 import { useRoute } from '@react-navigation/native';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Audio } from 'expo-av';
 
 import globalCss from "./css/globalCss";
-
 const { width } = Dimensions.get("window");
 
 export default function BooksScreen({ navigation }) {
@@ -25,19 +27,36 @@ export default function BooksScreen({ navigation }) {
   const [containerHeight, setContainerHeight] = useState(0);
   const route = useRoute();
   const url = route.params.url;
+  const [sound, setSound] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(null);
 
+const playSound = async (audioUrl) => {
+  if (!sound) {
+    const { sound: newSound } = await Audio.Sound.createAsync(
+      { uri: audioUrl },
+      { shouldPlay: true }
+    );
+    setSound(newSound);
+    setIsPlaying(true);
+  } else {
+    if (isPlaying) {
+      await sound.pauseAsync();
+      setIsPlaying(false);
+    } else {
+      await sound.playAsync();
+      setIsPlaying(true);
+    }
+  }
+};
 
-  const handleScroll = (event) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const contentHeight = event.nativeEvent.contentSize.height;
-    const containerHeight = event.nativeEvent.layoutMeasurement.height;
-
-    const newScrollY = offsetY < 0 ? 0 : offsetY;
-
-    setScrollY(newScrollY);
-    setContentHeight(contentHeight);
-    setContainerHeight(containerHeight);
+useEffect(() => {
+  return () => {
+    if (sound) {
+      sound.unloadAsync();
+    }
   };
+}, [sound]);
 
 useEffect(() => {
   const maxScroll = contentHeight - containerHeight;
@@ -67,6 +86,31 @@ useEffect(() => {
       .catch(error => console.error('Error:', error));
   }, [route.params.bookId]);
 
+const words = [
+  { text: "is", start: 180, duration: 100 },
+  { text: "the", start: 280, duration: 189 },
+  // ... restul cuvintelor
+];
+
+useEffect(() => {
+    let interval;
+
+    if (isPlaying && sound) {
+      interval = setInterval(async () => {
+        const status = await sound.getStatusAsync();
+        if (status.isPlaying) {
+          const currentTime = status.positionMillis;
+          const wordIndex = words.findIndex(word => 
+            currentTime >= word.start && currentTime <= (word.start + word.duration));
+          setCurrentWordIndex(wordIndex);
+        }
+      }, 100);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [isPlaying, sound]);
 
 
 
@@ -97,8 +141,14 @@ useEffect(() => {
         {/*<Text style={styles.textBook}>{item.content}</Text>*/}
 
         <Text style={styles.titleAuthor}>
-          Once  upon  a  time,  there  were  two  best  friends  an  ant  and  a  grasshopper.  
-          The  grasshopper  liked  to  relax  the  whole  day  and  play  his  guitar.  
+          {words.map((word, index) => (
+            <Text
+              key={index}
+              style={currentWordIndex === index ? styles.highlightedWord : styles.normalWord}
+            >
+              {word.text + ' '}
+            </Text>
+          ))}
         </Text>
 
       </View>
@@ -108,11 +158,13 @@ useEffect(() => {
 
 <View>
   {filteredData.length > 0 && (
-    <Text style={styles.textBook}>
-    https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/
-    {filteredData[0].audio_file}</Text>
+    <Button
+      title={isPlaying ? "Pauză" : "Redă Sunetul"}
+      onPress={() => playSound(`https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/${filteredData[0].audio_file}`)}
+    />
   )}
 </View>
+
 
 
     </View>
@@ -158,4 +210,11 @@ const styles = StyleSheet.create({
   textBook: {
     fontSize: 18,
   },
+  highlightedWord: {
+    backgroundColor: 'yellow',
+  },
+  normalWord: {
+    backgroundColor: 'transparent',
+  },
+  
 });

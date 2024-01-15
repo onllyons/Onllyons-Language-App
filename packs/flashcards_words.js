@@ -3,7 +3,8 @@ import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-nati
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel from 'react-native-new-snap-carousel';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCirclePlay, faCirclePause } from '@fortawesome/free-solid-svg-icons';
+import { Audio } from 'expo-av';
 
 import globalCss from './css/globalCss';
 import Loader from "./components/Loader";
@@ -18,6 +19,11 @@ export default function FlashCardsLearning({ route, navigation }) {
   const swiperRef = useRef(null);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
   const [loader, setLoader] = useState(false)
+
+  const [isPlaying, setIsPlaying] = useState(false);
+const [currentSound, setCurrentSound] = useState(null);
+
+
   const ProgressBar = ({ currentIndex, totalCount }) => {
     const progress = (currentIndex + 1) / totalCount;
     return (
@@ -26,6 +32,35 @@ export default function FlashCardsLearning({ route, navigation }) {
       </View>
     );
   };
+const playSound = async (audioUrl) => {
+  if (currentSound && isPlaying) {
+    await currentSound.pauseAsync();
+    setIsPlaying(false);
+  } else {
+    if (currentSound) {
+      await currentSound.unloadAsync();
+    }
+    const newSound = new Audio.Sound();
+    try {
+      await newSound.loadAsync({ uri: audioUrl });
+      await newSound.playAsync();
+      setCurrentSound(newSound);
+      setIsPlaying(true);
+
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (!status.isPlaying && status.didJustFinish) {
+          setIsPlaying(false);
+          newSound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.error('Eroare la redarea sunetului:', error);
+    }
+  }
+};
+
+
+
   const handleBackButtonPress = () => {
     navigation.goBack();
   };
@@ -105,7 +140,15 @@ useEffect(() => {
                   <Text style={styles.categoryTitle}>{item.word_en}</Text>
                   <Text style={styles.categoryTitle}>{item.tophoneticsBritish}</Text>
                   <Text style={styles.categoryTitle}>{item.tophoneticsAmerican}</Text>
-                  <Text style={styles.categoryTitle}>https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/{item.word_audio}</Text>
+
+                  <TouchableOpacity onPress={() => playSound(`https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/${item.word_audio}`)}>
+                    <Text>
+                      <FontAwesomeIcon icon={isPlaying ? faCirclePause : faCirclePlay} size={30} style={{ color: "#1f80ff" }}/>
+                    </Text>
+                  </TouchableOpacity>
+
+
+
                   <Text style={styles.categoryTitle}>{item.word_ru}</Text>
                 </View>
               ) : (
