@@ -51,6 +51,12 @@ const globalCss = StyleSheet.create({
   gry:{
     color: '#636363',
   },
+  white:{
+    color: '#ffff',
+  },
+  blueLight:{
+    color: '#8895bc',
+  },
   bold:{
     fontWeight: '700'
   },
@@ -111,9 +117,17 @@ const globalCss = StyleSheet.create({
     backgroundColor: '#1cb0f6',
     shadowColor: '#368fc3',
   },
+  buttonBlue: {
+    backgroundColor: '#1cb0f6',
+    shadowColor: '#368fc3',
+  },
   buttonWhite: {
     backgroundColor: '#ffffff',
     shadowColor: '#95d5a1',
+  },
+  buttonGry: {
+    backgroundColor: '#f1f0f0',
+    shadowColor: '#cbcbcb',
   },
   buttonGreen: {
     backgroundColor: '#57cc04',
@@ -125,6 +139,9 @@ const globalCss = StyleSheet.create({
   buttonPressedWhite: {
     backgroundColor: '#ffffff',
   },
+  buttonPressedGry: {
+    backgroundColor: '#dbd9d8',
+  },
   buttonPressedGreen: {
     backgroundColor: '#57cc04',
   },
@@ -135,6 +152,11 @@ const globalCss = StyleSheet.create({
   },
   buttonTextGreen: {
     color: '#40b352',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  buttonTextBlack: {
+    color: '#0000',
     fontSize: 15,
     fontWeight: '600',
   },

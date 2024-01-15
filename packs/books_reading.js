@@ -94,7 +94,13 @@ useEffect(() => {
       <View key={item.id} style={styles.contentBooksRead}>
         <Text style={styles.titleBook}>{item.title}</Text>
         <Text style={styles.titleAuthor}>{item.author}</Text>
-        <Text style={styles.textBook}>{item.content}</Text>
+        {/*<Text style={styles.textBook}>{item.content}</Text>*/}
+
+        <Text style={styles.titleAuthor}>
+          Once  upon  a  time,  there  were  two  best  friends  an  ant  and  a  grasshopper.  
+          The  grasshopper  liked  to  relax  the  whole  day  and  play  his  guitar.  
+        </Text>
+
       </View>
     ))}
   </View>
