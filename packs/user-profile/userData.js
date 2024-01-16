@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 import { useAuth } from "../screens/ui/AuthProvider";
 import globalCss from "../css/globalCss";
@@ -15,7 +16,7 @@ import globalCss from "../css/globalCss";
 const Profile = () => {
   const { isAuthenticated, getUser, logout } = useAuth();
   const user = getUser();
-
+  const navigation = useNavigation();
   return (
   	<ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }}>
       {isAuthenticated() ? (
@@ -92,15 +93,18 @@ const Profile = () => {
             </View>
 
             <Text style={styles.label}>Пароль</Text>
-            <View style={[styles.inputView, styles.inputContainer1]}>
-              <TextInput
-                style={globalCss.input}
-                value="**********"
-                placeholder="Пароль"
-                secureTextEntry
-                editable={false}
-              />
-            </View>
+            <TouchableOpacity onPress={() => navigation.navigate('ChangePasswordScreen')}>
+  <View style={[styles.inputView, styles.inputContainer1]}>
+    <TextInput
+      style={globalCss.input}
+      value="**********"
+      placeholder="Пароль"
+      secureTextEntry
+      editable={false}
+    />
+  </View>
+</TouchableOpacity>
+
           </View>
         </View>
       ) : (

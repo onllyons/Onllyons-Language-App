@@ -5,6 +5,7 @@ import {
     Text,
     Button,
     StyleSheet,
+    Image,
     ScrollView,
     TouchableOpacity,
     ImageBackground
@@ -21,13 +22,40 @@ export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
     const [data, setData] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [loadedCategories, setLoadedCategories] = useState([]);
 
     useEffect(() => {
         fetch('https://www.language.onllyons.com/ru/ru-en/HackTheSiteHere/packs/app/course_lesson.php')
             .then(response => response.json())
-            .then(data => setData(data))
-            .catch(error => console.error('Error:', error))
+            .then(data => {
+                const groupedData = groupByCategory(data);
+                setData(groupedData);
+                setLoadedCategories(Object.keys(groupedData).slice(0, 1)); // Încarcă doar prima categorie la început
+            })
+            .catch(error => console.error('Error:', error));
     }, []);
+
+    // Funcție pentru gruparea datelor pe categorii
+    const groupByCategory = (data) => {
+        return data.reduce((acc, item) => {
+            (acc[item.category_url] = acc[item.category_url] || []).push(item);
+            return acc;
+        }, {});
+    };
+
+    // Funcție pentru încărcarea următoarei categorii
+    const loadNextCategory = () => {
+        const allCategories = Object.keys(data);
+        const nextIndex = loadedCategories.length;
+        if (nextIndex < allCategories.length) {
+            setLoadedCategories([...loadedCategories, allCategories[nextIndex]]);
+        }
+    };
+
+        // Funcție pentru a verifica dacă utilizatorul a ajuns aproape de sfârșitul listei
+    const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
+        return layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
+    };
 
     const onPressIn = (id) => {
         setPressedCards(prevState => ({...prevState, [id]: true}));
@@ -37,73 +65,42 @@ export default function CourseScreen({navigation}) {
         setPressedCards(prevState => ({...prevState, [id]: false}));
     };
 
-    const backgroundImageArray = [
-        require('./images/background-app/bg1.png'),
-        require('./images/background-app/bg2.png'),
-        require('./images/background-app/bg3.png'),
-    ];
-
-    // Stilurile pentru fiecare imagine de fundal separat
-    const backgroundStyles = [
-        {height: 2500}, // bg1.png
-        {height: 2500}, // bg2.png
-        {height: 2500}, // bg3.png
-    ];
-
-    const getNextBackgroundImage = () => {
-        if (currentImageIndex < backgroundImageArray.length - 1) {
-            setCurrentImageIndex(currentImageIndex + 1);
-        } else {
-            setCurrentImageIndex(0);
-        }
-    };
-
     return (
-        <ScrollView style={styles.bgCourse}>
-            <ImageBackground
-                source={backgroundImageArray[currentImageIndex]}
-                style={[styles.bgImg, backgroundStyles[currentImageIndex]]} // Folosește stilurile pentru imaginea de fundal curentă
-            >
-                {isAuthenticated() ? (
-                    <View>
-                        <Text>Id: {user.id}</Text>
-                        <Text>Имя пользователя: {user.username}</Text>
-                        <Text>Почта: {user.email}</Text>
-                        <Button
-                            title="Сменить пароль"
-                            onPress={() => navigation.navigate('ChangePasswordScreen')}
-                        />
-                        <Button
-                            title="Выйти из аккаунта"
-                            onPress={() => {
-                                logout()
-                                    .then(() => {
-                                        navigation.navigate('StartPageScreen')
-                                    })
-                                    .catch(() => {
-                                        Toast.show({
-                                            type: "error",
-                                            text1: "Не удалось выйти из аккаунта"
-                                        });
-                                    });
-                            }}
-                        />
-                    </View>
-                ) : (
-                    ""
-                )}
 
-                <View style={globalCss.container}>
-                    <View>
-                        <Text style={[globalCss.title, globalCss.textAlignCenter]}>
-                            Course
-                        </Text>
-                    </View>
+    <View>
+        <View style={styles.navTabUser}>
+        <View style={styles.itemNavTabUser}>
+          <Image source={require('./images/other_images/nav-top/english.png')} style={styles.imageNavTop} />
+          <Text style={styles.dataNavTop}>EN</Text>
+        </View>
+        <View style={styles.itemNavTabUser}>
+          <Image source={require('./images/other_images/nav-top/sapphire.png')} style={styles.imageNavTop} />
+          <Text style={styles.dataNavTop}>743</Text>
+        </View>
+        <View style={styles.itemNavTabUser}>
+          <Image source={require('./images/other_images/nav-top/flame.png')} style={styles.imageNavTop} />
+          <Text style={styles.dataNavTop}>4</Text>
+        </View>
+        <TouchableOpacity style={styles.itemNavTabUser}>
+          <Image source={require('./images/other_images/nav-top/star.png')} style={styles.imageNavTop} />
+          <Text style={styles.dataNavTop}>4</Text>
+        </TouchableOpacity>
+      </View>
 
-                    <View style={styles.contentFlashCards}>
-                        {data ? (
-                            data.map((item, index) => (
-                                <View
+
+<ScrollView style={styles.bgCourse} onScroll={({ nativeEvent }) => {
+    if (isCloseToBottom(nativeEvent)) {
+        loadNextCategory();
+    }
+}}
+scrollEventThrottle={400}>
+    
+        <View style={globalCss.container}>
+            <View style={styles.contentFlashCards}>
+                {loadedCategories.map(category => (
+                    <React.Fragment key={category}>
+                        {data[category].map((item, index) => (
+                            <View
                                     key={item.id}
                                     style={[
                                         {
@@ -139,14 +136,14 @@ export default function CourseScreen({navigation}) {
                                         {item.title}
                                     </Text>
                                 </View>
-                            ))
-                        ) : (
-                            <Text></Text>
-                        )}
-                    </View>
-                </View>
-            </ImageBackground>
-        </ScrollView>
+                        ))}
+                    </React.Fragment>
+                ))}
+            </View>
+        </View>
+</ScrollView>
+    </View>
+
     );
 }
 
@@ -190,10 +187,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
     },
-    iconFlash: {},
-    bgImg: {
-        flex: 1,
-        resizeMode: 'cover',
-        padding: 10,
+
+    navTabUser:{
+      width: "100%",
+      paddingTop: "10%",
+      backgroundColor: "#eeeff0",
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+      itemNavTabUser:{
+      flexDirection: "row",
+      paddingTop: '5%',
+      paddingBottom: '5%',
+      alignItems: "center",
+      justifyContent: 'center',
+      flex: 1,
+    },
+      imageNavTop:{
+      width: 28,
+      height: 28,
+    },
+    dataNavTop:{
+      fontSize: 16,
+      color: '#383838',
+      fontWeight: '700',
+      marginLeft: '5%',
     },
 });
