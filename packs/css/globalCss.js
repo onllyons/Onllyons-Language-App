@@ -60,6 +60,9 @@ const globalCss = StyleSheet.create({
   blueLight:{
     color: '#8895bc',
   },
+  blue:{
+    color: '#1cb0f6',
+  },
   bold:{
     fontWeight: '700'
   },
@@ -166,6 +169,65 @@ const globalCss = StyleSheet.create({
   textUpercase:{
     textTransform: 'uppercase'
   },
+  modalContainerDropDown:{
+    backgroundColor: 'red',
+    flex: 1,
+    marginTop: '25%',
+    maxHeight: '30%',
+    alignItems: "center",
+    justifyContent: 'center',
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
 
 export default globalCss;

@@ -179,7 +179,7 @@ const handleRepeat = () => {
       <View style={styles.sectionTop}>
 
         <TouchableOpacity onPress={() => navigation.navigate('GamesScreen')} style={[styles.itemNavTop, styles.itemNavBtnBack]}>
-          <FontAwesomeIcon icon={faArrowLeft} size={30} style={styles.faArrowLeft} />
+          <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue} />
         </TouchableOpacity>
 
         <View style={[styles.itemNavTop, styles.itemRatingGen]}>
@@ -394,9 +394,7 @@ const styles = StyleSheet.create({
   faTrophy:{
     color: '#5e5e5e',
   },
-  faArrowLeft:{
-    color: '#1cb0f6',
-  },
+
   itemTxtNavTop:{
     fontSize: 19,
     color: '#5e5e5e',
