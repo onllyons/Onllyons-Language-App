@@ -64,7 +64,6 @@ export default function CourseLessonQuiz({navigation}) {
         })
             .then(({data}) => {
                 if (data.success) {
-                    console.log(data.questions)
                     if (!data.carousel.length && !data.questions.length) {
                         Toast.show({
                             type: "error",
