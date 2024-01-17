@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { View, Text, TouchableOpacity, Dimensions, Switch, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import Carousel from 'react-native-new-snap-carousel';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faTimes, faCirclePlay, faCirclePause } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faGear, faCirclePlay, faCirclePause } from '@fortawesome/free-solid-svg-icons';
+import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Audio } from 'expo-av';
 
 import globalCss from './css/globalCss';
@@ -20,9 +23,38 @@ export default function FlashCardsLearning({ route, navigation }) {
   const [isPressedContinue, setIsPressedContinue] = useState(false);
   const [loader, setLoader] = useState(false)
 
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
   const [isPlaying, setIsPlaying] = useState(false);
 const [currentSound, setCurrentSound] = useState(null);
 
+// moddal deschided de jso
+const bottomSheetRef = useRef(null);
+const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
+const handleOpenPress = useCallback(() => {
+  bottomSheetRef.current?.snapToIndex(1);
+}, []);
+
+const renderBackdrop = useCallback(
+  (props) => (
+    <BottomSheetBackdrop
+      {...props}
+      disappearsOnIndex={-1}
+      appearsOnIndex={1}
+    />
+  ),
+  []
+);
+
+const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
+const combinedOnPress = () => {
+    handleOpenPress();
+    handlePress();
+  };
 
   const ProgressBar = ({ currentIndex, totalCount }) => {
     const progress = (currentIndex + 1) / totalCount;
@@ -111,7 +143,10 @@ useEffect(() => {
 }, [url]);
 
 
+
+
   return (
+    <GestureHandlerRootView>
     <LinearGradient
       colors={['#ecf7ff', '#f3faff', '#ecf7ff']}
       locations={[0, 0.6, 1]}
@@ -119,14 +154,21 @@ useEffect(() => {
       end={[Math.cos(Math.PI / 12), 1]}
       style={styles.swiperContent}>
 
+      
+
       <Loader visible={loader} /> 
 
       <View style={styles.row}>
         <TouchableOpacity style={styles.backBtn} onPress={handleBackButtonPress}>
-          <Text><FontAwesomeIcon icon={faTimes} size={30} style={globalCss.gry} /></Text>
+          <Text><FontAwesomeIcon icon={faTimes} size={30} style={globalCss.blue} /></Text>
         </TouchableOpacity>
         <ProgressBar currentIndex={index} totalCount={totalSlides} />
+        <TouchableOpacity style={styles.settingsBtn} onPress={combinedOnPress} >
+          <Text><FontAwesomeIcon icon={faGear} size={30} style={globalCss.blue} /></Text>
+        </TouchableOpacity>
       </View>
+
+
 
       <View style={styles.carousel}>
         <Carousel
@@ -138,8 +180,9 @@ useEffect(() => {
               {item.type === "carousel" ? (
                 <View>
                   <Text style={styles.categoryTitle}>{item.word_en}</Text>
-                  <Text style={styles.categoryTitle}>{item.tophoneticsBritish}</Text>
-                  <Text style={styles.categoryTitle}>{item.tophoneticsAmerican}</Text>
+                  {/*<Text style={styles.categoryTitle}>{item.tophoneticsBritish}</Text>*/}
+                  {/*<Text style={styles.categoryTitle}>{item.tophoneticsAmerican}</Text>*/}
+
 
                   <TouchableOpacity onPress={() => playSound(`https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/${item.word_audio}`)}>
                     <Text>
@@ -172,6 +215,30 @@ useEffect(() => {
       />
 
     </LinearGradient>
+
+    <BottomSheet
+      ref={bottomSheetRef}
+      snapPoints={snapPoints}
+      backdropComponent={renderBackdrop}
+      enablePanDownToClose={true}
+      index={-1}
+    >
+      <BottomSheetView style={styles.contentBottomSheet}>
+        
+
+      <Switch
+        trackColor={{ false: "#d1d1d1", true: "#4ADE80" }}
+        thumbColor={isEnabled ? "#ffffff" : "#f4f3f4"}
+        ios_backgroundColor="#d1d1d1"
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+      />
+
+
+      </BottomSheetView>
+    </BottomSheet>
+
+    </GestureHandlerRootView>
   );
 }
 
@@ -218,7 +285,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#3a464e',
     borderRadius: 10,
-    marginRight: '5%',
     alignSelf: 'center',
     height: '40%',
   },
@@ -226,6 +292,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffeb3b',
     borderRadius: 10,
+  },
+  settingsBtn:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    width: '14%',
+    height: '100%',
+    paddingTop: '1%',
+    textAlign: 'center',
   },
   backBtn: {
     flexDirection: 'row',
@@ -263,5 +339,50 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 0,
+  },
+  contentBottomSheet:{
+    height: '100%', 
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
+  },
+  template:{
+
   },
 });
