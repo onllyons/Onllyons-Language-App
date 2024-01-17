@@ -2,6 +2,7 @@ import {StatusBar} from 'expo-status-bar';
 import {Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import * as Haptics from 'expo-haptics';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -11,6 +12,8 @@ import LoginScreen from './packs/screens-start-app/login';
 import ChangePasswordScreen from './packs/screens-start-app/change-password';
 import PasswordScreen from './packs/screens-start-app/password-request';
 import IntroductionScreen from './packs/screens-start-app/introduction-start';
+
+import { useNavigation } from '@react-navigation/native';
 
 import CourseScreen from './packs/course';
 import CourseLesson from './packs/course_lesson';
@@ -39,6 +42,10 @@ import {useEffect, useState} from "react";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const handleTabPress = () => {
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+};
+
 
 function UserProfileMenu() {
     return (
@@ -89,6 +96,8 @@ function MenuFlasCards() {
 }
 
 function MainTabNavigator() {
+    const navigation = useNavigation();
+
     return (
         <Tab.Navigator
             screenOptions={({route}) => ({
@@ -135,16 +144,74 @@ function MainTabNavigator() {
                     paddingTop: 20,
                 }
             })}
-        >
-            <Tab.Screen name="MenuCourseLesson" component={MenuCourseLesson}
-                        options={{title: "Курс", headerShown: false}}/>
-            <Tab.Screen name="MenuBooksReading" component={MenuBooksReading}
-                        options={{title: "Книги", headerShown: false}}/>
-            <Tab.Screen name="MenuGames" component={MenuGames} options={{title: "Играть", headerShown: false}}/>
-            <Tab.Screen name="MenuFlasCards" component={MenuFlasCards}
-                        options={{title: "Флэш-карты", headerShown: false}}/>
-            <Tab.Screen name="UserProfileMenu" component={UserProfileMenu}
-                        options={{title: "Меню", headerShown: false}}/>
+        >   
+            
+            <Tab.Screen
+  name="MenuCourseLesson"
+  component={MenuCourseLesson}
+  options={{ title: "Курс", headerShown: false }}
+  listeners={{
+    tabPress: (e) => {
+      e.preventDefault();
+      handleTabPress();
+      navigation.navigate("MenuCourseLesson");
+    },
+  }}
+/>
+
+<Tab.Screen
+  name="MenuBooksReading"
+  component={MenuBooksReading}
+  options={{ title: "Книги", headerShown: false }}
+  listeners={{
+    tabPress: (e) => {
+      e.preventDefault();
+      handleTabPress();
+      navigation.navigate("MenuBooksReading");
+    },
+  }}
+/>
+
+<Tab.Screen
+  name="MenuGames"
+  component={MenuGames}
+  options={{ title: "Играть", headerShown: false }}
+  listeners={{
+    tabPress: (e) => {
+      e.preventDefault();
+      handleTabPress();
+      navigation.navigate("MenuGames");
+    },
+  }}
+/>
+
+<Tab.Screen
+  name="MenuFlasCards"
+  component={MenuFlasCards}
+  options={{ title: "Флэш-карты", headerShown: false }}
+  listeners={{
+    tabPress: (e) => {
+      e.preventDefault();
+      handleTabPress();
+      navigation.navigate("MenuFlasCards");
+    },
+  }}
+/>
+
+<Tab.Screen
+  name="UserProfileMenu"
+  component={UserProfileMenu}
+  options={{ title: "Меню", headerShown: false }}
+  listeners={{
+    tabPress: (e) => {
+      e.preventDefault();
+      handleTabPress();
+      navigation.navigate("UserProfileMenu");
+    },
+  }}
+/>
+
+
         </Tab.Navigator>
     );
 }
