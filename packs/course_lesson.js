@@ -14,6 +14,7 @@ import globalCss from "./css/globalCss";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import {ResizeMode, Video, Audio} from "expo-av";
+import {useRoute} from "@react-navigation/native";
 
 const {width} = Dimensions.get("window");
 
@@ -27,7 +28,8 @@ const ProgressBar = ({currentIndex, totalCount}) => {
 };
 
 export default function CourseLessonQuiz({navigation}) {
-    const url = "english-course-how-are-you";
+    const route = useRoute()
+    const url = route.params.url;
     const [isPressedContinue, setIsPressedContinue] = useState(false);
     const swiperRef = useRef(null);
     const [data, setData] = useState({});
