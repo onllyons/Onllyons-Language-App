@@ -1,520 +1,312 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { DotIndicator } from "react-native-indicators"; // Importați DotIndicator sau alt tip de indicator dorit
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import React, {useState, useEffect} from "react";
+import {View, Text, StyleSheet, Image, TouchableOpacity} from "react-native";
+import {LinearGradient} from "expo-linear-gradient";
+import {DotIndicator} from "react-native-indicators"; // Importați DotIndicator sau alt tip de indicator dorit
+import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {
-  faTrophy,
-  faClock,
-  faArrowLeft,
-  faFire,
-  faLightbulb,
-  faRotateLeft,
-  faArrowRightLong,
+    faTrophy,
+    faClock,
+    faArrowLeft,
+    faFire
 } from "@fortawesome/free-solid-svg-icons";
 
 import globalCss from "./css/globalCss";
-import Loader from "./components/Loader";
+import SelectAnswer from "./components/games/SelectAnswer";
+import Buttons from "./components/games/Buttons";
+import axios from "axios";
+import Toast from "react-native-toast-message";
 
-export default function GameQuiz({ navigation }) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // Inițial, loader-ul este activat
-  const [error, setError] = useState(null);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
-  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
-  const [isHelpUsed, setIsHelpUsed] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+export default function GameQuiz({navigation}) {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true); // Inițial, loader-ul este activat
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+    const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
+    const [isHelpUsed, setIsHelpUsed] = useState(false);
+    const [showIncorrectStyle, setShowIncorrectStyle] = useState(false);
+    const [preHelpAnswers, setPreHelpAnswers] = useState([])
 
-  const [isPressedRepeatBtn, setIsPressedRepeatBtn] = useState(false);
-  const [isPressedHelpBtn, setIsPressedHelpBtn] = useState(false);
-  const [isPressedNextBtn, setIsPressedNextBtn] = useState(false);
-const [showIncorrectStyle, setShowIncorrectStyle] = useState(false);
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    };
 
-  const [isPressedAnswer, setIsPressedAnswer] = useState([]);
+    const TimerComponent = () => {
+        const [time, setTime] = useState(0)
 
+        useEffect(() => {
+            const id = setInterval(() => {
+                setTime(prevTime => prevTime + 1)
+            }, 1000);
 
-const formatTime = (time) => {
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-};
+            return () => clearInterval(id)
+        }, [])
 
-const TimerComponent = () => {
-  const [time, setTime] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setTime(prevTime => prevTime + 1);
-    }, 1000);
-
-    return () => clearInterval(id);
-  }, []);
-
-  return (
-    <View style={[styles.itemNavTop, styles.itemClock]}>
-      <FontAwesomeIcon icon={faClock} size={26} style={styles.faTrophy} />
-      <Text style={[styles.itemTxtNavTop, styles.itemClockTxt]}>{formatTime(time)}</Text>
-    </View>
-  );
-};
-
-
-
-
-const handlePressIn = (answerIndex) => {
-  const newIsPressedAnswer = [...isPressedAnswer];
-  newIsPressedAnswer[answerIndex] = true;
-  setIsPressedAnswer(newIsPressedAnswer);
-};
-
-
-const handlePressOut = (answerIndex) => {
-  const newIsPressedAnswer = [...isPressedAnswer];
-  newIsPressedAnswer[answerIndex] = false;
-  setIsPressedAnswer(newIsPressedAnswer);
-};
-
-
-  useEffect(() => {
-    setLoading(true);
-    fetch(
-      "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/game_play_chose.php"
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        const shuffledData = json.map((item) => ({
-          ...item,
-          answers: shuffleAnswers(item),
-        }));
-        setData(shuffledData);
-
-        const initialPressedAnswerState = Array(
-          shuffledData[currentQuestionIndex].answers.length
-        ).fill(false);
-        setIsPressedAnswer(initialPressedAnswerState);
-
-        setTimeout(() => {
-          setLoading(false);
-        }, 0); // 11111111111111
-      })
-      .catch((err) => {
-        setError(err);
-        setLoading(false);
-      });
-  }, []);
-
-const shuffleAnswers = (item) => {
-  let initialAnswers = [
-    { text: item.answer_1, correct: item.answer_correct === "1" },
-    { text: item.answer_2, correct: item.answer_correct === "2" },
-    { text: item.answer_3, correct: item.answer_correct === "3" },
-    { text: item.answer_4, correct: item.answer_correct === "4" },
-  ];
-
-  // Amestecă răspunsurile inițiale
-  for (let i = initialAnswers.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [initialAnswers[i], initialAnswers[j]] = [initialAnswers[j], initialAnswers[i]];
-  }
-
-  return initialAnswers;
-};
-
-const handleAnswerSelect = (selected, item) => {
-  if (!isAnswerSubmitted) {
-    const correctAnswer = item.answers.find((answer) => answer.correct).text;
-    setSelectedAnswer(selected);
-    const isCorrect = selected === correctAnswer;
-    setIsAnswerCorrect(isCorrect);
-    setShowIncorrectStyle(!isCorrect); // Setează stilul "incorrect" dacă răspunsul este greșit
-    setIsHelpUsed(false);
-    setIsAnswerSubmitted(true);
-  }
-};
-
-const handleHelp = () => {
-  setIsHelpUsed(true);
-  setShowIncorrectStyle(false); // Resetează stilul "incorrect"
-};
-
-
-
-const handleNext = () => {
-  setSelectedAnswer(null);
-  setIsAnswerCorrect(null);
-  setIsHelpUsed(false);
-  setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
-};
-
-const handleRepeat = () => {
-  setSelectedAnswer(null);
-  setIsAnswerCorrect(null);
-  setIsHelpUsed(false);
-  setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru a permite repetarea întrebării
-};
-
-  if (loading) {
-    // Dacă datele sunt în proces de încărcare, afișați pagina cu fundal galben și textul corespunzător
-    return (
-      <LinearGradient
-        colors={["#8f69cc", "#8f69cc"]}
-        style={styles.startContent}
-      >
-        <Image
-          source={require("./images/other_images/quiz-logo.png")}
-          style={styles.logoQuiz}
-        />
-        <Text style={styles.textContainerMess}>Quiz Time</Text>
-
-        <View style={styles.loaderContainer}>
-          <DotIndicator color="white" size={30} count={3} />
-        </View>
-      </LinearGradient>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.sectionTop}>
-
-        <TouchableOpacity onPress={() => navigation.navigate('GamesScreen')} style={[styles.itemNavTop, styles.itemNavBtnBack]}>
-          <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue} />
-        </TouchableOpacity>
-
-        <View style={[styles.itemNavTop, styles.itemRatingGen]}>
-          <FontAwesomeIcon icon={faTrophy} size={26} style={styles.faTrophy} />
-          <Text style={styles.itemTxtNavTop}>1124</Text>
-          <Text style={[styles.itemTxtNavTop, styles.itemBonus]}>0</Text>
-        </View>
-
-        <View style={[styles.itemNavTop, styles.itemConsecutive]}>
-          <FontAwesomeIcon icon={faFire} size={26} style={styles.faTrophy} />
-          <Text style={[styles.itemTxtNavTop, styles.answerCons]}>14</Text>
-        </View>
-
-        <TimerComponent />
-
-      </View>
-      {data.length > 0 && (
-        <View style={styles.buttonGroup} key={data[currentQuestionIndex].id}>
-          {data.length > 0 && (
-            <View
-              style={styles.buttonGroup}
-              key={data[currentQuestionIndex].id}
-            >
-              <Text style={styles.headerText}>
-                {data[currentQuestionIndex].survey_questions}
-              </Text>
-              {data[currentQuestionIndex].answers.map((answer, answerIndex) => (
-                <TouchableOpacity
-                  key={answerIndex}
-                  style={[
-                    globalCss.button,
-                    isPressedAnswer[answerIndex]
-                      ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                      : globalCss.buttonGry,
-
-                    selectedAnswer === answer.text &&
-                      (isAnswerCorrect ? styles.correct : styles.incorrect),
-                    // Verifică dacă butonul help a fost apăsat și răspunsul este corect
-                    isHelpUsed && answer.correct && styles.correct,
-                  ]}
-                  onPressIn={() => handlePressIn(answerIndex)}
-                  onPressOut={() => handlePressOut(answerIndex)}
-                  onPress={() =>
-                    handleAnswerSelect(answer.text, data[currentQuestionIndex])
-                  }
-                  activeOpacity={1}
-                >
-                  <Text style={[
-                    styles.buttonTextBlack,
-                    selectedAnswer === answer.text && isAnswerCorrect ? styles.correctTxt : 
-                    selectedAnswer === answer.text ? styles.incorrectTxt : null,
-                    isHelpUsed && answer.correct ? styles.correctTxt : null // Adăugați condiția pentru starea "Help" și corectitudinea răspunsului
-                  ]}>
-                    {answer.text}
-                  </Text>
-
-
-
-                </TouchableOpacity>
-              ))}
+        return (
+            <View style={[styles.itemNavTop, styles.itemClock]}>
+                <FontAwesomeIcon icon={faClock} size={26} style={styles.faTrophy}/>
+                <Text style={[styles.itemTxtNavTop, styles.itemClockTxt]}>{formatTime(time)}</Text>
             </View>
-          )}
+        )
+    }
+
+    const getQuestions = async () => {
+        try {
+            const json = await axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
+                method: "start"
+            }, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            })
+
+            const shuffledData = json.data.votes.map((item) => ({
+                ...item,
+                answers: shuffleAnswers(item),
+            }));
+            setData(prev => [...prev, ...shuffledData]);
+
+            setTimeout(() => {
+                setLoading(false);
+            }, 0);
+        } catch (err) {
+            navigation.goBack()
+
+            Toast.show({
+                type: "error",
+                text1: "Произошла ошибка, попробуйте позже"
+            })
+        }
+    }
+
+    useEffect(() => {
+        setLoading(true);
+
+        getQuestions()
+    }, []);
+
+    const shuffleAnswers = (item) => {
+        const correct = Number(item.test.correct)
+
+        let initialAnswers = [
+            {text: item.test["1"], correct: correct === 1, id: 1},
+            {text: item.test["2"], correct: correct === 2, id: 2},
+            {text: item.test["3"], correct: correct === 3, id: 3},
+            {text: item.test["4"], correct: correct === 4, id: 4},
+        ];
+
+        // Amestecă răspunsurile inițiale
+        for (let i = initialAnswers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [initialAnswers[i], initialAnswers[j]] = [initialAnswers[j], initialAnswers[i]];
+        }
+
+        return initialAnswers;
+    };
+
+    const handleAnswerSelect = (selected, item) => {
+        if (preHelpAnswers.indexOf(selected) !== -1 || isHelpUsed) return
+
+        if (!isAnswerSubmitted) {
+            const correctAnswer = item.answers.find((answer) => answer.correct).id;
+            setSelectedAnswer(selected);
+            const isCorrect = selected === correctAnswer;
+            setIsAnswerCorrect(isCorrect);
+            setShowIncorrectStyle(!isCorrect); // Setează stilul "incorrect" dacă răspunsul este greșit
+            setIsHelpUsed(false);
+            setIsAnswerSubmitted(true);
+        }
+    };
+
+    const handleHelp = () => {
+        if (preHelpAnswers.length > 0) {
+            setIsHelpUsed(true);
+            setShowIncorrectStyle(false); // Resetează stilul "incorrect"
+        } else {
+            for (let i = 0; i < data[0].answers.length; i++) {
+                if (preHelpAnswers.length >= 2) break
+                if (data[0].answers[i].id === selectedAnswer) continue
+
+                if (!data[0].answers[i].correct) preHelpAnswers.push(data[0].answers[i].id)
+            }
+
+            setPreHelpAnswers(prev => [...prev, preHelpAnswers])
+        }
+    };
+
+    const handleNext = () => {
+        setSelectedAnswer(null);
+        setIsAnswerCorrect(null);
+        setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
+        setIsHelpUsed(false);
+        setPreHelpAnswers([])
+
+        data.splice(0, 1)
+
+        setData(data)
+
+        if (data.length <= 0) {
+            setLoading(true)
+        } else if (data.length <= 2) {
+            getQuestions()
+        }
+    };
+
+    const handleRepeat = () => {
+        setSelectedAnswer(null);
+        setIsAnswerCorrect(null);
+        setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru a permite repetarea întrebării
+        setIsHelpUsed(false);
+        setPreHelpAnswers([])
+
+        for (let i = data[0].answers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [data[0].answers[i], data[0].answers[j]] = [data[0].answers[j], data[0].answers[i]];
+        }
+
+        setData(data);
+    };
+
+    if (loading) {
+        // Dacă datele sunt în proces de încărcare, afișați pagina cu fundal galben și textul corespunzător
+        return (
+            <LinearGradient
+                colors={["#8f69cc", "#8f69cc"]}
+                style={styles.startContent}
+            >
+                <Image
+                    source={require("./images/other_images/quiz-logo.png")}
+                    style={styles.logoQuiz}
+                />
+                <Text style={styles.textContainerMess}>Quiz Time</Text>
+
+                <View style={styles.loaderContainer}>
+                    <DotIndicator color="white" size={30} count={3}/>
+                </View>
+            </LinearGradient>
+        );
+    }
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.sectionTop}>
+
+                <TouchableOpacity onPress={() => navigation.navigate('GamesScreen')}
+                                  style={[styles.itemNavTop, styles.itemNavBtnBack]}>
+                    <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue}/>
+                </TouchableOpacity>
+
+                <View style={[styles.itemNavTop, styles.itemRatingGen]}>
+                    <FontAwesomeIcon icon={faTrophy} size={26} style={styles.faTrophy}/>
+                    <Text style={styles.itemTxtNavTop}>1124</Text>
+                    <Text style={[styles.itemTxtNavTop, styles.itemBonus]}>0</Text>
+                </View>
+
+                <View style={[styles.itemNavTop, styles.itemConsecutive]}>
+                    <FontAwesomeIcon icon={faFire} size={26} style={styles.faTrophy}/>
+                    <Text style={[styles.itemTxtNavTop, styles.answerCons]}>14</Text>
+                </View>
+
+                <TimerComponent/>
+
+            </View>
+            {data.length > 0 && (
+                <SelectAnswer data={data} isHelpUsed={isHelpUsed} isAnswerCorrect={isAnswerCorrect} preHelpAnswers={preHelpAnswers} selectedAnswer={selectedAnswer} handleAnswerSelect={handleAnswerSelect}/>
+            )}
+
+            <Buttons selectedAnswer={selectedAnswer} isAnswerCorrect={isAnswerCorrect} showIncorrectStyle={showIncorrectStyle} isHelpUsed={isHelpUsed} handleHelp={handleHelp} handleRepeat={handleRepeat} handleNext={handleNext}/>
         </View>
-      )}
-
-      <View style={styles.groupBtnQuiz}>
-{(selectedAnswer || isHelpUsed) && (
-  <TouchableOpacity
-    style={[
-      styles.quizBtnCtr,
-      isPressedRepeatBtn
-        ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-        : globalCss.buttonGry,
-      showIncorrectStyle && styles.incorrect // Aplică stilul "incorrect" dacă este necesar
-    ]}
-    onPressIn={() => setIsPressedRepeatBtn(true)}
-    onPressOut={() => setIsPressedRepeatBtn(false)}
-    activeOpacity={1}
-    onPress={handleRepeat}
-  >
-    <Text style={styles.buttonText}>
-      <FontAwesomeIcon
-        icon={faRotateLeft}
-        size={18}
-        style={showIncorrectStyle ? styles.correctTxt : globalCss.blueLight}
-      />
-    </Text>
-  </TouchableOpacity>
-)}
-
-
-
-        {(!selectedAnswer || (selectedAnswer && !isAnswerCorrect)) &&
-          !isHelpUsed && (
-            <TouchableOpacity
-              style={[
-                styles.quizBtnCtr,
-                isPressedHelpBtn
-                  ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                  : globalCss.buttonGry,
-              ]}
-              onPressIn={() => setIsPressedHelpBtn(true)}
-              onPressOut={() => setIsPressedHelpBtn(false)}
-              activeOpacity={1}
-              onPress={handleHelp}
-            >
-              <Text style={styles.buttonText}>
-                <FontAwesomeIcon
-                  icon={faLightbulb}
-                  size={18}
-                  style={globalCss.blueLight}
-                />
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          {(selectedAnswer || isHelpUsed) && (
-            <TouchableOpacity
-              style={[
-                styles.quizBtnCtr,
-                isPressedNextBtn
-                  ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                  : globalCss.buttonGry,
-                (isAnswerCorrect || isHelpUsed) && styles.correct,
-              ]}
-              onPressIn={() => setIsPressedNextBtn(true)}
-              onPressOut={() => setIsPressedNextBtn(false)}
-              activeOpacity={1}
-              onPress={handleNext}
-            >
-              <Text style={styles.buttonText}>
-                <FontAwesomeIcon
-                  icon={faArrowRightLong}
-                  size={18}
-                  style={(isAnswerCorrect || isHelpUsed) ? styles.correctTxt : globalCss.blueLight}
-                />
-              </Text>
-            </TouchableOpacity>
-          )}
-
-      </View>
-    </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-  },
-  groupBtnQuiz: {
-    maxWidth: "80%",
-    marginBottom: "13%",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignContent: "center",
-  },
-  quizBtnCtr: {
-    flex: 1,
-    marginHorizontal: "1%",
-    paddingTop: "6%",
-    paddingBottom: "5%",
-    //paddingVertical: 18,
-    alignItems: "center",
-    borderRadius: 14,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 0,
-  },
-  startContent: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  loaderContainer: {
-    position: "absolute",
-    bottom: "5%",
-    left: 0,
-    right: 0,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textContainerMess: {
-    fontSize: "45%",
-    textAlign: "center",
-    color: "#E4D3FF",
-  },
-  logoQuiz: {
-    width: 140,
-    height: 140,
-    alignSelf: "center",
-    marginBottom: "2.9%",
-  },
-  sectionTop: {
-    width: "100%",
-    paddingTop: "10%",
-    backgroundColor: "#eeeff0",
-    flexDirection: "row",
-    // justifyContent: "center",
-    alignItems: "center",
-  },
-  itemNavTop: {
-    flexDirection: "row",
-    paddingTop: '5%',
-    paddingBottom: '5%',
-    alignItems: "center",
-    flex: 1
-  },
-  faTrophy:{
-    color: '#5e5e5e',
-  },
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "white",
+    },
+    startContent: {
+        flex: 1,
+        justifyContent: "center",
+    },
+    loaderContainer: {
+        position: "absolute",
+        bottom: "5%",
+        left: 0,
+        right: 0,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    textContainerMess: {
+        fontSize: 24,
+        textAlign: "center",
+        color: "#E4D3FF",
+    },
+    logoQuiz: {
+        width: 140,
+        height: 140,
+        alignSelf: "center",
+        marginBottom: "2.9%",
+    },
+    sectionTop: {
+        width: "100%",
+        paddingTop: "10%",
+        backgroundColor: "#eeeff0",
+        flexDirection: "row",
+        // justifyContent: "center",
+        alignItems: "center",
+    },
+    itemNavTop: {
+        flexDirection: "row",
+        paddingTop: '5%',
+        paddingBottom: '5%',
+        alignItems: "center",
+        flex: 1
+    },
+    faTrophy: {
+        color: '#5e5e5e',
+    },
 
-  itemTxtNavTop:{
-    fontSize: 19,
-    color: '#5e5e5e',
-    fontWeight: '500',
-    marginLeft: '3%',
-  },
-  headerText: {
-    fontSize: 24,
-    textAlign: "center",
-    margin: 10,
-  },
-  buttonGroup: {
-    justifyContent: "center",
-    maxWidth: "97%",
-    flex: 1,
-  },
-  buttonText: {
-    fontSize: 18,
-    color: "white",
-  },
-  buttonTextBlack:{
-    textTransform: 'uppercase',
-    fontWeight: '600',
-    fontSize: 18,
-    color: "#8895bc",
-  },
-  correctTxt:{
-    color: "white",
-  },
+    itemTxtNavTop: {
+        fontSize: 19,
+        color: '#5e5e5e',
+        fontWeight: '500',
+        marginLeft: '3%',
+    },
 
+    itemNavBtnBack: {
+        paddingLeft: '5%',
+        maxWidth: '16%',
+    },
+    itemRatingGen: {
+        maxWidth: '39%',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    itemConsecutive: {
+        maxWidth: '22%',
+        paddingLeft: '1%'
+    },
+    itemClock: {
+        maxWidth: '23%',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 
+    itemClockTxt: {
+        minWidth: '15%',
+    },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  itemNavBtnBack:{
-    paddingLeft: '5%',
-    maxWidth: '16%',
-  },
-  itemRatingGen:{
-    maxWidth: '39%',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  itemConsecutive:{
-    maxWidth: '22%',
-    paddingLeft: '1%'
-  },
-  itemClock:{
-    maxWidth: '23%',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-
-
-
-
-  itemClockTxt:{
-    minWidth: '15%',
-  },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  itemBonus:{
-    // color: '#ca3431',
-    color: '#81b344',
-    fontWeight: '700'
-  },
-  incorrectTxt:{
-    color: "white",
-  },
-  correct: {
-    backgroundColor: "#81b344",
-  },
-  answerCons:{
-    marginLeft: 5,
-  },
-  incorrect: {
-    backgroundColor: "#ca3431",
-  },
+    itemBonus: {
+        // color: '#ca3431',
+        color: '#81b344',
+        fontWeight: '700'
+    },
+    answerCons: {
+        marginLeft: 5,
+    }
 });
