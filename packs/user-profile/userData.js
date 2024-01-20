@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
-import { useAuth } from "../screens/ui/AuthProvider";
+import { useAuth } from "../providers/AuthProvider";
 import globalCss from "../css/globalCss";
 
 const Profile = () => {

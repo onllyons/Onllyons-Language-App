@@ -7,7 +7,7 @@ import {faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
 import axios from "axios";
-import {useAuth} from "../screens/ui/AuthProvider";
+import {useAuth} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 
@@ -28,7 +28,7 @@ export default function IntroductionScreen({navigation}) {
 
     const [loader, setLoader] = useState(false)
 
-    const {isAuthenticated, login, getUserToken} = useAuth();
+    const {isAuthenticated, login, getTokens, checkServerResponse} = useAuth();
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator")
@@ -73,31 +73,19 @@ export default function IntroductionScreen({navigation}) {
 
             axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user_signup.php", {
                 ...userData,
-                token: getUserToken()
+                token: getTokens()["mobileToken"]
             }, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
             })
-                .then(async res => {
-                    setLoader(false)
-
-                    await new Promise(resolve => setTimeout(resolve, 100))
-
-                    const data = res.data
-
-                    if (data.success) {
-                        login(data.userData)
-
-                        navigation.navigate('MainTabNavigator')
-                    } else {
-                        Toast.show({
-                            type: "error",
-                            text1: data.message
-                        });
-                    }
-                }, 100)
-                .catch(() => setLoader(false))
+                .then(({data}) => checkServerResponse(data, null, false))
+                .then(async data => {
+                    await login(data.userData, data.tokens)
+                    navigation.navigate('MainTabNavigator')
+                })
+                .catch(() => {})
+                .finally(() => setTimeout(() => setLoader(false), 1))
         }
     }
 

@@ -15,6 +15,7 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import {ResizeMode, Video, Audio} from "expo-av";
 import {useRoute} from "@react-navigation/native";
+import {useAuth} from "./providers/AuthProvider";
 
 const {width} = Dimensions.get("window");
 
@@ -39,6 +40,8 @@ export default function CourseLessonQuiz({navigation}) {
     const [seriesElements, setSeriesElements] = useState([])
     const [sound, setSound] = useState();
 
+    const {checkServerResponse, getTokens} = useAuth()
+
     const handleBackButtonPress = () => {
         navigation.goBack();
     };
@@ -56,33 +59,29 @@ export default function CourseLessonQuiz({navigation}) {
 
         axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/course/get_carousel_and_test.php", {
             url: url,
-            series: series
+            series: series,
+            tokens: getTokens()
         }, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         })
-            .then(({data}) => {
-                if (data.success) {
-                    if (!data.carousel.length && !data.questions.length) {
-                        Toast.show({
-                            type: "error",
-                            text1: "Дальше серии нет"
-                        });
-                    } else {
-                        setData(data)
-
-                        setTotalSlides(Object.keys(data.carousel).length + Object.keys(data.questions).length);
-
-                        swiperRef.current?.snapToItem(0)
-                    }
-                } else {
+            .then(({data}) => checkServerResponse(data, navigation))
+            .then((data) => {
+                if (!data.carousel.length && !data.questions.length) {
                     Toast.show({
                         type: "error",
-                        text1: data.message
+                        text1: "Дальше серии нет"
                     });
+                } else {
+                    setData(data)
+
+                    setTotalSlides(Object.keys(data.carousel).length + Object.keys(data.questions).length);
+
+                    swiperRef.current?.snapToItem(0)
                 }
             })
+            .catch(() => {})
     }
 
     useEffect(() => {

@@ -6,7 +6,7 @@ import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 import globalCss from '../css/globalCss';
 import Toast from "react-native-toast-message";
 import axios from "axios";
-import {useAuth} from "../screens/ui/AuthProvider";
+import {useAuth} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 
 export default function ChangePasswordScreen({navigation}) {
@@ -20,7 +20,7 @@ export default function ChangePasswordScreen({navigation}) {
         confirm_password: ""
     })
 
-    const {getUser, isAuthenticated, getUserToken} = useAuth();
+    const {isAuthenticated, getTokens, checkServerResponse} = useAuth();
 
     useEffect(() => {
         if (!isAuthenticated()) navigation.navigate("StartPageScreen")
@@ -43,38 +43,18 @@ export default function ChangePasswordScreen({navigation}) {
         } else {
             setLoader(true)
 
-            console.log(data)
             axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/change_password.php", {
                 ...data,
-                userId: getUser().id,
-                token: getUserToken()
+                tokens: getTokens()
             }, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
             })
-                .then(async res => {
-                    setLoader(false)
-
-                    await new Promise(resolve => setTimeout(resolve, 100))
-
-                    const data = res.data
-
-                    if (data.success) {
-                        Toast.show({
-                            type: "success",
-                            text1: data.message
-                        });
-
-                        navigation.navigate('MainTabNavigator')
-                    } else {
-                        Toast.show({
-                            type: "error",
-                            text1: data.message
-                        });
-                    }
-                })
-                .catch(() => setLoader(false))
+                .then(({data}) => checkServerResponse(data, navigation))
+                .then(() => navigation.navigate('MainTabNavigator'))
+                .catch(() => {})
+                .finally(() => setTimeout(() => setLoader(false), 1))
         }
     }
 

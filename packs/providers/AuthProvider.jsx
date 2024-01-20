@@ -1,8 +1,8 @@
-import React, {createContext, useContext, useMemo, useState} from 'react';
+import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import axios from "axios";
-import Loader from "../../components/Loader";
+import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 
 const AuthContext = createContext("user context doesnt exists");
@@ -15,7 +15,11 @@ const callback = {
 export const AuthProvider = ({children}) => {
     const [user, setUser] = useState({});
     const [firstLaunch, setFirstLaunch] = useState(Date.now());
-    const [token, setToken] = useState("")
+    const [tokens, setTokens] = useState({
+        mobileToken: "",
+        accessToken: "",
+        refreshToken: "",
+    })
 
     const [loader, setLoader] = useState(false)
 
@@ -23,21 +27,18 @@ export const AuthProvider = ({children}) => {
     const retrieveData = async () => {
         try {
             const storedUser = await AsyncStorage.getItem("user");
+            const storedTokens = await AsyncStorage.getItem("tokens");
+            const firstLaunchDate = await AsyncStorage.getItem("firstLaunch");
 
             if (storedUser !== null) {
                 setUser(JSON.parse(storedUser))
             }
 
-            return Promise.resolve();
-        } catch (error) {
-            return Promise.reject();
-        }
-    };
+            if (storedTokens !== null) {
+                setTokens(prev => ({...prev, ...JSON.parse(storedTokens)}))
+            }
 
-    // Loading first time launch from local storage
-    const recordFirstLaunchDate = async () => {
-        try {
-            const firstLaunchDate = await AsyncStorage.getItem("firstLaunch");
+            console.log(tokens)
 
             if (firstLaunchDate === null) {
                 await AsyncStorage.setItem("firstLaunch", `${firstLaunch}`);
@@ -49,13 +50,16 @@ export const AuthProvider = ({children}) => {
         } catch (error) {
             return Promise.reject();
         }
-    }
+    };
 
-    const login = async userData => {
+    const login = async (userData, tokensData) => {
         try {
             // Save user data on local storage
             await AsyncStorage.setItem("user", JSON.stringify(userData));
             setUser(userData);
+
+            await AsyncStorage.setItem("tokens", JSON.stringify({...tokens, ...tokensData}));
+            setTokens({...tokens, ...tokensData});
 
             return Promise.resolve();
         } catch (error) {
@@ -66,6 +70,7 @@ export const AuthProvider = ({children}) => {
     const logout = async () => {
         try {
             await AsyncStorage.removeItem("user");
+            await AsyncStorage.removeItem("tokens");
             setUser({});
 
             return Promise.resolve();
@@ -80,11 +85,41 @@ export const AuthProvider = ({children}) => {
 
     const getUser = () => user
 
-    const getUserToken = () => token
+    const getTokens = () => tokens
 
     const setSuccessCallback = func => {
         if (callback.complete) func()
         else callback.callback = func
+    }
+
+    const checkServerResponse = async (response, navigation = null, showSuccess = true, showError = true) => {
+        if (!response.success) {
+            if (response.tokensError) {
+                await logout()
+
+                if (navigation) navigation.navigate("StartPageScreen")
+            }
+
+            if (showError) {
+                Toast.show({
+                    type: "error",
+                    text1: response.message
+                });
+            }
+
+            return Promise.reject(response);
+        }
+
+        if (showSuccess) {
+            Toast.show({
+                type: "success",
+                text1: response.message
+            });
+        }
+
+        if (response.token) setTokens(prev => ({...prev, accessToken: response.token}))
+
+        return Promise.resolve(response);
     }
 
     useMemo(() => {
@@ -92,8 +127,7 @@ export const AuthProvider = ({children}) => {
 
         setLoader(true)
 
-        recordFirstLaunchDate()
-            .then(() => retrieveData())
+        retrieveData()
             .then(() => {
                 const deviceInfo = {
                     brand: Device.brand,
@@ -108,6 +142,7 @@ export const AuthProvider = ({children}) => {
 
                 return axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/get_device_token.php", {
                     ...deviceInfo,
+                    tokens: tokens,
                     userId: isAuthenticated() ? user.id : -1
                 }, {
                     headers: {
@@ -117,16 +152,16 @@ export const AuthProvider = ({children}) => {
             })
             .then(async data => {
                 if (data.data.success) {
-                    setToken(data.data.token)
+                    setTokens(prev => ({...prev, mobileToken: data.data.mobileToken, accessToken: data.data.token}))
 
-                    setLoader(false)
+                    setTimeout(() => setLoader(false), 1)
 
                     if (isAuthenticated() && !data.data.userAvailable) {
                         await new Promise(resolve => setTimeout(resolve, 100))
 
                         Toast.show({
                             type: "error",
-                            text1: "Ошибка при загрузке данных пользователя, перевойдите в аккаунт"
+                            text1: "Ошибка, перевойдите в аккаунт"
                         });
 
                         return logout()
@@ -134,7 +169,7 @@ export const AuthProvider = ({children}) => {
                 }
             })
             .catch(async () => {
-                setLoader(false)
+                setTimeout(() => setLoader(false), 1)
 
                 await new Promise(resolve => setTimeout(resolve, 100))
 
@@ -151,7 +186,7 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, getUser, getUserToken, login, logout, setSuccessCallback}}>
+        <AuthContext.Provider value={{isAuthenticated, checkServerResponse, getUser, getTokens, login, logout, setSuccessCallback}}>
             <Loader visible={loader}/>
             {children}
         </AuthContext.Provider>

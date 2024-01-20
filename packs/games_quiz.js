@@ -15,6 +15,7 @@ import SelectAnswer from "./components/games/SelectAnswer";
 import Buttons from "./components/games/Buttons";
 import axios from "axios";
 import Toast from "react-native-toast-message";
+import {useAuth} from "./providers/AuthProvider";
 
 export default function GameQuiz({navigation}) {
     const [data, setData] = useState([]);
@@ -25,6 +26,11 @@ export default function GameQuiz({navigation}) {
     const [isHelpUsed, setIsHelpUsed] = useState(false);
     const [showIncorrectStyle, setShowIncorrectStyle] = useState(false);
     const [preHelpAnswers, setPreHelpAnswers] = useState([])
+    const [time, setTime] = useState(0)
+
+    const [restartCount, setRestartCount] = useState(0)
+
+    const {checkServerResponse, getTokens} = useAuth()
 
     const formatTime = (time) => {
         const minutes = Math.floor(time / 60);
@@ -32,9 +38,7 @@ export default function GameQuiz({navigation}) {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
     };
 
-    const TimerComponent = () => {
-        const [time, setTime] = useState(0)
-
+    const TimerComponent = ({time, setTime}) => {
         useEffect(() => {
             const id = setInterval(() => {
                 setTime(prevTime => prevTime + 1)
@@ -51,33 +55,33 @@ export default function GameQuiz({navigation}) {
         )
     }
 
-    const getQuestions = async () => {
-        try {
-            const json = await axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
-                method: "start"
-            }, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
+    const getQuestions = () => {
+        axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
+            method: "start",
+            tokens: getTokens()
+        }, {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        })
+            .then(({data}) => checkServerResponse(data, navigation, false))
+            .then(data => {
+                const shuffledData = data.votes.map((item) => ({
+                    ...item,
+                    answers: shuffleAnswers(item),
+                }));
+                setData(prev => [...prev, ...shuffledData]);
+
+                setTimeout(() => {
+                    setLoading(false);
+                }, 0);
             })
-
-            const shuffledData = json.data.votes.map((item) => ({
-                ...item,
-                answers: shuffleAnswers(item),
-            }));
-            setData(prev => [...prev, ...shuffledData]);
-
-            setTimeout(() => {
-                setLoading(false);
-            }, 0);
-        } catch (err) {
-            navigation.goBack()
-
-            Toast.show({
-                type: "error",
-                text1: "Произошла ошибка, попробуйте позже"
+            .catch(() => {
+                // Toast.show({
+                //     type: "error",
+                //     text1: "Произошла ошибка, попробуйте позже"
+                // })
             })
-        }
     }
 
     useEffect(() => {
@@ -116,6 +120,20 @@ export default function GameQuiz({navigation}) {
             setShowIncorrectStyle(!isCorrect); // Setează stilul "incorrect" dacă răspunsul este greșit
             setIsHelpUsed(false);
             setIsAnswerSubmitted(true);
+
+            axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
+                method: "info",
+                tokens: getTokens(),
+                answer: selected,
+                id: data[0].id,
+                timer: time,
+                tester: restartCount <= 0 && preHelpAnswers.length <= 0 ? 1 : 2,
+                restart: restartCount
+            }, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            })
         }
     };
 
@@ -132,6 +150,19 @@ export default function GameQuiz({navigation}) {
             }
 
             setPreHelpAnswers(prev => [...prev, preHelpAnswers])
+
+            if (restartCount <= 0) {
+                axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
+                    method: "help",
+                    tokens: getTokens(),
+                    id: data[0].id,
+                    timer: time
+                }, {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                })
+            }
         }
     };
 
@@ -141,6 +172,7 @@ export default function GameQuiz({navigation}) {
         setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
         setIsHelpUsed(false);
         setPreHelpAnswers([])
+        setRestartCount(0)
 
         data.splice(0, 1)
 
@@ -159,6 +191,7 @@ export default function GameQuiz({navigation}) {
         setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru a permite repetarea întrebării
         setIsHelpUsed(false);
         setPreHelpAnswers([])
+        setRestartCount(restartCount + 1)
 
         for (let i = data[0].answers.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -208,7 +241,7 @@ export default function GameQuiz({navigation}) {
                     <Text style={[styles.itemTxtNavTop, styles.answerCons]}>14</Text>
                 </View>
 
-                <TimerComponent/>
+                <TimerComponent time={time} setTime={setTime}/>
 
             </View>
             {data.length > 0 && (

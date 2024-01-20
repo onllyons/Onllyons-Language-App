@@ -9,7 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useAuth } from "./screens/ui/AuthProvider";
+import { useAuth } from "./providers/AuthProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import Toast from "react-native-toast-message";

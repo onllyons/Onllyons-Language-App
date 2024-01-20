@@ -1,7 +1,7 @@
 import {StatusBar} from 'expo-status-bar';
 import {Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import * as Haptics from 'expo-haptics';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -13,7 +13,7 @@ import ChangePasswordScreen from './packs/screens-start-app/change-password';
 import PasswordScreen from './packs/screens-start-app/password-request';
 import IntroductionScreen from './packs/screens-start-app/introduction-start';
 
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 import CourseScreen from './packs/course';
 import CourseLesson from './packs/course_lesson';
@@ -36,14 +36,14 @@ import UserSubscriptionChoose from './packs/user-profile/userSubscriptionChoose'
 import UserSubscriptionManage from './packs/user-profile/userSubscriptionManage';
 
 
-import {AuthProvider, useAuth} from "./packs/screens/ui/AuthProvider";
+import {AuthProvider, useAuth} from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import {useEffect, useState} from "react";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const handleTabPress = () => {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 };
 
 
@@ -90,7 +90,7 @@ function MenuFlasCards() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="FlashCardsScreen" component={FlashCardsScreen} options={{headerShown: false}}/>
-            
+
         </Stack.Navigator>
     );
 }
@@ -144,72 +144,72 @@ function MainTabNavigator() {
                     paddingTop: 20,
                 }
             })}
-        >   
-            
+        >
+
             <Tab.Screen
-  name="MenuCourseLesson"
-  component={MenuCourseLesson}
-  options={{ title: "Курс", headerShown: false }}
-  listeners={{
-    tabPress: (e) => {
-      e.preventDefault();
-      handleTabPress();
-      navigation.navigate("MenuCourseLesson");
-    },
-  }}
-/>
+                name="MenuCourseLesson"
+                component={MenuCourseLesson}
+                options={{title: "Курс", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuCourseLesson");
+                    },
+                }}
+            />
 
-<Tab.Screen
-  name="MenuBooksReading"
-  component={MenuBooksReading}
-  options={{ title: "Книги", headerShown: false }}
-  listeners={{
-    tabPress: (e) => {
-      e.preventDefault();
-      handleTabPress();
-      navigation.navigate("MenuBooksReading");
-    },
-  }}
-/>
+            <Tab.Screen
+                name="MenuBooksReading"
+                component={MenuBooksReading}
+                options={{title: "Книги", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuBooksReading");
+                    },
+                }}
+            />
 
-<Tab.Screen
-  name="MenuGames"
-  component={MenuGames}
-  options={{ title: "Играть", headerShown: false }}
-  listeners={{
-    tabPress: (e) => {
-      e.preventDefault();
-      handleTabPress();
-      navigation.navigate("MenuGames");
-    },
-  }}
-/>
+            <Tab.Screen
+                name="MenuGames"
+                component={MenuGames}
+                options={{title: "Играть", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuGames");
+                    },
+                }}
+            />
 
-<Tab.Screen
-  name="MenuFlasCards"
-  component={MenuFlasCards}
-  options={{ title: "Флэш-карты", headerShown: false }}
-  listeners={{
-    tabPress: (e) => {
-      e.preventDefault();
-      handleTabPress();
-      navigation.navigate("MenuFlasCards");
-    },
-  }}
-/>
+            <Tab.Screen
+                name="MenuFlasCards"
+                component={MenuFlasCards}
+                options={{title: "Флэш-карты", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuFlasCards");
+                    },
+                }}
+            />
 
-<Tab.Screen
-  name="UserProfileMenu"
-  component={UserProfileMenu}
-  options={{ title: "Меню", headerShown: false }}
-  listeners={{
-    tabPress: (e) => {
-      e.preventDefault();
-      handleTabPress();
-      navigation.navigate("UserProfileMenu");
-    },
-  }}
-/>
+            <Tab.Screen
+                name="UserProfileMenu"
+                component={UserProfileMenu}
+                options={{title: "Меню", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("UserProfileMenu");
+                    },
+                }}
+            />
 
 
         </Tab.Navigator>
@@ -261,12 +261,16 @@ function AppStack() {
             {/* Place screen here if you need to hide tab bar navigator */}
 
 
-            <Stack.Screen navigationKey="CourseLesson" name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
-            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{  headerShown: false,  cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}/>
+            <Stack.Screen name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
+            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{
+                headerShown: false,
+                cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+            }}/>
 
-            <Stack.Screen name="FlashCardsWordsCategory" component={FlashCardsWordsCategory} options={{  headerShown: false }}/>
-            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{  headerShown: false }}/>
-            <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{  headerShown: false }}/>
+            <Stack.Screen name="FlashCardsWordsCategory" component={FlashCardsWordsCategory}
+                          options={{headerShown: false}}/>
+            <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{headerShown: false}}/>
+            <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
 
         </Stack.Navigator>
     ) : (<></>);

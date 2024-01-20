@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
-import { useAuth } from "./screens/ui/AuthProvider";
+import { useAuth } from "./providers/AuthProvider";
 import globalCss from './css/globalCss';
 
 export default function MenuScreen({ navigation }) {

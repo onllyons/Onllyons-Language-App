@@ -11,7 +11,7 @@ import {
 
 import globalCss from '../css/globalCss';
 import axios from "axios";
-import {useAuth} from "../screens/ui/AuthProvider";
+import {useAuth} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 
@@ -21,7 +21,7 @@ export default function PasswordScreen({navigation}) {
 
     const [loader, setLoader] = useState(false)
 
-    const {getUserToken, isAuthenticated} = useAuth()
+    const {getTokens, isAuthenticated, checkServerResponse} = useAuth()
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator")
@@ -32,32 +32,15 @@ export default function PasswordScreen({navigation}) {
 
         axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/send_reset_mail.php", {
             email: email,
-            token: getUserToken()
+            token: getTokens()["mobileToken"]
         }, {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         })
-            .then(async res => {
-                setLoader(false)
-
-                await new Promise(resolve => setTimeout(resolve, 100))
-
-                const data = res.data
-
-                if (data.success) {
-                    Toast.show({
-                        type: "success",
-                        text1: data.message
-                    });
-                } else {
-                    Toast.show({
-                        type: "error",
-                        text1: data.message
-                    });
-                }
-            })
-            .catch(() => setLoader(false))
+            .then(({data}) => checkServerResponse(data, null, false))
+            .catch(() => {})
+            .finally(() => setTimeout(() => setLoader(false), 1))
     };
 
     return (

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import globalCss from '../css/globalCss';
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import {useAuth} from "../screens/ui/AuthProvider";
+import {useAuth} from "../providers/AuthProvider";
 
 export default function StartPageScreen({ navigation }) {
   const [isPressedContinue, setIsPressedContinue] = useState(false);
