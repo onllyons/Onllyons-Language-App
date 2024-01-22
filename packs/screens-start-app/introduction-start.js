@@ -20,11 +20,17 @@ const ProgressBar = ({currentIndex, totalCount}) => {
     );
 };
 
+
 export default function IntroductionScreen({navigation}) {
     const swiperRef = useRef(null);
     const [isPressedContinue, setIsPressedContinue] = useState(false);
+    const [isPressedLevel1, setIsPressedLevel1] = useState(false);
+    const [isPressedLevel2, setIsPressedLevel2] = useState(false);
+    const [isPressedLevel3, setIsPressedLevel3] = useState(false);
     const [index, setIndex] = useState(0);
-    const totalSlides = 6;
+    const totalSlides = 7;
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
 
     const [loader, setLoader] = useState(false)
 
@@ -43,21 +49,29 @@ export default function IntroductionScreen({navigation}) {
         name: ""
     })
 
+    const handleRightButtonPress = useCallback(() => {
+        if (index === totalSlides) {
+          // Dacă s-a ajuns la ultimul slide, afișează modalul
+          setIsModalVisible(true);
+        } else {
+          swiperRef.current?.scrollBy(1);
+        }
+      }, [index]);
+
+      const handleCloseModal = () => {
+        // Funcție pentru a închide modalul
+        setIsModalVisible(false);
+      };
+
     const handleBackButtonPress = () => {
         navigation.goBack();
     };
 
     const handleSlideChange = useCallback((newIndex) => {
-        console.log('Slide schimbat la indexul:', newIndex);
-
         if (newIndex < 0) swiperRef.current?.scrollTo(0);
-        else if (newIndex >= 6) swiperRef.current?.scrollTo(5);
+        else if (newIndex >= 7) swiperRef.current?.scrollTo(5);
 
         setIndex(newIndex);
-    }, []);
-
-    const handleRightButtonPress = useCallback(() => {
-        swiperRef.current?.scrollBy(1);
     }, []);
 
     const handleRegister = () => {
@@ -91,7 +105,7 @@ export default function IntroductionScreen({navigation}) {
 
     return (
         <LinearGradient
-            colors={['#5ed472', '#4ac35f', '#31b048']}
+            colors={['white', 'white', 'white']}
             locations={[0, 0.6, 1]}
             start={[0, 0]}
             end={[Math.cos(Math.PI / 12), 1]}
@@ -121,43 +135,87 @@ export default function IntroductionScreen({navigation}) {
                     </View>
 
                     <Image
-                        source={require('../images/maket-1.png')}
+                        source={require('../images/El/hello.png')}
                         style={styles.image}
                     />
                 </View>
-                <View style={styles.slide}>
+                <View style={styles.slideLevel}>
                     <View style={styles.slideFormInp}>
-
+                        <Image
+                            source={require('../images/El/regIm.png')}
+                            style={styles.imageReg}
+                        />
+                        
                         <View>
                             <TouchableOpacity
-                                style={[styles.button, userData.selectedLevel === 0 && styles.selectedButton]}
+                                style={[ globalCss.buttonRow,
+                                         isPressedLevel1
+                                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                                             : globalCss.buttonGry1,
+                                         userData.selectedLevel === 0 && styles.selectedButton]}
+                                onPressIn={() => setIsPressedLevel1(true)}
+                                onPressOut={() => setIsPressedLevel1(false)}
+                                activeOpacity={1}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 0}))}
-                            >
-                                <Text style={styles.buttonText}>Beginner</Text>
+                            >   
+                            <Image
+                                source={require('../images/icon/level1.png')}
+                                style={styles.imageRegLevel}
+                            />
+                                <Text style={styles.buttonText}>Я знаю некоторые слова и фразы</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.button, userData.selectedLevel === 1 && styles.selectedButton]}
+                            style={[ globalCss.buttonRow,
+                                         isPressedLevel2
+                                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                                             : globalCss.buttonGry1,
+                                         userData.selectedLevel === 1 && styles.selectedButton]}
+
+                                onPressIn={() => setIsPressedLevel2(true)}
+                                onPressOut={() => setIsPressedLevel2(false)}
+                                activeOpacity={1}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 1}))}
                             >
-                                <Text style={styles.buttonText}>Intermediate</Text>
+                            <Image
+                                source={require('../images/icon/level2.png')}
+                                style={styles.imageRegLevel}
+                            />
+                                <Text style={styles.buttonText}>Я могу вести простой разговор</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.button, userData.selectedLevel === 2 && styles.selectedButton]}
+                            style={[ globalCss.buttonRow,
+                                         isPressedLevel3
+                                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                                             : globalCss.buttonGry1,
+                                         userData.selectedLevel === 2 && styles.selectedButton]}
+
+                                onPressIn={() => setIsPressedLevel3(true)}
+                                onPressOut={() => setIsPressedLevel3(false)}
+                                activeOpacity={1}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 2}))}
                             >
-                                <Text style={styles.buttonText}>Advanced</Text>
+                            <Image
+                                source={require('../images/icon/level3.png')}
+                                style={styles.imageRegLevel}
+                            />
+                                <Text style={styles.buttonText}>У меня средний уровень или выше</Text>
                             </TouchableOpacity>
                         </View>
 
 
                     </View>
                 </View>
-                <View style={styles.slide}>
+                <View style={styles.slideLevel}>
+
+                    <Image
+                        source={require('../images/El/regName.png')}
+                        style={styles.imageRegInp}
+                    />
+
                     <View style={styles.slideFormInp}>
-                        <Text style={styles.titleInput}>name</Text>
                         <View style={styles.inputView}>
                             <TextInput
-                                placeholder="login"
+                                placeholder="Полное имя и фамилия"
                                 placeholderTextColor="#373737"
                                 style={globalCss.input}
                                 value={userData.name}
@@ -166,12 +224,13 @@ export default function IntroductionScreen({navigation}) {
                         </View>
                     </View>
                 </View>
-                <View style={styles.slide}>
+                <View style={styles.slideLevel}>
+
                     <View style={styles.slideFormInp}>
-                        <Text style={styles.titleInput}>surname</Text>
+                        <Text style={styles.titleInput}>surname delete slide</Text>
                         <View style={styles.inputView}>
                             <TextInput
-                                placeholder="login"
+                                placeholder="surname delete slide"
                                 placeholderTextColor="#373737"
                                 style={globalCss.input}
                                 value={userData.surname}
@@ -180,12 +239,17 @@ export default function IntroductionScreen({navigation}) {
                         </View>
                     </View>
                 </View>
-                <View style={styles.slide}>
+                <View style={styles.slideLevel}>
+
+                    <Image
+                        source={require('../images/El/regLog.png')}
+                        style={styles.imageRegInp}
+                    />
+
                     <View style={styles.slideFormInp}>
-                        <Text style={styles.titleInput}>username</Text>
                         <View style={styles.inputView}>
                             <TextInput
-                                placeholder="login"
+                                placeholder="Минимум 5 букв в логине"
                                 placeholderTextColor="#373737"
                                 style={globalCss.input}
                                 value={userData.username}
@@ -194,12 +258,17 @@ export default function IntroductionScreen({navigation}) {
                         </View>
                     </View>
                 </View>
-                <View style={styles.slide}>
+                <View style={styles.slideLevel}>
+
+                    <Image
+                        source={require('../images/El/regEmail.png')}
+                        style={styles.imageRegInp}
+                    />
+
                     <View style={styles.slideFormInp}>
-                        <Text style={styles.titleInput}>email</Text>
                         <View style={styles.inputView}>
                             <TextInput
-                                placeholder="login"
+                                placeholder="Не забудьте подтвердить его позже"
                                 placeholderTextColor="#373737"
                                 style={globalCss.input}
                                 value={userData.email}
@@ -208,34 +277,45 @@ export default function IntroductionScreen({navigation}) {
                         </View>
                     </View>
                 </View>
-                <View style={styles.slide}>
+                <View style={styles.slideLevel}>
+
+                    <Image
+                        source={require('../images/El/regPass.png')}
+                        style={styles.imageRegInp}
+                    />
+
                     <View style={styles.slideFormInp}>
-                        <Text style={styles.titleInput}>passwords</Text>
                         <View style={styles.inputView}>
                             <TextInput
-                                placeholder="login"
+                                placeholder="Создайте пароль для регистрации"
                                 placeholderTextColor="#373737"
                                 style={globalCss.input}
                                 value={userData.password}
                                 onChangeText={val => setUserData(prev => ({...prev, password: val}))}
                             />
                         </View>
-                        <TouchableOpacity
-                            style={[globalCss.button, globalCss.buttonWhite]}
-                            activeOpacity={1}
-                            onPress={handleRegister}
-                        >
-                            <Text
-                                style={[globalCss.buttonTextGreen, globalCss.textUpercase]}>Зарегистрироваться</Text>
-                        </TouchableOpacity>
+                        
                     </View>
                 </View>
+
+               
             </Swiper>
             <SwiperButtonsContainer
                 onRightPress={handleRightButtonPress}
                 isPressedContinue={isPressedContinue}
                 setIsPressedContinue={setIsPressedContinue}
             />
+
+            {isModalVisible && (
+                <View style={styles.modalContainer}>
+                    <Image
+                        source={require("../images/El/logoStart.png")}
+                        style={styles.logoEl}
+                    />
+                    
+                </View>
+            )}
+
         </LinearGradient>
     );
 }
@@ -243,13 +323,13 @@ export default function IntroductionScreen({navigation}) {
 const SwiperButtonsContainer = ({onRightPress, isPressedContinue, setIsPressedContinue}) => (
     <View style={styles.swiperButtonsContainer}>
         <TouchableOpacity
-            style={[globalCss.button, isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedWhite] : globalCss.buttonWhite]}
+            style={[globalCss.button, isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedPurple] : globalCss.buttonPurple]}
             onPress={onRightPress}
             onPressIn={() => setIsPressedContinue(true)}
             onPressOut={() => setIsPressedContinue(false)}
             activeOpacity={1}
         >
-            <Text style={[globalCss.buttonTextGreen, globalCss.textUpercase]}>Продолжить</Text>
+            <Text style={[globalCss.buttonText, globalCss.textUpercase]}>Продолжить</Text>
         </TouchableOpacity>
     </View>
 );
@@ -273,11 +353,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    slideLevel: {
+        flex: 1,
+    },
     containerText: {
         width: '80%',
     },
     text: {
-        color: 'white',
+        color: '#212121',
         fontSize: 30,
         fontWeight: 'bold',
         textAlign: 'center'
@@ -297,7 +380,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'red',
         width: '14%',
         paddingLeft: '2%',
         paddingRight: '1%',
@@ -305,9 +387,11 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     image: {
-        width: '50%',
-        height: '50%',
-        objectFit: 'contain',
+        width: '90%',
+        height: '60%',
+        marginTop: 20,
+        alignSelf: 'center',
+        resizeMode: 'contain'
     },
     slideFormInp: {
         width: '100%',
@@ -332,30 +416,62 @@ const styles = StyleSheet.create({
         paddingBottom: 17,
         paddingTop: 17,
     },
-
+    imageRegInp:{
+        width: '90%',
+        height: '27%',
+        marginTop: 10,
+        alignSelf: 'center',
+        marginBottom: 40,
+        resizeMode: 'contain'
+    },
     swiperButtonsContainer: {
         flexDirection: 'column',
         justifyContent: 'flex-end',
         paddingHorizontal: 20,
         marginTop: 10,
     },
-
-
+    imageReg:{
+        width: '97%',
+        height: '27%',
+        marginTop: 10,
+        marginBottom: 40,
+        resizeMode: 'contain'
+    },
     button: {
-        paddingHorizontal: 20,
-        paddingVertical: 30,
-        marginRight: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 20,
         marginBottom: 20,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 14,
     },
     selectedButton: {
-        backgroundColor: '#007BFF',
-        borderColor: '#007BFF',
+        backgroundColor: '#d6d6d6',
     },
     buttonText: {
+        width: '80%',
+        marginLeft: 18,
         color: '#333',
-        fontSize: 26,
-    }
+        fontSize: 19,
+    },
+    imageRegLevel:{
+        width: '15%',
+        resizeMode: 'contain'
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
+    logoEl:{
+        width: '60%',
+        height: '60%',
+        resizeMode: 'contain'
+    },
+
+
+
 });

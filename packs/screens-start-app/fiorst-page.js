@@ -53,7 +53,6 @@ export default function StartPageScreen({ navigation }) {
           <Text style={globalCss.buttonText}>НАЧАТЬ</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('MainTabNavigator')}><Text>home</Text></TouchableOpacity>
     </View>
   );
 }

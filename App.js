@@ -1,8 +1,9 @@
 import {StatusBar} from 'expo-status-bar';
-import {Image} from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import * as Haptics from 'expo-haptics';
+import {DotIndicator} from "react-native-indicators";
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -46,6 +47,25 @@ const handleTabPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 };
 
+const WelcomeScreen = ({ onFinished }) => {
+    useEffect(() => {
+        setTimeout(() => {
+            onFinished();
+        }, 2000);
+    }, []);
+
+    return (
+        <View style={styles.container}>
+            <Image
+                source={require("./packs/images/El/logoStart.png")}
+                style={styles.logoEl}
+            />
+            <View style={styles.loaderContainer}>
+                <DotIndicator color="#6949FF" size={20} count={3}/>
+            </View>
+        </View>
+    );
+};
 
 function UserProfileMenu() {
     return (
@@ -312,15 +332,44 @@ const toastConfig = {
 };
 
 export default function App() {
+    const [loading, setLoading] = useState(true);
+
     return (
         <>
-            <AuthProvider>
-                <NavigationContainer>
-                    <AppStack/>
-                    <StatusBar style="auto"/>
-                </NavigationContainer>
-            </AuthProvider>
+            {loading ? (
+                <WelcomeScreen onFinished={() => setLoading(false)} />
+            ) : (
+                <AuthProvider>
+                    <NavigationContainer>
+                        <AppStack/>
+                        <StatusBar style="auto"/>
+                    </NavigationContainer>
+                </AuthProvider>
+            )}
             <Toast position="bottom" config={toastConfig} onPress={() => Toast.hide()}/>
         </>
     );
 }
+
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
+    logoEl:{
+        width: '60%',
+        height: '60%',
+        resizeMode: 'contain'
+    },
+    loaderContainer: {
+        position: "absolute",
+        bottom: "7%",
+        left: 0,
+        right: 0,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+});

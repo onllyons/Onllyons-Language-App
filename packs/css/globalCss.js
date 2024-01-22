@@ -103,6 +103,19 @@ const globalCss = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
   },
+  buttonRow:{
+    width: '100%',
+    flexDirection: 'row',
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    borderRadius: 14,
+    marginBottom: 20,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+  },
   button:{
     width: '100%',
     paddingVertical: 18,
@@ -123,9 +136,9 @@ const globalCss = StyleSheet.create({
     backgroundColor: '#1cb0f6',
     shadowColor: '#368fc3',
   },
-  buttonBlue: {
-    backgroundColor: '#1cb0f6',
-    shadowColor: '#368fc3',
+  buttonPurple: {
+    backgroundColor: '#6949FF',
+    shadowColor: '#4631A8',
   },
   buttonWhite: {
     backgroundColor: '#ffffff',
@@ -135,12 +148,19 @@ const globalCss = StyleSheet.create({
     backgroundColor: '#f1f0f0',
     shadowColor: '#cbcbcb',
   },
+  buttonGry1: {
+    backgroundColor: '#f3f3f3',
+    shadowColor: '#c5c5c5',
+  },
   buttonGreen: {
     backgroundColor: '#57cc04',
     shadowColor: '#62a10a',
   },
   buttonPressedBlue: {
     backgroundColor: '#1cb0f6',
+  },
+  buttonPressedPurple: {
+    backgroundColor: '#6949FF',
   },
   buttonPressedWhite: {
     backgroundColor: '#ffffff',
