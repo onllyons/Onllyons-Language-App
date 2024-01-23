@@ -6,7 +6,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
-import {useAuth} from "../providers/AuthProvider";
+import {isAuthenticated, login, useAuth} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
@@ -28,13 +28,11 @@ export default function IntroductionScreen({navigation}) {
     const [isPressedLevel2, setIsPressedLevel2] = useState(false);
     const [isPressedLevel3, setIsPressedLevel3] = useState(false);
     const [index, setIndex] = useState(0);
-    const totalSlides = 7;
+    const totalSlides = 6;
     const [isModalVisible, setIsModalVisible] = useState(false);
 
 
     const [loader, setLoader] = useState(false)
-
-    const {isAuthenticated, login, getTokens, checkServerResponse} = useAuth();
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator")
@@ -43,7 +41,6 @@ export default function IntroductionScreen({navigation}) {
     const [userData, setUserData] = useState({
         selectedLevel: 0,
         password: "",
-        surname: "",
         username: "",
         email: "",
         name: ""
@@ -87,7 +84,8 @@ export default function IntroductionScreen({navigation}) {
 
             sendDefaultRequest(`${SERVER_AJAX_URL}/user_signup.php`,
                 {...userData},
-                navigation
+                navigation,
+                {success: false}
             )
                 .then(async data => {
                     await login(data.userData, data.tokens)
@@ -215,21 +213,6 @@ export default function IntroductionScreen({navigation}) {
                                 style={globalCss.input}
                                 value={userData.name}
                                 onChangeText={val => setUserData(prev => ({...prev, name: val}))}
-                            />
-                        </View>
-                    </View>
-                </View>
-                <View style={styles.slideLevel}>
-
-                    <View style={styles.slideFormInp}>
-                        <Text style={styles.titleInput}>surname delete slide</Text>
-                        <View style={styles.inputView}>
-                            <TextInput
-                                placeholder="surname delete slide"
-                                placeholderTextColor="#373737"
-                                style={globalCss.input}
-                                value={userData.surname}
-                                onChangeText={val => setUserData(prev => ({...prev, surname: val}))}
                             />
                         </View>
                     </View>

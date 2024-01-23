@@ -38,7 +38,8 @@ export default function LoginScreen({navigation}) {
 
             sendDefaultRequest(`${SERVER_AJAX_URL}/user_login.php`,
                 {...userData},
-                navigation
+                navigation,
+                {success: false}
             )
                 .then(async data => {
                     await login(data.userData, data.tokens)
