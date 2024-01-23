@@ -37,7 +37,7 @@ import UserSubscriptionChoose from './packs/user-profile/userSubscriptionChoose'
 import UserSubscriptionManage from './packs/user-profile/userSubscriptionManage';
 
 
-import {AuthProvider, useAuth} from "./packs/providers/AuthProvider";
+import {AuthProvider, isAuthenticated, setSuccessCallback} from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import {useEffect, useState} from "react";
 
@@ -45,26 +45,6 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const handleTabPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-};
-
-const WelcomeScreen = ({ onFinished }) => {
-    useEffect(() => {
-        setTimeout(() => {
-            onFinished();
-        }, 2000);
-    }, []);
-
-    return (
-        <View style={styles.container}>
-            <Image
-                source={require("./packs/images/El/logoStart.png")}
-                style={styles.logoEl}
-            />
-            <View style={styles.loaderContainer}>
-                <DotIndicator color="#6949FF" size={20} count={3}/>
-            </View>
-        </View>
-    );
 };
 
 function UserProfileMenu() {
@@ -238,7 +218,6 @@ function MainTabNavigator() {
 
 
 function AppStack() {
-    const {isAuthenticated, setSuccessCallback} = useAuth()
     const [callbackComplete, setCallbackComplete] = useState(false)
 
     useEffect(() => {
@@ -332,44 +311,15 @@ const toastConfig = {
 };
 
 export default function App() {
-    const [loading, setLoading] = useState(true);
-
     return (
         <>
-            {loading ? (
-                <WelcomeScreen onFinished={() => setLoading(false)} />
-            ) : (
-                <AuthProvider>
-                    <NavigationContainer>
-                        <AppStack/>
-                        <StatusBar style="auto"/>
-                    </NavigationContainer>
-                </AuthProvider>
-            )}
+            <AuthProvider>
+                <NavigationContainer>
+                    <AppStack/>
+                    <StatusBar style="auto"/>
+                </NavigationContainer>
+            </AuthProvider>
             <Toast position="bottom" config={toastConfig} onPress={() => Toast.hide()}/>
         </>
     );
 }
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-    },
-    logoEl:{
-        width: '60%',
-        height: '60%',
-        resizeMode: 'contain'
-    },
-    loaderContainer: {
-        position: "absolute",
-        bottom: "7%",
-        left: 0,
-        right: 0,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-});

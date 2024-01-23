@@ -10,11 +10,10 @@ import {
 } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
-import { useAuth } from "../providers/AuthProvider";
 import globalCss from "../css/globalCss";
+import {getUser, isAuthenticated} from "../providers/AuthProvider";
 
 const Profile = () => {
-  const { isAuthenticated, getUser, logout } = useAuth();
   const user = getUser();
   const navigation = useNavigation();
   return (

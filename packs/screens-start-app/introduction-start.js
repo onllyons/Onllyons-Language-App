@@ -6,10 +6,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
-import axios from "axios";
-import {useAuth} from "../providers/AuthProvider";
+import {isAuthenticated, login, useAuth} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 
 const ProgressBar = ({currentIndex, totalCount}) => {
     const progress = (currentIndex + 1) / totalCount;
@@ -28,12 +28,16 @@ export default function IntroductionScreen({navigation}) {
     const [isPressedLevel2, setIsPressedLevel2] = useState(false);
     const [isPressedLevel3, setIsPressedLevel3] = useState(false);
     const [index, setIndex] = useState(0);
+<<<<<<< HEAD
     const [isLastSlide, setIsLastSlide] = useState(false);
     const totalSlides = 8;
+=======
+    const totalSlides = 6;
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+>>>>>>> aeecf29116dbae417b3e3d0ac1b78f5cb3511b93
 
     const [loader, setLoader] = useState(false)
-
-    const {isAuthenticated, login, getTokens, checkServerResponse} = useAuth();
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator")
@@ -42,7 +46,6 @@ export default function IntroductionScreen({navigation}) {
     const [userData, setUserData] = useState({
         selectedLevel: 0,
         password: "",
-        surname: "",
         username: "",
         email: "",
         name: ""
@@ -81,15 +84,11 @@ const handleSlideChange = useCallback((newIndex) => {
         } else {
             setLoader(true)
 
-            axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user_signup.php", {
-                ...userData,
-                token: getTokens()["mobileToken"]
-            }, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            })
-                .then(({data}) => checkServerResponse(data, null, false))
+            sendDefaultRequest(`${SERVER_AJAX_URL}/user_signup.php`,
+                {...userData},
+                navigation,
+                {success: false}
+            )
                 .then(async data => {
                     await login(data.userData, data.tokens)
                     navigation.navigate('MainTabNavigator')
@@ -216,21 +215,6 @@ const handleSlideChange = useCallback((newIndex) => {
                                 style={globalCss.input}
                                 value={userData.name}
                                 onChangeText={val => setUserData(prev => ({...prev, name: val}))}
-                            />
-                        </View>
-                    </View>
-                </View>
-                <View style={styles.slideLevel}>
-
-                    <View style={styles.slideFormInp}>
-                        <Text style={styles.titleInput}>surname delete slide</Text>
-                        <View style={styles.inputView}>
-                            <TextInput
-                                placeholder="surname delete slide"
-                                placeholderTextColor="#373737"
-                                style={globalCss.input}
-                                value={userData.surname}
-                                onChangeText={val => setUserData(prev => ({...prev, surname: val}))}
                             />
                         </View>
                     </View>

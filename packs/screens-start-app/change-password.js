@@ -5,9 +5,9 @@ import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
 import Toast from "react-native-toast-message";
-import axios from "axios";
-import {useAuth} from "../providers/AuthProvider";
+import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 
 export default function ChangePasswordScreen({navigation}) {
     const [PressSignIn, setPressSignIn] = useState(false);
@@ -19,8 +19,6 @@ export default function ChangePasswordScreen({navigation}) {
         new_password: "",
         confirm_password: ""
     })
-
-    const {isAuthenticated, getTokens, checkServerResponse} = useAuth();
 
     useEffect(() => {
         if (!isAuthenticated()) navigation.navigate("StartPageScreen")
@@ -43,15 +41,10 @@ export default function ChangePasswordScreen({navigation}) {
         } else {
             setLoader(true)
 
-            axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/change_password.php", {
-                ...data,
-                tokens: getTokens()
-            }, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            })
-                .then(({data}) => checkServerResponse(data, navigation))
+            sendDefaultRequest(`${SERVER_AJAX_URL}/change_password.php`,
+                {...data},
+                navigation
+            )
                 .then(() => navigation.navigate('MainTabNavigator'))
                 .catch(() => {})
                 .finally(() => setTimeout(() => setLoader(false), 1))
