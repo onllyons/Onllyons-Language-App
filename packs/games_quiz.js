@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {View, Text, StyleSheet, Image, TouchableOpacity} from "react-native";
 import {LinearGradient} from "expo-linear-gradient";
 import {DotIndicator} from "react-native-indicators"; // Importați DotIndicator sau alt tip de indicator dorit
@@ -14,8 +14,9 @@ import globalCss from "./css/globalCss";
 import SelectAnswer from "./components/games/SelectAnswer";
 import Buttons from "./components/games/Buttons";
 import axios from "axios";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import {Loader} from "./components/games/Loader";
 import Toast from "react-native-toast-message";
-import {useAuth} from "./providers/AuthProvider";
 
 export default function GameQuiz({navigation}) {
     const [data, setData] = useState([]);
@@ -26,11 +27,15 @@ export default function GameQuiz({navigation}) {
     const [isHelpUsed, setIsHelpUsed] = useState(false);
     const [showIncorrectStyle, setShowIncorrectStyle] = useState(false);
     const [preHelpAnswers, setPreHelpAnswers] = useState([])
-    const [time, setTime] = useState(0)
+    const stats = useRef({
+        time: 0,
+        series: 0,
+        rating: 0,
+        additionalRating: 0
+    })
+    const blocked = useRef(false)
 
     const [restartCount, setRestartCount] = useState(0)
-
-    const {checkServerResponse, getTokens} = useAuth()
 
     const formatTime = (time) => {
         const minutes = Math.floor(time / 60);
@@ -38,10 +43,18 @@ export default function GameQuiz({navigation}) {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
     };
 
-    const TimerComponent = ({time, setTime}) => {
+    const TimerComponent = () => {
+        const [timer, setTimer] = useState(stats.current.time)
+
         useEffect(() => {
             const id = setInterval(() => {
-                setTime(prevTime => prevTime + 1)
+                if (selectedAnswer !== null || preHelpAnswers.length > 0) {
+                    clearInterval(id)
+                    return
+                }
+
+                setTimer(prev => prev += 1)
+                stats.current.time += 1
             }, 1000);
 
             return () => clearInterval(id)
@@ -50,37 +63,55 @@ export default function GameQuiz({navigation}) {
         return (
             <View style={[styles.itemNavTop, styles.itemClock]}>
                 <FontAwesomeIcon icon={faClock} size={26} style={styles.faTrophy}/>
-                <Text style={[styles.itemTxtNavTop, styles.itemClockTxt]}>{formatTime(time)}</Text>
+                <Text style={[styles.itemTxtNavTop, styles.itemClockTxt]}>{formatTime(timer)}</Text>
             </View>
         )
     }
 
+    const checkBlocked = () => {
+        if (blocked.current) {
+            Toast.show({
+                type: "error",
+                text1: "Достигнуто доступное количество бесплатных тестов"
+            });
+        }
+    }
+
     const getQuestions = () => {
-        axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
-            method: "start",
-            tokens: getTokens()
-        }, {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+        sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
+            {
+                method: "start",
+                excludedIds: data.map(obj => obj.id)
             },
-        })
-            .then(({data}) => checkServerResponse(data, navigation, false))
+            navigation,
+            {success: false}
+        )
             .then(data => {
+                stats.current.rating = data.rating
+
+                if (data.action === "openModalMembership") {
+                    blocked.current = true
+                } else {
+                    blocked.current = false
+                }
+
                 const shuffledData = data.votes.map((item) => ({
                     ...item,
                     answers: shuffleAnswers(item),
                 }));
-                setData(prev => [...prev, ...shuffledData]);
-
+                setData(shuffledData);
+            })
+            .catch((err) => {
+                if (typeof err === "object") {
+                    if (!err.tokensError) {
+                        navigation.goBack()
+                    }
+                }
+            })
+            .finally(() => {
                 setTimeout(() => {
                     setLoading(false);
                 }, 0);
-            })
-            .catch(() => {
-                // Toast.show({
-                //     type: "error",
-                //     text1: "Произошла ошибка, попробуйте позже"
-                // })
             })
     }
 
@@ -110,6 +141,11 @@ export default function GameQuiz({navigation}) {
     };
 
     const handleAnswerSelect = (selected, item) => {
+        if (blocked.current) {
+            checkBlocked()
+            return
+        }
+
         if (preHelpAnswers.indexOf(selected) !== -1 || isHelpUsed) return
 
         if (!isAnswerSubmitted) {
@@ -121,23 +157,50 @@ export default function GameQuiz({navigation}) {
             setIsHelpUsed(false);
             setIsAnswerSubmitted(true);
 
-            axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
-                method: "info",
-                tokens: getTokens(),
-                answer: selected,
-                id: data[0].id,
-                timer: time,
-                tester: restartCount <= 0 && preHelpAnswers.length <= 0 ? 1 : 2,
-                restart: restartCount
-            }, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
+            if (restartCount <= 0 && preHelpAnswers.length <= 0 && !isHelpUsed) {
+                if (isCorrect) {
+                    const timePercent = stats.current.time / data[0].time * 100;
+                    let bonusRating = 0
+
+                    if (timePercent <= 33) bonusRating = 3;
+                    else if (timePercent <= 66) bonusRating = 2;
+                    else if (timePercent <= 100) bonusRating = 1;
+
+                    stats.current.additionalRating = data[0].rating_add + bonusRating
+                    stats.current.rating += data[0].rating_add + bonusRating
+                    stats.current.series++
+                } else {
+                    const lastRating = stats.current.rating
+                    stats.current.rating -= data[0].rating_minus
+                    stats.current.series = 0
+
+                    if (stats.current.rating < 300) stats.current.rating = 300
+
+                    stats.current.additionalRating = -(lastRating - stats.current.rating)
+                }
+            }
+
+            sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
+                {
+                    method: "info",
+                    answer: selected,
+                    id: data[0].id,
+                    timer: stats.current.time,
+                    tester: restartCount <= 0 && preHelpAnswers.length <= 0 ? 1 : 2,
+                    restart: restartCount
                 },
-            })
+                navigation,
+                {success: false}
+            )
         }
     };
 
     const handleHelp = () => {
+        if (blocked.current) {
+            checkBlocked()
+            return
+        }
+
         if (preHelpAnswers.length > 0) {
             setIsHelpUsed(true);
             setShowIncorrectStyle(false); // Resetează stilul "incorrect"
@@ -152,16 +215,23 @@ export default function GameQuiz({navigation}) {
             setPreHelpAnswers(prev => [...prev, preHelpAnswers])
 
             if (restartCount <= 0) {
-                axios.post("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/games/game_default/game.php", {
-                    method: "help",
-                    tokens: getTokens(),
-                    id: data[0].id,
-                    timer: time
-                }, {
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
+                const lastRating = stats.current.rating
+                stats.current.rating -= data[0].rating_minus
+                stats.current.series = 0
+
+                if (stats.current.rating < 300) stats.current.rating = 300
+
+                stats.current.additionalRating = -(lastRating - stats.current.rating)
+
+                sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
+                    {
+                        method: "help",
+                        id: data[0].id,
+                        timer: stats.current.time
                     },
-                })
+                    navigation,
+                    {success: false}
+                )
             }
         }
     };
@@ -173,25 +243,33 @@ export default function GameQuiz({navigation}) {
         setIsHelpUsed(false);
         setPreHelpAnswers([])
         setRestartCount(0)
+        stats.current.time = 0
+        stats.current.additionalRating = 0
 
-        data.splice(0, 1)
-
-        setData(data)
-
-        if (data.length <= 0) {
-            setLoading(true)
-        } else if (data.length <= 2) {
+        // data.splice(0, 1)
+        //
+        // setData(data)
+        //
+        // if (data.length <= 0) {
+        //     setLoading(true)
+        // } else if (data.length <= 2) {
             getQuestions()
-        }
+        // }
     };
 
     const handleRepeat = () => {
+        if (blocked.current) {
+            checkBlocked()
+            return
+        }
+
         setSelectedAnswer(null);
         setIsAnswerCorrect(null);
         setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru a permite repetarea întrebării
         setIsHelpUsed(false);
         setPreHelpAnswers([])
         setRestartCount(restartCount + 1)
+        stats.current.time = 0
 
         for (let i = data[0].answers.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -203,22 +281,7 @@ export default function GameQuiz({navigation}) {
 
     if (loading) {
         // Dacă datele sunt în proces de încărcare, afișați pagina cu fundal galben și textul corespunzător
-        return (
-            <LinearGradient
-                colors={["#8f69cc", "#8f69cc"]}
-                style={styles.startContent}
-            >
-                <Image
-                    source={require("./images/other_images/quiz-logo.png")}
-                    style={styles.logoQuiz}
-                />
-                <Text style={styles.textContainerMess}>Quiz Time</Text>
-
-                <View style={styles.loaderContainer}>
-                    <DotIndicator color="white" size={30} count={3}/>
-                </View>
-            </LinearGradient>
-        );
+        return (<Loader/>);
     }
 
     return (
@@ -232,16 +295,21 @@ export default function GameQuiz({navigation}) {
 
                 <View style={[styles.itemNavTop, styles.itemRatingGen]}>
                     <FontAwesomeIcon icon={faTrophy} size={26} style={styles.faTrophy}/>
-                    <Text style={styles.itemTxtNavTop}>1124</Text>
-                    <Text style={[styles.itemTxtNavTop, styles.itemBonus]}>0</Text>
+                    <Text style={styles.itemTxtNavTop}>{stats.current.rating}</Text>
+                    {stats.current.additionalRating !== 0 &&
+                        <Text style={[
+                            styles.itemTxtNavTop,
+                            stats.current.additionalRating > 0 ? styles.ratingPlus : styles.ratingMinus
+                        ]}>{stats.current.additionalRating > 0 ? "+" : ""}{stats.current.additionalRating}</Text>
+                    }
                 </View>
 
                 <View style={[styles.itemNavTop, styles.itemConsecutive]}>
                     <FontAwesomeIcon icon={faFire} size={26} style={styles.faTrophy}/>
-                    <Text style={[styles.itemTxtNavTop, styles.answerCons]}>14</Text>
+                    <Text style={[styles.itemTxtNavTop, styles.answerCons]}>{stats.current.series}</Text>
                 </View>
 
-                <TimerComponent time={time} setTime={setTime}/>
+                <TimerComponent/>
 
             </View>
             {data.length > 0 && (
@@ -259,29 +327,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white",
-    },
-    startContent: {
-        flex: 1,
-        justifyContent: "center",
-    },
-    loaderContainer: {
-        position: "absolute",
-        bottom: "5%",
-        left: 0,
-        right: 0,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    textContainerMess: {
-        fontSize: 24,
-        textAlign: "center",
-        color: "#E4D3FF",
-    },
-    logoQuiz: {
-        width: 140,
-        height: 140,
-        alignSelf: "center",
-        marginBottom: "2.9%",
     },
     sectionTop: {
         width: "100%",
@@ -334,9 +379,12 @@ const styles = StyleSheet.create({
         minWidth: '15%',
     },
 
-    itemBonus: {
-        // color: '#ca3431',
+    ratingPlus: {
         color: '#81b344',
+        fontWeight: '700'
+    },
+    ratingMinus: {
+        color: '#ca3431',
         fontWeight: '700'
     },
     answerCons: {

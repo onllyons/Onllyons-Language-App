@@ -4,11 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
-import { useAuth } from "./providers/AuthProvider";
+import {getUser, isAuthenticated, logout} from "./providers/AuthProvider";
 import globalCss from './css/globalCss';
+import Toast from "react-native-toast-message";
 
 export default function MenuScreen({ navigation }) {
-  const { isAuthenticated, getUser, logout } = useAuth();
   const user = getUser();
   const [BtnLoggOut, setBtnLoggOut] = useState(false);
 

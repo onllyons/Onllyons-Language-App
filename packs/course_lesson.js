@@ -16,6 +16,7 @@ import Toast from "react-native-toast-message";
 import {ResizeMode, Video, Audio} from "expo-av";
 import {useRoute} from "@react-navigation/native";
 import {useAuth} from "./providers/AuthProvider";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 
 const {width} = Dimensions.get("window");
 
@@ -40,8 +41,6 @@ export default function CourseLessonQuiz({navigation}) {
     const [seriesElements, setSeriesElements] = useState([])
     const [sound, setSound] = useState();
 
-    const {checkServerResponse, getTokens} = useAuth()
-
     const handleBackButtonPress = () => {
         navigation.goBack();
     };
@@ -57,16 +56,14 @@ export default function CourseLessonQuiz({navigation}) {
     const updateSlider = (series) => {
         setCurrentSeries(series)
 
-        axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/course/get_carousel_and_test.php", {
-            url: url,
-            series: series,
-            tokens: getTokens()
-        }, {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+        sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_carousel_and_test.php`,
+            {
+                url: url,
+                series: series
             },
-        })
-            .then(({data}) => checkServerResponse(data, navigation))
+            navigation,
+            {success: false}
+        )
             .then((data) => {
                 if (!data.carousel.length && !data.questions.length) {
                     Toast.show({

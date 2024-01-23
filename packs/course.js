@@ -15,9 +15,6 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import Toast from "react-native-toast-message";
 
 export default function CourseScreen({ navigation }) {
-  const { isAuthenticated, getUser, logout } = useAuth();
-  const user = getUser();
-
   const [pressedCards, setPressedCards] = useState({});
   const [data, setData] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -179,16 +176,17 @@ const measureCategoryHeight = (index) => {
 
       <ScrollView
       ref={scrollViewRef}
-        onScroll={handleScroll}
+        // onScroll={handleScroll}
         scrollEventThrottle={16}
         contentContainerStyle={{ paddingTop: 190, paddingBottom: 20 }}
         style={styles.bgCourse}
         onScroll={({ nativeEvent }) => {
+          handleScroll()
           if (isCloseToBottom(nativeEvent)) {
             loadNextCategory();
           }
         }}
-        scrollEventThrottle={400}
+        // scrollEventThrottle={400}
       > 
 
         

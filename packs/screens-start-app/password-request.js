@@ -10,18 +10,15 @@ import {
 } from 'react-native';
 
 import globalCss from '../css/globalCss';
-import axios from "axios";
-import {useAuth} from "../providers/AuthProvider";
+import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
-import Toast from "react-native-toast-message";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 
 export default function PasswordScreen({navigation}) {
     const [email, setEmail] = useState("");
     const [pressSignIn, setPressSignIn] = useState(false);
 
     const [loader, setLoader] = useState(false)
-
-    const {getTokens, isAuthenticated, checkServerResponse} = useAuth()
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator")
@@ -30,15 +27,10 @@ export default function PasswordScreen({navigation}) {
     const handleRequestPassword = () => {
         setLoader(true)
 
-        axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/send_reset_mail.php", {
-            email: email,
-            token: getTokens()["mobileToken"]
-        }, {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-        })
-            .then(({data}) => checkServerResponse(data, null, false))
+        sendDefaultRequest(`${SERVER_AJAX_URL}/send_reset_mail.php`,
+            {email: email},
+            navigation
+        )
             .catch(() => {})
             .finally(() => setTimeout(() => setLoader(false), 1))
     };
