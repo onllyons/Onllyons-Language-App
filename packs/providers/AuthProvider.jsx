@@ -1,10 +1,9 @@
-import React, {createContext, useContext, useMemo, useRef, useState} from 'react';
+import React, {createContext, useContext, useMemo, useState} from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import axios from "axios";
-import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
-import {WelcomeScreen} from "../components/WelcomeScreen";
+import {Welcome} from "../components/Welcome";
 
 const AuthContext = createContext("user context doesnt exists");
 
@@ -164,7 +163,7 @@ export const AuthProvider = ({children}) => {
 
     return (
         <AuthContext.Provider value={{isAuthenticated, getUser, getTokens, login, logout, setSuccessCallback, setTokens}}>
-            {loader ? <WelcomeScreen/> : children}
+            {loader ? <Welcome/> : children}
         </AuthContext.Provider>
     );
 };

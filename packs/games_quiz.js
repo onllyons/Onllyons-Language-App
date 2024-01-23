@@ -1,7 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
-import {View, Text, StyleSheet, Image, TouchableOpacity} from "react-native";
-import {LinearGradient} from "expo-linear-gradient";
-import {DotIndicator} from "react-native-indicators"; // Importați DotIndicator sau alt tip de indicator dorit
+import {View, Text, StyleSheet, TouchableOpacity} from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {
     faTrophy,
@@ -11,12 +9,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import globalCss from "./css/globalCss";
-import SelectAnswer from "./components/games/SelectAnswer";
+import Answers from "./components/games/Answers";
 import Buttons from "./components/games/Buttons";
-import axios from "axios";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
-import Toast from "react-native-toast-message";
 
 export default function GameQuiz({navigation}) {
     const [data, setData] = useState([]);
@@ -70,10 +66,7 @@ export default function GameQuiz({navigation}) {
 
     const checkBlocked = () => {
         if (blocked.current) {
-            Toast.show({
-                type: "error",
-                text1: "Достигнуто доступное количество бесплатных тестов"
-            });
+            navigation.navigate("SubscribeScreen")
         }
     }
 
@@ -88,12 +81,7 @@ export default function GameQuiz({navigation}) {
         )
             .then(data => {
                 stats.current.rating = data.rating
-
-                if (data.action === "openModalMembership") {
-                    blocked.current = true
-                } else {
-                    blocked.current = false
-                }
+                blocked.current = data.action === "openModalMembership"
 
                 const shuffledData = data.votes.map((item) => ({
                     ...item,
@@ -246,15 +234,7 @@ export default function GameQuiz({navigation}) {
         stats.current.time = 0
         stats.current.additionalRating = 0
 
-        // data.splice(0, 1)
-        //
-        // setData(data)
-        //
-        // if (data.length <= 0) {
-        //     setLoading(true)
-        // } else if (data.length <= 2) {
-            getQuestions()
-        // }
+        getQuestions()
     };
 
     const handleRepeat = () => {
@@ -313,7 +293,7 @@ export default function GameQuiz({navigation}) {
 
             </View>
             {data.length > 0 && (
-                <SelectAnswer data={data} isHelpUsed={isHelpUsed} isAnswerCorrect={isAnswerCorrect} preHelpAnswers={preHelpAnswers} selectedAnswer={selectedAnswer} handleAnswerSelect={handleAnswerSelect}/>
+                <Answers data={data} isHelpUsed={isHelpUsed} isAnswerCorrect={isAnswerCorrect} preHelpAnswers={preHelpAnswers} selectedAnswer={selectedAnswer} handleAnswerSelect={handleAnswerSelect}/>
             )}
 
             <Buttons selectedAnswer={selectedAnswer} isAnswerCorrect={isAnswerCorrect} showIncorrectStyle={showIncorrectStyle} isHelpUsed={isHelpUsed} handleHelp={handleHelp} handleRepeat={handleRepeat} handleNext={handleNext}/>

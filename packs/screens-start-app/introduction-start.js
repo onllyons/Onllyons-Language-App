@@ -20,22 +20,17 @@ const ProgressBar = ({currentIndex, totalCount}) => {
     );
 };
 
+
 export default function IntroductionScreen({navigation}) {
     const swiperRef = useRef(null);
     const [isPressedContinue, setIsPressedContinue] = useState(false);
-    const [isPressedRegistration, setIsPressedRegistration] = useState(false);
     const [isPressedLevel1, setIsPressedLevel1] = useState(false);
     const [isPressedLevel2, setIsPressedLevel2] = useState(false);
     const [isPressedLevel3, setIsPressedLevel3] = useState(false);
     const [index, setIndex] = useState(0);
-<<<<<<< HEAD
-    const [isLastSlide, setIsLastSlide] = useState(false);
-    const totalSlides = 8;
-=======
     const totalSlides = 6;
     const [isModalVisible, setIsModalVisible] = useState(false);
 
->>>>>>> aeecf29116dbae417b3e3d0ac1b78f5cb3511b93
 
     const [loader, setLoader] = useState(false)
 
@@ -51,26 +46,29 @@ export default function IntroductionScreen({navigation}) {
         name: ""
     })
 
+    const handleRightButtonPress = useCallback(() => {
+        if (index === totalSlides) {
+          // Dacă s-a ajuns la ultimul slide, afișează modalul
+          setIsModalVisible(true);
+        } else {
+          swiperRef.current?.scrollBy(1);
+        }
+      }, [index]);
+
+      const handleCloseModal = () => {
+        // Funcție pentru a închide modalul
+        setIsModalVisible(false);
+      };
+
     const handleBackButtonPress = () => {
         navigation.goBack();
     };
 
-const handleSlideChange = useCallback((newIndex) => {
-    if (newIndex < 0) {
-        swiperRef.current?.scrollTo(0);
-    } else if (newIndex >= totalSlides - 1) { // Verificăm dacă utilizatorul este pe ultimul slide
-        setIsLastSlide(true); // Setăm isLastSlide true doar când este pe ultimul slide
-    } else {
-        setIsLastSlide(false);
-    }
+    const handleSlideChange = useCallback((newIndex) => {
+        if (newIndex < 0) swiperRef.current?.scrollTo(0);
+        else if (newIndex >= 7) swiperRef.current?.scrollTo(5);
 
-    setIndex(newIndex);
-}, []);
-
-
-
-    const handleRightButtonPress = useCallback(() => {
-        swiperRef.current?.scrollBy(1);
+        setIndex(newIndex);
     }, []);
 
     const handleRegister = () => {
@@ -278,62 +276,40 @@ const handleSlideChange = useCallback((newIndex) => {
                     </View>
                 </View>
 
-                <View style={styles.slideLevel}>
-                    <View  style={styles.finishSlided}>
-                        <Image
-                            source={require("../images/El/regFinish.png")}
-                            style={styles.regFinish}
-                        />
-                        <Text style={styles.finishTxt}>
-                            Поздравляем с началом изучения английского! 🎉 
-                            Создайте профиль и присоединяйтесь к нам в этом увлекательном путешествии. 
-                            Добро пожаловать! 😊🚀
-                        </Text>
-                    </View>
-                </View>
-
                
             </Swiper>
             <SwiperButtonsContainer
-              onRightPress={handleRightButtonPress}
-              isPressedContinue={isPressedContinue}
-              setIsPressedContinue={setIsPressedContinue}
-              isLastSlide={isLastSlide}
-              handleRegister={handleRegister}
-              isPressedRegistration={isPressedRegistration}
-              setIsPressedRegistration={setIsPressedRegistration}
+                onRightPress={handleRightButtonPress}
+                isPressedContinue={isPressedContinue}
+                setIsPressedContinue={setIsPressedContinue}
             />
 
+            {isModalVisible && (
+                <View style={styles.modalContainer}>
+                    <Image
+                        source={require("../images/El/logoStart.png")}
+                        style={styles.logoEl}
+                    />
+                    
+                </View>
+            )}
 
         </LinearGradient>
     );
 }
 
-const SwiperButtonsContainer = ({ onRightPress, isPressedContinue, setIsPressedContinue, isLastSlide, handleRegister, isPressedRegistration, setIsPressedRegistration }) => (
-  <View style={styles.swiperButtonsContainer}>
-    {!isLastSlide && (
-      <TouchableOpacity
-        style={[globalCss.button, isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedPurple] : globalCss.buttonPurple]}
-        onPress={onRightPress}
-        onPressIn={() => setIsPressedContinue(true)}
-        onPressOut={() => setIsPressedContinue(false)}
-        activeOpacity={1}
-      >
-        <Text style={[globalCss.buttonText, globalCss.textUpercase]}>Продолжить</Text>
-      </TouchableOpacity>
-    )}
-    {isLastSlide && (
-      <TouchableOpacity
-        style={[globalCss.button, isPressedRegistration ? [globalCss.buttonPressed, globalCss.buttonPressedPurple] : globalCss.buttonPurple]}
-        onPressIn={() => setIsPressedRegistration(true)}
-        onPressOut={() => setIsPressedRegistration(false)}
-        activeOpacity={1}
-        onPress={handleRegister}
-      >
-        <Text style={[globalCss.buttonText, globalCss.textUpercase]}>Зарегистрироваться</Text>
-      </TouchableOpacity>
-    )}
-  </View>
+const SwiperButtonsContainer = ({onRightPress, isPressedContinue, setIsPressedContinue}) => (
+    <View style={styles.swiperButtonsContainer}>
+        <TouchableOpacity
+            style={[globalCss.button, isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedPurple] : globalCss.buttonPurple]}
+            onPress={onRightPress}
+            onPressIn={() => setIsPressedContinue(true)}
+            onPressOut={() => setIsPressedContinue(false)}
+            activeOpacity={1}
+        >
+            <Text style={[globalCss.buttonText, globalCss.textUpercase]}>Продолжить</Text>
+        </TouchableOpacity>
+    </View>
 );
 
 
@@ -410,7 +386,7 @@ const styles = StyleSheet.create({
         borderColor: '#e0e0e0',
         flexDirection: 'row',
         borderLeftWidth: 2.1,
-        backgroundColor: '#f3f3f3',
+        backgroundColor: '#e0e0e0',
         borderRightWidth: 2.1,
         paddingLeft: 12,
         borderTopWidth: 2.1,
@@ -462,21 +438,18 @@ const styles = StyleSheet.create({
         width: '15%',
         resizeMode: 'contain'
     },
-    finishSlided:{
+    modalContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        alignContent: 'center',
+        backgroundColor: 'white',
     },
-    regFinish:{
-        width: '100%',
-        height: '70%',
+    logoEl:{
+        width: '60%',
+        height: '60%',
         resizeMode: 'contain'
     },
-    finishTxt:{
-        color: '#333',
-        fontSize: 19,
-        marginTop: 30,
-        alignSelf: 'center',
-        textAlign: 'center',
-    },
+
+
+
 });

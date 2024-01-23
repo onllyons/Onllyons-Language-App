@@ -1,9 +1,8 @@
 import {StatusBar} from 'expo-status-bar';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { Image } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import * as Haptics from 'expo-haptics';
-import {DotIndicator} from "react-native-indicators";
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -33,7 +32,7 @@ import FlashCardsWords from './packs/flashcards_words';
 import MenuScreen from './packs/menu';
 import UserData from './packs/user-profile/userData';
 import UserSettings from './packs/user-profile/userSettings';
-import UserSubscriptionChoose from './packs/user-profile/userSubscriptionChoose';
+import SubscribeScreen from "./packs/screens/SubscribeScreen";
 import UserSubscriptionManage from './packs/user-profile/userSubscriptionManage';
 
 
@@ -261,7 +260,7 @@ function AppStack() {
 
 
             <Stack.Screen name="CourseLesson" component={CourseLesson} options={{headerShown: false}}/>
-            <Stack.Screen name="UserSubscriptionChoose" component={UserSubscriptionChoose} options={{
+            <Stack.Screen name="SubscribeScreen" component={SubscribeScreen} options={{
                 headerShown: false,
                 cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
             }}/>
