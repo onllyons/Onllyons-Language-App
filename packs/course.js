@@ -200,8 +200,8 @@ const measureCategoryHeight = (index) => {
 
           <View style={styles.contentFlashCards}>
             {loadedCategories.map((category, index) => (
-              <React.Fragment key={category} 
-              ref={el => (categoryRefs.current[index] = el)}
+              <React.Fragment key={category} ref={el => (categoryRefs.current[index] = el)}
+              
                 onLayout={() => measureCategoryHeight(index)}>
 
 
