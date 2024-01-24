@@ -9,10 +9,16 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { useRoute } from '@react-navigation/native';
+import Loader from "./components/Loader";
+import { useRoute } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Audio } from 'expo-av';
+import {
+  faTimes,
+  faGear,
+  faCirclePlay,
+  faCirclePause,
+} from "@fortawesome/free-solid-svg-icons";
+import { Audio } from "expo-av";
 
 import globalCss from "./css/globalCss";
 const { width } = Dimensions.get("window");
@@ -30,45 +36,47 @@ export default function BooksScreen({ navigation }) {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-const playSound = async (audioUrl) => {
-  if (!sound) {
-    const { sound: newSound } = await Audio.Sound.createAsync(
-      { uri: audioUrl },
-      { shouldPlay: true }
-    );
-    setSound(newSound);
-    setIsPlaying(true);
-  } else {
-    if (isPlaying) {
-      await sound.pauseAsync();
-      setIsPlaying(false);
-    } else {
-      await sound.playAsync();
+
+
+  const playSound = async (audioUrl) => {
+    if (!sound) {
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri: audioUrl },
+        { shouldPlay: true }
+      );
+      setSound(newSound);
       setIsPlaying(true);
-    }
-  }
-};
-
-useEffect(() => {
-  return () => {
-    if (sound) {
-      sound.unloadAsync();
+    } else {
+      if (isPlaying) {
+        await sound.pauseAsync();
+        setIsPlaying(false);
+      } else {
+        await sound.playAsync();
+        setIsPlaying(true);
+      }
     }
   };
-}, [sound]);
 
-useEffect(() => {
-  const maxScroll = contentHeight - containerHeight;
-  const newScrollY = scrollY < 0 ? 0 : Math.min(scrollY, maxScroll);
-  const newScrollPercentage = (newScrollY / maxScroll) * 100;
-  setScrollY(newScrollY);
-  setScrollProgress(newScrollPercentage);
-  if (initialLoad && newScrollPercentage > 0) {
-    setInitialLoad(false);
-  }
-}, [scrollY, contentHeight, containerHeight, initialLoad]);
+  useEffect(() => {
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, [sound]);
 
+  useEffect(() => {
+    const maxScroll = contentHeight - containerHeight;
+    const newScrollY = scrollY < 0 ? 0 : Math.min(scrollY, maxScroll);
+    const newScrollPercentage = (newScrollY / maxScroll) * 100;
+    setScrollY(newScrollY);
+    setScrollProgress(newScrollPercentage);
+    if (initialLoad && newScrollPercentage > 0) {
+      setInitialLoad(false);
+    }
+  }, [scrollY, contentHeight, containerHeight, initialLoad]);
 
   const [scrollProgress, setScrollProgress] = useState(0);
   const [initialLoad, setInitialLoad] = useState(true);
@@ -76,23 +84,30 @@ useEffect(() => {
   const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
-      .then(response => response.json())
-      .then(data => {
-        // Filtrează datele pentru a selecta doar elementul cu ID-ul corespunzător
-        const filteredData = data.filter(item => item.id === route.params.bookId);
-        setFilteredData(filteredData); // Folosește setFilteredData aici
+    setLoading(true); // Activează Loader-ul
+    fetch(
+      "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const filteredData = data.filter(
+          (item) => item.id === route.params.bookId
+        );
+        setFilteredData(filteredData);
       })
-      .catch(error => console.error('Error:', error));
+      .catch((error) => {
+        console.error("Error:", error);
+      })
+      .finally(() => setLoading(false)); // Dezactivează Loader-ul
   }, [route.params.bookId]);
 
-const words = [
-  { text: "is", start: 180, duration: 100 },
-  { text: "the", start: 280, duration: 189 },
-  // ... restul cuvintelor
-];
+  const words = [
+    { text: "is", start: 180, duration: 100 },
+    { text: "the", start: 280, duration: 189 },
+    // ... restul cuvintelor
+  ];
 
-useEffect(() => {
+  useEffect(() => {
     let interval;
 
     if (isPlaying && sound) {
@@ -100,8 +115,11 @@ useEffect(() => {
         const status = await sound.getStatusAsync();
         if (status.isPlaying) {
           const currentTime = status.positionMillis;
-          const wordIndex = words.findIndex(word => 
-            currentTime >= word.start && currentTime <= (word.start + word.duration));
+          const wordIndex = words.findIndex(
+            (word) =>
+              currentTime >= word.start &&
+              currentTime <= word.start + word.duration
+          );
           setCurrentWordIndex(wordIndex);
         }
       }, 100);
@@ -112,80 +130,108 @@ useEffect(() => {
     return () => clearInterval(interval);
   }, [isPlaying, sound]);
 
-
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    const maxScroll = contentHeight - containerHeight;
+    const scrollPercentage = maxScroll > 0 ? (offsetY / maxScroll) * 100 : 0;
+    setScrollProgress(scrollPercentage.toFixed(0));
+    console.log(scrollProgress)
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={goBackToBooks} style={styles.closeButton}>
-        <FontAwesomeIcon icon={faTimes} size={30} color="red" />
-      </TouchableOpacity>
+      <Loader visible={loading} />
 
-      <View style={styles.progressBarContainer}>
-        <View
-          style={{
+      <View style={styles.row}>
+        <TouchableOpacity onPress={goBackToBooks} style={styles.closeButton}>
+          <FontAwesomeIcon icon={faTimes} size={30} style={globalCss.blue} />
+        </TouchableOpacity>
+
+        <View style={styles.progressBarContainer}>
+          <View style={{
             width: initialLoad ? "0%" : `${scrollProgress}%`,
             height: 5,
             backgroundColor: initialLoad ? "lightgray" : "red",
-          }}
-        />
-      </View>
+          }}>
+          </View>
+        </View>
 
-      <Text style={styles.scrollPercentageText}>{isNaN(scrollProgress) ? '0%' : `${Math.round(scrollProgress)}%`}</Text>
-
-<ScrollView onScroll={handleScroll} scrollEventThrottle={16} style={styles.ScrollView}>
-  <View style={styles.contentBooks}>
-    {filteredData.map((item, index) => (
-      <View key={item.id} style={styles.contentBooksRead}>
-        <Text style={styles.titleBook}>{item.title}</Text>
-        <Text style={styles.titleAuthor}>{item.author}</Text>
-        {/*<Text style={styles.textBook}>{item.content}</Text>*/}
-
-        <Text style={styles.titleAuthor}>
-          {words.map((word, index) => (
-            <Text
-              key={index}
-              style={currentWordIndex === index ? styles.highlightedWord : styles.normalWord}
-            >
-              {word.text + ' '}
-            </Text>
-          ))}
+        <Text style={styles.scrollPercentageText}>
+          {scrollProgress} %
         </Text>
 
+        <TouchableOpacity style={styles.settingsBtn}>
+          <Text>
+            <FontAwesomeIcon icon={faGear} size={30} style={globalCss.blue} />
+          </Text>
+        </TouchableOpacity>
       </View>
-    ))}
-  </View>
-</ScrollView>
 
-<View>
-  {filteredData.length > 0 && (
-    <Button
-      title={isPlaying ? "Pauză" : "Redă Sunetul"}
-      onPress={() => playSound(`https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/${filteredData[0].audio_file}`)}
-    />
-  )}
-</View>
+      <ScrollView
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        style={styles.ScrollView}
+      >
+        <View style={styles.contentBooks}>
+          {filteredData.map((item, index) => (
+            <View key={item.id} style={styles.contentBooksRead}>
+              <Text style={styles.titleBook}>{item.title}</Text>
+              <Text style={styles.titleAuthor}>{item.author}</Text>
+              <Text style={styles.textBook}>{item.content}</Text>
 
+              <Text style={styles.titleAuthor}>
+                {words.map((word, index) => (
+                  <Text
+                    key={index}
+                    style={
+                      currentWordIndex === index
+                        ? styles.highlightedWord
+                        : styles.normalWord
+                    }
+                  >
+                    {word.text + " "}
+                  </Text>
+                ))}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
 
-
+      <View>
+        {filteredData.length > 0 && (
+          <Button
+            title={isPlaying ? "Pauză" : "Redă Sunetul"}
+            onPress={() =>
+              playSound(
+                `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/${filteredData[0].audio_file}`
+              )
+            }
+          />
+        )}
+      </View>
     </View>
   );
-}
+} 
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
-    paddingTop: 20,
     paddingBottom: 20,
-    marginTop: '13%',
+    marginTop: '12%',
   },
-  ScrollView:{
-    padding: '5%'
+  row:{
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   closeButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    zIndex: 1,
+    backgroundColor: 'red',
+    minWidth: '14%',
+    paddingVertical: '3%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
   },
   progressBarContainer: {
     width: '70%',
@@ -195,10 +241,6 @@ const styles = StyleSheet.create({
   scrollPercentageText: {
     alignSelf: 'center',
     marginTop: 5,
-  },
-  scrollView: {
-    marginTop: 40, // Adjust the spacing as needed
-    paddingHorizontal: 20,
   },
   titleBook: {
     fontSize: 21,

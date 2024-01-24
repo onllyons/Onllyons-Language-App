@@ -93,22 +93,31 @@ export default function FlashCardsCategory({ route, navigation }) {
   return (
     <View>
 
-      <View style={styles.navTabUser}>
-        <TouchableOpacity onPress={() => navigation.navigate('FlashCardsScreen')} style={[styles.itemNavTabUser, styles.itemNavBtnBack]}>
+      <View style={globalCss.navTabUser}>
+        <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => navigation.navigate('FlashCardsScreen')}>
           <FontAwesomeIcon icon={faArrowLeft} size={30}  style={globalCss.blue} />
+          <Text style={globalCss.dataNavTop}></Text>
         </TouchableOpacity>
-
-        <View style={styles.itemNavTabUser}>
-          <Image source={require('./images/other_images/nav-top/sapphire.png')} style={styles.imageNavTop} />
-          <Text style={styles.dataNavTop}>743</Text>
+        <View style={globalCss.itemNavTabUser}>
+          <Image
+            source={require("./images/other_images/nav-top/sapphire.webp")}
+            style={globalCss.imageNavTop}
+          />
+          <Text style={globalCss.dataNavTop}>743</Text>
         </View>
-        <View style={styles.itemNavTabUser}>
-          <Image source={require('./images/other_images/nav-top/flame.png')} style={styles.imageNavTop} />
-          <Text style={styles.dataNavTop}>4</Text>
+        <View style={globalCss.itemNavTabUser}>
+          <Image
+            source={require("./images/other_images/nav-top/flame.png")}
+            style={globalCss.imageNavTop}
+          />
+          <Text style={globalCss.dataNavTop}>4</Text>
         </View>
-        <TouchableOpacity style={styles.itemNavTabUser}>
-          <Image source={require('./images/other_images/nav-top/star.png')} style={styles.imageNavTop} />
-          <Text style={styles.dataNavTop}>4</Text>
+        <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => setIsDropdownVisible(!isDropdownVisible)}>
+          <Image
+            source={require("./images/other_images/nav-top/star.png")}
+            style={globalCss.imageNavTop}
+          />
+          <Text style={globalCss.dataNavTop}>4</Text>
         </TouchableOpacity>
       </View>
 
@@ -231,34 +240,4 @@ const styles = StyleSheet.create({
   levelHardTxt:{
     marginLeft: '3%'
   },
-  navTabUser:{
-    width: "100%",
-    paddingTop: "10%",
-    backgroundColor: "#eeeff0",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-    itemNavTabUser:{
-    flexDirection: "row",
-    paddingTop: '5%',
-    paddingBottom: '5%',
-    alignItems: "center",
-    flex: 1,
-  },
-    imageNavTop:{
-    width: 28,
-    height: 28,
-  },
-  dataNavTop:{
-    fontSize: 16,
-    color: '#383838',
-    fontWeight: '700',
-    marginLeft: '5%',
-  },
-  itemNavBtnBack:{
-    paddingLeft: '5%',
-    maxWidth: '25%',
-  },
-
 });

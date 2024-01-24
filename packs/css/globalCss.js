@@ -197,6 +197,55 @@ const globalCss = StyleSheet.create({
     alignItems: "center",
     justifyContent: 'center',
   },
+  // nav tab
+  navTabUser: {
+    width: "100%",
+    paddingTop: "10%",
+    backgroundColor: "#ffffff",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  itemNavTabUser: {
+    flexDirection: "row",
+    paddingTop: "5%",
+    paddingBottom: "5%",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+
+  imageNavTop: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain'
+  },
+  dataNavTop: {
+    fontSize: 16,
+    color: "#383838",
+    fontWeight: "700",
+    marginLeft: "5%",
+  },
+  dataCategoryTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#383838",
+  },
+
+  itemNavTabUserBtnBack: {
+    flexDirection: "row",
+    paddingTop: "5%",
+    paddingBottom: "5%",
+    paddingLeft: "5%",
+    minWidth: '18%',
+  },
+  itemNavTabUserTitleCat: {
+    flexDirection: "row",
+    paddingTop: "5%",
+    paddingBottom: "5%",
+    flex: 1,
+  },
+
   template:{
 
   },

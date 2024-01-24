@@ -71,8 +71,6 @@ function MenuBooksReading() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="BooksScreen" component={BooksScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="BooksCategory" component={BooksCategory}/>
-            <Stack.Screen name="BooksReading" component={BooksReading} options={{headerShown: false}}/>
         </Stack.Navigator>
     );
 }
@@ -269,6 +267,10 @@ function AppStack() {
                           options={{headerShown: false}}/>
             <Stack.Screen name="FlashCardsWords" component={FlashCardsWords} options={{headerShown: false}}/>
             <Stack.Screen name="GamesQuiz" component={GamesQuiz} options={{headerShown: false}}/>
+
+            <Stack.Screen name="BooksCategory" component={BooksCategory} options={{headerShown: false}}/>
+            <Stack.Screen name="BooksReading" component={BooksReading} options={{headerShown: false}}/>
+            
 
         </Stack.Navigator>
     ) : (<></>);

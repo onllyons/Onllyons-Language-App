@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
+import Loader from "./components/Loader";
 import globalCss from "./css/globalCss";
 import BooksReading from "./books_reading";
 
@@ -10,16 +13,28 @@ export default function BooksCategoryScreen({ route }) {
   const [data, setData] = useState([]);
   const { category } = route.params;
   const bookId = route.params.bookId;
+  const [loading, setLoading] = useState(false);
+  const [visibleItems, setVisibleItems] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
-      .then(response => response.json())
-      .then(data => {
-        const filteredData = data.filter(item => item.type_category === category);
-        setData(filteredData);
-      })
-      .catch(error => console.error('Error:', error));
+      setLoading(true);
+      fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
+          .then(response => response.json())
+          .then(data => {
+               const filteredData = data.filter(item => item.type_category === category);
+               setData(filteredData);
+               setTotalItems(filteredData.length);
+           })
+          .catch(error => console.error('Error:', error))
+          .finally(() => setLoading(false));
   }, [category]);
+
+const loadMoreItems = () => {
+  if (visibleItems < totalItems) {
+    setVisibleItems(visibleItems + 15);
+  }
+};
 
   const getCategoryImageAndText = (categoryValue) => {
     switch (categoryValue) {
@@ -75,30 +90,50 @@ export default function BooksCategoryScreen({ route }) {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.categoryTitle}>{category}</Text>
-        {data.map((item) => (
-          <View key={item.id}>
-            {renderItem({ item })}
-          </View>
-        ))}
+    <View style={styles.container}>
+
+    <Loader visible={loading}/>
+
+    <View style={globalCss.navTabUser}>
+      <TouchableOpacity style={globalCss.itemNavTabUserBtnBack} onPress={() => navigation.navigate('BooksScreen')}>
+        <FontAwesomeIcon icon={faArrowLeft} size={30}  style={globalCss.blue} />
+      </TouchableOpacity>
+      <View style={globalCss.itemNavTabUserTitleCat}>
+        <Text style={globalCss.dataCategoryTitle}>{category}</Text>
       </View>
+    </View>
+
+    <ScrollView
+      contentContainerStyle={{ paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20 }}
+      onScroll={({ nativeEvent }) => {
+        if (isCloseToBottom(nativeEvent)) {
+          loadMoreItems();
+        }
+      }}
+      scrollEventThrottle={400}
+    >
+      {data.slice(0, visibleItems).map((item) => (
+        <View key={item.id}>
+          {renderItem({ item })}
+        </View>
+      ))}
     </ScrollView>
+
+    
+    </View>
   );
 }
 
+const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
+  const paddingToBottom = 20;
+  return layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom;
+};
 
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    padding: 20,
-  },
-  categoryTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+      flex: 1, 
   },
   item: {
     marginBottom: '10%',
@@ -112,6 +147,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   title: {
+    maxWidth: '90%',
     fontSize: 17,
     marginTop: '2%',
     fontWeight: "bold",

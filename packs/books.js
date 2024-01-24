@@ -6,23 +6,27 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons';
 import BooksReading from "./books_reading";
 import Carousel from 'react-native-new-snap-carousel';
+import Loader from "./components/Loader";
 
 export default function BooksScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
     const [data, setData] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
             .then(response => response.json())
             .then(data => {
                 setData(data);
-                // Extrage categoriile unice din date
                 const uniqueCategories = [...new Set(data.map(item => item.type_category))];
                 setCategories(uniqueCategories);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error:', error))
+            .finally(() => setLoading(false)); // Dezactivează Loader-ul
     }, []);
+
 
     const onPressIn = (id) => {
         setPressedCards(prevState => ({...prevState, [id]: true}));
@@ -37,8 +41,41 @@ export default function BooksScreen({navigation}) {
     };
 
     return (
-        <ScrollView style={globalCss.container}>
+        <View style={styles.container}>
 
+        <View style={globalCss.navTabUser}>
+          <View style={globalCss.itemNavTabUser}>
+            <Image
+              source={require("./images/other_images/nav-top/english.webp")}
+              style={globalCss.imageNavTop}
+            />
+            <Text style={globalCss.dataNavTop}>EN</Text>
+          </View>
+          <View style={globalCss.itemNavTabUser}>
+            <Image
+              source={require("./images/other_images/nav-top/sapphire.webp")}
+              style={globalCss.imageNavTop}
+            />
+            <Text style={globalCss.dataNavTop}>743</Text>
+          </View>
+          <View style={globalCss.itemNavTabUser}>
+            <Image
+              source={require("./images/other_images/nav-top/flame.png")}
+              style={globalCss.imageNavTop}
+            />
+            <Text style={globalCss.dataNavTop}>4</Text>
+          </View>
+          <TouchableOpacity style={globalCss.itemNavTabUser}>
+            <Image
+              source={require("./images/other_images/nav-top/star.png")}
+              style={globalCss.imageNavTop}
+            />
+            <Text style={globalCss.dataNavTop}>4</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView contentContainerStyle={{ paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20 }}>
+            <Loader visible={loading}/>
             {categories.map((category, index) => (
                 <View key={index}>
                     <View style={[globalCss.row, globalCss.mb3]}>
@@ -103,13 +140,14 @@ export default function BooksScreen({navigation}) {
                 </View>
             ))}
         </ScrollView>
+        </View>
     );
 }
 
 
 const styles = StyleSheet.create({
-    bgCourse: {
-        backgroundColor: '#d1d1d1',
+    container: {
+        flex: 1, 
     },
     cell: {
         marginRight: '8%',

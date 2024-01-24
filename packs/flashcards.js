@@ -54,22 +54,35 @@ const FlashCardWords = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.navTabUser}>
-        <View style={styles.itemNavTabUser}>
-          <Image source={require('./images/other_images/nav-top/english.png')} style={styles.imageNavTop} />
-          <Text style={styles.dataNavTop}>EN</Text>
+
+    <View style={globalCss.navTabUser}>
+        <View style={globalCss.itemNavTabUser}>
+          <Image
+            source={require("./images/other_images/nav-top/english.webp")}
+            style={globalCss.imageNavTop}
+          />
+          <Text style={globalCss.dataNavTop}>EN</Text>
         </View>
-        <View style={styles.itemNavTabUser}>
-          <Image source={require('./images/other_images/nav-top/sapphire.png')} style={styles.imageNavTop} />
-          <Text style={styles.dataNavTop}>743</Text>
+        <View style={globalCss.itemNavTabUser}>
+          <Image
+            source={require("./images/other_images/nav-top/sapphire.webp")}
+            style={globalCss.imageNavTop}
+          />
+          <Text style={globalCss.dataNavTop}>743</Text>
         </View>
-        <View style={styles.itemNavTabUser}>
-          <Image source={require('./images/other_images/nav-top/flame.png')} style={styles.imageNavTop} />
-          <Text style={styles.dataNavTop}>4</Text>
+        <View style={globalCss.itemNavTabUser}>
+          <Image
+            source={require("./images/other_images/nav-top/flame.png")}
+            style={globalCss.imageNavTop}
+          />
+          <Text style={globalCss.dataNavTop}>4</Text>
         </View>
-        <TouchableOpacity style={styles.itemNavTabUser} onPress={() => setIsDropdownVisible(!isDropdownVisible)}>
-          <Image source={require('./images/other_images/nav-top/star.png')} style={styles.imageNavTop} />
-          <Text style={styles.dataNavTop}>4</Text>
+        <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => setIsDropdownVisible(!isDropdownVisible)}>
+          <Image
+            source={require("./images/other_images/nav-top/star.png")}
+            style={globalCss.imageNavTop}
+          />
+          <Text style={globalCss.dataNavTop}>4</Text>
         </TouchableOpacity>
       </View>
 
@@ -162,36 +175,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignContent: 'center',
     zIndex: 2,
-  },
-  iconFlash: {
-
-  },
-  imageNavTop:{
-    width: 28,
-    height: 28,
-  },
-  dataNavTop:{
-    fontSize: 16,
-    color: '#383838',
-    fontWeight: '700',
-    marginLeft: '5%',
-  },
-  navTabUser:{
-    width: "100%",
-    paddingTop: "10%",
-    backgroundColor: "#eeeff0",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 3,
-  },
-  itemNavTabUser:{
-    flexDirection: "row",
-    paddingTop: '5%',
-    paddingBottom: '5%',
-    alignItems: "center",
-    justifyContent: 'center',
-    flex: 1,
   },
   dropdown: {
     position: 'absolute',

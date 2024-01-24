@@ -139,34 +139,34 @@ const measureCategoryHeight = (index) => {
 
   return (
     <View>
-      <View style={styles.navTabUser}>
-        <View style={styles.itemNavTabUser}>
+      <View style={globalCss.navTabUser}>
+        <View style={globalCss.itemNavTabUser}>
           <Image
             source={require("./images/other_images/nav-top/english.webp")}
-            style={styles.imageNavTop}
+            style={globalCss.imageNavTop}
           />
-          <Text style={styles.dataNavTop}>EN</Text>
+          <Text style={globalCss.dataNavTop}>EN</Text>
         </View>
-        <View style={styles.itemNavTabUser}>
+        <View style={globalCss.itemNavTabUser}>
           <Image
             source={require("./images/other_images/nav-top/sapphire.webp")}
-            style={styles.imageNavTop}
+            style={globalCss.imageNavTop}
           />
-          <Text style={styles.dataNavTop}>743</Text>
+          <Text style={globalCss.dataNavTop}>743</Text>
         </View>
-        <View style={styles.itemNavTabUser}>
+        <View style={globalCss.itemNavTabUser}>
           <Image
             source={require("./images/other_images/nav-top/flame.png")}
-            style={styles.imageNavTop}
+            style={globalCss.imageNavTop}
           />
-          <Text style={styles.dataNavTop}>4</Text>
+          <Text style={globalCss.dataNavTop}>4</Text>
         </View>
-        <TouchableOpacity style={styles.itemNavTabUser}>
+        <TouchableOpacity style={globalCss.itemNavTabUser}>
           <Image
             source={require("./images/other_images/nav-top/star.png")}
-            style={styles.imageNavTop}
+            style={globalCss.imageNavTop}
           />
-          <Text style={styles.dataNavTop}>4</Text>
+          <Text style={globalCss.dataNavTop}>4</Text>
         </TouchableOpacity>
       </View>
 
@@ -180,9 +180,9 @@ const measureCategoryHeight = (index) => {
         scrollEventThrottle={16}
         contentContainerStyle={{ paddingTop: 190, paddingBottom: 20 }}
         style={styles.bgCourse}
-        onScroll={({ nativeEvent }) => {
-          handleScroll()
-          if (isCloseToBottom(nativeEvent)) {
+        onScroll={(event) => {
+          handleScroll(event);
+          if (isCloseToBottom(event.nativeEvent)) {
             loadNextCategory();
           }
         }}
@@ -283,8 +283,6 @@ const styles = StyleSheet.create({
     elevation: 0,
     justifyContent: 'center',
   },
-
-
   cardPressed: {
     shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
@@ -304,38 +302,11 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     // alignContent: "center",
   },
-  navTabUser: {
-    width: "100%",
-    paddingTop: "10%",
-    backgroundColor: "#ffffff",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   categoryTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
     paddingTop: 10,
     paddingLeft: 10,
-  },
-  itemNavTabUser: {
-    flexDirection: "row",
-    paddingTop: "5%",
-    paddingBottom: "5%",
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-  },
-  imageNavTop: {
-    width: 28,
-    height: 28,
-    resizeMode: 'contain'
-  },
-  dataNavTop: {
-    fontSize: 16,
-    color: "#383838",
-    fontWeight: "700",
-    marginLeft: "5%",
   },
 });
