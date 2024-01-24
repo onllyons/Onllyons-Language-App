@@ -394,6 +394,7 @@ const styles = StyleSheet.create({
     width: '14%',
     paddingVertical: '3%',
     alignItems: 'center',
+    backgroundColor: 'red',
     alignContent: 'center',
   },
 });
