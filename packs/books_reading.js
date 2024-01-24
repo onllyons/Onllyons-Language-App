@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -37,6 +37,25 @@ export default function BooksScreen({ navigation }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(null);
   const [loading, setLoading] = useState(false);
+  const scrollViewRef = useRef();  // Referință pentru ScrollView
+  const contentRef = useRef();
+
+const handleScroll = (event) => {
+  const y = event.nativeEvent.contentOffset.y;
+  const height = event.nativeEvent.layoutMeasurement.height;
+  const contentHeight = event.nativeEvent.contentSize.height;
+
+  if (y <= 0) {
+    setScrollY(0);
+  } else {
+    let scrollPercentage = (y / (contentHeight - height)) * 100;
+    // Verifică dacă rezultatul este NaN și corectează
+    scrollPercentage = isNaN(scrollPercentage) ? 0 : scrollPercentage;
+    // Asigură că valoarea este între 0 și 100
+    setScrollY(Math.min(100, Math.max(0, scrollPercentage.toFixed(0))));
+  }
+};
+
 
 
 
@@ -67,19 +86,8 @@ export default function BooksScreen({ navigation }) {
     };
   }, [sound]);
 
-  useEffect(() => {
-    const maxScroll = contentHeight - containerHeight;
-    const newScrollY = scrollY < 0 ? 0 : Math.min(scrollY, maxScroll);
-    const newScrollPercentage = (newScrollY / maxScroll) * 100;
-    setScrollY(newScrollY);
-    setScrollProgress(newScrollPercentage);
-    if (initialLoad && newScrollPercentage > 0) {
-      setInitialLoad(false);
-    }
-  }, [scrollY, contentHeight, containerHeight, initialLoad]);
 
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [initialLoad, setInitialLoad] = useState(true);
+
 
   const [filteredData, setFilteredData] = useState([]);
 
@@ -130,17 +138,14 @@ export default function BooksScreen({ navigation }) {
     return () => clearInterval(interval);
   }, [isPlaying, sound]);
 
-  const handleScroll = (event) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const maxScroll = contentHeight - containerHeight;
-    const scrollPercentage = maxScroll > 0 ? (offsetY / maxScroll) * 100 : 0;
-    setScrollProgress(scrollPercentage.toFixed(0));
-    console.log(scrollProgress)
-  };
 
   return (
     <View style={styles.container}>
       <Loader visible={loading} />
+
+
+
+
 
       <View style={styles.row}>
         <TouchableOpacity onPress={goBackToBooks} style={styles.closeButton}>
@@ -148,17 +153,8 @@ export default function BooksScreen({ navigation }) {
         </TouchableOpacity>
 
         <View style={styles.progressBarContainer}>
-          <View style={{
-            width: initialLoad ? "0%" : `${scrollProgress}%`,
-            height: 5,
-            backgroundColor: initialLoad ? "lightgray" : "red",
-          }}>
-          </View>
+          <View style={[styles.progressBar, { width: `${scrollY}%` }]} />
         </View>
-
-        <Text style={styles.scrollPercentageText}>
-          {scrollProgress} %
-        </Text>
 
         <TouchableOpacity style={styles.settingsBtn}>
           <Text>
@@ -167,11 +163,7 @@ export default function BooksScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        style={styles.ScrollView}
-      >
+      <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
         <View style={styles.contentBooks}>
           {filteredData.map((item, index) => (
             <View key={item.id} style={styles.contentBooksRead}>
@@ -226,21 +218,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButton: {
-    backgroundColor: 'red',
     minWidth: '14%',
     paddingVertical: '3%',
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-  },
-  progressBarContainer: {
-    width: '70%',
-    height: 5,
-    backgroundColor: "lightgray",
-  },
-  scrollPercentageText: {
-    alignSelf: 'center',
-    marginTop: 5,
   },
   titleBook: {
     fontSize: 21,
@@ -258,5 +240,22 @@ const styles = StyleSheet.create({
   normalWord: {
     backgroundColor: 'transparent',
   },
-  
+
+  progressBarContainer: {
+    height: 20,
+    flex: 1,
+    backgroundColor: 'lightgray',
+    borderRadius: 5,
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: 'red',
+    borderRadius: 5,
+  },
+  settingsBtn:{
+    width: '14%',
+    paddingVertical: '3%',
+    alignItems: 'center',
+    alignContent: 'center',
+  },
 });
