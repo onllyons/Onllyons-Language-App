@@ -1,15 +1,14 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
 import Swiper from 'react-native-swiper';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
-import axios from "axios";
-import {useAuth} from "../providers/AuthProvider";
+import {isAuthenticated, login} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 
 const ProgressBar = ({currentIndex, totalCount}) => {
     const progress = (currentIndex + 1) / totalCount;
@@ -19,7 +18,6 @@ const ProgressBar = ({currentIndex, totalCount}) => {
         </View>
     );
 };
-
 
 export default function IntroductionScreen({navigation}) {
     const swiperRef = useRef(null);
@@ -32,10 +30,7 @@ export default function IntroductionScreen({navigation}) {
     const [isLastSlide, setIsLastSlide] = useState(false);
     const totalSlides = 7;
 
-
     const [loader, setLoader] = useState(false)
-
-    const {isAuthenticated, login, getTokens, checkServerResponse} = useAuth();
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator")
@@ -49,7 +44,7 @@ export default function IntroductionScreen({navigation}) {
         name: ""
     })
 
-const handleSlideChange = useCallback((newIndex) => {
+    const handleSlideChange = useCallback((newIndex) => {
         if (newIndex < 0) {
             swiperRef.current?.scrollTo(0);
         } else if (newIndex >= totalSlides - 1) {
@@ -61,21 +56,14 @@ const handleSlideChange = useCallback((newIndex) => {
         setIndex(newIndex);
     }, []);
 
-const handleRightButtonPress = useCallback(() => {
+    const handleRightButtonPress = useCallback(() => {
         swiperRef.current?.scrollBy(1);
     }, []);
-
-      const handleCloseModal = () => {
-        // Funcție pentru a închide modalul
-        setIsModalVisible(false);
-      };
-    
 
     const handleBackButtonPress = () => {
         navigation.goBack();
     };
 
-    
 
     const handleRegister = () => {
         if (isAuthenticated()) {
@@ -88,36 +76,28 @@ const handleRightButtonPress = useCallback(() => {
         } else {
             setLoader(true)
 
-            axios.post("https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user_signup.php", {
-                ...userData,
-                token: getTokens()["mobileToken"]
-            }, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            })
-                .then(({data}) => checkServerResponse(data, null, false))
+            sendDefaultRequest(`${SERVER_AJAX_URL}/user_signup.php`,
+                {...userData},
+                navigation,
+                {success: false}
+            )
                 .then(async data => {
                     await login(data.userData, data.tokens)
                     navigation.navigate('MainTabNavigator')
                 })
-                .catch(() => {})
+                .catch(() => {
+                })
                 .finally(() => setTimeout(() => setLoader(false), 1))
         }
     }
 
     return (
-        <LinearGradient
-            colors={['white', 'white', 'white']}
-            locations={[0, 0.6, 1]}
-            start={[0, 0]}
-            end={[Math.cos(Math.PI / 12), 1]}
-            style={styles.swiperContent}>
+        <View style={styles.swiperContent}>
 
             <Loader visible={loader}/>
 
             <View style={styles.row}>
-                
+
 
                 <TouchableOpacity onPress={handleBackButtonPress} style={styles.backBtn}>
                     <Text><FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.gry}/></Text>
@@ -150,59 +130,59 @@ const handleRightButtonPress = useCallback(() => {
                             source={require('../images/El/regIm.png')}
                             style={styles.imageReg}
                         />
-                        
+
                         <View>
                             <TouchableOpacity
-                                style={[ globalCss.buttonRow,
-                                         isPressedLevel1
-                                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                             : globalCss.buttonGry1,
-                                         userData.selectedLevel === 0 && styles.selectedButton]}
+                                style={[globalCss.buttonRow,
+                                    isPressedLevel1
+                                        ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                                        : globalCss.buttonGry1,
+                                    userData.selectedLevel === 0 && styles.selectedButton]}
                                 onPressIn={() => setIsPressedLevel1(true)}
                                 onPressOut={() => setIsPressedLevel1(false)}
                                 activeOpacity={1}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 0}))}
-                            >   
-                            <Image
-                                source={require('../images/icon/level1.png')}
-                                style={styles.imageRegLevel}
-                            />
+                            >
+                                <Image
+                                    source={require('../images/icon/level1.png')}
+                                    style={styles.imageRegLevel}
+                                />
                                 <Text style={styles.buttonText}>Я знаю некоторые слова и фразы</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                            style={[ globalCss.buttonRow,
-                                         isPressedLevel2
-                                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                             : globalCss.buttonGry1,
-                                         userData.selectedLevel === 1 && styles.selectedButton]}
+                                style={[globalCss.buttonRow,
+                                    isPressedLevel2
+                                        ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                                        : globalCss.buttonGry1,
+                                    userData.selectedLevel === 1 && styles.selectedButton]}
 
                                 onPressIn={() => setIsPressedLevel2(true)}
                                 onPressOut={() => setIsPressedLevel2(false)}
                                 activeOpacity={1}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 1}))}
                             >
-                            <Image
-                                source={require('../images/icon/level2.png')}
-                                style={styles.imageRegLevel}
-                            />
+                                <Image
+                                    source={require('../images/icon/level2.png')}
+                                    style={styles.imageRegLevel}
+                                />
                                 <Text style={styles.buttonText}>Я могу вести простой разговор</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                            style={[ globalCss.buttonRow,
-                                         isPressedLevel3
-                                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                             : globalCss.buttonGry1,
-                                         userData.selectedLevel === 2 && styles.selectedButton]}
+                                style={[globalCss.buttonRow,
+                                    isPressedLevel3
+                                        ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                                        : globalCss.buttonGry1,
+                                    userData.selectedLevel === 2 && styles.selectedButton]}
 
                                 onPressIn={() => setIsPressedLevel3(true)}
                                 onPressOut={() => setIsPressedLevel3(false)}
                                 activeOpacity={1}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 2}))}
                             >
-                            <Image
-                                source={require('../images/icon/level3.png')}
-                                style={styles.imageRegLevel}
-                            />
+                                <Image
+                                    source={require('../images/icon/level3.png')}
+                                    style={styles.imageRegLevel}
+                                />
                                 <Text style={styles.buttonText}>У меня средний уровень или выше</Text>
                             </TouchableOpacity>
                         </View>
@@ -284,25 +264,25 @@ const handleRightButtonPress = useCallback(() => {
                                 onChangeText={val => setUserData(prev => ({...prev, password: val}))}
                             />
                         </View>
-                        
+
                     </View>
                 </View>
 
                 <View style={styles.slideLevel}>
-                    <View  style={styles.finishSlided}>
+                    <View style={styles.finishSlided}>
                         <Image
                             source={require("../images/El/regFinish.png")}
                             style={styles.regFinish}
                         />
                         <Text style={styles.finishTxt}>
-                           Поздравляем с началом изучения английского! 🎉 
-                           Создайте профиль и присоединяйтесь к нам в этом увлекательном путешествии. 
-                           Добро пожаловать! 😊🚀
+                            Поздравляем с началом изучения английского! 🎉
+                            Создайте профиль и присоединяйтесь к нам в этом увлекательном путешествии.
+                            Добро пожаловать! 😊🚀
                         </Text>
                     </View>
                 </View>
 
-               
+
             </Swiper>
             <SwiperButtonsContainer
                 onRightPress={handleRightButtonPress}
@@ -312,17 +292,14 @@ const handleRightButtonPress = useCallback(() => {
                 handleRegister={handleRegister}
                 isPressedRegistration={isPressedRegistration}
                 setIsPressedRegistration={setIsPressedRegistration}
-            /> 
+            />
 
 
-
-             
-
-        </LinearGradient>
+        </View>
     );
 }
 
-const SwiperButtonsContainer = ({ onRightPress, isPressedContinue, setIsPressedContinue, isLastSlide, handleRegister, isPressedRegistration, setIsPressedRegistration }) => (
+const SwiperButtonsContainer = ({onRightPress, isPressedContinue, setIsPressedContinue, isLastSlide, handleRegister, isPressedRegistration, setIsPressedRegistration}) => (
     <View style={styles.swiperButtonsContainer}>
         {!isLastSlide && (
             <TouchableOpacity
@@ -431,7 +408,7 @@ const styles = StyleSheet.create({
         paddingBottom: 17,
         paddingTop: 17,
     },
-    imageRegInp:{
+    imageRegInp: {
         width: '90%',
         height: '27%',
         marginTop: 10,
@@ -445,7 +422,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginTop: 10,
     },
-    imageReg:{
+    imageReg: {
         width: '97%',
         height: '27%',
         marginTop: 10,
@@ -471,7 +448,7 @@ const styles = StyleSheet.create({
         color: '#333',
         fontSize: 19,
     },
-    imageRegLevel:{
+    imageRegLevel: {
         width: '15%',
         resizeMode: 'contain'
     },
@@ -481,28 +458,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    logoEl:{
+    logoEl: {
         width: '60%',
         height: '60%',
         resizeMode: 'contain'
     },
-    finishSlided:{
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        alignContent: 'center',
-    },
-    regFinish:{
+    regFinish: {
         width: '100%',
         height: '70%',
         resizeMode: 'contain'
     },
-    finishSlided:{
+    finishSlided: {
         justifyContent: 'center',
         alignItems: 'center',
         alignContent: 'center',
     },
-    finishTxt:{
+    finishTxt: {
         color: '#333',
         fontSize: 19,
         marginTop: 30,
