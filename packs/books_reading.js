@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   Button,
   StyleSheet,
   handleScroll,
+  Switch,
+  TouchableWithoutFeedback,
   TouchableOpacity,
   Dimensions,
 } from "react-native";
@@ -15,10 +17,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faTimes,
   faGear,
+  faCaretRight,
+  faCaretLeft,
+  faCheck,
   faCirclePlay,
   faCirclePause,
 } from "@fortawesome/free-solid-svg-icons";
 import { Audio } from "expo-av";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, {BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 
 import globalCss from "./css/globalCss";
 const { width } = Dimensions.get("window");
@@ -57,7 +64,8 @@ const handleScroll = (event) => {
 };
 
 
-
+const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   const playSound = async (audioUrl) => {
     if (!sound) {
@@ -159,10 +167,25 @@ const extractWords = (htmlString) => {
 
   return words;
 };
+const bottomSheetRef = useRef(null);
+const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
+const handleOpenPress = useCallback(() => {
+  bottomSheetRef.current?.snapToIndex(1);
+}, []);
 
+const renderBackdrop = useCallback(
+  (props) => (
+    <BottomSheetBackdrop
+      {...props}
+      disappearsOnIndex={-1}
+      appearsOnIndex={1}
+    />
+  ),
+  []
+);
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Loader visible={loading} />
 
 
@@ -178,9 +201,9 @@ const extractWords = (htmlString) => {
           <View style={[styles.progressBar, { width: `${scrollY}%` }]} />
         </View>
 
-        <TouchableOpacity style={styles.settingsBtn}>
+        <TouchableOpacity style={styles.settingsBtn} onPress={handleOpenPress}>
           <Text>
-            <FontAwesomeIcon icon={faGear} size={30} style={globalCss.blue} />
+            <FontAwesomeIcon icon={faCheck} size={30} style={globalCss.blue} />
           </Text>
         </TouchableOpacity>
       </View>
@@ -208,44 +231,120 @@ const extractWords = (htmlString) => {
       </ScrollView>
 
       <View style={styles.audioPlyr}>
-        {filteredData.length > 0 && (
-          <TouchableOpacity
-            style={styles.audioBtnPlay}
-            onPress={() =>
-              playSound(
-                `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/${filteredData[0].audio_file}`
-              )
-            }
-          >
-            <FontAwesomeIcon icon={isPlaying ? faCirclePause : faCirclePlay} size={43} style={styles.audioBtnPlayColor} />
-          </TouchableOpacity>
-        )}
+      <View style={styles.controlAudioBtn}>
+      <FontAwesomeIcon 
+        icon={faCaretLeft} 
+        size={43}
+        style={styles.audioBtnPlayColor}
+      />
       </View>
-    </View>
+      {filteredData.length > 0 && (
+        <TouchableWithoutFeedback
+          onPress={() =>
+            playSound(
+              `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/${filteredData[0].audio_file}`
+            )
+          }
+        >
+          <View style={styles.audioBtnPlay}>
+            <FontAwesomeIcon 
+              icon={isPlaying ? faCirclePause : faCirclePlay} 
+              size={43}
+              style={styles.audioBtnPlayColor}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      )}
+
+      <View style={styles.controlAudioBtn}>
+      <FontAwesomeIcon 
+        icon={faCaretRight} 
+        size={43}
+        style={styles.audioBtnPlayColor}
+      />
+      
+      
+
+      </View>
+      </View>
+
+
+   
+
+
+<BottomSheet
+      ref={bottomSheetRef}
+      snapPoints={snapPoints}
+      backdropComponent={renderBackdrop}
+      enablePanDownToClose={true}
+      index={-1}
+    >
+      <BottomSheetView style={styles.contentBottomSheet}>
+        
+      <View style={styles.audioBtnSave}>
+          <Text style={styles.audioTxtSave}>Пометить как прочитанное</Text>
+
+      <Switch
+        trackColor={{ false: "#d1d1d1", true: "#4ADE80" }}
+        thumbColor={isEnabled ? "#ffffff" : "#f4f3f4"}
+        ios_backgroundColor="#d1d1d1"
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+      />
+      </View>
+
+
+      </BottomSheetView>
+    </BottomSheet>
+
+
+
+
+    </GestureHandlerRootView>
   );
 } 
+
 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
     paddingBottom: 20,
-    marginTop: '12%',
+    paddingTop: '12%',
+  },
+  audioBtnSave:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+  },
+  audioTxtSave:{
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#343541',
+    flex: 1,
   },
   audioPlyr:{
     position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'center',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'blue',
+    backgroundColor: 'white',
     paddingVertical: '8%',
     alignItems: 'center',
   },
-  audioBtnPlay:{
-    
+  contentBottomSheet:{
+    height: '100%', 
+      flex: 1,
+
   },
   audioBtnPlayColor:{
-    color: 'red',
+    color: '#343541',
+  },
+  controlAudioBtn:{
+    minWidth: '20%',
+    alignItems: 'center',
   },
   row:{
     flexDirection: 'row',
@@ -281,15 +380,15 @@ const styles = StyleSheet.create({
   },
 
   progressBarContainer: {
-    height: 20,
+    height: 25,
     flex: 1,
-    backgroundColor: 'lightgray',
-    borderRadius: 5,
+    backgroundColor: '#3a464e',
+    borderRadius: 10,
   },
   progressBar: {
     height: '100%',
-    backgroundColor: 'red',
-    borderRadius: 5,
+    backgroundColor: '#ffeb3b',
+    borderRadius: 10,
   },
   settingsBtn:{
     width: '14%',
