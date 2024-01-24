@@ -90,24 +90,30 @@ const handleScroll = (event) => {
 
 
   const [filteredData, setFilteredData] = useState([]);
+  const [wordsArray, setWordsArray] = useState([]);
 
   useEffect(() => {
-    setLoading(true); // Activează Loader-ul
-    fetch(
+  setLoading(true);
+  fetch(
       "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php"
     )
-      .then((response) => response.json())
-      .then((data) => {
-        const filteredData = data.filter(
-          (item) => item.id === route.params.bookId
-        );
-        setFilteredData(filteredData);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      })
-      .finally(() => setLoading(false)); // Dezactivează Loader-ul
-  }, [route.params.bookId]);
+    .then((response) => response.json())
+    .then((data) => {
+      const filteredData = data.filter(
+        (item) => item.id === route.params.bookId
+      );
+      const words = extractWords(filteredData[0].content); // Presupunând că `filteredData[0].content` conține HTML-ul
+      setFilteredData(filteredData);
+      setWordsArray(words); // presupunând că ai o stare `wordsArray` pentru a stoca cuvintele extrase
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    })
+    .finally(() => setLoading(false));
+}, [route.params.bookId]);
+
+
+
 
   const words = [
     { text: "is", start: 180, duration: 100 },
@@ -138,6 +144,22 @@ const handleScroll = (event) => {
     return () => clearInterval(interval);
   }, [isPlaying, sound]);
 
+const extractWords = (htmlString) => {
+  const regex = /<span data-m="(\d+)" data-d="(\d+)">(.*?)<\/span>/g;
+  const words = [];
+  let match;
+
+  while ((match = regex.exec(htmlString)) !== null) {
+    const start = parseInt(match[1], 10);
+    const duration = parseInt(match[2], 10);
+    const text = match[3].trim().replace(/&nbsp;/g, ' ');
+
+    words.push({ text, start, duration });
+  }
+
+  return words;
+};
+
 
   return (
     <View style={styles.container}>
@@ -163,43 +185,40 @@ const handleScroll = (event) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
+      <ScrollView onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={{ paddingTop: 30, paddingBottom: 30, paddingHorizontal: 20, }}>
         <View style={styles.contentBooks}>
           {filteredData.map((item, index) => (
-            <View key={item.id} style={styles.contentBooksRead}>
-              <Text style={styles.titleBook}>{item.title}</Text>
-              <Text style={styles.titleAuthor}>{item.author}</Text>
-              <Text style={styles.textBook}>{item.content}</Text>
+          <View key={item.id} style={styles.contentBooksRead}>
+            <Text style={styles.titleBook}>{item.title}</Text>
+            <Text style={styles.titleAuthor}>{item.author}</Text>
 
-              <Text style={styles.titleAuthor}>
-                {words.map((word, index) => (
-                  <Text
-                    key={index}
-                    style={
-                      currentWordIndex === index
-                        ? styles.highlightedWord
-                        : styles.normalWord
-                    }
-                  >
-                    {word.text + " "}
-                  </Text>
-                ))}
-              </Text>
+            <View style={styles.textContainer}>
+              {wordsArray.map((word, index) => (
+                <Text
+                  key={index}
+                  style={currentWordIndex === index ? styles.highlightedWord : styles.normalWord}
+                >
+                  {word.text + " "}
+                </Text>
+              ))}
             </View>
-          ))}
+          </View>
+        ))}
         </View>
       </ScrollView>
 
-      <View>
+      <View style={styles.audioPlyr}>
         {filteredData.length > 0 && (
-          <Button
-            title={isPlaying ? "Pauză" : "Redă Sunetul"}
+          <TouchableOpacity
+            style={styles.audioBtnPlay}
             onPress={() =>
               playSound(
                 `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/audio/${filteredData[0].audio_file}`
               )
             }
-          />
+          >
+            <FontAwesomeIcon icon={isPlaying ? faCirclePause : faCirclePlay} size={43} style={styles.audioBtnPlayColor} />
+          </TouchableOpacity>
         )}
       </View>
     </View>
@@ -212,6 +231,21 @@ const styles = StyleSheet.create({
     flex: 1, 
     paddingBottom: 20,
     marginTop: '12%',
+  },
+  audioPlyr:{
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'blue',
+    paddingVertical: '8%',
+    alignItems: 'center',
+  },
+  audioBtnPlay:{
+    
+  },
+  audioBtnPlayColor:{
+    color: 'red',
   },
   row:{
     flexDirection: 'row',
@@ -226,9 +260,14 @@ const styles = StyleSheet.create({
   },
   titleBook: {
     fontSize: 21,
+    fontWeight: '500',
+    color: '#343541',
+    alignSelf: 'center',
   },
   titleAuthor: {
+    color: '#343541',
     fontSize: 16,
+    alignSelf: 'center',
     marginBottom: 10,
   },
   textBook: {
