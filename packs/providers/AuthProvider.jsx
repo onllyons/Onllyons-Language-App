@@ -27,7 +27,8 @@ export const login = async (userData, tokensData) => {
         user = userData
 
         await AsyncStorage.setItem("tokens", JSON.stringify({...tokens, ...tokensData}));
-        tokens = {...tokens, ...tokensData};
+
+        setTokens(tokensData);
 
         return Promise.resolve();
     } catch (error) {
@@ -87,7 +88,7 @@ export const AuthProvider = ({children}) => {
             }
 
             if (storedTokens !== null) {
-                setTokens({...JSON.parse(storedTokens)})
+                setTokens(JSON.parse(storedTokens))
             }
 
             if (firstLaunchDate === null) {
@@ -133,6 +134,8 @@ export const AuthProvider = ({children}) => {
             .then(async data => {
                 if (data.data.success) {
                     setTimeout(() => setLoader(false), 1)
+
+                    await AsyncStorage.setItem("tokens", JSON.stringify({...tokens, ...data.data.tokens}));
 
                     setTokens(data.data.tokens)
 
