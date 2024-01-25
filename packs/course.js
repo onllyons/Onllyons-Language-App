@@ -149,7 +149,7 @@ const measureCategoryHeight = (index) => {
         </View>
         <View style={globalCss.itemNavTabUser}>
           <Image
-            source={require("./images/other_images/nav-top/sapphire.webp")}
+            source={require("./images/other_images/nav-top/pomodoro-technique.png")}
             style={globalCss.imageNavTop}
           />
           <Text style={globalCss.dataNavTop}>743</Text>

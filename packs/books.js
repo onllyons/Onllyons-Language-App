@@ -53,7 +53,7 @@ export default function BooksScreen({navigation}) {
           </View>
           <View style={globalCss.itemNavTabUser}>
             <Image
-              source={require("./images/other_images/nav-top/sapphire.webp")}
+              source={require("./images/other_images/nav-top/magic-book.png")}
               style={globalCss.imageNavTop}
             />
             <Text style={globalCss.dataNavTop}>743</Text>

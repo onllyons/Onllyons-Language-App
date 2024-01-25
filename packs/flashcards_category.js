@@ -13,9 +13,10 @@ const shuffleArray = (array) => {
 };
 
 export default function FlashCardsCategory({ route, navigation }) {
-  const { codeName } = route.params;
+  const { codeName, codeTitle } = route.params;
   const [data, setData] = useState([]);
   const [pressedCards, setPressedCards] = useState({});
+  const [isPressedContinue, setIsPressedContinue] = useState(false);
 
   const colors = ['#FF9400', '#7BC70A', '#CE81FF', '#1AB1F6', '#ffcc01', '#FC4849']; 
   const colorsPressed = ['#ffb14c', '#92ea0e', '#deadff', '#59c7f7', '#f9d243', '#f97575']; 
@@ -91,38 +92,19 @@ export default function FlashCardsCategory({ route, navigation }) {
   };
 
   return (
-    <View>
+    <View style={styles.containerMain}>
 
+ 
       <View style={globalCss.navTabUser}>
-        <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => navigation.navigate('FlashCardsScreen')}>
+        <TouchableOpacity style={globalCss.itemNavTabUserBtnBack} onPress={() => navigation.navigate('FlashCardsScreen')}>
           <FontAwesomeIcon icon={faArrowLeft} size={30}  style={globalCss.blue} />
-          <Text style={globalCss.dataNavTop}></Text>
         </TouchableOpacity>
-        <View style={globalCss.itemNavTabUser}>
-          <Image
-            source={require("./images/other_images/nav-top/sapphire.webp")}
-            style={globalCss.imageNavTop}
-          />
-          <Text style={globalCss.dataNavTop}>743</Text>
+        <View style={globalCss.itemNavTabUserTitleCat}>
+          <Text style={globalCss.dataCategoryTitle}>{codeTitle}</Text>
         </View>
-        <View style={globalCss.itemNavTabUser}>
-          <Image
-            source={require("./images/other_images/nav-top/flame.png")}
-            style={globalCss.imageNavTop}
-          />
-          <Text style={globalCss.dataNavTop}>4</Text>
-        </View>
-        <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => setIsDropdownVisible(!isDropdownVisible)}>
-          <Image
-            source={require("./images/other_images/nav-top/star.png")}
-            style={globalCss.imageNavTop}
-          />
-          <Text style={globalCss.dataNavTop}>4</Text>
-        </TouchableOpacity>
       </View>
 
-
-      <ScrollView contentContainerStyle={{ paddingTop: 10, paddingBottom: 160 }}>
+      <ScrollView contentContainerStyle={{ paddingTop: 0, paddingBottom: 160 }}>
         <View style={styles.container}>
           {data.map((item, index) => (
             <View style={styles.cardLesson} key={item.id}>
@@ -155,6 +137,21 @@ export default function FlashCardsCategory({ route, navigation }) {
             </View>
           ))}
         </View>
+
+        <TouchableOpacity 
+        style={[styles.containerMessage, isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedGry] : globalCss.buttonGry1]}
+        onPressIn={() => setIsPressedContinue(true)}
+        onPressOut={() => setIsPressedContinue(false)}
+        activeOpacity={1}
+      >
+        <Text style={styles.buttonText}>
+          В каждом уроке представлены не более 10 слов, чтобы облегчить изучение и запоминание. 
+          Это позволяет более эффективно усваивать материал, сосредотачиваясь на небольшом количестве слов за один раз.
+        </Text>
+      </TouchableOpacity>
+
+
+
       </ScrollView>
     </View>
   );
@@ -162,11 +159,31 @@ export default function FlashCardsCategory({ route, navigation }) {
 
 
 const styles = StyleSheet.create({
+  containerMain:{
+    backgroundColor: 'white'
+  },
   container: {
     flex: 1, 
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: '2%',
+  },
+  containerMessage:{
+    marginHorizontal: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    borderRadius: 14,
+    marginBottom: 20,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  buttonText:{
+    color: 'black',
+    fontSize: 18,
+    fontWeight: '600',
   },
   cardPressed: {
     shadowOffset: { width: 0, height: 0 },
