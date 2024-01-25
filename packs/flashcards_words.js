@@ -14,7 +14,6 @@ import {
   StyleSheet,
 } from "react-native";
 import * as Haptics from "expo-haptics";
-import { LinearGradient } from "expo-linear-gradient";
 import Carousel from "react-native-new-snap-carousel";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -39,42 +38,83 @@ const { width } = Dimensions.get("window");
 
 export default function FlashCardsLearning({ route, navigation }) {
   const [combinedData, setCombinedData] = useState([]);
-  const [index, setIndex] = useState(0);
   const totalSlides = combinedData.length;
+  const [index, setIndex] = useState(0);
   const { url } = route.params;
   const swiperRef = useRef(null);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
   const [loader, setLoader] = useState(false);
 
-  // checkbox save local storage
-
   const [isEnabled, setIsEnabled] = useState(false);
   const [isEnabledUsa, setIsEnabledUsa] = useState(true);
 
+  const [carouselData, setCarouselData] = useState([]);
+  const [quizData, setQuizData] = useState([]);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [isAtLastCarouselSlide, setIsAtLastCarouselSlide] = useState(false);
+
   const toggleSwitch = () => {
-  setIsEnabled((previousState) => !previousState);
-  // Salvare în AsyncStorage
-  AsyncStorage.setItem("isEnabled", JSON.stringify(!isEnabled))
-    .then(() => {
-      console.log("Valoarea isEnabled a fost salvată cu succes în AsyncStorage.");
-    })
-    .catch((error) => {
-      console.error("Eroare la salvarea în AsyncStorage:", error);
-    });
+    setIsEnabled((previousState) => !previousState);
+    // Salvare în AsyncStorage
+    AsyncStorage.setItem("isEnabled", JSON.stringify(!isEnabled))
+      .then(() => {
+        console.log(
+          "Valoarea isEnabled a fost salvată cu succes în AsyncStorage."
+        );
+      })
+      .catch((error) => {
+        console.error("Eroare la salvarea în AsyncStorage:", error);
+      });
+  };
+
+  const fetchCarouselData = async () => {
+    try {
+      const response = await fetch(
+        "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-carousel.php"
+      );
+      let data = await response.json();
+      data = data.filter((item) => item.url_display === url); // Filtrare după URL
+      setCarouselData(data);
+    } catch (error) {
+      console.error("Error fetching carousel data:", error);
+    }
+  };
+
+  // Încărcarea datelor pentru Quiz, filtrate după URL
+  const fetchQuizData = async () => {
+    try {
+      const response = await fetch(
+        "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-quiz.php"
+      );
+      let data = await response.json();
+      data = data.filter((item) => item.quiz_url === url); // Filtrare după URL
+      setQuizData(data);
+    } catch (error) {
+      console.error("Error fetching quiz data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCarouselData();
+  }, []);
+
+const handleShowQuiz = () => {
+  fetchQuizData(); // Încărcați datele quiz-ului când butonul este apăsat
+  setShowQuiz(true);
+  setIndex(0); // Resetarea indexului la 0 pentru a începe quiz-ul
 };
 
-const toggleSwitchUsa = () => {
-  setIsEnabledUsa((previousState) => !previousState);
-  // Salvare în AsyncStorage
-  AsyncStorage.setItem("isEnabledUsa", JSON.stringify(!isEnabledUsa))
-    .then(() => {
-      console.log("succes");
-    })
-    .catch((error) => {
-      console.error("error:", error);
-    });
-};
-
+  const toggleSwitchUsa = () => {
+    setIsEnabledUsa((previousState) => !previousState);
+    // Salvare în AsyncStorage
+    AsyncStorage.setItem("isEnabledUsa", JSON.stringify(!isEnabledUsa))
+      .then(() => {
+        console.log("succes");
+      })
+      .catch((error) => {
+        console.error("error:", error);
+      });
+  };
 
   // Recuperare stării din AsyncStorage la încărcarea componentei
   useEffect(() => {
@@ -101,7 +141,6 @@ const toggleSwitchUsa = () => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSound, setCurrentSound] = useState(null);
-
 
   // moddal deschided de jso
   const bottomSheetRef = useRef(null);
@@ -181,60 +220,76 @@ const toggleSwitchUsa = () => {
     );
   };
 
+  const lastCarouselIndex = combinedData.findIndex(
+    (item) => item.type !== "carousel"
+  );
+
   const handleSlideChange = (newIndex) => {
     updateProgressBar(newIndex);
+    // Verifică dacă utilizatorul a ajuns la ultimul slide din carousel
+    if (newIndex === carouselData.length - 1) {
+      setIsAtLastCarouselSlide(true);
+    } else {
+      setIsAtLastCarouselSlide(false);
+    }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoader(true); // Indicatorul de încărcare este activat
+  const renderItem = ({ item }) => {
+    if (showQuiz) {
+      // Afișați slide-urile Quiz
+      return (
+        <View style={styles.slide}>
+          <Text style={styles.categoryTitle}>quiz: {item.answer_1}</Text>
+        </View>
+      );
+    } else {
+      // Afișați slide-urile Carousel
+      return (
+        <View style={styles.slide}>
+          {/* 11111111111111111111111111111111111111111111111111 */}
+          <View style={styles.groupEng}>
+            <Text style={styles.word_en}>{item.word_en}</Text>
+            <Text
+              style={
+                isEnabled ? styles.tophoneticsAmerican : { display: "none" }
+              }
+            >
+              brit: / {item.tophoneticsBritish} /
+            </Text>
+            <Text
+              style={
+                isEnabledUsa ? styles.tophoneticsBritish : { display: "none" }
+              }
+            >
+              usa: / {item.tophoneticsAmerican} /
+            </Text>
+          </View>
 
-        const responseCarousel = await fetch(
-          "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-carousel.php"
-        );
-        const dataCarousel = await responseCarousel.json();
+          <TouchableOpacity
+            onPress={() =>
+              playSound(
+                `https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/${item.word_audio}`
+              )
+            }
+          >
+            <Text style={styles.audioWord}>
+              <FontAwesomeIcon
+                icon={isPlaying ? faCirclePause : faCirclePlay}
+                size={40}
+                style={{ color: "#1f80ff" }}
+              />
+            </Text>
+          </TouchableOpacity>
 
-        const responseQuiz = await fetch(
-          "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-quiz.php"
-        );
-        const dataQuiz = await responseQuiz.json();
-
-        const filteredCarouselData = dataCarousel.filter(
-          (item) => item.url_display === url
-        );
-        const filteredQuizData = dataQuiz.filter(
-          (item) => item.quiz_url === url
-        );
-
-        const combinedData = [
-          ...filteredCarouselData.map((item) => ({
-            ...item,
-            type: "carousel",
-          })),
-          ...filteredQuizData.map((item) => ({ ...item, type: "quiz" })),
-        ];
-
-        setCombinedData(combinedData);
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setLoader(false); // Indicatorul de încărcare este dezactivat
-      }
-    };
-
-    fetchData();
-  }, [url]);
+          <Text style={styles.word_ru}>{item.word_ru}</Text>
+        </View>
+      );
+    }
+  };
 
   return (
     <GestureHandlerRootView>
-      <LinearGradient
-        colors={["#ecf7ff", "#f3faff", "#ecf7ff"]}
-        locations={[0, 0.6, 1]}
-        start={[0, 0]}
-        end={[Math.cos(Math.PI / 12), 1]}
-        style={styles.swiperContent}
-      >
+      <View style={styles.swiperContent}>
         <Loader visible={loader} />
 
         <View style={styles.row}>
@@ -250,7 +305,15 @@ const toggleSwitchUsa = () => {
               />
             </Text>
           </TouchableOpacity>
-          <ProgressBar currentIndex={index} totalCount={totalSlides} />
+          <ProgressBar
+            currentIndex={index}
+            totalCount={
+              !showQuiz
+                ? carouselData.length
+                : carouselData.length + quizData.length
+            }
+          />
+
           <TouchableOpacity
             style={styles.settingsBtn}
             onPress={combinedOnPress}
@@ -263,45 +326,10 @@ const toggleSwitchUsa = () => {
 
         <View style={styles.carousel}>
           <Carousel
-            data={combinedData}
+            data={showQuiz ? quizData : carouselData}
             ref={swiperRef}
-            onSnapToItem={(index) => handleSlideChange(index)}
-            renderItem={({ item }) => (
-              <View style={styles.slide}>
-                {item.type === "carousel" ? (
-                  <View>
-                {/* 11111111111111111111111111111111111111111111111111 */}
-                    <View style={styles.groupEng}>
-                      <Text style={styles.word_en}>{item.word_en}</Text>
-                      <Text style={isEnabled ? styles.tophoneticsAmerican : { display: 'none' }}>brit: / {item.tophoneticsBritish} /</Text>
-                      <Text style={isEnabledUsa ? styles.tophoneticsBritish : { display: 'none' }}>usa: / {item.tophoneticsAmerican} /</Text>
-                    </View>
-
-                    <TouchableOpacity
-                      onPress={() =>
-                        playSound(
-                          `https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/${item.word_audio}`
-                        )
-                      }
-                    >
-                      <Text style={styles.audioWord}>
-                        <FontAwesomeIcon
-                          icon={isPlaying ? faCirclePause : faCirclePlay}
-                          size={40}
-                          style={{ color: "#1f80ff" }}
-                        />
-                      </Text>
-                    </TouchableOpacity>
-
-                    <Text style={styles.word_ru}>{item.word_ru}</Text>
-                  </View>
-                ) : (
-                  <Text style={styles.categoryTitle}>
-                    quiz: {item.answer_1}
-                  </Text>
-                )}
-              </View>
-            )}
+            onSnapToItem={handleSlideChange}
+            renderItem={renderItem} // Utilizați funcția renderItem corectată
             sliderWidth={width}
             itemWidth={width - 70}
             paginationStyle={styles.pagination}
@@ -309,6 +337,14 @@ const toggleSwitchUsa = () => {
             layout={"default"}
             loop={false}
           />
+
+        {isAtLastCarouselSlide && !showQuiz && index < quizData.length && (
+          <View style={styles.modalContainer}>
+            <TouchableOpacity onPress={handleShowQuiz}>
+              <Text style={styles.modalText}>Show Quiz</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         </View>
 
         <SwiperButtonsContainer
@@ -316,7 +352,7 @@ const toggleSwitchUsa = () => {
           isPressedContinue={isPressedContinue}
           setIsPressedContinue={setIsPressedContinue}
         />
-      </LinearGradient>
+      </View>
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -326,8 +362,7 @@ const toggleSwitchUsa = () => {
         index={-1}
       >
         <BottomSheetView style={styles.contentBottomSheet}>
-        
-        <View style={styles.settingsGroup}>
+          <View style={styles.settingsGroup}>
             <Text style={styles.settingsIPA}>Американское произношение</Text>
 
             <Switch
@@ -337,12 +372,9 @@ const toggleSwitchUsa = () => {
               onValueChange={toggleSwitchUsa}
               value={isEnabledUsa}
             />
+          </View>
 
-
-        </View>
-
-
-        <View style={styles.settingsGroup}>
+          <View style={styles.settingsGroup}>
             <Text style={styles.settingsIPA}>Британское произношение</Text>
 
             <Switch
@@ -352,13 +384,7 @@ const toggleSwitchUsa = () => {
               onValueChange={toggleSwitch}
               value={isEnabled}
             />
-        </View>
-
-        
-
-
-        
-
+          </View>
         </BottomSheetView>
       </BottomSheet>
     </GestureHandlerRootView>
@@ -477,80 +503,62 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   groupEng: {
-    marginBottom: '10%',
+    marginBottom: "10%",
   },
   word_en: {
     fontSize: 30,
-    color: '#535353',
-    textTransform: 'capitalize',
-    fontWeight: '500',
-    textAlign: 'center',
+    color: "#535353",
+    textTransform: "capitalize",
+    fontWeight: "500",
+    textAlign: "center",
   },
   tophoneticsBritish: {
-    textAlign: 'center',
-    color: '#0036ff',
+    textAlign: "center",
+    color: "#0036ff",
     fontWeight: 300,
     fontSize: 20,
   },
   tophoneticsAmerican: {
-    textAlign: 'center',
-    color: '#0036ff',
+    textAlign: "center",
+    color: "#0036ff",
     fontWeight: 300,
     fontSize: 20,
   },
   word_ru: {
     fontSize: 30,
-    color: '#535353',
-    textTransform: 'capitalize',
-    fontWeight: '500',
-    textAlign: 'center',
+    color: "#535353",
+    textTransform: "capitalize",
+    fontWeight: "500",
+    textAlign: "center",
   },
   audioWord: {
-    alignSelf: 'center',
-    marginBottom: '10%'
+    alignSelf: "center",
+    marginBottom: "10%",
   },
-  settingsGroup:{
-    flexDirection: 'row',
-    alignItems: 'center',
+  settingsGroup: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 20,
-    marginBottom: '2%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
+    marginBottom: "2%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
   },
-    settingsIPA:{
+  settingsIPA: {
     fontSize: 18,
-    fontWeight: '500',
-    color: '#343541',
+    fontWeight: "500",
+    color: "#343541",
     flex: 1,
   },
-  
-  template: {
 
-  },
-  template: {
-
-  },
-  template: {
-
-  },
-  template: {
-
-  },
-  template: {
-
-  },
-  template: {
-
-  },
-  template: {
-
-  },
-  template: {
-
-  },
-  template: {
-
-  },
+  template: {},
+  template: {},
+  template: {},
+  template: {},
+  template: {},
+  template: {},
+  template: {},
+  template: {},
+  template: {},
 });
