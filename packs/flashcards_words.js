@@ -35,11 +35,11 @@ import globalCss from "./css/globalCss";
 import Loader from "./components/Loader";
 
 const { width } = Dimensions.get("window");
-
+const DEBOUNCE_TIME = 300;
 export default function FlashCardsLearning({ route, navigation }) {
   const [combinedData, setCombinedData] = useState([]);
-  const totalSlides = combinedData.length;
-  const [index, setIndex] = useState(0);
+const [index, setIndex] = useState(0);
+const totalSlides = combinedData.length;
   const { url } = route.params;
   const swiperRef = useRef(null);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
@@ -52,6 +52,8 @@ export default function FlashCardsLearning({ route, navigation }) {
   const [quizData, setQuizData] = useState([]);
   const [showQuiz, setShowQuiz] = useState(false);
   const [isAtLastCarouselSlide, setIsAtLastCarouselSlide] = useState(false);
+const [showModal, setShowModal] = useState(false);
+  const [lastPlayed, setLastPlayed] = useState(0);
 
   const toggleSwitch = () => {
     setIsEnabled((previousState) => !previousState);
@@ -67,18 +69,23 @@ export default function FlashCardsLearning({ route, navigation }) {
       });
   };
 
-  const fetchCarouselData = async () => {
-    try {
-      const response = await fetch(
-        "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-carousel.php"
-      );
-      let data = await response.json();
-      data = data.filter((item) => item.url_display === url); // Filtrare după URL
-      setCarouselData(data);
-    } catch (error) {
-      console.error("Error fetching carousel data:", error);
-    }
-  };
+const fetchCarouselData = async () => {
+  try {
+    const response = await fetch(
+      "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-carousel.php"
+    );
+    let data = await response.json();
+    data = data.filter((item) => item.url_display === url); // Filtrare după URL
+    setCarouselData(data);
+
+    // Calculează lungimea datelor și actualizează combinedData
+    const totalSlides = data.length;
+    setCombinedData(data);
+  } catch (error) {
+    console.error("Error fetching carousel data:", error);
+  }
+};
+
 
   // Încărcarea datelor pentru Quiz, filtrate după URL
   const fetchQuizData = async () => {
@@ -100,9 +107,13 @@ export default function FlashCardsLearning({ route, navigation }) {
 
 const handleShowQuiz = () => {
   fetchQuizData(); // Încărcați datele quiz-ului când butonul este apăsat
-  setShowQuiz(true);
+  setShowQuiz(true); // Afișează quiz-ul
+  setShowModal(false); // Ascunde modalul
   setIndex(0); // Resetarea indexului la 0 pentru a începe quiz-ul
 };
+
+
+
 
   const toggleSwitchUsa = () => {
     setIsEnabledUsa((previousState) => !previousState);
@@ -177,62 +188,91 @@ const handleShowQuiz = () => {
       </View>
     );
   };
-  const playSound = async (audioUrl) => {
-    if (currentSound && isPlaying) {
-      await currentSound.pauseAsync();
-      setIsPlaying(false);
-    } else {
-      if (currentSound) {
-        await currentSound.unloadAsync();
+
+
+const playSound = async (audioUrl) => {
+  // Verifică dacă sunetul curent este în curs de redare și așteaptă finalizarea
+  if (currentSound && isPlaying) {
+    await currentSound.stopAsync(); // Oprire înainte de a începe redarea următoare
+    setIsPlaying(false);
+  }
+
+  // Descarcă sunetul curent (dacă există)
+  if (currentSound) {
+    await currentSound.unloadAsync();
+  }
+
+  // Crează un nou sunet și redă-l
+  const newSound = new Audio.Sound();
+  try {
+    await newSound.loadAsync({ uri: audioUrl });
+    await newSound.playAsync();
+    setCurrentSound(newSound);
+    setIsPlaying(true);
+
+    newSound.setOnPlaybackStatusUpdate((status) => {
+      if (!status.isPlaying && status.didJustFinish) {
+        setIsPlaying(false);
+        newSound.unloadAsync();
       }
-      const newSound = new Audio.Sound();
-      try {
-        await newSound.loadAsync({ uri: audioUrl });
-        await newSound.playAsync();
-        setCurrentSound(newSound);
-        setIsPlaying(true);
+    });
+  } catch (error) {
+    console.error("Eroare la redarea sunetului:", error);
+  }
+};
 
-        newSound.setOnPlaybackStatusUpdate((status) => {
-          if (!status.isPlaying && status.didJustFinish) {
-            setIsPlaying(false);
-            newSound.unloadAsync();
-          }
-        });
-      } catch (error) {
-        console.error("Eroare la redarea sunetului:", error);
-      }
-    }
-  };
 
-  const handleBackButtonPress = () => {
-    navigation.goBack();
-  };
-  const handleRightButtonPress = () => {
-    if (index < totalSlides - 1) {
-      swiperRef.current?.snapToNext();
-    }
-  };
 
-  const updateProgressBar = (newIndex) => {
-    setIndex(newIndex);
-    console.log(
-      `Index actualizat: ${newIndex}, Lungime totală: ${combinedData.length}`
-    );
-  };
 
-  const lastCarouselIndex = combinedData.findIndex(
-    (item) => item.type !== "carousel"
+const handleBackButtonPress = () => {
+  navigation.goBack();
+};
+
+
+
+const updateProgressBar = (newIndex) => {
+  setIndex(newIndex);
+
+  const isAtLastSlide = newIndex === combinedData.length - 1; // Verifică dacă este ultimul slide
+  setIsAtLastCarouselSlide(isAtLastSlide);
+
+  console.log(
+    `Index actualizat: ${newIndex}, Lungime totală: ${combinedData.length}`
   );
+};
 
-  const handleSlideChange = (newIndex) => {
-    updateProgressBar(newIndex);
-    // Verifică dacă utilizatorul a ajuns la ultimul slide din carousel
-    if (newIndex === carouselData.length - 1) {
-      setIsAtLastCarouselSlide(true);
-    } else {
-      setIsAtLastCarouselSlide(false);
-    }
-  };
+const lastCarouselIndex = combinedData.findIndex(
+  (item) => item.type !== "carousel"
+);
+
+const handleSlideChange = (newIndex) => {
+  updateProgressBar(newIndex);
+
+  // Verifică dacă este ultimul slide
+  const isAtLastSlide = newIndex === combinedData.length - 1;
+  setIsAtLastCarouselSlide(isAtLastSlide); // Setează starea în funcție de poziția curentă
+
+  // Verifică dacă quiz-ul este afișat și dacă slide-ul curent are audio
+  const currentSlide = showQuiz ? quizData[newIndex] : carouselData[newIndex];
+  if (!showQuiz && currentSlide && currentSlide.word_audio) {
+    const audioUrl = `https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/${currentSlide.word_audio}`;
+    playSound(audioUrl);
+  }
+};
+
+
+const handleRightButtonPress = () => {
+  if (isAtLastCarouselSlide) {
+    // Dacă este ultimul slide, afișează modalul
+    setShowModal(true);
+  } else if (index < totalSlides - 1) {
+    // Altfel, avansează la următorul slide
+    swiperRef.current?.snapToNext();
+    const newIndex = index + 1;
+    setIndex(newIndex); // Actualizează indexul la următorul slide
+  }
+};
+
 
   const renderItem = ({ item }) => {
     if (showQuiz) {
@@ -338,21 +378,31 @@ const handleShowQuiz = () => {
             loop={false}
           />
 
-        {isAtLastCarouselSlide && !showQuiz && index < quizData.length && (
-          <View style={styles.modalContainer}>
-            <TouchableOpacity onPress={handleShowQuiz}>
-              <Text style={styles.modalText}>Show Quiz</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+
+
+
+
+
+
+
         </View>
 
         <SwiperButtonsContainer
           onRightPress={handleRightButtonPress}
           isPressedContinue={isPressedContinue}
           setIsPressedContinue={setIsPressedContinue}
+          swiperRef={swiperRef} 
         />
       </View>
+
+{showModal && (
+  <View style={styles.modalContainer}>
+    <TouchableOpacity onPress={handleShowQuiz}>
+      <Text style={styles.modalText}>Afișează Quiz</Text>
+    </TouchableOpacity>
+  </View>
+)}
+
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -395,6 +445,7 @@ const SwiperButtonsContainer = ({
   onRightPress,
   isPressedContinue,
   setIsPressedContinue,
+  swiperRef,
 }) => (
   <View style={styles.swiperButtonsContainer}>
     <TouchableOpacity
@@ -404,7 +455,12 @@ const SwiperButtonsContainer = ({
           ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
           : globalCss.buttonBlue,
       ]}
-      onPress={onRightPress}
+      onPress={() => {
+        if (swiperRef && swiperRef.current) { // Verifică dacă swiperRef este definit și nu este null
+          onRightPress(); // Apelează funcția onRightPress
+          swiperRef.current.snapToNext(); // Schimbă slide-ul la următorul în carusel
+        }
+      }}
       onPressIn={() => setIsPressedContinue(true)}
       onPressOut={() => setIsPressedContinue(false)}
       activeOpacity={1}
@@ -413,6 +469,8 @@ const SwiperButtonsContainer = ({
     </TouchableOpacity>
   </View>
 );
+
+
 
 const styles = StyleSheet.create({
   carousel: {
@@ -552,7 +610,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  template: {},
+  modalContainer: {
+    width: '100%',
+    height: '50%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'red',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999,
+  },
+
   template: {},
   template: {},
   template: {},
