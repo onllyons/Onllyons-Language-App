@@ -95,6 +95,11 @@ const globalCss = StyleSheet.create({
     borderColor: '#d8d8d8',
     shadowColor: '#d8d8d8',
   },
+  bgGreen: {
+    backgroundColor: '#57cc04',
+    shadowColor: '#439c04',
+    borderColor: 'transparent',
+  },
   bgGryPressed: {
     backgroundColor: '#f9f9f9',
     borderColor: '#d8d8d8',
@@ -154,7 +159,7 @@ const globalCss = StyleSheet.create({
   },
   buttonGreen: {
     backgroundColor: '#57cc04',
-    shadowColor: '#62a10a',
+    shadowColor: '#40a400',
   },
   buttonPressedBlue: {
     backgroundColor: '#1cb0f6',

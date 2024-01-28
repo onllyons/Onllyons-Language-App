@@ -21,6 +21,9 @@ export default function CourseScreen({navigation}) {
     const startLayoutY = useRef(0)
     const categoriesPos = useRef({})
 
+    const [isCardPressedCourseTitle, setIsCardPressedCourseTitle] = useState(false);
+    const [isCardPressedCourseDetails, setIsCardPressedCourseDetails] = useState(false);
+
     const handleScroll = (nativeEvent) => {
         let currCategoryOnScroll = currentCategoryName
 
@@ -137,13 +140,36 @@ export default function CourseScreen({navigation}) {
                 </TouchableOpacity>
             </View>
 
+            {/*11111111111111*/}
+
             <View style={styles.infoCourseSubject}>
-                <Text>{currentCategoryName}</Text>
+                <TouchableOpacity
+                    style={[styles.cardCategoryTitle, isCardPressedCourseTitle ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
+                    onPressIn={() => setIsCardPressedCourseTitle(true)}
+                    onPressOut={() => setIsCardPressedCourseTitle(false)}
+                    activeOpacity={1}
+                >
+                    <Text style={styles.infoCourseTxtSubCat}>Subject 1</Text>
+                    <Text style={styles.infoCourseTitle}>{currentCategoryName}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                style={[styles.infoCourseBtn, isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
+                    onPressIn={() => setIsCardPressedCourseDetails(true)}
+                    onPressOut={() => setIsCardPressedCourseDetails(false)}
+                    activeOpacity={1}
+                >
+                    <Image
+                      source={require('./images/icon/infoCategory.png')}
+                      style={styles.infoCategoryImg}
+                    />
+                </TouchableOpacity>
             </View>
+
+
 
             <ScrollView
                 ref={scrollViewRef}
-                contentContainerStyle={{paddingTop: 190, paddingBottom: 20}}
+                contentContainerStyle={{paddingTop: 140, paddingBottom: 20}}
                 style={styles.bgCourse}
                 onScroll={e => handleScroll(e.nativeEvent)}
                 onLayout={(e) => startLayoutY.current = e.nativeEvent.layout.y}
@@ -155,12 +181,12 @@ export default function CourseScreen({navigation}) {
                             <View key={category}
                                   onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>
 
-                                <View style={styles.categoryTitleBg}>
+                                {/*<View style={styles.categoryTitleBg}>
                                     <Text style={styles.categoryTitle}>
                                         {data[category].var_idtest_1}
                                     </Text>
                                 </View>
-
+                                */}
                                 {data[category].items.map((item, index) => (
                                     <TouchableOpacity
                                         key={item.id}
@@ -224,17 +250,11 @@ const styles = StyleSheet.create({
         left: '5%',
         right: '5%',
         width: '90%',
-        height: 140,
-        backgroundColor: '#57cc02',
-        borderRadius: 13,
-        shadowOffset: {width: 0, height: 8},
+        height: 95,
+        flexDirection: 'row',
         zIndex: 1,
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        shadowColor: '#47a40b',
-        elevation: 0,
-        justifyContent: 'center',
     },
+
     cardPressed: {
         shadowOffset: {width: 0, height: 0},
         transform: [{translateY: 4}],
@@ -261,4 +281,66 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingLeft: 10,
     },
+    infoCourseTitle:{
+        color: 'white',
+        fontSize: 19,
+        width: '80%',
+        marginLeft: '5%',
+        textTransform: 'uppercase',
+        fontWeight: '600',
+    },
+    cardCategoryTitle: {
+        width: '73%',
+        height: '100%',
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 12,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        textAlign: 'center',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 1,
+        shadowRadius: 0,
+        elevation: 0,
+      },
+    infoCourseBtn:{
+        width: '27%',
+        height: '100%',
+        borderTopRightRadius: 12,
+        borderBottomRightRadius: 12,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        textAlign: 'center',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 1,
+        shadowRadius: 0,
+        elevation: 0,
+    },
+    infoCourseTxtSubCat:{
+        color: '#d1ffb1',
+        fontSize: 15,
+        width: '80%',
+        marginLeft: '5%',
+        textTransform: 'uppercase',
+        fontWeight: '700',
+    },
+    infoCategoryImg:{
+        width: '30%',
+        height: '30%',
+        resizeMode: 'contain',
+        alignSelf: 'center',
+    },
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
