@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "rea
 import globalCss from './css/globalCss';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import Loader from "./components/Loader";
+
 const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -17,7 +19,7 @@ export default function FlashCardsCategory({ route, navigation }) {
   const [data, setData] = useState([]);
   const [pressedCards, setPressedCards] = useState({});
   const [isPressedContinue, setIsPressedContinue] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const colors = ['#FF9400', '#7BC70A', '#CE81FF', '#1AB1F6', '#ffcc01', '#FC4849']; 
   const colorsPressed = ['#ffb14c', '#92ea0e', '#deadff', '#59c7f7', '#f9d243', '#f97575']; 
   
@@ -52,15 +54,21 @@ export default function FlashCardsCategory({ route, navigation }) {
   }, []);
 
 
-  useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-category.php')
-      .then((response) => response.json())
-      .then((data) => {
-        const filteredData = data.filter((item) => item.group_category === codeName);
-        setData(filteredData);
-      })
-      .catch((error) => console.error('Error:', error));
-  }, [codeName]);
+useEffect(() => {
+  setIsLoading(true); // Activează loader-ul înainte de solicitarea fetch
+  fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-category.php')
+    .then((response) => response.json())
+    .then((data) => {
+      const filteredData = data.filter((item) => item.group_category === codeName);
+      setData(filteredData);
+      setIsLoading(false); // Dezactivează loader-ul după ce datele sunt procesate
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      setIsLoading(false); // Dezactivează loader-ul în caz de eroare
+    });
+}, [codeName]); // Dependența pentru useEffect
+
 
   const getCategoryImageAndText = (categoryValue) => {
     switch (categoryValue) {
@@ -93,6 +101,7 @@ export default function FlashCardsCategory({ route, navigation }) {
 
   return (
     <View style={styles.containerMain}>
+<Loader visible={isLoading}/>
 
  
       <View style={globalCss.navTabUser}>

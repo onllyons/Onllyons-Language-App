@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Modal, Ani
 import globalCss from './css/globalCss';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import Loader from "./components/Loader";
 
 const FlashCardWords = ({ navigation }) => {
   const [pressedCards, setPressedCards] = useState({});
@@ -11,16 +12,21 @@ const FlashCardWords = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef(null);
 
-  useEffect(() => {
-    fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words.php')
-      .then(response => response.json())
-      .then(data => {
-        setData(data);
-        setVisibleData(data.slice(0, 20)); // Afișează primele 20 de carduri inițial
-        setIsLoading(false);
-      })
-      .catch(error => console.error('Error:', error));
-  }, []);
+useEffect(() => {
+  setIsLoading(true); // Activează loader-ul înainte de solicitarea fetch
+  fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words.php')
+    .then(response => response.json())
+    .then(data => {
+      setData(data);
+      setVisibleData(data.slice(0, 20)); // Afișează primele 20 de carduri inițial
+      setIsLoading(false); // Dezactivează loader-ul după ce datele sunt încărcate
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      setIsLoading(false); // Dezactivează loader-ul în caz de eroare
+    });
+}, []);
+
 
   const onPressIn = (id) => {
     setPressedCards(prevState => ({ ...prevState, [id]: true }));
@@ -50,6 +56,7 @@ const FlashCardWords = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+    <Loader visible={isLoading}/>
       <View style={globalCss.navTabUser}>
         <View style={globalCss.itemNavTabUser}>
           <Image
