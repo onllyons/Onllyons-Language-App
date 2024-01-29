@@ -1,12 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import React, {useState, useMemo, useRef} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions} from 'react-native';
 import globalCss from './css/globalCss';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons';
-import BooksReading from "./books_reading";
 import Carousel from 'react-native-new-snap-carousel';
 import Loader from "./components/Loader";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 
 export default function BooksScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
@@ -14,17 +13,27 @@ export default function BooksScreen({navigation}) {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
+    const finishedBooks = useRef(0)
+
+    useMemo(() => {
         setLoading(true);
-        fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
-            .then(response => response.json())
+
+        sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,
+            {},
+            navigation,
+            {success: false}
+        )
             .then(data => {
-                setData(data);
-                const uniqueCategories = [...new Set(data.map(item => item.type_category))];
+                finishedBooks.current = data.finishedBooks
+
+                setData(data.data);
+
+                const uniqueCategories = [...new Set(data.data.map(item => item.type_category))];
                 setCategories(uniqueCategories);
             })
-            .catch(error => console.error('Error:', error))
-            .finally(() => setLoading(false)); // Dezactivează Loader-ul
+            .finally(() => {
+                setTimeout(() => setLoading(false), 1)
+            }); // Dezactivează Loader-ul
     }, []);
 
 
@@ -56,7 +65,7 @@ export default function BooksScreen({navigation}) {
               source={require("./images/other_images/nav-top/magic-book.png")}
               style={globalCss.imageNavTop}
             />
-            <Text style={globalCss.dataNavTop}>743</Text>
+            <Text style={globalCss.dataNavTop}>{finishedBooks.current}</Text>
           </View>
           <View style={globalCss.itemNavTabUser}>
             <Image

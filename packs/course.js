@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef, useMemo} from "react";
 import globalCss from "./css/globalCss";
 import {
     View,
@@ -11,6 +11,7 @@ import {
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faStar} from "@fortawesome/free-solid-svg-icons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import Loader from "./components/Loader";
 
 export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
@@ -30,6 +31,8 @@ export default function CourseScreen({navigation}) {
 
     const finishedCounter = useRef({})
     const phrasesCompleted = useRef({})
+
+    const [loader, setLoader] = useState(false)
 
     const handleScroll = (nativeEvent) => {
         let currCategoryOnScroll = currentCategory
@@ -54,7 +57,9 @@ export default function CourseScreen({navigation}) {
     };
 
 
-    useEffect(() => {
+    useMemo(() => {
+        setLoader(true)
+
         sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories.php`,
             {},
             navigation,
@@ -76,6 +81,9 @@ export default function CourseScreen({navigation}) {
                         url: initialCategories[0]
                     });
                 }
+            })
+            .finally(() => {
+                setTimeout(() => setLoader(false), 1)
             })
     }, []);
 
@@ -124,6 +132,7 @@ export default function CourseScreen({navigation}) {
 
     return (
         <View>
+            <Loader visible={loader}/>
             <View style={globalCss.navTabUser}>
                 <View style={globalCss.itemNavTabUser}>
                     <Image
