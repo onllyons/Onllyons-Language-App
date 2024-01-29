@@ -8,6 +8,7 @@ import React, {
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   Dimensions,
   Switch,
@@ -30,20 +31,22 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Audio } from "expo-av";
+import Loader from "./components/Loader";
 
 import globalCss from "./css/globalCss";
-import Loader from "./components/Loader";
 
 const { width } = Dimensions.get("window");
 const DEBOUNCE_TIME = 300;
 export default function FlashCardsLearning({ route, navigation }) {
   const [combinedData, setCombinedData] = useState([]);
-const [index, setIndex] = useState(0);
-const totalSlides = combinedData.length;
+  const [index, setIndex] = useState(0);
+  const totalSlides = combinedData.length;
   const { url } = route.params;
   const swiperRef = useRef(null);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
-  const [loader, setLoader] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPressedQuizStart, setIsPressedStartQuiz] = useState(false);
+  
 
   const [isEnabled, setIsEnabled] = useState(false);
   const [isEnabledUsa, setIsEnabledUsa] = useState(true);
@@ -52,8 +55,25 @@ const totalSlides = combinedData.length;
   const [quizData, setQuizData] = useState([]);
   const [showQuiz, setShowQuiz] = useState(false);
   const [isAtLastCarouselSlide, setIsAtLastCarouselSlide] = useState(false);
-const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [lastPlayed, setLastPlayed] = useState(0);
+
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [quizIndex, setQuizIndex] = useState(0);
+
+
+  // effects btn
+  const [checkQuizAnswers, setCheckQuizAnswers] = useState({});
+  const handlePressIn = (answerId) => {
+    setCheckQuizAnswers(prevState => ({ ...prevState, [answerId]: true }));
+  };
+
+  const handlePressOut = (answerId) => {
+    setCheckQuizAnswers(prevState => ({ ...prevState, [answerId]: false }));
+  };
+
+ 
+
 
   const toggleSwitch = () => {
     setIsEnabled((previousState) => !previousState);
@@ -69,23 +89,22 @@ const [showModal, setShowModal] = useState(false);
       });
   };
 
-const fetchCarouselData = async () => {
-  try {
-    const response = await fetch(
-      "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-carousel.php"
-    );
-    let data = await response.json();
-    data = data.filter((item) => item.url_display === url); // Filtrare după URL
-    setCarouselData(data);
+  const fetchCarouselData = async () => {
+    try {
+      const response = await fetch(
+        "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-carousel.php"
+      );
+      let data = await response.json();
+      data = data.filter((item) => item.url_display === url); // Filtrare după URL
+      setCarouselData(data);
 
-    // Calculează lungimea datelor și actualizează combinedData
-    const totalSlides = data.length;
-    setCombinedData(data);
-  } catch (error) {
-    console.error("Error fetching carousel data:", error);
-  }
-};
-
+      // Calculează lungimea datelor și actualizează combinedData
+      const totalSlides = data.length;
+      setCombinedData(data);
+    } catch (error) {
+      console.error("Error fetching carousel data:", error);
+    }
+  };
 
   // Încărcarea datelor pentru Quiz, filtrate după URL
   const fetchQuizData = async () => {
@@ -102,15 +121,42 @@ const fetchCarouselData = async () => {
   };
 
   useEffect(() => {
-    fetchCarouselData();
-  }, []);
+    setIsLoading(true); // Activează loader-ul
 
-const handleShowQuiz = () => {
-  fetchQuizData(); // Încărcați datele quiz-ului când butonul este apăsat
-  setShowQuiz(true); // Afișează quiz-ul
-  setShowModal(false); // Ascunde modalul
-  setIndex(0); // Resetarea indexului la 0 pentru a începe quiz-ul
+    const fetchData = async () => {
+      try {
+        await fetchCarouselData(); // Așteaptă finalizarea primei cereri
+        await fetchQuizData(); // Așteaptă finalizarea celei de-a doua cereri
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setIsLoading(false); // Dezactivează loader-ul după finalizarea ambelor cereri
+      }
+    };
+
+    fetchData();
+  }, [url]); // Include url ca dependență
+
+const handleShowQuiz = async () => {
+  setIsLoading(true);
+  try {
+    await fetchQuizData();
+    setShowQuiz(true); // Primul setăm faptul că arătăm quiz-ul
+    setQuizIndex(1); // Setăm indexul quiz-ului la 1 pentru a începe de la primul slide al quiz-ului
+    setIndex(1); // Setăm indexul global la 1
+    setCombinedData(quizData); // Actualizăm datele combinate cu datele quiz-ului
+    setShowModal(false); // Închidem modalul
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    setIsLoading(false);
+  }
 };
+
+
+
+
+
 
 
 
@@ -128,27 +174,41 @@ const handleShowQuiz = () => {
   };
 
   // Recuperare stării din AsyncStorage la încărcarea componentei
-  useEffect(() => {
-    AsyncStorage.getItem("isEnabled")
-      .then((value) => {
-        if (value !== null) {
-          setIsEnabled(JSON.parse(value));
-        }
-      })
-      .catch((error) => {
-        console.error("error", error);
-      });
+useEffect(() => {
+  // Verificarea stării isEnabled
+  AsyncStorage.getItem("isEnabled")
+    .then((value) => {
+      if (value !== null) {
+        setIsEnabled(JSON.parse(value));
+      }
+    })
+    .catch((error) => {
+      console.error("error", error);
+    });
 
-    AsyncStorage.getItem("isEnabledUsa")
-      .then((value) => {
-        if (value !== null) {
-          setIsEnabledUsa(JSON.parse(value));
-        }
-      })
-      .catch((error) => {
-        console.error("error:", error);
-      });
-  }, []);
+  // Verificarea stării isEnabledUsa
+  AsyncStorage.getItem("isEnabledUsa")
+    .then((value) => {
+      if (value !== null) {
+        setIsEnabledUsa(JSON.parse(value));
+      }
+    })
+    .catch((error) => {
+      console.error("error:", error);
+    });
+
+  // Verificarea stării quizShown
+  AsyncStorage.getItem('quizShown')
+    .then((value) => {
+      if (value === 'true') {
+        setShowModal(false); // Nu afișa modalul dacă quiz-ul a fost deja deschis
+      }
+    })
+    .catch((error) => {
+      console.error("Eroare la citirea din AsyncStorage:", error);
+    });
+}, []);
+
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSound, setCurrentSound] = useState(null);
@@ -190,80 +250,92 @@ const handleShowQuiz = () => {
   };
 
 
-const playSound = async (audioUrl) => {
-  // Verifică dacă sunetul curent este în curs de redare și așteaptă finalizarea
-  if (currentSound && isPlaying) {
-    await currentSound.stopAsync(); // Oprire înainte de a începe redarea următoare
-    setIsPlaying(false);
-  }
+  const playSound = async (audioUrl) => {
+    // Verifică dacă sunetul curent este în curs de redare și așteaptă finalizarea
+    if (currentSound && isPlaying) {
+      await currentSound.stopAsync(); // Oprire înainte de a începe redarea următoare
+      setIsPlaying(false);
+    }
 
-  // Descarcă sunetul curent (dacă există)
-  if (currentSound) {
-    await currentSound.unloadAsync();
-  }
+    // Descarcă sunetul curent (dacă există)
+    if (currentSound) {
+      await currentSound.unloadAsync();
+    }
 
-  // Crează un nou sunet și redă-l
-  const newSound = new Audio.Sound();
-  try {
-    await newSound.loadAsync({ uri: audioUrl });
-    await newSound.playAsync();
-    setCurrentSound(newSound);
-    setIsPlaying(true);
+    // Crează un nou sunet și redă-l
+    const newSound = new Audio.Sound();
+    try {
+      await newSound.loadAsync({ uri: audioUrl });
+      await newSound.playAsync();
+      setCurrentSound(newSound);
+      setIsPlaying(true);
 
-    newSound.setOnPlaybackStatusUpdate((status) => {
-      if (!status.isPlaying && status.didJustFinish) {
-        setIsPlaying(false);
-        newSound.unloadAsync();
-      }
-    });
-  } catch (error) {
-    console.error("Eroare la redarea sunetului:", error);
-  }
-};
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (!status.isPlaying && status.didJustFinish) {
+          setIsPlaying(false);
+          newSound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.error("Eroare la redarea sunetului:", error);
+    }
+  };
 
+  const handleBackButtonPress = () => {
+    navigation.goBack();
+  };
 
+  const updateProgressBar = (newIndex) => {
+    setIndex(newIndex);
 
+    const isAtLastSlide = newIndex === combinedData.length - 1; // Verifică dacă este ultimul slide
+    setIsAtLastCarouselSlide(isAtLastSlide);
+  };
 
-const handleBackButtonPress = () => {
-  navigation.goBack();
-};
-
-
-
-const updateProgressBar = (newIndex) => {
-  setIndex(newIndex);
-
-  const isAtLastSlide = newIndex === combinedData.length - 1; // Verifică dacă este ultimul slide
-  setIsAtLastCarouselSlide(isAtLastSlide);
-
-  console.log(
-    `Index actualizat: ${newIndex}, Lungime totală: ${combinedData.length}`
+  const lastCarouselIndex = combinedData.findIndex(
+    (item) => item.type !== "carousel"
   );
-};
 
-const lastCarouselIndex = combinedData.findIndex(
-  (item) => item.type !== "carousel"
-);
+  const handleSlideChange = (newIndex) => {
+     if (showQuiz) {
+        setQuizIndex(newIndex); // Actualizăm indexul pentru quiz
+        console.log(`Index quiz: ${newIndex + 1}, Lungime totală quiz: ${quizData.length}`);
+      } else {
+        setCarouselIndex(newIndex); // Actualizăm indexul pentru carusel
+        console.log(`Index carousel: ${newIndex + 1}, Lungime totală carousel: ${carouselData.length}`);
+      }
 
-const handleSlideChange = (newIndex) => {
-  updateProgressBar(newIndex);
+    updateProgressBar(newIndex);
+    setRandomOrder([1, 2, 3, 4].sort(() => Math.random() - 0.5));
 
-  // Verifică dacă este ultimul slide
-  const isAtLastSlide = newIndex === combinedData.length - 1;
-  setIsAtLastCarouselSlide(isAtLastSlide); // Setează starea în funcție de poziția curentă
+    setIndex(newIndex);
+    setIsAnswerSelected(false); // Resetați starea când se schimbă slide-ul
 
-  // Verifică dacă quiz-ul este afișat și dacă slide-ul curent are audio
-  const currentSlide = showQuiz ? quizData[newIndex] : carouselData[newIndex];
-  if (!showQuiz && currentSlide && currentSlide.word_audio) {
-    const audioUrl = `https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/${currentSlide.word_audio}`;
-    playSound(audioUrl);
-  }
-};
 
+
+
+    // Verifică dacă este ultimul slide
+    const isAtLastSlide = newIndex === combinedData.length - 1;
+    setIsAtLastCarouselSlide(isAtLastSlide); // Setează starea în funcție de poziția curentă
+
+    setIsAnswerSelected(false); // Resetați starea când se schimbă slide-ul
+
+    // Verifică dacă quiz-ul este afișat și dacă slide-ul curent are audio
+    const currentSlide = showQuiz ? quizData[newIndex] : carouselData[newIndex];
+    if (!showQuiz && currentSlide && currentSlide.word_audio) {
+      const audioUrl = `https://www.language.onllyons.com/ru/ru-en/packs/assest/game-card-word/content/audio/${currentSlide.word_audio}`;
+      playSound(audioUrl);
+    }
+
+    if ((showQuiz && newIndex === quizData.length) || (!showQuiz && newIndex === carouselData.length)) {
+      setIndex(0);
+    }
+
+  };
 
 const handleRightButtonPress = () => {
-  if (isAtLastCarouselSlide) {
-    // Dacă este ultimul slide, afișează modalul
+  if (isAtLastCarouselSlide && !showQuiz) {
+    // Dacă este ultimul slide și quiz-ul nu este afișat, afișează modalul
     setShowModal(true);
   } else if (index < totalSlides - 1) {
     // Altfel, avansează la următorul slide
@@ -273,20 +345,58 @@ const handleRightButtonPress = () => {
   }
 };
 
+const [selectedAnswers, setSelectedAnswers] = useState({});
+const [answersCorrectness, setAnswersCorrectness] = useState({});
+const [isAnswerSelected, setIsAnswerSelected] = useState(false);
+
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+  const [randomOrder, setRandomOrder] = useState([]);
+  // Modificați funcția pentru a primi argumentele necesare
+const handleSelectAnswer = (questionId, answerIndex, correctAnswer) => {
+  const correctAnswerIndex = parseInt(correctAnswer, 10);
+  setSelectedAnswers(prevState => ({ ...prevState, [questionId]: answerIndex }));
+  setAnswersCorrectness(prevState => ({ ...prevState, [questionId]: answerIndex === correctAnswerIndex }));
+  setIsAnswerSelected(true);
+};
+
 
   const renderItem = ({ item }) => {
     if (showQuiz) {
-      // Afișați slide-urile Quiz
+    
       return (
         <View style={styles.slide}>
-          <Text style={styles.categoryTitle}>quiz: {item.answer_1}</Text>
+          <View style={styles.groupBtnQuiz}>
+            <Text style={styles.headerText}>{item.question}</Text>
+            {randomOrder.map((answerIndex) => (
+              <TouchableOpacity
+                key={answerIndex}
+                style={[
+                  styles.quizBtnCtr,
+                  globalCss.buttonGry,
+                  selectedAnswers[item.id] === answerIndex && answersCorrectness[item.id] ? styles.correct : null,
+                  selectedAnswers[item.id] === answerIndex && !answersCorrectness[item.id] ? styles.incorrect : null,
+                  checkQuizAnswers[item.id] ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : null
+                ]}
+                onPress={() =>
+                  handleSelectAnswer(item.id, answerIndex, item.answer_correct)
+                }
+                onPressIn={() => handlePressIn(item.id)} // Asigurați-vă că fiecare buton primește cheia sa unică
+                onPressOut={() => handlePressOut(item.id)} // Asigurați-vă că fiecare buton primește cheia sa unică
+                activeOpacity={1}
+              >
+                <Text style={globalCss.blueLight}>
+                  {item[`answer_${answerIndex}`]}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       );
     } else {
-      // Afișați slide-urile Carousel
+      // Afișați slide-urile Carousel asdf
       return (
         <View style={styles.slide}>
-          {/* 11111111111111111111111111111111111111111111111111 */}
           <View style={styles.groupEng}>
             <Text style={styles.word_en}>{item.word_en}</Text>
             <Text
@@ -330,7 +440,7 @@ const handleRightButtonPress = () => {
   return (
     <GestureHandlerRootView>
       <View style={styles.swiperContent}>
-        <Loader visible={loader} />
+        <Loader visible={isLoading} />
 
         <View style={styles.row}>
           <TouchableOpacity
@@ -348,9 +458,9 @@ const handleRightButtonPress = () => {
           <ProgressBar
             currentIndex={index}
             totalCount={
-              !showQuiz
-                ? carouselData.length
-                : carouselData.length + quizData.length
+              showQuiz
+                ? quizData.length
+                : carouselData.length
             }
           />
 
@@ -368,22 +478,17 @@ const handleRightButtonPress = () => {
           <Carousel
             data={showQuiz ? quizData : carouselData}
             ref={swiperRef}
-            onSnapToItem={handleSlideChange}
-            renderItem={renderItem} // Utilizați funcția renderItem corectată
             sliderWidth={width}
-            itemWidth={width - 70}
+            itemWidth={showQuiz ? width - 30 : width - 70}
             paginationStyle={styles.pagination}
             contentContainerCustomStyle={styles.carouselContainer}
             layout={"default"}
             loop={false}
+            onSnapToItem={handleSlideChange}
+            renderItem={renderItem}
+            firstItem={showQuiz ? quizIndex : carouselIndex}
+            scrollEnabled={!showQuiz} // Dezactivează scroll-ul când showQuiz este adevărat
           />
-
-
-
-
-
-
-
 
         </View>
 
@@ -391,18 +496,47 @@ const handleRightButtonPress = () => {
           onRightPress={handleRightButtonPress}
           isPressedContinue={isPressedContinue}
           setIsPressedContinue={setIsPressedContinue}
-          swiperRef={swiperRef} 
+          swiperRef={swiperRef}
+          isAnswerSelected={isAnswerSelected}
+          showQuiz={showQuiz} // Pasați această stare
         />
+
+
       </View>
 
-{showModal && (
-  <View style={styles.modalContainer}>
-    <TouchableOpacity onPress={handleShowQuiz}>
-      <Text style={styles.modalText}>Afișează Quiz</Text>
-    </TouchableOpacity>
-  </View>
-)}
+      {showModal && (
+        <View style={styles.modalContainer}>
+        <View style={styles.modalClose}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={handleBackButtonPress}
+          >
+            <Text>
+              <FontAwesomeIcon
+                icon={faTimes}
+                size={30}
+                style={globalCss.blue}
+              />
+            </Text>
+          </TouchableOpacity>
+        </View>
 
+
+
+          <Image style={styles.succesImg} source={require('./images/El/succes.png')} />
+        <View style={styles.modalContainerCenter}>
+          <Text style={styles.succesText}>Поздравляю, вы успешно завершили урок! Нажмите на кнопку ниже, чтобы начать тест.</Text>
+          <TouchableOpacity 
+            style={[globalCss.button, styles.buttonGenQuiz, isPressedQuizStart ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
+            onPressIn={() => setIsPressedStartQuiz(true)}
+            onPressOut={() => setIsPressedStartQuiz(false)}
+            activeOpacity={1}
+            onPress={handleShowQuiz}>
+            <Text style={styles.modalText}>начать тест</Text>
+          </TouchableOpacity>
+         </View>
+        </View>
+      )}
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -446,27 +580,35 @@ const SwiperButtonsContainer = ({
   isPressedContinue,
   setIsPressedContinue,
   swiperRef,
+  isAnswerSelected,
+  showQuiz,
 }) => (
   <View style={styles.swiperButtonsContainer}>
-    <TouchableOpacity
-      style={[
-        globalCss.button,
-        isPressedContinue
-          ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
-          : globalCss.buttonBlue,
-      ]}
-      onPress={() => {
-        if (swiperRef && swiperRef.current) { // Verifică dacă swiperRef este definit și nu este null
-          onRightPress(); // Apelează funcția onRightPress
-          swiperRef.current.snapToNext(); // Schimbă slide-ul la următorul în carusel
-        }
-      }}
-      onPressIn={() => setIsPressedContinue(true)}
-      onPressOut={() => setIsPressedContinue(false)}
-      activeOpacity={1}
-    >
-      <Text style={globalCss.buttonText}>Продолжить</Text>
-    </TouchableOpacity>
+<TouchableOpacity
+  style={[
+    globalCss.button,
+    isPressedContinue
+      ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
+      : globalCss.buttonBlue,
+    !isAnswerSelected && showQuiz && styles.buttonInactive
+  ]}
+  onPress={() => {
+    if (swiperRef && swiperRef.current) {
+      if (showQuiz && isAnswerSelected) {
+        onRightPress(); // Execută doar dacă este quiz și un răspuns este selectat
+      } else if (!showQuiz) {
+        onRightPress(); // Execută în modul carusel
+      }
+    }
+  }}
+  onPressIn={() => setIsPressedContinue(true)}
+  onPressOut={() => setIsPressedContinue(false)}
+  activeOpacity={1}
+  disabled={!isAnswerSelected && showQuiz} // Dezactivează doar în modul quiz și dacă nu este selectat un răspuns
+>
+<Text style={[globalCss.buttonText, !isAnswerSelected && showQuiz && { color: '#343541' }]}>Продолжить</Text>
+</TouchableOpacity>
+
   </View>
 );
 
@@ -610,23 +752,97 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  modalContainer: {
+  
+  groupBtnQuiz: {
+    maxWidth: "80%",
+    alignContent: "center",
+  },
+  quizBtnCtr: {
+    minWidth: '100%',
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    borderRadius: 14,
+    marginBottom: 20,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  correct: {
+      backgroundColor: "#81b344",
+  },
+  incorrect: {
+      backgroundColor: "#ca3431",
+  },
+  correctTxt: {
+      color: "white",
+  },
+  buttonText: {
+      fontSize: 18,
+      color: "white",
+  },
+  headerText: {
+    fontSize: 24,
+    textAlign: "center",
+    marginBottom: '10%',
+  },
+  buttonInactive: {
+    backgroundColor: '#f1f0f0',
+    shadowColor: '#cbcbcb',
+  },
+  succesImg: {
+    alignSelf: "center",
+    marginBottom: "2.9%",
     width: '100%',
     height: '50%',
-    position: 'absolute',
+    resizeMode: 'contain',
+    marginTop: '4%',
+  },
+  modalContainer: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "white",
+    paddingTop: '10%',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
     zIndex: 999,
   },
+  modalClose: {
+    height: '10%',
+    paddingRight: '5%',
+    paddingLeft: '2%',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
+  },
+  succesText:{
+    color: '#343541',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: '20%',
+    textAlign: 'center',
+  },
+  modalText: {
+    textTransform: 'uppercase',
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  modalContainerCenter: {
+    width: '100%',
+    paddingHorizontal: '5%',
+    alignSelf: 'center',
+    paddingTop: '4%',
+    
+  },
+  buttonGenQuiz: {
+    alignSelf: 'center',
 
-  template: {},
-  template: {},
-  template: {},
-  template: {},
+  },
   template: {},
   template: {},
   template: {},
