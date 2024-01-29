@@ -10,12 +10,16 @@ import {
 } from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faStar} from "@fortawesome/free-solid-svg-icons";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 
 export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
     const [data, setData] = useState(null);
     const [loadedCategories, setLoadedCategories] = useState([]);
-    const [currentCategoryName, setCurrentCategoryName] = useState('');
+    const [currentCategory, setCurrentCategory] = useState({
+        name: "",
+        url: ""
+    });
     const scrollViewRef = useRef(null);
 
     const startLayoutY = useRef(0)
@@ -24,17 +28,23 @@ export default function CourseScreen({navigation}) {
     const [isCardPressedCourseTitle, setIsCardPressedCourseTitle] = useState(false);
     const [isCardPressedCourseDetails, setIsCardPressedCourseDetails] = useState(false);
 
+    const finishedCounter = useRef({})
+    const phrasesCompleted = useRef({})
+
     const handleScroll = (nativeEvent) => {
-        let currCategoryOnScroll = currentCategoryName
+        let currCategoryOnScroll = currentCategory
 
         for (const category of Object.keys(categoriesPos.current)) {
             if (nativeEvent.contentOffset.y >= categoriesPos.current[category]) {
-                currCategoryOnScroll = data[category].var_idtest_1
+                currCategoryOnScroll = {
+                    name: data[category].categoryTitle,
+                    url: category
+                }
             }
         }
 
-        if (currCategoryOnScroll !== currentCategoryName) {
-            setCurrentCategoryName(currCategoryOnScroll)
+        if (currCategoryOnScroll.name !== currentCategory.name) {
+            setCurrentCategory(currCategoryOnScroll)
         }
 
         // Funcție pentru a verifica dacă utilizatorul a ajuns aproape de sfârșitul listei
@@ -45,23 +55,28 @@ export default function CourseScreen({navigation}) {
 
 
     useEffect(() => {
-        fetch("https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/course_lesson.php")
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                const groupedData = groupByCategory(data);
+        sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories.php`,
+            {},
+            navigation,
+            {success: false}
+        )
+            .then(data => {
+                const groupedData = groupByCategory(data.data);
                 setData(groupedData);
-                console.log(Object.keys(groupedData).slice(0, 1))
+
                 const initialCategories = Object.keys(groupedData).slice(0, 1);
                 setLoadedCategories(initialCategories);
+
+                finishedCounter.current = data.finishedCounter
+                phrasesCompleted.current = data.phrasesCompleted
+
                 if (initialCategories.length > 0) {
-                    setCurrentCategoryName(groupedData[initialCategories[0]].var_idtest_1);
+                    setCurrentCategory({
+                        name: groupedData[initialCategories[0]].categoryTitle,
+                        url: initialCategories[0]
+                    });
                 }
             })
-            .catch((error) => {
-                console.error("Eroare:", error);
-            });
     }, []);
 
 
@@ -72,7 +87,7 @@ export default function CourseScreen({navigation}) {
             if (!acc[item.category_url]) {
                 acc[item.category_url] = {
                     items: [],
-                    var_idtest_1: item.var_idtest_1, // Stochează var_idtest_1 pentru fiecare categorie
+                    categoryTitle: item.categoryTitle, // Stochează var_idtest_1 pentru fiecare categorie
                 };
             }
 
@@ -122,7 +137,7 @@ export default function CourseScreen({navigation}) {
                         source={require("./images/other_images/nav-top/sapphire.webp")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text style={globalCss.dataNavTop}>743</Text>
+                    <Text style={globalCss.dataNavTop}>{finishedCounter.current[currentCategory.url]}</Text>
                 </View>
                 <View style={globalCss.itemNavTabUser}>
                     <Image
@@ -136,7 +151,7 @@ export default function CourseScreen({navigation}) {
                         source={require("./images/other_images/nav-top/star.png")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text style={globalCss.dataNavTop}>4</Text>
+                    <Text style={globalCss.dataNavTop}>{phrasesCompleted.current[currentCategory.url]}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -150,7 +165,7 @@ export default function CourseScreen({navigation}) {
                     activeOpacity={1}
                 >
                     <Text style={styles.infoCourseTxtSubCat}>Subject 1</Text>
-                    <Text style={styles.infoCourseTitle}>{currentCategoryName}</Text>
+                    <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                 style={[styles.infoCourseBtn, isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
@@ -183,7 +198,7 @@ export default function CourseScreen({navigation}) {
 
                                 {/*<View style={styles.categoryTitleBg}>
                                     <Text style={styles.categoryTitle}>
-                                        {data[category].var_idtest_1}
+                                        {data[category].categoryTitle}
                                     </Text>
                                 </View>
                                 */}
