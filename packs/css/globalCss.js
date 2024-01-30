@@ -205,6 +205,8 @@ const globalCss = StyleSheet.create({
   // nav tab
   navTabUser: {
     width: "100%",
+    zIndex: 4,
+    overflow: "hidden",
     paddingTop: "10%",
     backgroundColor: "#ffffff",
     flexDirection: "row",
@@ -249,31 +251,6 @@ const globalCss = StyleSheet.create({
     paddingTop: "5%",
     paddingBottom: "5%",
     flex: 1,
-  },
-
-  template:{
-
-  },
-  template:{
-
-  },
-  template:{
-
-  },
-  template:{
-
-  },
-  template:{
-
-  },
-  template:{
-
-  },
-  template:{
-
-  },
-  template:{
-
   },
 
 
