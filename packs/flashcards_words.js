@@ -19,6 +19,7 @@ export default function FlashCardsLearning({ route, navigation }) {
   const [combinedData, setCombinedData] = useState([]);
   const [index, setIndex] = useState(0);
   const totalSlides = combinedData.length;
+
   const { url } = route.params;
   const swiperRef = useRef(null);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
@@ -88,18 +89,21 @@ const handlePressOut = (questionId, answerIndex) => {
   };
 
   // Încărcarea datelor pentru Quiz, filtrate după URL
-  const fetchQuizData = async () => {
-    try {
-      const response = await fetch(
-        "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-quiz.php"
-      );
-      let data = await response.json();
-      data = data.filter((item) => item.quiz_url === url); // Filtrare după URL
-      setQuizData(data);
-    } catch (error) {
-      console.error("Error fetching quiz data:", error);
-    }
-  };
+const fetchQuizData = async () => {
+  try {
+    const response = await fetch(
+      "https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/flascard-words-quiz.php"
+    );
+    const data = await response.json();
+    const filteredData = data.filter((item) => item.quiz_url === url);
+    setQuizData(filteredData); // Setează datele quizului
+    return filteredData;
+  } catch (error) {
+    console.error("Error fetching quiz data:", error);
+    return []; // Întoarce un array gol în caz de eroare
+  }
+};
+
 
   useEffect(() => {
     setIsLoading(true); // Activează loader-ul
@@ -122,36 +126,55 @@ const handlePressOut = (questionId, answerIndex) => {
 const handleShowQuiz = async () => {
   setIsLoading(true);
   try {
-    await fetchQuizData();
+    const data = await fetchQuizData();
+    if (!data || !Array.isArray(data)) {
+      throw new Error('Invalid data received');
+    }
     setShowQuiz(true);
     setQuizIndex(0);
     setIndex(0);
-    setCombinedData(quizData);
+    setCombinedData(data); // Setează datele combinării cu datele quizului
     setShowModal(false);
+    swiperRef.current?.snapToItem(0); // Navigați explicit la primul slide
   } catch (error) {
     console.error("Error:", error);
+    setCombinedData([]);
   } finally {
     setIsLoading(false);
   }
 };
+
 
 const restartQuiz = async () => {
   setIsLoading(true);
   try {
-    await fetchQuizData();
-    setShowQuiz(true);
-    setQuizIndex(0);
-    setIndex(0);
-    setCombinedData(quizData);
-    setShowModal(false);
-    setShowCongratulationsModal(false); // Adăugați această linie pentru a închide modalul de felicitări
+    const data = await fetchQuizData(); 
+    if (!data || !Array.isArray(data)) {
+      throw new Error('Invalid data received');
+    }
+
+    if (data && Array.isArray(data)) {
+      setCombinedData(data);
+      setQuizData(data); // Asigurați-vă că quizData este actualizat
+      setQuizIndex(0);
+      setIndex(0);
+      setSelectedAnswers({});
+      setAnswersCorrectness({});
+      setIsAnswerSelected(false);
+      setShowCongratulationsModal(false);
+      setShowQuiz(true);
+      setShowModal(false);
+      swiperRef.current?.snapToItem(0); // Navigați explicit la primul slide
+    } else {
+      throw new Error('Invalid data received');
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error occurred: ", error);
+    setCombinedData([]);
   } finally {
     setIsLoading(false);
   }
 };
-
 
 
   const toggleSwitchUsa = () => {
@@ -232,6 +255,12 @@ const restartQuiz = async () => {
     handlePress();
   };
 
+useEffect(() => {
+  console.log("Index changed: ", index);
+  // Aici puteți adăuga orice logică suplimentară necesară când indexul se schimbă
+}, [index]);
+
+
   const ProgressBar = ({ currentIndex, totalCount }) => {
     const progress = (currentIndex + 1) / totalCount;
     return (
@@ -288,6 +317,9 @@ const restartQuiz = async () => {
   );
 
   const handleSlideChange = (newIndex) => {
+
+    console.log("handleSlideChange - New Index: ", newIndex);
+
     if (showQuiz) {
       setQuizIndex(newIndex); // Actualizăm indexul pentru quiz
       console.log(
@@ -622,11 +654,7 @@ const calculateCorrectPercentage = () => {
           ]}
           onPressIn={() => setIsPressedStartQuiz(true)}
           onPressOut={() => setIsPressedStartQuiz(false)}
-          onPress={() => {
-        handleShowQuiz();
-        setShowCongratulationsModal(false);
-      }}
-          >
+          onPress={restartQuiz}>
           <Text style={styles.modalText}>restart</Text>
         </TouchableOpacity>
 
@@ -760,7 +788,7 @@ const SwiperButtonsContainer = ({
         onPressOut={() => setIsPressedContinue(false)}
         activeOpacity={1}
       >
-        <Text style={globalCss.buttonText}>Finalizează quiz</Text>
+        <Text style={globalCss.buttonText}>Завершите тест</Text>
       </TouchableOpacity>
     ) : (
       // Altfel, afișează butonul standard de navigare
