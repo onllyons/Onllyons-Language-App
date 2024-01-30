@@ -6,7 +6,7 @@ import {
     StyleSheet,
     Image,
     ScrollView,
-    TouchableOpacity,
+    TouchableOpacity, Animated
 } from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faStar} from "@fortawesome/free-solid-svg-icons";
@@ -130,10 +130,71 @@ export default function CourseScreen({navigation}) {
         return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
     };
 
+    const heightsNav = useRef({
+        navTop: 100,
+        navTopMenu: {}
+    });
+
+
+    // Nav top Menu
+    // For animation slide
+    const topPositionNavTopMenus = useRef({}).current;
+
+    // For animation arrows
+    const topPositionNavTopArrows = useRef({}).current;
+
+    // Current opened menu
+    const openedNavMenu = useRef(null)
+
+    // Open/close nav menu by id
+    const toggleNavTopMenu = (id) => {
+        if (openedNavMenu.current !== null && openedNavMenu.current !== id) {
+            Animated.parallel([
+                Animated.spring(topPositionNavTopMenus[openedNavMenu.current], {
+                    toValue: 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+                topPositionNavTopArrows[openedNavMenu.current] && Animated.spring(topPositionNavTopArrows[openedNavMenu.current], {
+                    toValue: 10,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(topPositionNavTopMenus[id], {
+                    toValue: heightsNav.current.navTopMenu[id],
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+                topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
+                    toValue: 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        } else {
+            Animated.parallel([
+                Animated.spring(topPositionNavTopMenus[id], {
+                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id],
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+                topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
+                    toValue: openedNavMenu.current === id ? 10 : 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                })
+            ]).start();
+        }
+
+        openedNavMenu.current = openedNavMenu.current === id ? null : id
+    };
+
     return (
         <View>
             <Loader visible={loader}/>
-            <View style={globalCss.navTabUser}>
+
+            <View style={globalCss.navTabUser}
+                  onLayout={event => heightsNav.current.navTop = event.nativeEvent.layout.height}>
                 <View style={globalCss.itemNavTabUser}>
                     <Image
                         source={require("./images/other_images/nav-top/english.webp")}
@@ -146,27 +207,63 @@ export default function CourseScreen({navigation}) {
                         source={require("./images/other_images/nav-top/sapphire.webp")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text style={globalCss.dataNavTop}>{finishedCounter.current[currentCategory.url]}</Text>
+                    <Text
+                        style={globalCss.dataNavTop}>{finishedCounter.current[currentCategory.url] ? finishedCounter.current[currentCategory.url] : 0}</Text>
                 </View>
-                <View style={globalCss.itemNavTabUser}>
+                <TouchableOpacity style={globalCss.itemNavTabUser}
+                                  onPress={() => toggleNavTopMenu("test")}>
                     <Image
                         source={require("./images/other_images/nav-top/flame.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>4</Text>
-                </View>
-                <TouchableOpacity style={globalCss.itemNavTabUser}>
+
+                    <AnimatedNavTopArrow id={"test"} topPositionNavTopArrows={topPositionNavTopArrows}>
+                        <Image
+                            source={require("./images/icon/arrowTop.png")}
+                            style={stylesTest.navTopArrow}
+                        />
+                    </AnimatedNavTopArrow>
+                </TouchableOpacity>
+                <TouchableOpacity style={globalCss.itemNavTabUser}
+                                  onPress={() => toggleNavTopMenu(0)}>
                     <Image
                         source={require("./images/other_images/nav-top/star.png")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text style={globalCss.dataNavTop}>{phrasesCompleted.current[currentCategory.url]}</Text>
+                    <Text
+                        style={globalCss.dataNavTop}>{phrasesCompleted.current[currentCategory.url] ? phrasesCompleted.current[currentCategory.url] : 0}</Text>
+
+                    <AnimatedNavTopArrow id={0} topPositionNavTopArrows={topPositionNavTopArrows}>
+                        <Image
+                            source={require("./images/icon/arrowTop.png")}
+                            style={stylesTest.navTopArrow}
+                        />
+                    </AnimatedNavTopArrow>
                 </TouchableOpacity>
             </View>
 
-            {/*11111111111111*/}
+            {/* First nav menu */}
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"test"}>
+                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+            </AnimatedNavTopMenu>
 
-            <View style={styles.infoCourseSubject}>
+            {/* Second nav menu */}
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={0}>
+                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
+                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
+                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
+                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
+                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
+            </AnimatedNavTopMenu>
+
+            <View style={{...styles.infoCourseSubject, top: heightsNav.current.navTop}}>
                 <TouchableOpacity
                     style={[styles.cardCategoryTitle, isCardPressedCourseTitle ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
                     onPressIn={() => setIsCardPressedCourseTitle(true)}
@@ -176,19 +273,18 @@ export default function CourseScreen({navigation}) {
                     <Text style={styles.infoCourseTxtSubCat}>Subject 1</Text>
                     <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                style={[styles.infoCourseBtn, isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
+                <TouchableOpacity
+                    style={[styles.infoCourseBtn, isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
                     onPressIn={() => setIsCardPressedCourseDetails(true)}
                     onPressOut={() => setIsCardPressedCourseDetails(false)}
                     activeOpacity={1}
                 >
                     <Image
-                      source={require('./images/icon/infoCategory.png')}
-                      style={styles.infoCategoryImg}
+                        source={require('./images/icon/infoCategory.png')}
+                        style={styles.infoCategoryImg}
                     />
                 </TouchableOpacity>
             </View>
-
 
 
             <ScrollView
@@ -198,7 +294,6 @@ export default function CourseScreen({navigation}) {
                 onScroll={e => handleScroll(e.nativeEvent)}
                 onLayout={(e) => startLayoutY.current = e.nativeEvent.layout.y}
             >
-
                 <View style={styles.container}>
                     <View style={styles.contentFlashCards}>
                         {loadedCategories.map((category) => (
@@ -250,6 +345,82 @@ export default function CourseScreen({navigation}) {
     );
 }
 
+const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows}) => {
+    if (!topPositionNavTopArrows[id]) topPositionNavTopArrows[id] = new Animated.Value(0)
+
+    return (
+        <Animated.View
+            style={{
+                ...stylesTest.navTopArrowView,
+                transform: [{translateY: topPositionNavTopArrows[id]}]
+            }}
+        >
+            {children}
+        </Animated.View>
+    )
+})
+
+const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, heightsNav}) => {
+    if (!topPositionNavTopMenus[id]) topPositionNavTopMenus[id] = new Animated.Value(0)
+    if (!heightsNav.current.navTopMenu[id]) heightsNav.current.navTopMenu[id] = 999
+
+    return (
+        <Animated.View
+            style={{
+                ...stylesTest.navTopModal,
+                top: -heightsNav.current.navTopMenu[id] + heightsNav.current.navTop,
+                transform: [{translateY: topPositionNavTopMenus[id]}]
+            }}
+            onLayout={event => heightsNav.current.navTopMenu[id] = Math.ceil(event.nativeEvent.layout.height + 1)}
+        >
+            <View style={stylesTest.navTopModalIn}>
+                {children}
+            </View>
+        </Animated.View>
+    )
+})
+
+const stylesTest = StyleSheet.create({
+    arrows: {
+        position: 'absolute',
+        bottom: "100%",
+        left: 0,
+        right: 0,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center"
+    },
+
+    navTopArrowView: {
+        position: 'absolute',
+        bottom: 0,
+    },
+
+    navTopArrow: {
+        width: 10,
+        height: 10,
+        resizeMode: 'contain'
+    },
+
+    navTopModal: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 2,
+    },
+
+    navTopModalIn: {
+        padding: 20,
+        width: "100%",
+        backgroundColor: "#3a3a3a"
+    },
+
+    navTopModalText: {
+        textAlign: 'center',
+    },
+})
+
 const styles = StyleSheet.create({
     container: {},
     bgCourse: {
@@ -275,6 +446,7 @@ const styles = StyleSheet.create({
         right: '5%',
         width: '90%',
         height: 95,
+        marginTop: "2%",
         flexDirection: 'row',
         zIndex: 1,
     },
@@ -305,7 +477,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingLeft: 10,
     },
-    infoCourseTitle:{
+    infoCourseTitle: {
         color: 'white',
         fontSize: 19,
         width: '80%',
@@ -321,12 +493,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignSelf: 'center',
         textAlign: 'center',
-        shadowOffset: { width: 0, height: 6 },
+        shadowOffset: {width: 0, height: 6},
         shadowOpacity: 1,
         shadowRadius: 0,
         elevation: 0,
-      },
-    infoCourseBtn:{
+    },
+    infoCourseBtn: {
         width: '27%',
         height: '100%',
         borderTopRightRadius: 12,
@@ -334,12 +506,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignSelf: 'center',
         textAlign: 'center',
-        shadowOffset: { width: 0, height: 6 },
+        shadowOffset: {width: 0, height: 6},
         shadowOpacity: 1,
         shadowRadius: 0,
         elevation: 0,
     },
-    infoCourseTxtSubCat:{
+    infoCourseTxtSubCat: {
         color: '#d1ffb1',
         fontSize: 15,
         width: '80%',
@@ -347,7 +519,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         fontWeight: '700',
     },
-    infoCategoryImg:{
+    infoCategoryImg: {
         width: '30%',
         height: '30%',
         resizeMode: 'contain',
