@@ -82,6 +82,13 @@ export default function CourseScreen({navigation}) {
                     });
                 }
             })
+            .catch((err) => {
+                if (typeof err === "object") {
+                    if (!err.tokensError) {
+                        navigation.goBack()
+                    }
+                }
+            })
             .finally(() => {
                 setTimeout(() => setLoader(false), 1)
             })
@@ -156,17 +163,17 @@ export default function CourseScreen({navigation}) {
                     useNativeDriver: true,
                 }),
                 topPositionNavTopArrows[openedNavMenu.current] && Animated.spring(topPositionNavTopArrows[openedNavMenu.current], {
-                    toValue: 10,
+                    toValue: 0,
                     duration: 500,
                     useNativeDriver: true,
                 }),
                 Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: heightsNav.current.navTopMenu[id],
+                    toValue: heightsNav.current.navTopMenu[id] - 1,
                     duration: 500,
                     useNativeDriver: true,
                 }),
                 topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
-                    toValue: 0,
+                    toValue: -8,
                     duration: 500,
                     useNativeDriver: true,
                 }),
@@ -174,12 +181,12 @@ export default function CourseScreen({navigation}) {
         } else {
             Animated.parallel([
                 Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id],
+                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 1,
                     duration: 500,
                     useNativeDriver: true,
                 }),
                 topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
-                    toValue: openedNavMenu.current === id ? 10 : 0,
+                    toValue: openedNavMenu.current === id ? 0 : -8,
                     duration: 500,
                     useNativeDriver: true,
                 })
@@ -393,7 +400,7 @@ const stylesTest = StyleSheet.create({
 
     navTopArrowView: {
         position: 'absolute',
-        bottom: 0,
+        bottom: -10,
     },
 
     navTopArrow: {
@@ -408,6 +415,7 @@ const stylesTest = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 2,
+        backgroundColor: "rgba(0, 0, 0, 0.2)"
     },
 
     navTopModalIn: {
