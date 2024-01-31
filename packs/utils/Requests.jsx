@@ -58,5 +58,5 @@ export const sendDefaultRequest = async (url, dataObj, navigation = null, showOp
         return Promise.reject(err);
     }
 
-    return Promise.reject();
+    return Promise.reject({success: false, message: "Произошла ошибка, попробуйте позже"});
 }

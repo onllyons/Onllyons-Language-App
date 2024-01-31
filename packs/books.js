@@ -117,10 +117,7 @@ export default function BooksScreen({navigation}) {
                                 <View style={styles.cell}>
                                     <TouchableOpacity
                                         style={[styles.card, pressedCards[item.id] ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-                                        onPress={() => navigation.navigate('BooksReading', {
-                                            url: item.url,
-                                            bookId: item.id
-                                        })}
+                                        onPress={() => navigation.navigate('BooksReading', {id: item.id})}
                                         onPressIn={() => onPressIn(item.id)}
                                         onPressOut={() => onPressOut(item.id)}
                                         activeOpacity={1}
