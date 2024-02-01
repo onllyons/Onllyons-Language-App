@@ -35,7 +35,6 @@ import UserSettings from './packs/user-profile/userSettings';
 import SubscribeScreen from "./packs/screens/SubscribeScreen";
 import UserSubscriptionManage from './packs/user-profile/userSubscriptionManage';
 
-
 import {AuthProvider, isAuthenticated, setSuccessCallback} from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import {useEffect, useState} from "react";

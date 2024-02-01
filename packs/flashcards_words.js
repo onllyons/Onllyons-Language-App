@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef, useMemo, useCallback,} from "react"
 import { View, Text, Modal, Image, TouchableOpacity, Dimensions, Switch, StyleSheet,} from "react-native";
 import * as Haptics from "expo-haptics";
 import Carousel from "react-native-new-snap-carousel";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTimes, faGear, faCirclePlay, faCirclePause,} from "@fortawesome/free-solid-svg-icons";
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop,} from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -818,7 +817,7 @@ const SwiperButtonsContainer = ({
             !isAnswerSelected && showQuiz && { color: "#343541" },
           ]}
         >
-          {showQuiz ? "Продолжить" : "Următorul"}
+          {showQuiz ? "Продолжить" : "Продолжить"}
         </Text>
       </TouchableOpacity>
     )}

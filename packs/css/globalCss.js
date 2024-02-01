@@ -1,86 +1,94 @@
-import { StyleSheet } from 'react-native';
-
-// sergiu test 123123
+import { StyleSheet } from "react-native";
 
 const globalCss = StyleSheet.create({
-  NavTopStartApp:{
-    
-  },
-  navBottomApp:{
+  NavTopStartApp: {},
+  navBottomApp: {
     borderBottomLeftRadius: 30,
-    backgroundColor: 'red'
+    backgroundColor: "red",
   },
   navImage: {
-    alignSelf: 'center',
+    alignSelf: "center",
   },
-  alignItemsCenter:{
-    alignItems: 'center',
+  alignItemsCenter: {
+    alignItems: "center",
+  },
+  alignSelfCenter: {
+    alignSelf: "center",
   },
   container: {
-    flex: 1, 
+    flex: 1,
     padding: 20,
-    marginTop: '13%',
+    marginTop: "13%",
   },
-  flex1:{
+  flex1: {
     flex: 1,
   },
   title: {
-    color: '#494949',
-    fontWeight: '700',
+    color: "#494949",
+    fontWeight: "700",
     fontSize: 33,
     marginBottom: 20,
   },
-  mb17:{
-    marginBottom: '17%',
+  bold700: {
+    fontWeight: "700",
   },
-  mb11:{
-    marginBottom: '11%',
+  mb17: {
+    marginBottom: "17%",
   },
-  mb3:{
-    marginBottom: '3%',
+  mb11: {
+    marginBottom: "11%",
   },
-  textAlignCenter:{
-    textAlign: 'center'
+  mb3: {
+    marginBottom: "3%",
+  },
+  mt4: {
+    marginTop: "4%",
+  },
+  mt8: {
+    marginTop: "8%",
+  },
+  textAlignCenter: {
+    textAlign: "center",
   },
   row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    alignContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    alignContent: "center",
   },
-  link:{
-    color: '#3ca6ff',
+  link: {
+    color: "#3ca6ff",
   },
-  gry:{
-    color: '#636363',
+  gry: {
+    color: "#636363",
   },
-  white:{
-    color: '#ffff',
+  white: {
+    color: "#ffff",
   },
-  blueLight:{
-    color: '#8895bc',
+  blueLight: {
+    color: "#8895bc",
   },
-  blue:{
-    color: '#1cb0f6',
+  blue: {
+    color: "#1cb0f6",
   },
-  bold:{
-    fontWeight: '700'
+  bold: {
+    fontWeight: "700",
   },
   input: {
-    color: '#636363',
+    color: "#636363",
     fontSize: 17,
     flex: 1,
   },
   card: {
-    width: '48%',
-    marginBottom: '5%',
+    width: "48%",
+    marginBottom: "5%",
     paddingTop: 55,
     paddingBottom: 55,
     paddingLeft: 8,
     paddingRight: 8,
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderTopWidth: 2,
     borderBottomWidth: 2,
     borderLeftWidth: 2,
@@ -91,29 +99,29 @@ const globalCss = StyleSheet.create({
     elevation: 0,
   },
   bgGry: {
-    backgroundColor: '#f9f9f9',
-    borderColor: '#d8d8d8',
-    shadowColor: '#d8d8d8',
+    backgroundColor: "#f9f9f9",
+    borderColor: "#d8d8d8",
+    shadowColor: "#d8d8d8",
   },
   bgGreen: {
-    backgroundColor: '#57cc04',
-    shadowColor: '#439c04',
-    borderColor: 'transparent',
+    backgroundColor: "#57cc04",
+    shadowColor: "#439c04",
+    borderColor: "transparent",
   },
   bgGryPressed: {
-    backgroundColor: '#f9f9f9',
-    borderColor: '#d8d8d8',
+    backgroundColor: "#f9f9f9",
+    borderColor: "#d8d8d8",
   },
-  cardPressed:{
+  cardPressed: {
     shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
   },
-  buttonRow:{
-    width: '100%',
-    flexDirection: 'row',
+  buttonRow: {
+    width: "100%",
+    flexDirection: "row",
     paddingVertical: 18,
     paddingHorizontal: 32,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 14,
     marginBottom: 20,
     shadowOffset: { width: 0, height: 4 },
@@ -121,11 +129,11 @@ const globalCss = StyleSheet.create({
     shadowRadius: 0,
     elevation: 0,
   },
-  button:{
-    width: '100%',
+  button: {
+    width: "100%",
     paddingVertical: 18,
     paddingHorizontal: 32,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 14,
     marginBottom: 20,
     shadowOffset: { width: 0, height: 4 },
@@ -133,74 +141,74 @@ const globalCss = StyleSheet.create({
     shadowRadius: 0,
     elevation: 0,
   },
-  buttonPressed:{
+  buttonPressed: {
     shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
   },
   buttonBlue: {
-    backgroundColor: '#1cb0f6',
-    shadowColor: '#368fc3',
+    backgroundColor: "#1cb0f6",
+    shadowColor: "#368fc3",
   },
   buttonPurple: {
-    backgroundColor: '#6949FF',
-    shadowColor: '#4631A8',
+    backgroundColor: "#6949FF",
+    shadowColor: "#4631A8",
   },
   buttonWhite: {
-    backgroundColor: '#ffffff',
-    shadowColor: '#95d5a1',
+    backgroundColor: "#ffffff",
+    shadowColor: "#95d5a1",
   },
   buttonGry: {
-    backgroundColor: '#f1f0f0',
-    shadowColor: '#cbcbcb',
+    backgroundColor: "#f1f0f0",
+    shadowColor: "#cbcbcb",
   },
   buttonGry1: {
-    backgroundColor: '#f3f3f3',
-    shadowColor: '#c5c5c5',
+    backgroundColor: "#f3f3f3",
+    shadowColor: "#c5c5c5",
   },
   buttonGreen: {
-    backgroundColor: '#57cc04',
-    shadowColor: '#40a400',
+    backgroundColor: "#57cc04",
+    shadowColor: "#40a400",
   },
   buttonPressedBlue: {
-    backgroundColor: '#1cb0f6',
+    backgroundColor: "#1cb0f6",
   },
   buttonPressedPurple: {
-    backgroundColor: '#6949FF',
+    backgroundColor: "#6949FF",
   },
   buttonPressedWhite: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   buttonPressedGry: {
-    backgroundColor: '#dbd9d8',
+    backgroundColor: "#dbd9d8",
   },
   buttonPressedGreen: {
-    backgroundColor: '#57cc04',
+    backgroundColor: "#57cc04",
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   buttonTextGreen: {
-    color: '#40b352',
+    color: "#40b352",
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   buttonTextBlack: {
-    color: '#0000',
+    color: "#0000",
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
-  textUpercase:{
-    textTransform: 'uppercase'
+  textUpercase: {
+    textTransform: "uppercase",
   },
-  modalContainerDropDown:{
-    backgroundColor: 'red',
+  modalContainerDropDown: {
+    backgroundColor: "red",
     flex: 1,
-    marginTop: '25%',
-    maxHeight: '30%',
+    marginTop: "25%",
+    maxHeight: "30%",
     alignItems: "center",
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   // nav tab
   navTabUser: {
@@ -225,7 +233,7 @@ const globalCss = StyleSheet.create({
   imageNavTop: {
     width: 28,
     height: 28,
-    resizeMode: 'contain'
+    resizeMode: "contain",
   },
   dataNavTop: {
     fontSize: 16,
@@ -244,7 +252,7 @@ const globalCss = StyleSheet.create({
     paddingTop: "5%",
     paddingBottom: "5%",
     paddingLeft: "5%",
-    minWidth: '18%',
+    minWidth: "18%",
   },
   itemNavTabUserTitleCat: {
     flexDirection: "row",
@@ -252,33 +260,44 @@ const globalCss = StyleSheet.create({
     paddingBottom: "5%",
     flex: 1,
   },
+  modalSubscription: {
+    height: "100%",
+    backgroundColor: "#efefef",
+  },
+  infoCatTitle: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    borderRadius: "25%",
+    paddingTop: "5%",
+    paddingLeft: "2%",
+    paddingRight: "5%",
+    paddingBottom: "5%",
+  },
+  courseCatImg: {
+    width: 130,
+    height: 130,
+    resizeMode: "contain",
+  },
+  titleLessonCat: {
+    width: "62%",
+    justifyContent: "center",
+    paddingLeft: "4%",
+  },
+  titleLessonCatTxt: {
+    fontSize: 20,
+    color: "#212121",
+    fontWeight: "500",
+  },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  asdd: {},
+  asdd: {},
+  asdd: {},
+  asdd: {},
+  asdd: {},
+  asdd: {},
+  asdd: {},
+  asdd: {},
+  asdd: {},
 });
 
 export default globalCss;

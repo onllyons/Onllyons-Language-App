@@ -169,7 +169,8 @@ useEffect(() => {
 
 const styles = StyleSheet.create({
   containerMain:{
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    flex: 1
   },
   container: {
     flex: 1, 
