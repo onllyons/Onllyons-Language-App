@@ -231,6 +231,7 @@ export default function CourseLessonQuiz({navigation}) {
             let element;
             switch (data.questions[key].variant) {
                 case "v":
+                
                     element = (
                         <View
                             key={`test-${data.questions[key].series}-${index}`}
@@ -255,24 +256,24 @@ export default function CourseLessonQuiz({navigation}) {
 
                             <View style={styles.groupQuizBtn}>
                                 <View style={styles.btnQuizPosition1}>
-                                    <Text style={styles.btnQuizStyle}>
-                                        {data.questions[key].v1}
-                                    </Text>
+                                    <TouchableOpacity style={styles.btnQuizStyle}>
+                                        <Text>{data.questions[key].v1}</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 <View style={styles.btnQuizPosition2}>
-                                    <Text style={styles.btnQuizStyle}>
-                                        {data.questions[key].v2}
-                                    </Text>
+                                    <TouchableOpacity style={styles.btnQuizStyle}>
+                                        <Text>{data.questions[key].v2}</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 <View style={styles.btnQuizPosition1}>
-                                    <Text style={styles.btnQuizStyle}>
-                                        {data.questions[key].v3}
-                                    </Text>
+                                    <TouchableOpacity style={styles.btnQuizStyle}>
+                                        <Text>{data.questions[key].v3}</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 <View style={styles.btnQuizPosition2}>
-                                    <Text style={styles.btnQuizStyle}>
-                                        {data.questions[key].v4}
-                                    </Text>
+                                    <TouchableOpacity style={styles.btnQuizStyle}>
+                                        <Text>{data.questions[key].v4}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
@@ -509,38 +510,56 @@ export default function CourseLessonQuiz({navigation}) {
             </View>
 
             <View style={styles.carousel}>
-                <Carousel
-                        scrollEnabled={!quizActive}
-                        ref={swiperRef}
-                        data={seriesElements}
-                        sliderWidth={width}
-                        itemWidth={width - 70}
-                        layout={"default"}
-                        loop={false}
-                        onSnapToItem={updateProgressBar} // Actualizeaza bara de progres cand faci scroll
-                        renderItem={(data) =>
-                            <View style={styles.slideBox}>
-                                {startQuizIndex.current <= data.index
-                                    ? <Animated.View style={{width: quizWidth.current}}>
-                                        <View
-                                            style={[
-                                                styles.slide,
-                                                // startQuizIndex.current <= data.index ? {width: width - 70} : {width: width - 100}
-                                            ]}
-                                        >{data.item}</View>
-                                    </Animated.View>
-                                    : <View
-                                        style={[
-                                            styles.slide,
-                                            {width: width - 100}
-                                            // startQuizIndex.current <= data.index ? {width: width - 70} : {width: width - 100}
-                                        ]}
-                                    >{data.item}</View>}
-                            </View>
-                        }
-                    />
-            </View>
+                {/* <Carousel
+                         scrollEnabled={!quizActive}
+                         ref={swiperRef}
+                         data={seriesElements}
+                         sliderWidth={width}
+                         itemWidth={width - 70}
+                         layout={"default"}
+                         loop={false}
+                         onSnapToItem={updateProgressBar} // Actualizeaza bara de progres cand faci scroll
+                         renderItem={(data) =>
+                             <View style={styles.slideBox}>
+                                 {startQuizIndex.current <= data.index
+                                     ? <Animated.View style={{width: quizWidth.current}}>
+                                         <View
+                                             style={[
+                                                 styles.slide,
+                                             ]}
+                                         >{data.item}</View>
+                                     </Animated.View>
+                                     : <View
+                                         style={[
+                                             styles.slide,
+                                             {width: width - 100}
+                                         ]}
+                                     >{data.item}</View>}
+                             </View>
+                         }
+                     /> */}
 
+                <Carousel
+                  scrollEnabled={!quizActive}
+                  ref={swiperRef}
+                  data={seriesElements}
+                  sliderWidth={width}
+                  itemWidth={width}
+                  layout="default"
+                  loop={false}
+                  onSnapToItem={updateProgressBar} // Actualizează bara de progres la scroll
+                  renderItem={({item, index}) => (
+                    <View style={styles.slideBox}>
+                      <Animated.View style={{width: startQuizIndex.current <= index ? quizWidth.current : width}}>
+                        <View style={[styles.slide, {width: startQuizIndex.current <= index ? width - 0 : width - 0}]}>
+                          {item}
+                        </View>
+                      </Animated.View>
+                    </View>
+                  )}
+                />
+
+            </View>
             <SwiperButtonsContainer
                 onRightPress={handleRightButtonPress}
                 isPressedContinue={isPressedContinue}
@@ -569,68 +588,56 @@ const SwiperButtonsContainer = ({
         onJumpToSlide,
         issetSeriesNext
     }) => (
-    <View style={{position: "relative", bottom: 10}}>
-        <View style={styles.swiperButtonsContainer}>
-            {index === totalSlides - 1 ? (
-                <TouchableOpacity
-                    style={[
-                        globalCss.button,
-                        isPressedContinue
-                            ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
-                            : globalCss.buttonBlue,
-                    ]}
-                    onPress={() => {
-                        if (issetSeriesNext) updateSlider(currentSeries + 1)
-                        else finish()
-                    }}
-                    onPressIn={() => setIsPressedContinue(true)}
-                    onPressOut={() => setIsPressedContinue(false)}
-                    activeOpacity={1}
-                >
-                    <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                        {issetSeriesNext ? "Следующая серия" : "Финиш"}
-                    </Text>
-                </TouchableOpacity>
-            ) : (
-                <TouchableOpacity
-                    style={[
-                        globalCss.button,
-                        isPressedContinue
-                            ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
-                            : globalCss.buttonBlue,
-                    ]}
-                    onPress={onRightPress}
-                    onPressIn={() => setIsPressedContinue(true)}
-                    onPressOut={() => setIsPressedContinue(false)}
-                    activeOpacity={1}
-                >
-                    <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                        Продолжить
-                    </Text>
-                </TouchableOpacity>
-            )}
-
-            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-            {/* !!!!!!!! Конец курса кнопка!!!!!!!! */}
-            {/* !!!!!!!! Конец курса кнопка!!!!!!!! */}
-            {/* !!!!!!!! Конец курса кнопка!!!!!!!! */}
-            {/* !!!!!!!! Конец курса кнопка!!!!!!!! */}
-            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-
+    
+    <View style={styles.swiperButtonsContainer}>
+        {index === totalSlides - 1 ? (
             <TouchableOpacity
-                style={styles.btnabs}
-                onPress={() => onJumpToSlide(7)} // 11111111111111111111
+                style={[
+                    globalCss.button,
+                    isPressedContinue
+                        ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
+                        : globalCss.buttonBlue,
+                ]}
+                onPress={() => {
+                    if (issetSeriesNext) updateSlider(currentSeries + 1)
+                    else finish()
+                }}
+                onPressIn={() => setIsPressedContinue(true)}
+                onPressOut={() => setIsPressedContinue(false)}
                 activeOpacity={1}
             >
                 <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                    onJumpToSlide
+                    {issetSeriesNext ? "Следующая серия" : "Финиш"}
                 </Text>
             </TouchableOpacity>
-        </View>
+        ) : (
+            <TouchableOpacity
+                style={[
+                    globalCss.button,
+                    isPressedContinue
+                        ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
+                        : globalCss.buttonBlue,
+                ]}
+                onPress={onRightPress}
+                onPressIn={() => setIsPressedContinue(true)}
+                onPressOut={() => setIsPressedContinue(false)}
+                activeOpacity={1}
+            >
+                <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
+                    Продолжить
+                </Text>
+            </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+            style={styles.btnabs}
+            onPress={() => onJumpToSlide(7)}
+            activeOpacity={1}
+        >
+            <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
+                onJumpToSlide
+            </Text>
+        </TouchableOpacity> 
     </View>
 );
 
@@ -654,11 +661,10 @@ const styles = StyleSheet.create({
         left: 40,
     },
     carousel: {
-        height: "75%",
+        height: "70%",
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        paddingTop: "12%",
     },
     gradient: {
         flex: 1,
@@ -671,13 +677,14 @@ const styles = StyleSheet.create({
     slideBox: {
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
     },
     slide: {
         backgroundColor: "#fff",
         borderRadius: 10,
-        height: "90%",
-        padding: 20
+        height: "100%",
+        padding: 20,
+        alignSelf: 'center',
     },
     slideIn: {
         flex: 1,
@@ -685,6 +692,7 @@ const styles = StyleSheet.create({
     },
     swiperContent: {
         height: "100%",
+        backgroundColor: 'white'
     },
 
     containerVideoLesson: {
@@ -757,14 +765,11 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontStyle: "italic",
     },
-    slideCourseLess: {
-        width: "100%",
-        paddingHorizontal: 20,
-    },
     swiperButtonsContainer: {
         flexDirection: "row",
         justifyContent: "flex-end",
-        paddingHorizontal: "9%",
+        paddingHorizontal: "5%",
+        paddingVertical: "8%",
     },
     button: {
         paddingHorizontal: 20,

@@ -13,12 +13,12 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
         <View style={styles.groupBtnQuiz}>
             {(selectedAnswer || isHelpUsed) && (
                 <TouchableOpacity
-                    style={[
+                    style={[ 
                         styles.quizBtnCtr,
                         isPressedRepeatBtn
                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
                             : globalCss.buttonGry,
-                        showIncorrectStyle && styles.incorrect // Aplică stilul "incorrect" dacă este necesar
+                        showIncorrectStyle && globalCss.incorrect // Aplică stilul "incorrect" dacă este necesar
                     ]}
                     onPressIn={() => setIsPressedRepeatBtn(true)}
                     onPressOut={() => setIsPressedRepeatBtn(false)}
@@ -29,7 +29,7 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                         <FontAwesomeIcon
                             icon={faRotateLeft}
                             size={18}
-                            style={showIncorrectStyle ? styles.correctTxt : globalCss.blueLight}
+                            style={showIncorrectStyle ? globalCss.correctTxt : globalCss.blueLight}
                         />
                     </Text>
                 </TouchableOpacity>
@@ -67,7 +67,7 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                         isPressedNextBtn
                             ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
                             : globalCss.buttonGry,
-                        (isAnswerCorrect || isHelpUsed) && styles.correct,
+                        (isAnswerCorrect || isHelpUsed) && globalCss.correct,
                     ]}
                     onPressIn={() => setIsPressedNextBtn(true)}
                     onPressOut={() => setIsPressedNextBtn(false)}
@@ -78,7 +78,7 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                         <FontAwesomeIcon
                             icon={faArrowRightLong}
                             size={18}
-                            style={(isAnswerCorrect || isHelpUsed) ? styles.correctTxt : globalCss.blueLight}
+                            style={(isAnswerCorrect || isHelpUsed) ? globalCss.correctTxt : globalCss.blueLight}
                         />
                     </Text>
                 </TouchableOpacity>
@@ -110,15 +110,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 0,
         elevation: 0,
-    },
-    correct: {
-        backgroundColor: "#81b344",
-    },
-    incorrect: {
-        backgroundColor: "#ca3431",
-    },
-    correctTxt: {
-        color: "white",
     },
     buttonText: {
         fontSize: 18,

@@ -39,35 +39,34 @@ const Answers = ({data, isHelpUsed, isAnswerCorrect, preHelpAnswers, selectedAns
                 </Text>
                 {data[0].answers.map((answer) => (
                     <TouchableOpacity
-                        key={answer.id}
-                        style={[
-                            globalCss.button,
-                            isPressedAnswer[answer.id]
-                                ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                : globalCss.buttonGry,
+                    key={answer.id}
+                    style={[
+                        globalCss.button,
+                        isPressedAnswer[answer.id]
+                            ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                            : globalCss.buttonGry,
+                        selectedAnswer === answer.id &&
+                        (isAnswerCorrect ? globalCss.correct : globalCss.incorrect),
+                        isHelpUsed && answer.correct && globalCss.correct,
+                        preHelpAnswers.indexOf(answer.id) !== -1 ? globalCss.hint : ""
+                    ]}
+                    onPressIn={() => handlePressIn(answer.id)}
+                    onPressOut={() => handlePressOut(answer.id)}
+                    onPress={() => handleAnswerSelect(answer.id, data[0])}
+                    activeOpacity={1}
+                >
+                    <Text style={[
+                        styles.buttonTextBlack,
+                        // Aplică globalCss.correctTxt dacă condițiile pentru globalCss.hint sunt îndeplinite
+                        preHelpAnswers.indexOf(answer.id) !== -1 ? globalCss.correctTxt : "",
+                        selectedAnswer === answer.id && isAnswerCorrect ? globalCss.correctTxt :
+                            selectedAnswer === answer.id ? globalCss.incorrectTxt : null,
+                        isHelpUsed && answer.correct ? globalCss.correctTxt : null
+                    ]}>
+                        {answer.text}
+                    </Text>
+                </TouchableOpacity>
 
-                            selectedAnswer === answer.id &&
-                            (isAnswerCorrect ? styles.correct : styles.incorrect),
-                            // Verifică dacă butonul help a fost apăsat și răspunsul este corect
-                            isHelpUsed && answer.correct && styles.correct,
-                            preHelpAnswers.indexOf(answer.id) !== -1 ? styles.hint : ""
-                        ]}
-                        onPressIn={() => handlePressIn(answer.id)}
-                        onPressOut={() => handlePressOut(answer.id)}
-                        onPress={() =>
-                            handleAnswerSelect(answer.id, data[0])
-                        }
-                        activeOpacity={1}
-                    >
-                        <Text style={[
-                            styles.buttonTextBlack,
-                            selectedAnswer === answer.id && isAnswerCorrect ? styles.correctTxt :
-                                selectedAnswer === answer.id ? styles.incorrectTxt : null,
-                            isHelpUsed && answer.correct ? styles.correctTxt : null // Adăugați condiția pentru starea "Help" și corectitudinea răspunsului
-                        ]}>
-                            {answer.text}
-                        </Text>
-                    </TouchableOpacity>
                 ))}
             </View>
         </View>
@@ -83,15 +82,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: "6%",
         flex: 1,
     },
-    correct: {
-        backgroundColor: "#81b344",
-    },
-    incorrect: {
-        backgroundColor: "#ca3431",
-    },
-    hint: {
-        backgroundColor: "#373737",
-    },
     headerText: {
         fontSize: 24,
         textAlign: "center",
@@ -102,11 +92,5 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontSize: 18,
         color: "#8895bc",
-    },
-    incorrectTxt: {
-        color: "white",
-    },
-    correctTxt: {
-        color: "white",
     },
 });

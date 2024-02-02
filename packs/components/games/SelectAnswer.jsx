@@ -47,9 +47,9 @@ const SelectAnswer = ({data, isHelpUsed, isAnswerCorrect, preHelpAnswers, select
                                 : globalCss.buttonGry,
 
                             selectedAnswer === answer.id &&
-                            (isAnswerCorrect ? styles.correct : styles.incorrect),
+                            (isAnswerCorrect ? styles.correct : globalCss.incorrect),
                             // Verifică dacă butonul help a fost apăsat și răspunsul este corect
-                            isHelpUsed && answer.correct && styles.correct,
+                            isHelpUsed && answer.correct && globalCss.correct,
                             preHelpAnswers.indexOf(answer.id) !== -1 ? styles.hint : ""
                         ]}
                         onPressIn={() => handlePressIn(answer.id)}
@@ -62,8 +62,8 @@ const SelectAnswer = ({data, isHelpUsed, isAnswerCorrect, preHelpAnswers, select
                         <Text style={[
                             styles.buttonTextBlack,
                             selectedAnswer === answer.id && isAnswerCorrect ? styles.correctTxt :
-                                selectedAnswer === answer.id ? styles.incorrectTxt : null,
-                            isHelpUsed && answer.correct ? styles.correctTxt : null // Adăugați condiția pentru starea "Help" și corectitudinea răspunsului
+                                selectedAnswer === answer.id ? globalCss.incorrectTxt : null,
+                            isHelpUsed && answer.correct ? globalCss.correctTxt : null // Adăugați condiția pentru starea "Help" și corectitudinea răspunsului
                         ]}>
                             {answer.text}
                         </Text>
@@ -83,12 +83,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: "6%",
         flex: 1,
     },
-    correct: {
-        backgroundColor: "#81b344",
-    },
-    incorrect: {
-        backgroundColor: "#ca3431",
-    },
     hint: {
         backgroundColor: "#373737",
     },
@@ -102,11 +96,5 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontSize: 18,
         color: "#8895bc",
-    },
-    incorrectTxt: {
-        color: "white",
-    },
-    correctTxt: {
-        color: "white",
     },
 });

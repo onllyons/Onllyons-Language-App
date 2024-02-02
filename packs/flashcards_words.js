@@ -4,7 +4,7 @@ import * as Haptics from "expo-haptics";
 import Carousel from "react-native-new-snap-carousel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faTimes, faGear, faCirclePlay, faCirclePause,} from "@fortawesome/free-solid-svg-icons";
+import {faTimes, faRotateLeft, faGear, faCirclePlay, faCirclePause,} from "@fortawesome/free-solid-svg-icons";
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop,} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {Audio} from "expo-av";
@@ -24,6 +24,8 @@ export default function FlashCardsLearning({route, navigation}) {
     const [isPressedContinue, setIsPressedContinue] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isPressedQuizStart, setIsPressedStartQuiz] = useState(false);
+    const [isPressedQuizStart1, setIsPressedStartQuiz1] = useState(false);
+    const [isPressedQuizRestart, setIsPressedRestartQuiz] = useState(false);
 
     const [isEnabled, setIsEnabled] = useState(false);
     const [isEnabledUsa, setIsEnabledUsa] = useState(true);
@@ -437,9 +439,9 @@ export default function FlashCardsLearning({route, navigation}) {
                                     styles.quizBtnCtr,
                                     globalCss.buttonGry,
                                     selectedAnswers[item.id] === answerIndex &&
-                                    answersCorrectness[item.id] ? styles.correct : null,
+                                    answersCorrectness[item.id] ? globalCss.correct : null,
                                     selectedAnswers[item.id] === answerIndex &&
-                                    !answersCorrectness[item.id] ? styles.incorrect : null,
+                                    !answersCorrectness[item.id] ? globalCss.incorrect : null,
                                     checkQuizAnswers[`${item.id}_${answerIndex}`]
                                         ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
                                         : null,
@@ -452,7 +454,7 @@ export default function FlashCardsLearning({route, navigation}) {
                                 activeOpacity={1}
                                 disabled={selectedAnswers[item.id] !== undefined} // Dezactivați butonul dacă a fost selectat un răspuns
                             >
-                                <Text style={[
+                                <Text style={[ styles.answerFlashcard,
                                     selectedAnswers[item.id] === answerIndex ? {color: 'white'} : globalCss.blueLight
                                 ]}>
                                     {item[`answer_${answerIndex}`]}
@@ -508,7 +510,10 @@ export default function FlashCardsLearning({route, navigation}) {
 
     return (
         <GestureHandlerRootView>
-            <View style={styles.swiperContent}>
+            <View style={[
+              styles.swiperContent,
+              { backgroundColor: showQuiz ? 'white' : 'transparent' }
+            ]}>
                 <Loader visible={isLoading}/>
 
                 <View style={styles.row}>
@@ -545,7 +550,7 @@ export default function FlashCardsLearning({route, navigation}) {
                         data={showQuiz ? quizData : carouselData}
                         ref={swiperRef}
                         sliderWidth={width}
-                        itemWidth={showQuiz ? width - 100 : width - 70}
+                        itemWidth={showQuiz ? width - 0 : width - 70}
                         paginationStyle={styles.pagination}
                         contentContainerCustomStyle={styles.carouselContainer}
                         layout={"default"}
@@ -640,37 +645,47 @@ export default function FlashCardsLearning({route, navigation}) {
                                     }
                                 </View>
 
+                                <View style={styles.groupBtnQuizFinish}>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.buttonRestartQuiz,
+                                            styles.buttonGenQuiz,
+                                            isPressedQuizRestart
+                                                ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
+                                                : globalCss.buttonGry,
+                                        ]}
+                                        onPressIn={() => setIsPressedRestartQuiz(true)}
+                                        onPressOut={() => setIsPressedRestartQuiz(false)}
+                                        activeOpacity={1}
+                                        onPress={restartQuiz}>
+                                        <Text style={styles.modalText}>
+                                            <FontAwesomeIcon
+                                                icon={faRotateLeft}
+                                                size={20}
+                                                style={globalCss.blueLight}
+                                            />
+                                        </Text>
+                                    </TouchableOpacity>
+                                    {/*1111111111111111111111*/}
 
-                                <TouchableOpacity
-                                    style={[
-                                        globalCss.button,
-                                        styles.buttonGenQuiz,
-                                        isPressedQuizStart
-                                            ? [globalCss.buttonPressed, globalCss.buttonPressedGreen]
-                                            : globalCss.buttonGreen,
-                                    ]}
-                                    onPressIn={() => setIsPressedStartQuiz(true)}
-                                    onPressOut={() => setIsPressedStartQuiz(false)}
-                                    onPress={restartQuiz}>
-                                    <Text style={styles.modalText}>restart</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.buttonEndQuiz,
+                                            styles.buttonGenQuiz,
+                                            isPressedQuizStart1
+                                                ? [globalCss.buttonPressed, globalCss.buttonPressedGreen]
+                                                : globalCss.buttonGreen,
+                                        ]}
+                                        onPressIn={() => setIsPressedStartQuiz1(true)}
+                                        onPressOut={() => setIsPressedStartQuiz1(false)}
+                                        activeOpacity={1}
+                                        onPress={handleBackButtonPress}
+                                    >
+                                        <Text style={styles.modalText}>Дальше</Text>
+                                    </TouchableOpacity>
+                                </View>
 
-
-                                <TouchableOpacity
-                                    style={[
-                                        globalCss.button,
-                                        styles.buttonGenQuiz,
-                                        isPressedQuizStart
-                                            ? [globalCss.buttonPressed, globalCss.buttonPressedGreen]
-                                            : globalCss.buttonGreen,
-                                    ]}
-                                    onPressIn={() => setIsPressedStartQuiz(true)}
-                                    onPressOut={() => setIsPressedStartQuiz(false)}
-                                    activeOpacity={1}
-                                    onPress={handleBackButtonPress}
-                                >
-                                    <Text style={styles.modalText}>Выбрать другой урок</Text>
-                                </TouchableOpacity>
+                                
                             </View>
                         </View>
                     </View>
@@ -717,7 +732,7 @@ export default function FlashCardsLearning({route, navigation}) {
                             activeOpacity={1}
                             onPress={handleShowQuiz}
                         >
-                            <Text style={styles.modalText}>начать тест</Text>
+                            <Text style={[styles.modalText, globalCss.textUpercase]}>начать тест</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -761,27 +776,44 @@ export default function FlashCardsLearning({route, navigation}) {
 }
 
 const SwiperButtonsContainer = ({
-                                    onRightPress,
-                                    isPressedContinue,
-                                    setIsPressedContinue,
-                                    swiperRef,
-                                    isAnswerSelected,
-                                    showQuiz,
-                                    currentIndex, // Indexul curent al slide-ului
-                                    totalSlides, // Numărul total de slide-uri
-                                    onFinishQuiz, // Funcția care va fi apelată când se finalizează quizul
-                                }) => (
+        onRightPress,
+        isPressedContinue,
+        setIsPressedContinue,
+        swiperRef,
+        isAnswerSelected,
+        showQuiz,
+        currentIndex, // Indexul curent al slide-ului
+        totalSlides, // Numărul total de slide-uri
+        onFinishQuiz, // Funcția care va fi apelată când se finalizează quizul
+    }) => (
     <View style={styles.swiperButtonsContainer}>
         {showQuiz && currentIndex === totalSlides - 1 ? (
             // Dacă este ultimul slide al quizului, afișează butonul "Finalizează quiz"
             <TouchableOpacity
-                style={[globalCss.button, globalCss.buttonBlue]}
-                onPress={onFinishQuiz} // Apelarea funcției pentru finalizarea quizului
+                style={[
+                    globalCss.button,
+                    globalCss.buttonBlue,
+                    !isAnswerSelected ? styles.buttonInactive : {}, // Aplică stilul inactiv dacă nu este selectat un răspuns
+                ]}
+                onPress={() => {
+                    if (isAnswerSelected) {
+                        onFinishQuiz(); // Apelarea funcției doar dacă un răspuns este selectat
+                    }
+                }}
                 onPressIn={() => setIsPressedContinue(true)}
                 onPressOut={() => setIsPressedContinue(false)}
                 activeOpacity={1}
+                disabled={!isAnswerSelected} // Dezactivează funcționalitatea onPress dacă nu este selectat un răspuns
             >
-                <Text style={globalCss.buttonText}>Завершите тест</Text>
+                <Text
+                    style={[
+                        styles.buttonTextNext,
+                        globalCss.textUpercase,
+                        !isAnswerSelected ? { color: "#8895bc" } : {}, // Schimbă culoarea textului dacă butonul este inactiv
+                    ]}
+                >
+                    Завершите тест
+                </Text>
             </TouchableOpacity>
         ) : (
             // Altfel, afișează butonul standard de navigare
@@ -807,8 +839,8 @@ const SwiperButtonsContainer = ({
             >
                 <Text
                     style={[
-                        globalCss.buttonText,
-                        !isAnswerSelected && showQuiz && {color: "#343541"},
+                        styles.buttonTextNext, globalCss.textUpercase,
+                        !isAnswerSelected && showQuiz && {color: "#8895bc"},
                     ]}
                 >
                     {showQuiz ? "Продолжить" : "Продолжить"}
@@ -830,6 +862,11 @@ const styles = StyleSheet.create({
     gradient: {
         flex: 1,
     },
+    buttonTextNext: {
+        color: "white",
+        fontSize: 17,
+        fontWeight: "600",
+      },
     row: {
         flexDirection: "row",
         marginTop: "10%",
@@ -953,11 +990,14 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         color: "#343541",
         flex: 1,
-    },
+    }, 
 
     groupBtnQuiz: {
         maxWidth: "80%",
         alignContent: "center",
+    },
+    groupBtnQuizFinish: {
+        flexDirection: 'row',
     },
     quizBtnCtr: {
         minWidth: "100%",
@@ -970,15 +1010,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 0,
         elevation: 0,
-    },
-    correct: {
-        backgroundColor: "#81b344",
-    },
-    incorrect: {
-        backgroundColor: "#ca3431",
-    },
-    correctTxt: {
-        color: "white",
     },
     buttonText: {
         fontSize: 18,
@@ -1119,5 +1150,38 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "47%",
         resizeMode: "contain",
-    }
+    },
+
+    answerFlashcard: {
+        textTransform: 'uppercase',
+        fontWeight: '600',
+        fontSize: 17,
+        color: "#8895bc",
+    },
+
+    buttonRestartQuiz: {
+      width: "30%",
+      paddingVertical: 18,
+      paddingHorizontal: 32,
+      alignItems: "center",
+      borderRadius: 14,
+      marginBottom: 20,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 1,
+      shadowRadius: 0,
+      elevation: 0,
+    }, 
+    buttonEndQuiz:{
+      width: "67%",
+      marginLeft: '3%',
+      paddingVertical: 18,
+      paddingHorizontal: 32,
+      alignItems: "center",
+      borderRadius: 14,
+      marginBottom: 20,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 1,
+      shadowRadius: 0,
+      elevation: 0,
+    },
 });

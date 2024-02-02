@@ -140,7 +140,7 @@ const globalCss = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 0,
-  },
+  }, 
   buttonPressed: {
     shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
@@ -149,7 +149,7 @@ const globalCss = StyleSheet.create({
     backgroundColor: "#1cb0f6",
     shadowColor: "#368fc3",
   },
-  buttonPurple: {
+  buttonPurple: { 
     backgroundColor: "#6949FF",
     shadowColor: "#4631A8",
   },
@@ -186,6 +186,11 @@ const globalCss = StyleSheet.create({
   },
   buttonText: {
     color: "white",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  buttonTextblueLight: {
+    color: "#8895bc",
     fontSize: 15,
     fontWeight: "600",
   },
@@ -288,9 +293,20 @@ const globalCss = StyleSheet.create({
     color: "#212121",
     fontWeight: "500",
   },
-
-  asdd: {},
-  asdd: {},
+  correct: {
+    backgroundColor: "#81b344",
+    shadowColor: "#529302",
+  },
+  incorrect: {
+      backgroundColor: "#ca3431",
+      shadowColor: "#942320",
+  },
+  hint: {
+      backgroundColor: "#373737",
+      shadowColor: "#000000",
+  },
+  incorrectTxt: {color: "white",},
+  correctTxt: {color: "white",},
   asdd: {},
   asdd: {},
   asdd: {},
