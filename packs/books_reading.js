@@ -113,28 +113,23 @@ export default function BooksScreen({navigation}) {
             });
     }, []);
 
-
-    const words = [
-        {text: "is", start: 180, duration: 100},
-        {text: "the", start: 280, duration: 189},
-        // ... restul cuvintelor
-    ];
-
     useEffect(() => {
+        console.log(wordsArray)
         let interval = setInterval(async () => {
             if (isPlaying && sound) {
                 const status = await sound.getStatusAsync();
                 if (status.isPlaying) {
                     const currentTime = status.positionMillis;
-                    const wordIndex = words.findIndex(
+                    const wordIndex = wordsArray.findIndex(
                         (word) =>
                             currentTime >= word.start &&
                             currentTime <= word.start + word.duration
                     );
+                    console.log(wordIndex)
                     setCurrentWordIndex(wordIndex);
                 }
             }
-        }, 100);
+        }, 50);
 
         return () => clearInterval(interval);
     }, [isPlaying]);
@@ -155,7 +150,6 @@ export default function BooksScreen({navigation}) {
         return words;
     };
     const bottomSheetRef = useRef(null);
-    const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
     const handleOpenPress = useCallback(() => {
         bottomSheetRef.current?.snapToIndex(1);
     }, []);
@@ -262,7 +256,7 @@ export default function BooksScreen({navigation}) {
 
             <BottomSheet
                 ref={bottomSheetRef}
-                snapPoints={snapPoints}
+                snapPoints={["25%", "50%", "90%"]}
                 backdropComponent={renderBackdrop}
                 enablePanDownToClose={true}
                 index={-1}

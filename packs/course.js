@@ -9,10 +9,11 @@ import {
     TouchableOpacity, Animated
 } from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faStar, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faStar} from "@fortawesome/free-solid-svg-icons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
+
 export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
     const [data, setData] = useState(null);
@@ -196,16 +197,16 @@ export default function CourseScreen({navigation}) {
         openedNavMenu.current = openedNavMenu.current === id ? null : id
     };
 
-const [isModalVisible, setModalVisible] = useState(false);
-const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
-const [btnNextSubscribe, setbtnNextSubscribe] = useState(false);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
+    const [btnNextSubscribe, setbtnNextSubscribe] = useState(false);
 
-const toggleModal = () => {
-  setModalVisible(!isModalVisible);
-};
-const subscriptionModal = () => {
-  setSubscriptionVisible(!subscriptionModalVisible);
-};
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
+    const subscriptionModal = () => {
+        setSubscriptionVisible(!subscriptionModalVisible);
+    };
 
 
     return (
@@ -306,18 +307,18 @@ const subscriptionModal = () => {
                 </TouchableOpacity>
             </View>
 
-           {/* 11111111111111111111111111 */}
+            {/* 11111111111111111111111111 */}
 
-        <Modal
-        isVisible={isModalVisible}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        onBackdropPress={toggleModal}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-        >
-            <View style={styles.modal}>
+            <Modal
+                isVisible={isModalVisible}
+                animationIn="slideInUp"
+                animationOut="slideOutDown"
+                onBackdropPress={toggleModal}
+                style={{justifyContent: 'flex-end', margin: 0}}
+            >
+                <View style={styles.modal}>
 
-                {/*<View style={styles.headerModalCat}>
+                    {/*<View style={styles.headerModalCat}>
                     <TouchableOpacity style={styles.closeModalCourse} onPress={toggleModal}>
                       <Text>
                           <FontAwesomeIcon icon={faTimes} size={30} style={globalCss.link}/>
@@ -328,167 +329,173 @@ const subscriptionModal = () => {
                     </View>
                 </View> */}
 
-                <ScrollView 
-                ref={scrollViewRef}
-                contentContainerStyle={{paddingTop: 25, paddingBottom: 80}}
-                 style={styles.modalCourseContent}>
-                    <View style={styles.infoCatTitle}>
-                        <Image
-                            source={require("./images/El/inGlasses.png")}
-                            style={styles.courseCatImg}
-                        />
-                        <View style={styles.titleLessonCat}>
-                            <Text style={styles.titleLessonCatSubject}>Subject 1</Text>
-                            <Text style={styles.titleLessonCatTxt}>350 базовых английских слов</Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.infoDetExtraCat}>
-                        
-
-                        <View style={styles.infoDetCatTitle}>
+                    <ScrollView
+                        ref={scrollViewRef}
+                        contentContainerStyle={{paddingTop: 25, paddingBottom: 80}}
+                        style={styles.modalCourseContent}>
+                        <View style={styles.infoCatTitle}>
                             <Image
-                                source={require("./images/icon/book.png")}
-                                style={styles.courseDetCatImg}
+                                source={require("./images/El/inGlasses.png")}
+                                style={styles.courseCatImg}
                             />
-                            <View style={styles.titleDetLessonCat}>
-                                <Text style={styles.titleDetLessonCatSubject}>20 уроков</Text>
-                                <Text style={styles.titleDetLessonCatTxt}>Вперёд навстречу 20 увлекательным приключениям!</Text>
-                            </View>
-                        </View>
-                        
-                        <View style={styles.horizontalLine} />
-                        
-                        <View style={styles.infoDetCatTitle}>
-                            <Image
-                                source={require("./images/icon/brain.png")}
-                                style={styles.courseDetCatImg}
-                            />
-                            <View style={styles.titleDetLessonCat}>
-                                <Text style={styles.titleDetLessonCatSubject}>351 испытаний</Text>
-                                <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие через 351 мир возможностей!</Text>
+                            <View style={styles.titleLessonCat}>
+                                <Text style={styles.titleLessonCatSubject}>Subject 1</Text>
+                                <Text style={styles.titleLessonCatTxt}>350 базовых английских слов</Text>
                             </View>
                         </View>
 
-                        <View style={styles.horizontalLine} />
-                        
-                        <View style={styles.infoDetCatTitle}>
-                            <Image
-                                source={require("./images/icon/hourglass.png")}
-                                style={styles.courseDetCatImg}
-                            />
-                            <View style={styles.titleDetLessonCat}>
-                                <Text style={styles.titleDetLessonCatSubject}>Более 6 часов погружения</Text>
-                                <Text style={styles.titleDetLessonCatTxt}>полного погружения в знания</Text>
+                        <View style={styles.infoDetExtraCat}>
+
+
+                            <View style={styles.infoDetCatTitle}>
+                                <Image
+                                    source={require("./images/icon/book.png")}
+                                    style={styles.courseDetCatImg}
+                                />
+                                <View style={styles.titleDetLessonCat}>
+                                    <Text style={styles.titleDetLessonCatSubject}>20 уроков</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд навстречу 20 увлекательным
+                                        приключениям!</Text>
+                                </View>
                             </View>
-                        </View>
-                    </View>
 
-                </ScrollView>
-            </View>
-        </Modal>
+                            <View style={styles.horizontalLine}/>
 
+                            <View style={styles.infoDetCatTitle}>
+                                <Image
+                                    source={require("./images/icon/brain.png")}
+                                    style={styles.courseDetCatImg}
+                                />
+                                <View style={styles.titleDetLessonCat}>
+                                    <Text style={styles.titleDetLessonCatSubject}>351 испытаний</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие через 351 мир
+                                        возможностей!</Text>
+                                </View>
+                            </View>
 
-        <Modal
-        isVisible={subscriptionModalVisible}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        onBackdropPress={subscriptionModal}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-        >
-            <View style={globalCss.modalSubscription}>
+                            <View style={styles.horizontalLine}/>
 
-                <ScrollView 
-                ref={scrollViewRef}
-                contentContainerStyle={{paddingTop: 80, paddingBottom: 80}}
-                 style={styles.modalCourseContent}>
-                    <View style={globalCss.infoCatTitle}>
-                        <Image
-                            source={require("./images/El/inGlasses.png")}
-                            style={globalCss.courseCatImg}
-                        />
-                        <View style={globalCss.titleLessonCat}>
-                            <Text style={globalCss.titleLessonCatTxt}>
-                                Веселитесь и учите английский с нашей подпиской сейчас!
-                            </Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.infoDetExtraCat}>
-                        
-                        <View style={styles.infoDetCatTitle}>
-                            <Image
-                                source={require("./images/icon/brain.png")}
-                                style={styles.courseDetCatImg}
-                            />
-                            <View style={styles.titleDetLessonCat}>
-                                <Text style={styles.titleDetLessonCatSubject}>Quiz games</Text>
-                                <Text style={styles.titleDetLessonCatTxt}>Неограниченный доступ к викторинам - 4 игры</Text>
+                            <View style={styles.infoDetCatTitle}>
+                                <Image
+                                    source={require("./images/icon/hourglass.png")}
+                                    style={styles.courseDetCatImg}
+                                />
+                                <View style={styles.titleDetLessonCat}>
+                                    <Text style={styles.titleDetLessonCatSubject}>Более 6 часов погружения</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>полного погружения в знания</Text>
+                                </View>
                             </View>
                         </View>
 
-                        <View style={styles.horizontalLine} />
+                    </ScrollView>
+                </View>
+            </Modal>
 
-                        <View style={styles.infoDetCatTitle}>
+
+            <Modal
+                isVisible={subscriptionModalVisible}
+                animationIn="slideInUp"
+                animationOut="slideOutDown"
+                onBackdropPress={subscriptionModal}
+                style={{justifyContent: 'flex-end', margin: 0}}
+            >
+                <View style={globalCss.modalSubscription}>
+
+                    <ScrollView
+                        ref={scrollViewRef}
+                        contentContainerStyle={{paddingTop: 80, paddingBottom: 80}}
+                        style={styles.modalCourseContent}>
+                        <View style={globalCss.infoCatTitle}>
                             <Image
-                                source={require("./images/icon/online-course.png")}
-                                style={styles.courseDetCatImg}
+                                source={require("./images/El/inGlasses.png")}
+                                style={globalCss.courseCatImg}
                             />
-                            <View style={styles.titleDetLessonCat}>
-                                <Text style={styles.titleDetLessonCatSubject}>Курс: Английский язык, 295 уроков</Text>
-                                <Text style={styles.titleDetLessonCatTxt}>Изучайте английский язык увлекательно и легко, открывая дверь в мир знаний и игр!</Text>
-                            </View>
-                        </View>
-                        
-                        <View style={styles.horizontalLine} />
-                        
-                        <View style={styles.infoDetCatTitle}>
-                            <Image
-                                source={require("./images/icon/audio-book.png")}
-                                style={styles.courseDetCatImg}
-                            />
-                            <View style={styles.titleDetLessonCat}>
-                                <Text style={styles.titleDetLessonCatSubject}>327 книг с аудио и субтитрами</Text>
-                                <Text style={styles.titleDetLessonCatTxt}>
-                                    Каждая книга — это волшебное путешествие с аудио и субтитрами, оживляющее истории для вас!
+                            <View style={globalCss.titleLessonCat}>
+                                <Text style={globalCss.titleLessonCatTxt}>
+                                    Веселитесь и учите английский с нашей подпиской сейчас!
                                 </Text>
                             </View>
                         </View>
 
-                        <View style={styles.horizontalLine} />
-                        
-                        <View style={styles.infoDetCatTitle}>
-                            <Image
-                                source={require("./images/icon/flash-card.png")}
-                                style={styles.courseDetCatImg}
-                            />
-                            <View style={styles.titleDetLessonCat}>
-                                <Text style={styles.titleDetLessonCatSubject}>Flashcard: 557 уроков 5352 слов</Text>
-                                <Text style={styles.titleDetLessonCatTxt}>Погрузитесь в магию ...</Text>
+                        <View style={styles.infoDetExtraCat}>
+
+                            <View style={styles.infoDetCatTitle}>
+                                <Image
+                                    source={require("./images/icon/brain.png")}
+                                    style={styles.courseDetCatImg}
+                                />
+                                <View style={styles.titleDetLessonCat}>
+                                    <Text style={styles.titleDetLessonCatSubject}>Quiz games</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Неограниченный доступ к викторинам - 4
+                                        игры</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.horizontalLine}/>
+
+                            <View style={styles.infoDetCatTitle}>
+                                <Image
+                                    source={require("./images/icon/online-course.png")}
+                                    style={styles.courseDetCatImg}
+                                />
+                                <View style={styles.titleDetLessonCat}>
+                                    <Text style={styles.titleDetLessonCatSubject}>Курс: Английский язык, 295
+                                        уроков</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Изучайте английский язык увлекательно и
+                                        легко, открывая дверь в мир знаний и игр!</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.horizontalLine}/>
+
+                            <View style={styles.infoDetCatTitle}>
+                                <Image
+                                    source={require("./images/icon/audio-book.png")}
+                                    style={styles.courseDetCatImg}
+                                />
+                                <View style={styles.titleDetLessonCat}>
+                                    <Text style={styles.titleDetLessonCatSubject}>327 книг с аудио и субтитрами</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>
+                                        Каждая книга — это волшебное путешествие с аудио и субтитрами, оживляющее
+                                        истории для вас!
+                                    </Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.horizontalLine}/>
+
+                            <View style={styles.infoDetCatTitle}>
+                                <Image
+                                    source={require("./images/icon/flash-card.png")}
+                                    style={styles.courseDetCatImg}
+                                />
+                                <View style={styles.titleDetLessonCat}>
+                                    <Text style={styles.titleDetLessonCatSubject}>Flashcard: 557 уроков 5352 слов</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Погрузитесь в магию ...</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    {/* 11111 */}
-                    <TouchableOpacity 
-                        style={[globalCss.button, globalCss.mt8, btnNextSubscribe ? [globalCss.buttonPressed, globalCss.buttonPressedBlue] : globalCss.buttonBlue]}
-                        onPress={subscriptionModal}
-                        onPressIn={() => setbtnNextSubscribe(true)}
-                        onPressOut={() => setbtnNextSubscribe(false)}
-                        activeOpacity={1}
-                        onPress={() => navigation.navigate('SubscribeScreen')}
-                    >
-                        <Text style={globalCss.buttonText}>ПОДПИСАТЬСЯ</Text>
-                    </TouchableOpacity>
+                        {/* 11111 */}
+                        <TouchableOpacity
+                            style={[globalCss.button, globalCss.mt8, btnNextSubscribe ? [globalCss.buttonPressed, globalCss.buttonPressedBlue] : globalCss.buttonBlue]}
+                            onPress={subscriptionModal}
+                            onPressIn={() => setbtnNextSubscribe(true)}
+                            onPressOut={() => setbtnNextSubscribe(false)}
+                            activeOpacity={1}
+                        >
+                            <Text style={globalCss.buttonText}>ПОДПИСАТЬСЯ</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={[ globalCss.alignSelfCenter, globalCss.mt4 ]} onPress={subscriptionModal}>
-                      <Text>
-                          Больше не показывать
-                      </Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={[globalCss.alignSelfCenter, globalCss.mt4]}
+                                          onPress={subscriptionModal}>
+                            <Text>
+                                Больше не показывать
+                            </Text>
+                        </TouchableOpacity>
 
-                </ScrollView>
-            </View>
-        </Modal>
+                    </ScrollView>
+                </View>
+            </Modal>
 
 
             <ScrollView
@@ -500,10 +507,10 @@ const subscriptionModal = () => {
             >
                 <View style={styles.container}>
                     <View style={styles.contentFlashCards}>
-                    {/* 2222222222 */}
-                    <TouchableOpacity onPress={subscriptionModal} activeOpacity={1}>
-                        <Text>subscription modal</Text>
-                    </TouchableOpacity>
+                        {/* 2222222222 */}
+                        <TouchableOpacity onPress={subscriptionModal} activeOpacity={1}>
+                            <Text>subscription modal</Text>
+                        </TouchableOpacity>
                         {loadedCategories.map((category) => (
                             <View key={category}
                                   onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>
@@ -735,25 +742,25 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     modal: {
-      height: '73%',
-      backgroundColor: '#efefef',
-      borderRadius: 10,
+        height: '73%',
+        backgroundColor: '#efefef',
+        borderRadius: 10,
     },
     modalCourseContent: {
-      paddingLeft: '4%',
-      paddingRight: '4%',
-      paddingBottom: '4%',
+        paddingLeft: '4%',
+        paddingRight: '4%',
+        paddingBottom: '4%',
     },
-    closeModalCourse:{
+    closeModalCourse: {
         marginTop: '2%',
         padding: 10,
     },
-    courseCatImg:{
+    courseCatImg: {
         width: 130,
         height: 130,
         resizeMode: 'contain',
     },
-    infoCatTitle:{
+    infoCatTitle: {
         flexDirection: 'row',
         backgroundColor: 'white',
         borderRadius: '25%',
@@ -762,26 +769,26 @@ const styles = StyleSheet.create({
         paddingRight: '5%',
         paddingBottom: '5%',
     },
-    titleLessonCat:{
+    titleLessonCat: {
         width: '62%',
         justifyContent: 'center',
         paddingLeft: '4%',
     },
-    titleLessonCatTxt:{
+    titleLessonCatTxt: {
         fontSize: 20,
         color: '#212121',
         fontWeight: '500',
     },
-    titleLessonCatSubject:{
+    titleLessonCatSubject: {
         fontSize: 16,
         color: '#6949FF',
     },
-    courseDetCatImg:{
+    courseDetCatImg: {
         width: 57,
         height: 57,
         resizeMode: 'contain',
     },
-    infoDetExtraCat:{
+    infoDetExtraCat: {
         backgroundColor: 'white',
         borderRadius: '25%',
         paddingTop: '6%',
@@ -790,59 +797,47 @@ const styles = StyleSheet.create({
         paddingBottom: '6%',
         marginTop: '5%',
     },
-    infoDetCatTitle:{
+    infoDetCatTitle: {
         flexDirection: 'row',
         marginBottom: '0'
     },
-    titleDetLessonCat:{
+    titleDetLessonCat: {
         width: '62%',
         justifyContent: 'center',
         paddingLeft: '5%',
     },
-    titleDetLessonCatSubject:{
+    titleDetLessonCatSubject: {
         fontSize: 17.5,
         color: '#212121',
         fontWeight: '500',
         textTransform: 'uppercase',
     },
-    titleDetLessonCatTxt:{
+    titleDetLessonCatTxt: {
         fontSize: 16,
         color: '#616161',
     },
-    horizontalLine:{
+    horizontalLine: {
         width: '90%',
         alignSelf: 'center',
         borderBottomWidth: 1,
         borderBottomColor: '#EEEEEE',
         marginVertical: '7%',
     },
-    headerModalCat:{
+    headerModalCat: {
         flexDirection: 'row',
     },
-    headerTitleModalCat:{
+    headerTitleModalCat: {
         justifyContent: 'center',
         alignSelf: 'center',
     },
-    headerTitleModalCatTxt:{
+    headerTitleModalCatTxt: {
         fontSize: 18,
         color: '#212121',
         textTransform: 'uppercase',
         alignSelf: 'center',
         textAlign: 'center',
         marginTop: '1%',
-    },
-    asdf:{
-
-    },
-    asdf:{
-
-    },
-    asdf:{
-
-    },
-    asdf:{
-
-    },
+    }
 });
 
 

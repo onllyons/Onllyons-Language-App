@@ -60,7 +60,7 @@ export const getTokens = () => tokens
 
 export const setSuccessCallback = func => {
     if (callback.complete) func()
-    else callback.callback = func
+    else callback.callback = func()
 }
 
 export const setTokens = obj => {
