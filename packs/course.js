@@ -13,6 +13,7 @@ import {faStar} from "@fortawesome/free-solid-svg-icons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
+import {DefaultButtonDown} from "./components/buttons/DefaultButtonDown";
 
 export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
@@ -293,18 +294,25 @@ export default function CourseScreen({navigation}) {
                     <Text style={styles.infoCourseTxtSubCat}>Subject 1</Text>
                     <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.infoCourseBtn, isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
-                    onPressIn={() => setIsCardPressedCourseDetails(true)}
-                    onPressOut={() => setIsCardPressedCourseDetails(false)}
-                    onPress={toggleModal}
-                    activeOpacity={1}
-                >
+
+                <DefaultButtonDown style={{...styles.infoCourseBtn, ...globalCss.buttonGreen}} onPress={toggleModal}>
                     <Image
                         source={require('./images/icon/infoCategory.png')}
                         style={styles.infoCategoryImg}
                     />
-                </TouchableOpacity>
+                </DefaultButtonDown>
+                {/*<TouchableOpacity*/}
+                {/*    style={[styles.infoCourseBtn, isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}*/}
+                {/*    onPressIn={() => setIsCardPressedCourseDetails(true)}*/}
+                {/*    onPressOut={() => setIsCardPressedCourseDetails(false)}*/}
+                {/*    onPress={toggleModal}*/}
+                {/*    activeOpacity={1}*/}
+                {/*>*/}
+                {/*    <Image*/}
+                {/*        source={require('./images/icon/infoCategory.png')}*/}
+                {/*        style={styles.infoCategoryImg}*/}
+                {/*    />*/}
+                {/*</TouchableOpacity>*/}
             </View>
 
             {/* 11111111111111111111111111 */}
@@ -522,6 +530,24 @@ export default function CourseScreen({navigation}) {
                                 </View>
                                 */}
                                 {data[category].items.map((item, index) => (
+                                    // <DefaultButtonDown style={[
+                                    //     {
+                                    //         marginLeft: `${getMarginLeftForCard(index)}%`,
+                                    //     },
+                                    //     styles.card,
+                                    //     pressedCards[item.id]
+                                    //         ? [styles.cardPressed, styles.bgGryPressed]
+                                    //         : styles.bgGry,
+                                    // ]} onPress={() => navigation.navigate("CourseLesson", {url: item.url})}>
+                                    //     <Text>
+                                    //         <FontAwesomeIcon
+                                    //             icon={faStar}
+                                    //             size={18}
+                                    //             style={styles.iconFlash}
+                                    //         />
+                                    //     </Text>
+                                    //     <Text>{item.title}</Text>
+                                    // </DefaultButtonDown>
                                     <TouchableOpacity
                                         key={item.id}
                                         style={[
@@ -763,7 +789,7 @@ const styles = StyleSheet.create({
     infoCatTitle: {
         flexDirection: 'row',
         backgroundColor: 'white',
-        borderRadius: '25%',
+        borderRadius: 25,
         paddingTop: '5%',
         paddingLeft: '2%',
         paddingRight: '5%',
@@ -790,7 +816,7 @@ const styles = StyleSheet.create({
     },
     infoDetExtraCat: {
         backgroundColor: 'white',
-        borderRadius: '25%',
+        borderRadius: 25,
         paddingTop: '6%',
         paddingLeft: '6%',
         paddingRight: '6%',
