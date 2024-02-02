@@ -41,29 +41,23 @@ export const DefaultButtonDown = ({children, style, onPress, onPressIn, onPressO
                     justifyContent: "center"
                 }}
                 onPressIn={() => {
-                    console.log("88888888888888888888")
                     handlePressIn()
 
                     if (onPressIn) {
-                        console.log("11111111111")
                         onPressIn()
                     }
                 }}
                 onPressOut={() => {
-                    console.log("99999999999999")
                     handlePressOut()
 
                     if (onPressOut) {
-                        console.log("22222222222222")
                         onPressOut()
                     }
                 }}
                 onPress={() => {
-                    console.log("000000000000000")
                     handlePress()
 
                     if (onPress) {
-                        console.log("333333333333333333")
                         onPress()
                     }
                 }}
