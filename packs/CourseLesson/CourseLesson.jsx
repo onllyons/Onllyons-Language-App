@@ -86,7 +86,8 @@ export const CourseLesson = ({ navigation }) => {
   }, []);
 
   const updateProgressBar = (newIndex) => {
-    console.log("dataFull[index].type", dataFull[newIndex].type);
+    // TODO tester NOW
+    //console.log("dataFull[index].type", dataFull[newIndex].type);
     if (!quizActive && newIndex >= startQuizIndex.current) {
       Animated.timing(quizWidth.current, {
         toValue: width - 70,
