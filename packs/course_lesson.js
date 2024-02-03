@@ -13,11 +13,12 @@ import {faCirclePause, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {LinearGradient} from 'expo-linear-gradient';
 import globalCss from "./css/globalCss";
 import Toast from "react-native-toast-message";
-import {Video, Audio} from "expo-av";
+import {Audio} from "expo-av";
 import {useRoute} from "@react-navigation/native";
-import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faCirclePlay} from "@fortawesome/free-solid-svg-icons";
+import {CustomVideo} from "./components/course/CustomVideo";
 
 const {width} = Dimensions.get("window");
 
@@ -58,6 +59,8 @@ export default function CourseLessonQuiz({navigation}) {
 
     const quizWidth = useRef(new Animated.Value(width - 100));
 
+    const indexRef = useRef(0)
+
     const updateProgressBar = (newIndex) => {
         if (!quizActive && newIndex >= startQuizIndex.current) {
             Animated.timing(quizWidth.current, {
@@ -70,6 +73,7 @@ export default function CourseLessonQuiz({navigation}) {
         }
         else if (quizActive && newIndex < startQuizIndex.current) setQuizActive(false)
 
+        indexRef.current = newIndex
         setIndex(newIndex);
     };
 
@@ -197,17 +201,7 @@ export default function CourseLessonQuiz({navigation}) {
                         </Text>
                     </View>
 
-                    <View style={styles.videoContainer}>
-                        <Video
-                            key={`video-${key}`}
-                            style={styles.video}
-                            source={{
-                                uri: `https://language.onllyons.com/ru/ru-en/packs/assest/course/video-lessons/${data.carousel[key].file_path}`,
-                            }}
-                            useNativeControls
-                            resizeMode="cover"
-                        />
-                    </View>
+                    <CustomVideo url={`${SERVER_URL}/ru/ru-en/packs/assest/course/video-lessons/${data.carousel[key].file_path}`}/>
 
                     <View style={styles.bgGroupTitleCourse1}>
                         <View style={styles.groupTitleCourse1}>
@@ -227,14 +221,14 @@ export default function CourseLessonQuiz({navigation}) {
 
         startQuizIndex.current = seriesElementsArr.length
 
-        Object.keys(data.questions ? data.questions : {}).forEach((key, index) => {
+        Object.keys(data.questions ? data.questions : {}).forEach((key, i) => {
             let element;
             switch (data.questions[key].variant) {
                 case "v":
                 
                     element = (
                         <View
-                            key={`test-${data.questions[key].series}-${index}`}
+                            key={`test-${data.questions[key].series}-${i}`}
                             style={styles.slideIn}
                         >
                             <View style={styles.videoContainerGroup}>
@@ -243,16 +237,7 @@ export default function CourseLessonQuiz({navigation}) {
                                 </Text>
                             </View>
 
-                            <View style={styles.videoContainer}>
-                                <Video
-                                    style={styles.video}
-                                    source={{
-                                        uri: `https://language.onllyons.com/ru/ru-en/packs/assest/course/content/videos/${data.questions[key].file_path}`,
-                                    }}
-                                    useNativeControls
-                                    resizeMode="cover"
-                                />
-                            </View>
+                            <CustomVideo url={`${SERVER_URL}/ru/ru-en/packs/assest/course/content/videos/${data.questions[key].file_path}`}/>
 
                             <View style={styles.groupQuizBtn}>
                                 <View style={styles.btnQuizPosition1}>
@@ -282,7 +267,7 @@ export default function CourseLessonQuiz({navigation}) {
                 case "i":
                     element = (
                         <View
-                            key={`test-${data.questions[key].series}-${index}`}
+                            key={`test-${data.questions[key].series}-${i}`}
                             style={styles.slideIn}
                         >
                             <View style={styles.videoContainerGroup}>
@@ -323,7 +308,7 @@ export default function CourseLessonQuiz({navigation}) {
                     break;
                 case "a":
                     element = (
-                        <View key={`test-${data.questions[key].series}-${index}`} style={styles.slideIn}>
+                        <View key={`test-${data.questions[key].series}-${i}`} style={styles.slideIn}>
                             <View style={styles.videoContainerGroup}>
                                 <Text style={styles.base_title}>
                                     {data.questions[key].description}
@@ -362,7 +347,7 @@ export default function CourseLessonQuiz({navigation}) {
                 case "ca":
                     const words = data.questions[key].v1.split(" ");
                     element = (
-                        <View key={`test-${data.questions[key].series}-${index}`} style={styles.slideIn}>
+                        <View key={`test-${data.questions[key].series}-${i}`} style={styles.slideIn}>
                             <View style={styles.videoContainerGroup}>
                                 <Text style={styles.base_title}>
                                     {data.questions[key].description}
@@ -396,7 +381,7 @@ export default function CourseLessonQuiz({navigation}) {
                 case "ct":
                     element = (
                         <View
-                            key={`test-${data.questions[key].series}-${index}`}
+                            key={`test-${data.questions[key].series}-${i}`}
                             style={styles.slideIn}
                         >
                             <Text>clav alege</Text>
@@ -434,7 +419,7 @@ export default function CourseLessonQuiz({navigation}) {
                 case "t":
                     element = (
                         <View
-                            key={`test-${data.questions[key].series}-${index}`}
+                            key={`test-${data.questions[key].series}-${i}`}
                             style={styles.slideIn}
                         >
                             <View style={styles.videoContainerGroup}>
@@ -482,7 +467,7 @@ export default function CourseLessonQuiz({navigation}) {
                 default:
                     element = (
                         <Text
-                            key={`test-${data.questions[key].series}-${index}`}
+                            key={`test-${data.questions[key].series}-${i}`}
                             style={styles.slideIn}
                         >
                             error ? {data.questions[key].series} : {data.questions[key].v1}
@@ -510,35 +495,6 @@ export default function CourseLessonQuiz({navigation}) {
             </View>
 
             <View style={styles.carousel}>
-                {/* <Carousel
-                         scrollEnabled={!quizActive}
-                         ref={swiperRef}
-                         data={seriesElements}
-                         sliderWidth={width}
-                         itemWidth={width - 70}
-                         layout={"default"}
-                         loop={false}
-                         onSnapToItem={updateProgressBar} // Actualizeaza bara de progres cand faci scroll
-                         renderItem={(data) =>
-                             <View style={styles.slideBox}>
-                                 {startQuizIndex.current <= data.index
-                                     ? <Animated.View style={{width: quizWidth.current}}>
-                                         <View
-                                             style={[
-                                                 styles.slide,
-                                             ]}
-                                         >{data.item}</View>
-                                     </Animated.View>
-                                     : <View
-                                         style={[
-                                             styles.slide,
-                                             {width: width - 100}
-                                         ]}
-                                     >{data.item}</View>}
-                             </View>
-                         }
-                     /> */}
-
                 <Carousel
                   scrollEnabled={!quizActive}
                   ref={swiperRef}
@@ -862,7 +818,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         borderColor: "#E0E0E0",
-        borderBottomWidth: 0,
         borderBottomWidth: 1,
         paddingHorizontal: "3%",
     },
