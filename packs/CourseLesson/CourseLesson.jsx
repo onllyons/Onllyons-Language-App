@@ -159,7 +159,8 @@ export const CourseLesson = ({ navigation }) => {
   const drawCarouselTest = (dataItem, indexItem) => {
     const key = `${dataItem.type}${indexItem}${dataItem.id}`;
     const currentQuest = dataItem[`v${dataItem.correct}`] || "";
-    if (indexItem === index) console.log("dataItem", dataItem);
+    // TODO test data NOW
+    //if (indexItem === index) console.log("dataItem", dataItem);
 
     if (!dataItem) return null;
     const keyStr = `carousel-${dataItem.series}-${indexItem}`;
