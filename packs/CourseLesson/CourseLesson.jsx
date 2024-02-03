@@ -222,9 +222,8 @@ export const CourseLesson = ({ navigation }) => {
             <View style={styles.groupQuizBtn}>
               <View style={styles.btnQuizPosition1}>
                 <TouchableOpacity
-                  disabled={check[key]}
+                  disabled={Boolean(check[key])}
                   style={[
-                    styles.btnQuizStyle,
                     {
                       ...(check[key] && dataItem.v1 === check[key]
                         ? {
@@ -241,6 +240,7 @@ export const CourseLesson = ({ navigation }) => {
                 >
                   <Text
                     style={[
+                      styles.btnQuizStyle,
                       {
                         color:
                           check[key] && dataItem.v1 === check[key]
@@ -255,9 +255,8 @@ export const CourseLesson = ({ navigation }) => {
               </View>
               <View style={styles.btnQuizPosition2}>
                 <TouchableOpacity
-                  disabled={check[key]}
+                  disabled={Boolean(check[key])}
                   style={[
-                    styles.btnQuizStyle,
                     {
                       ...(check[key] && dataItem.v2 === check[key]
                         ? {
@@ -274,6 +273,7 @@ export const CourseLesson = ({ navigation }) => {
                 >
                   <Text
                     style={[
+                      styles.btnQuizStyle,
                       {
                         color:
                           check[key] && dataItem.v2 === check[key]
@@ -288,9 +288,8 @@ export const CourseLesson = ({ navigation }) => {
               </View>
               <View style={styles.btnQuizPosition1}>
                 <TouchableOpacity
-                  disabled={check[key]}
+                  disabled={Boolean(check[key])}
                   style={[
-                    styles.btnQuizStyle,
                     {
                       ...(check[key] && dataItem.v3 === check[key]
                         ? {
@@ -307,6 +306,7 @@ export const CourseLesson = ({ navigation }) => {
                 >
                   <Text
                     style={[
+                      styles.btnQuizStyle,
                       {
                         color:
                           check[key] && dataItem.v3 === check[key]
@@ -321,9 +321,8 @@ export const CourseLesson = ({ navigation }) => {
               </View>
               <View style={styles.btnQuizPosition2}>
                 <TouchableOpacity
-                  disabled={check[key]}
+                  disabled={Boolean(check[key])}
                   style={[
-                    styles.btnQuizStyle,
                     {
                       ...(check[key] && dataItem.v4 === check[key]
                         ? {
@@ -340,6 +339,7 @@ export const CourseLesson = ({ navigation }) => {
                 >
                   <Text
                     style={[
+                      styles.btnQuizStyle,
                       {
                         color:
                           check[key] && dataItem.v4 === check[key]
@@ -369,7 +369,7 @@ export const CourseLesson = ({ navigation }) => {
             />
             <View style={styles.groupQuizBtn}>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition1,
                   {
@@ -399,7 +399,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition2,
                   {
@@ -429,7 +429,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition1,
                   {
@@ -459,7 +459,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition2,
                   {
@@ -503,9 +503,9 @@ export const CourseLesson = ({ navigation }) => {
             />
             <View style={styles.groupQuizBtn}>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
-                  styles.btnQuizStyle,
+                  styles.btnQuizPosition1,
                   {
                     ...(check[key] && dataItem.v1 === check[key]
                       ? {
@@ -533,9 +533,9 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
-                  styles.btnQuizStyle,
+                  styles.btnQuizPosition2,
                   {
                     ...(check[key] && dataItem.v2 === check[key]
                       ? {
@@ -563,9 +563,9 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
-                  styles.btnQuizStyle,
+                  styles.btnQuizPosition1,
                   {
                     ...(check[key] && dataItem.v3 === check[key]
                       ? {
@@ -593,9 +593,9 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
-                  styles.btnQuizStyle,
+                  styles.btnQuizPosition2,
                   {
                     ...(check[key] && dataItem.v4 === check[key]
                       ? {
@@ -792,7 +792,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition2,
                   {
@@ -822,7 +822,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition1,
                   {
@@ -838,7 +838,7 @@ export const CourseLesson = ({ navigation }) => {
                 onPress={() => setCurrentQuest(key, dataItem.v3, currentQuest)}
               >
                 <Text
-                  disabled={check[key]}
+                  disabled={Boolean(check[key])}
                   style={[
                     styles.btnQuizStyle,
                     {
@@ -853,7 +853,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled={check[key]}
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition2,
                   {
