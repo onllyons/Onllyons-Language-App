@@ -161,6 +161,7 @@ export const CourseLesson = ({ navigation }) => {
     const currentQuest = dataItem[`v${dataItem.correct}`] || "";
     // TODO test data NOW
     //if (indexItem === index) console.log("dataItem", dataItem);
+    setQuizActive(dataItem.type !== "questions");
 
     if (!dataItem) return null;
     const keyStr = `carousel-${dataItem.series}-${indexItem}`;
@@ -916,7 +917,7 @@ export const CourseLesson = ({ navigation }) => {
 
         <View style={styles.carousel}>
           <Carousel
-            scrollEnabled={false}
+            scrollEnabled={!quizActive}
             ref={swiperRef}
             data={dataFull || []}
             sliderWidth={width}
