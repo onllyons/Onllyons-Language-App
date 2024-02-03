@@ -186,10 +186,10 @@ export const AuthProvider = ({ children }) => {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         staysActiveInBackground: true,
-        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
+        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
-        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
         playThroughEarpieceAndroid: false,
       });
     })();
