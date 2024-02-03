@@ -159,6 +159,7 @@ export const CourseLesson = ({ navigation }) => {
   const drawCarouselTest = (dataItem, indexItem) => {
     const key = `${dataItem.type}${indexItem}${dataItem.id}`;
     const currentQuest = dataItem[`v${dataItem.correct}`] || "";
+    if (indexItem === index) console.log("dataItem", dataItem);
 
     if (!dataItem) return null;
     const keyStr = `carousel-${dataItem.series}-${indexItem}`;
@@ -170,13 +171,21 @@ export const CourseLesson = ({ navigation }) => {
             <Text style={styles.base_title}>{dataItem.base_title}</Text>
           </View>
 
-          <View style={styles.videoContainer}>
-            <VideoCustom
-              index={indexItem}
-              uri={`https://language.onllyons.com/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
+          {dataItem.file_path.includes("mp3") ? (
+            <SoundCustom
+              name={dataItem.file_path}
+              url={`https://www.language.onllyons.com/ru/ru-en/packs/assest/course/audio-lessons/${dataItem.file_path}`}
               isFocused={indexItem === index}
             />
-          </View>
+          ) : (
+            <View style={styles.videoContainer}>
+              <VideoCustom
+                index={indexItem}
+                uri={`https://language.onllyons.com/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
+                isFocused={indexItem === index}
+              />
+            </View>
+          )}
 
           <View style={styles.bgGroupTitleCourse1}>
             <View style={styles.groupTitleCourse1}>

@@ -12,11 +12,13 @@ import { stylesCourse_lesson as styles } from "../../course_lesson.styles";
 
 type SoundCustomProps = {
   name: string;
+  url?: string;
   isFocused: boolean;
 };
 
 export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
   name,
+  url,
   isFocused,
 }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -38,7 +40,9 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
     if (!sound) {
       const { sound } = await Audio.Sound.createAsync(
         {
-          uri: `https://language.onllyons.com/ru/ru-en/packs/assest/course/content/audios/${name}`,
+          uri: url
+            ? url
+            : `https://language.onllyons.com/ru/ru-en/packs/assest/course/content/audios/${name}`,
         },
         { shouldPlay: true }
       );
@@ -68,7 +72,7 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
   useEffect(() => {
     if (isFocused) playSound(name);
     else if (sound) sound.unloadAsync();
-  }, [isFocused]);
+  }, [isFocused, name]);
 
   return (
     <TouchableOpacity onPress={() => playSound(name)}>
