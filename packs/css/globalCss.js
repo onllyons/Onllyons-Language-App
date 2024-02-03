@@ -140,7 +140,7 @@ const globalCss = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 0,
-  }, 
+  },
   buttonPressed: {
     shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
@@ -149,7 +149,7 @@ const globalCss = StyleSheet.create({
     backgroundColor: "#1cb0f6",
     shadowColor: "#368fc3",
   },
-  buttonPurple: { 
+  buttonPurple: {
     backgroundColor: "#6949FF",
     shadowColor: "#4631A8",
   },
@@ -296,17 +296,19 @@ const globalCss = StyleSheet.create({
   correct: {
     backgroundColor: "#81b344",
     shadowColor: "#529302",
+    color: "white",
   },
   incorrect: {
-      backgroundColor: "#ca3431",
-      shadowColor: "#942320",
+    backgroundColor: "#ca3431",
+    shadowColor: "#942320",
+    color: "white",
   },
   hint: {
-      backgroundColor: "#373737",
-      shadowColor: "#000000",
+    backgroundColor: "#373737",
+    shadowColor: "#000000",
   },
-  incorrectTxt: {color: "white",},
-  correctTxt: {color: "white",}
+  incorrectTxt: { color: "white" },
+  correctTxt: { color: "white" },
 });
 
 export default globalCss;
