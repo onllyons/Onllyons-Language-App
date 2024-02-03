@@ -607,7 +607,7 @@ const SwiperButtonsContainer = ({
                 activeOpacity={1}
             >
                 <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                    {issetSeriesNext ? "Следующая серия" : "Финиш"}
+                    {issetSeriesNext ? "Завершить тест" : "Завершить урок"}
                 </Text>
             </TouchableOpacity>
         ) : (

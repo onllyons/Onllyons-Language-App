@@ -812,7 +812,7 @@ const SwiperButtonsContainer = ({
                         !isAnswerSelected ? { color: "#8895bc" } : {}, // Schimbă culoarea textului dacă butonul este inactiv
                     ]}
                 >
-                    Завершите тест
+                    Завершить тест
                 </Text>
             </TouchableOpacity>
         ) : (
