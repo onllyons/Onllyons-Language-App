@@ -86,6 +86,7 @@ export const CourseLesson = ({ navigation }) => {
   }, []);
 
   const updateProgressBar = (newIndex) => {
+    console.log("dataFull[index].type", dataFull[newIndex].type);
     if (!quizActive && newIndex >= startQuizIndex.current) {
       Animated.timing(quizWidth.current, {
         toValue: width - 70,
@@ -96,6 +97,8 @@ export const CourseLesson = ({ navigation }) => {
       setQuizActive(true);
     } else if (quizActive && newIndex < startQuizIndex.current)
       setQuizActive(false);
+    else if (dataFull[newIndex].type !== "carousel")
+      setQuizActive(dataFull[newIndex].type !== "carousel");
 
     setIndex(newIndex);
   };
@@ -161,7 +164,6 @@ export const CourseLesson = ({ navigation }) => {
     const currentQuest = dataItem[`v${dataItem.correct}`] || "";
     // TODO test data NOW
     //if (indexItem === index) console.log("dataItem", dataItem);
-    setQuizActive(dataItem.type !== "questions");
 
     if (!dataItem) return null;
     const keyStr = `carousel-${dataItem.series}-${indexItem}`;

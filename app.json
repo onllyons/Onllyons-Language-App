@@ -15,7 +15,16 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": ["audio"],
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
+        "UIApplicationShortcutItemTitle": "ADD_ITEM_SHORTCUT_TITLE",
+        "NSCameraUsageDescription": "Доступ до камери для фото профілю",
+        "NSPhotoLibraryUsageDescription": "Доступ до фотогалереї для фото профілю",
+        "NSMicrophoneUsageDescription": "We need microphone access for recording audio",
+        "NSCalendarsUsageDescription": "Доступ до календаря для планування подій",
+        "NSContactsUsageDescription": "Доступ до контактів для імпорту інформації",
+        "NSAppleMusicUsageDescription": "Доступ до Apple Music для імпорту музики",
+        "NSSpeechRecognitionUsageDescription": "Allow recognition to access your speech recognition"
       }
     },
     "android": {
@@ -27,5 +36,13 @@
     "web": {
       "favicon": "./assets/favicon.png"
     }
-  }
+  },
+  "plugins": [
+    [
+      "expo-av",
+      {
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+      }
+    ]
+  ]
 }
