@@ -14,6 +14,7 @@ import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
 import {DefaultButtonDown} from "./components/buttons/DefaultButtonDown";
+import {SubscribeModal} from "./components/SubscribeModal";
 
 export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
@@ -29,7 +30,6 @@ export default function CourseScreen({navigation}) {
     const categoriesPos = useRef({})
 
     const [isCardPressedCourseTitle, setIsCardPressedCourseTitle] = useState(false);
-    const [isCardPressedCourseDetails, setIsCardPressedCourseDetails] = useState(false);
 
     const finishedCounter = useRef({})
     const phrasesCompleted = useRef({})
@@ -200,15 +200,10 @@ export default function CourseScreen({navigation}) {
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
-    const [btnNextSubscribe, setbtnNextSubscribe] = useState(false);
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
-    const subscriptionModal = () => {
-        setSubscriptionVisible(!subscriptionModalVisible);
-    };
-
 
     return (
         <View>
@@ -399,112 +394,7 @@ export default function CourseScreen({navigation}) {
                 </View>
             </Modal>
 
-
-            <Modal
-                isVisible={subscriptionModalVisible}
-                animationIn="slideInUp"
-                animationOut="slideOutDown"
-                onBackdropPress={subscriptionModal}
-                style={{justifyContent: 'flex-end', margin: 0}}
-            >
-                <View style={globalCss.modalSubscription}>
-
-                    <ScrollView
-                        ref={scrollViewRef}
-                        contentContainerStyle={{paddingTop: 80, paddingBottom: 80}}
-                        style={styles.modalCourseContent}>
-                        <View style={globalCss.infoCatTitle}>
-                            <Image
-                                source={require("./images/El/inGlasses.png")}
-                                style={globalCss.courseCatImg}
-                            />
-                            <View style={globalCss.titleLessonCat}>
-                                <Text style={globalCss.titleLessonCatTxt}>
-                                    Веселитесь и учите английский с нашей подпиской сейчас!
-                                </Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.infoDetExtraCat}>
-
-                            <View style={styles.infoDetCatTitle}>
-                                <Image
-                                    source={require("./images/icon/brain.png")}
-                                    style={styles.courseDetCatImg}
-                                />
-                                <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>Quiz games</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Неограниченный доступ к викторинам - 4
-                                        игры</Text>
-                                </View>
-                            </View>
-
-                            <View style={styles.horizontalLine}/>
-
-                            <View style={styles.infoDetCatTitle}>
-                                <Image
-                                    source={require("./images/icon/online-course.png")}
-                                    style={styles.courseDetCatImg}
-                                />
-                                <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>Курс: Английский язык, 295
-                                        уроков</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Изучайте английский язык увлекательно и
-                                        легко, открывая дверь в мир знаний и игр!</Text>
-                                </View>
-                            </View>
-
-                            <View style={styles.horizontalLine}/>
-
-                            <View style={styles.infoDetCatTitle}>
-                                <Image
-                                    source={require("./images/icon/audio-book.png")}
-                                    style={styles.courseDetCatImg}
-                                />
-                                <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>327 книг с аудио и субтитрами</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>
-                                        Каждая книга — это волшебное путешествие с аудио и субтитрами, оживляющее
-                                        истории для вас!
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <View style={styles.horizontalLine}/>
-
-                            <View style={styles.infoDetCatTitle}>
-                                <Image
-                                    source={require("./images/icon/flash-card.png")}
-                                    style={styles.courseDetCatImg}
-                                />
-                                <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>Flashcard: 557 уроков 5352 слов</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Погрузитесь в магию ...</Text>
-                                </View>
-                            </View>
-                        </View>
-                        {/* 11111 */}
-                        <TouchableOpacity
-                            style={[globalCss.button, globalCss.mt8, btnNextSubscribe ? [globalCss.buttonPressed, globalCss.buttonPressedBlue] : globalCss.buttonBlue]}
-                            onPress={subscriptionModal}
-                            onPressIn={() => setbtnNextSubscribe(true)}
-                            onPressOut={() => setbtnNextSubscribe(false)}
-                            activeOpacity={1}
-                        >
-                            <Text style={globalCss.buttonText}>ПОДПИСАТЬСЯ</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[globalCss.alignSelfCenter, globalCss.mt4]}
-                                          onPress={subscriptionModal}>
-                            <Text>
-                                Больше не показывать
-                            </Text>
-                        </TouchableOpacity>
-
-                    </ScrollView>
-                </View>
-            </Modal>
-
+            <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
 
             <ScrollView
                 ref={scrollViewRef}
@@ -516,7 +406,7 @@ export default function CourseScreen({navigation}) {
                 <View style={styles.container}>
                     <View style={styles.contentFlashCards}>
                         {/* 2222222222 */}
-                        <TouchableOpacity onPress={subscriptionModal} activeOpacity={1}>
+                        <TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
                             <Text>subscription modal</Text>
                         </TouchableOpacity>
                         {loadedCategories.map((category) => (

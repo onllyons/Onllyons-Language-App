@@ -272,7 +272,7 @@ const globalCss = StyleSheet.create({
   infoCatTitle: {
     flexDirection: "row",
     backgroundColor: "white",
-    borderRadius: "25%",
+    borderRadius: 25,
     paddingTop: "5%",
     paddingLeft: "2%",
     paddingRight: "5%",
@@ -306,14 +306,7 @@ const globalCss = StyleSheet.create({
       shadowColor: "#000000",
   },
   incorrectTxt: {color: "white",},
-  correctTxt: {color: "white",},
-  asdd: {},
-  asdd: {},
-  asdd: {},
-  asdd: {},
-  asdd: {},
-  asdd: {},
-  asdd: {},
+  correctTxt: {color: "white",}
 });
 
 export default globalCss;
