@@ -30,6 +30,11 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
   };
 
   const playSound = async (name: string) => {
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      playsInSilentModeIOS: true,
+    });
+
     if (!sound) {
       const { sound } = await Audio.Sound.createAsync(
         {
@@ -46,7 +51,7 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
         await sound.pauseAsync();
         setIsPlaying(false);
       } else {
-        await sound.playAsync();
+        await sound.playAsync({});
         setIsPlaying(true);
       }
     }

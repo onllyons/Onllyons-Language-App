@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useRef } from "react";
-import { AVPlaybackStatusSuccess, ResizeMode, Video } from "expo-av";
+import { AVPlaybackStatusSuccess, Audio, ResizeMode, Video } from "expo-av";
 
 // styles
 import { stylesCourse_lesson as styles } from "../../course_lesson.styles";
@@ -36,6 +36,10 @@ export const VideoCustom: FunctionComponent<VideoCustomProps> = ({
     try {
       if (isFocused)
         (async () => {
+          await Audio.setAudioModeAsync({
+            allowsRecordingIOS: true,
+            playsInSilentModeIOS: true,
+          });
           await videoRef.current.playAsync();
         })();
       else
