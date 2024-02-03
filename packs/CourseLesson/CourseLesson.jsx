@@ -829,7 +829,7 @@ export const CourseLesson = ({ navigation }) => {
 
         <View style={styles.carousel}>
           <Carousel
-            scrollEnabled={!quizActive}
+            scrollEnabled={false}
             ref={swiperRef}
             data={dataFull || []}
             sliderWidth={width}
