@@ -213,6 +213,7 @@ export const CourseLesson = ({ navigation }) => {
             <View style={styles.groupQuizBtn}>
               <View style={styles.btnQuizPosition1}>
                 <TouchableOpacity
+                  disabled={check[key]}
                   style={[
                     styles.btnQuizStyle,
                     {
@@ -245,6 +246,7 @@ export const CourseLesson = ({ navigation }) => {
               </View>
               <View style={styles.btnQuizPosition2}>
                 <TouchableOpacity
+                  disabled={check[key]}
                   style={[
                     styles.btnQuizStyle,
                     {
@@ -277,6 +279,7 @@ export const CourseLesson = ({ navigation }) => {
               </View>
               <View style={styles.btnQuizPosition1}>
                 <TouchableOpacity
+                  disabled={check[key]}
                   style={[
                     styles.btnQuizStyle,
                     {
@@ -309,6 +312,7 @@ export const CourseLesson = ({ navigation }) => {
               </View>
               <View style={styles.btnQuizPosition2}>
                 <TouchableOpacity
+                  disabled={check[key]}
                   style={[
                     styles.btnQuizStyle,
                     {
@@ -356,6 +360,7 @@ export const CourseLesson = ({ navigation }) => {
             />
             <View style={styles.groupQuizBtn}>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizPosition1,
                   {
@@ -385,6 +390,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizPosition2,
                   {
@@ -414,6 +420,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizPosition1,
                   {
@@ -443,6 +450,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizPosition2,
                   {
@@ -486,6 +494,7 @@ export const CourseLesson = ({ navigation }) => {
             />
             <View style={styles.groupQuizBtn}>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizStyle,
                   {
@@ -515,6 +524,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizStyle,
                   {
@@ -544,6 +554,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizStyle,
                   {
@@ -573,6 +584,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizStyle,
                   {
@@ -619,31 +631,80 @@ export const CourseLesson = ({ navigation }) => {
               <TextInput
                 placeholder="Выберите правдивые слова"
                 placeholderTextColor="#a5a5a5"
+                value={check[key]}
                 editable={false}
                 style={globalCss.input}
               />
             </View>
 
             <View style={styles.groupQuizBtn}>
-              {words.map((word, wordIndex) => (
-                <View
-                  key={`word-${wordIndex}`}
-                  style={styles.btnQuizPositionCa}
-                >
-                  <Text style={styles.btnQuizStyleCa}>{word}</Text>
-                </View>
-              ))}
+              {words.map((word, wordIndex) =>
+                check[key] && check[key].includes(word) ? null : (
+                  <TouchableOpacity
+                    key={`word-${wordIndex}`}
+                    style={styles.btnQuizPositionCa}
+                    onPress={() => {
+                      setCurrentCheck((state) => ({
+                        ...state,
+                        [key]: check[key]
+                          ? `${check[key]} ${word}` === dataItem.v1
+                          : false,
+                      }));
+                      setCheck((state) => ({
+                        ...state,
+                        [key]: state[key] ? `${state[key]} ${word}` : word,
+                      }));
+                    }}
+                  >
+                    <Text style={styles.btnQuizStyleCa}>{word}</Text>
+                  </TouchableOpacity>
+                )
+              )}
             </View>
           </View>
         );
 
       case "ct":
+        const wordsTest = dataItem.v1.split(" ");
         return (
           <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
-            <Text>clav alege</Text>
-            <Text>
-              {dataItem.series} : {dataItem.v1}
-            </Text>
+            <View style={styles.videoContainerGroup}>
+              <Text style={styles.base_title}>{dataItem.description}</Text>
+            </View>
+            <View style={[styles.inputView, styles.inputContainer1]}>
+              <TextInput
+                placeholder="Выберите правдивые слова"
+                placeholderTextColor="#a5a5a5"
+                value={check[key]}
+                editable={false}
+                style={globalCss.input}
+              />
+            </View>
+
+            <View style={styles.groupQuizBtn}>
+              {wordsTest.map((word, wordIndex) =>
+                check[key] && check[key].includes(word) ? null : (
+                  <TouchableOpacity
+                    key={`word-${wordIndex}`}
+                    style={styles.btnQuizPositionCa}
+                    onPress={() => {
+                      setCurrentCheck((state) => ({
+                        ...state,
+                        [key]: check[key]
+                          ? `${check[key]} ${word}` === dataItem.v1
+                          : false,
+                      }));
+                      setCheck((state) => ({
+                        ...state,
+                        [key]: state[key] ? `${state[key]} ${word}` : word,
+                      }));
+                    }}
+                  >
+                    <Text style={styles.btnQuizStyleCa}>{word}</Text>
+                  </TouchableOpacity>
+                )
+              )}
+            </View>
           </View>
         );
       case "k":
@@ -659,6 +720,17 @@ export const CourseLesson = ({ navigation }) => {
                 placeholder="Напиши пропущенное слово."
                 placeholderTextColor="#a5a5a5"
                 style={globalCss.input}
+                value={check[key]}
+                onChangeText={(value) => {
+                  setCurrentCheck((state) => ({
+                    ...state,
+                    [key]: value === dataItem.v1,
+                  }));
+                  setCheck((state) => ({
+                    ...state,
+                    [key]: value,
+                  }));
+                }}
               />
             </View>
           </View>
@@ -681,6 +753,7 @@ export const CourseLesson = ({ navigation }) => {
 
             <View style={styles.groupQuizBtn}>
               <TouchableOpacity
+                disabled={Boolean(check[key])}
                 style={[
                   styles.btnQuizPosition1,
                   {
@@ -710,6 +783,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizPosition2,
                   {
@@ -739,6 +813,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizPosition1,
                   {
@@ -754,6 +829,7 @@ export const CourseLesson = ({ navigation }) => {
                 onPress={() => setCurrentQuest(key, dataItem.v3, currentQuest)}
               >
                 <Text
+                  disabled={check[key]}
                   style={[
                     styles.btnQuizStyle,
                     {
@@ -768,6 +844,7 @@ export const CourseLesson = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                disabled={check[key]}
                 style={[
                   styles.btnQuizPosition2,
                   {
