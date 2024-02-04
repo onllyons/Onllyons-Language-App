@@ -632,6 +632,18 @@ export const CourseLesson = ({ navigation }) => {
         );
       case "ca":
         const words = dataItem.v1.split(" ");
+        const setValueCA = (value) => {
+          if (!check[key] && words[0] === value)
+            setCheck((state) => ({
+              ...state,
+              [key]: value,
+            }));
+          else if (dataItem.v1.includes(`${check[key]} ${value}`))
+            setCheck((state) => ({
+              ...state,
+              [key]: `${state[key]} ${value}`,
+            }));
+        };
         return (
           <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
             <View style={styles.videoContainerGroup}>
@@ -658,16 +670,7 @@ export const CourseLesson = ({ navigation }) => {
                     key={`word-${wordIndex}`}
                     style={styles.btnQuizPositionCa}
                     onPress={() => {
-                      setCurrentCheck((state) => ({
-                        ...state,
-                        [key]: check[key]
-                          ? `${check[key]} ${word}` === dataItem.v1
-                          : false,
-                      }));
-                      setCheck((state) => ({
-                        ...state,
-                        [key]: state[key] ? `${state[key]} ${word}` : word,
-                      }));
+                      setValueCA(word);
                     }}
                   >
                     <Text style={styles.btnQuizStyleCa}>{word}</Text>
@@ -680,6 +683,18 @@ export const CourseLesson = ({ navigation }) => {
 
       case "ct":
         const wordsTest = dataItem.v1.split(" ");
+        const setValueCT = (value) => {
+          if (!check[key] && words[0] === value)
+            setCheck((state) => ({
+              ...state,
+              [key]: value,
+            }));
+          else if (dataItem.v1.includes(`${check[key]} ${value}`))
+            setCheck((state) => ({
+              ...state,
+              [key]: `${state[key]} ${value}`,
+            }));
+        };
         return (
           <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
             <View style={styles.videoContainerGroup}>
@@ -702,16 +717,7 @@ export const CourseLesson = ({ navigation }) => {
                     key={`word-${wordIndex}`}
                     style={styles.btnQuizPositionCa}
                     onPress={() => {
-                      setCurrentCheck((state) => ({
-                        ...state,
-                        [key]: check[key]
-                          ? `${check[key]} ${word}` === dataItem.v1
-                          : false,
-                      }));
-                      setCheck((state) => ({
-                        ...state,
-                        [key]: state[key] ? `${state[key]} ${word}` : word,
-                      }));
+                      setValueCT(word);
                     }}
                   >
                     <Text style={styles.btnQuizStyleCa}>{word}</Text>
