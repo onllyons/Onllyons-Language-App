@@ -184,7 +184,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     (async () => {
       await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
+        allowsRecordingIOS: false,
         staysActiveInBackground: true,
         interruptionModeIOS: InterruptionModeIOS.DoNotMix,
         playsInSilentModeIOS: true,

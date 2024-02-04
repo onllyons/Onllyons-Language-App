@@ -37,7 +37,7 @@ export const VideoCustom: FunctionComponent<VideoCustomProps> = ({
       if (isFocused)
         (async () => {
           await Audio.setAudioModeAsync({
-            allowsRecordingIOS: true,
+            allowsRecordingIOS: false,
             playsInSilentModeIOS: true,
           });
           await videoRef.current.playAsync();
