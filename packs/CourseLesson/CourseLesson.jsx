@@ -172,6 +172,8 @@ export const CourseLesson = ({ navigation }) => {
 
     return checkKey && checkKey?.includes(word);
   };
+  console.log("check", check);
+  console.log("currentCheck", currentCheck);
 
   const drawCarouselTest = (dataItem, indexItem) => {
     const key = `${dataItem.type}${indexItem}${dataItem.id}`;
@@ -447,7 +449,9 @@ export const CourseLesson = ({ navigation }) => {
 
                   setCurrentCheck((state) => ({
                     ...state,
-                    [key]: rightValue.trim() === dataItem.v1,
+                    [key]:
+                      rightValue.toLocaleLowerCase().trim() ===
+                      dataItem.v1.toLocaleLowerCase(),
                   }));
                   setCheck((state) => ({
                     ...state,
