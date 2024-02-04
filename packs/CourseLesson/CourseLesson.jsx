@@ -301,6 +301,10 @@ export const CourseLesson = ({ navigation }) => {
               ...state,
               [key]: `${state[key]} ${value}`,
             }));
+          setCurrentCheck((state) => ({
+            ...state,
+            [key]: true,
+          }));
         };
         return (
           <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
@@ -356,6 +360,10 @@ export const CourseLesson = ({ navigation }) => {
               ...state,
               [key]: `${state[key]} ${value}`,
             }));
+          setCurrentCheck((state) => ({
+            ...state,
+            [key]: true,
+          }));
         };
         return (
           <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
