@@ -287,7 +287,10 @@ export const CourseLesson = ({ navigation }) => {
           </View>
         );
       case "ca":
-        const words = dataItem.v1.split(" ");
+        const words = [
+          ...dataItem.v1.split(" "),
+          ...dataItem.v2.split(" "),
+        ].sort();
         const setValueCA = (value) => {
           if (!check[key] && words[0] === value)
             setCheck((state) => ({
@@ -337,7 +340,10 @@ export const CourseLesson = ({ navigation }) => {
           </View>
         );
       case "ct":
-        const wordsTest = dataItem.v1.split(" ");
+        const wordsTest = [
+          ...dataItem.v1.split(" "),
+          ...dataItem.v2.split(" "),
+        ].sort();
         const setValueCT = (value) => {
           if (!check[key] && wordsTest[0] === value)
             setCheck((state) => ({

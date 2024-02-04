@@ -51,7 +51,7 @@ export const VideoCustom: FunctionComponent<VideoCustomProps> = ({
 
   return (
     <Video
-      volume={3}
+      volume={5}
       ref={videoRef}
       key={`video-${index}`}
       style={styles.video}

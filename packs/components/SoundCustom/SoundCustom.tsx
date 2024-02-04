@@ -46,6 +46,7 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
         },
         { shouldPlay: true }
       );
+      await sound.setVolumeAsync(1);
       sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
 
       setSound(sound);
@@ -55,7 +56,7 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
         await sound.pauseAsync();
         setIsPlaying(false);
       } else {
-        await sound.playAsync({});
+        await sound.playAsync();
         setIsPlaying(true);
       }
     }

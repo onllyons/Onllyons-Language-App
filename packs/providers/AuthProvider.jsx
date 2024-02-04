@@ -192,7 +192,6 @@ export const AuthProvider = ({ children }) => {
         interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
         playThroughEarpieceAndroid: false,
       });
-      await Audio.setVolumeAsync(1);
     })();
   }, []);
 
