@@ -161,11 +161,23 @@ export const CourseLesson = ({ navigation }) => {
     });
   };
 
+  const isCurrentWord = (word, checkKey, dataItemV1, dataItemV2) => {
+    // TODO
+    /*  console.log(
+      'check[keyId].split(" ").filter((item) => item === word)',
+      checkKey
+    ); */
+    if (word.length <= 3)
+      return checkKey?.split(" ").filter((item) => item === word).length > 0;
+
+    return checkKey && checkKey?.includes(word);
+  };
+
   const drawCarouselTest = (dataItem, indexItem) => {
     const key = `${dataItem.type}${indexItem}${dataItem.id}`;
     const currentQuest = dataItem[`v${dataItem.correct}`] || "";
     // TODO test data NOW
-    if (indexItem === index) console.log("dataItem", dataItem);
+    //if (indexItem === index) console.log("dataItem", dataItem);
 
     if (!dataItem) return null;
     const keyStr = `carousel-${dataItem.series}-${indexItem}`;
@@ -330,7 +342,12 @@ export const CourseLesson = ({ navigation }) => {
 
             <View style={styles.groupQuizBtn}>
               {words.map((word, wordIndex) =>
-                check[key] && check[key].includes(word) ? null : (
+                isCurrentWord(
+                  word,
+                  check[key],
+                  dataItem.v1,
+                  dataItem.v2
+                ) ? null : (
                   <TouchableOpacity
                     key={`word-${wordIndex}`}
                     style={styles.btnQuizPositionCa}
@@ -388,9 +405,12 @@ export const CourseLesson = ({ navigation }) => {
 
             <View style={styles.groupQuizBtn}>
               {wordsTest.map((word, wordIndex) =>
-                check[key] &&
-                check[key].includes(word) &&
-                !dataItem.v2.includes(word) ? null : (
+                isCurrentWord(
+                  word,
+                  check[key],
+                  dataItem.v1,
+                  dataItem.v2
+                ) ? null : (
                   <TouchableOpacity
                     key={`word-${wordIndex}`}
                     style={styles.btnQuizPositionCa}
