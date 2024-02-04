@@ -289,7 +289,7 @@ export const CourseLesson = ({ navigation }) => {
       case "ca":
         const words = [...dataItem.v1.split(" "), ...dataItem.v2.split(" ")]
           .filter((item) => Boolean(item))
-          .sort();
+          .sort(() => Math.random() - 0.5);
         const setValueCA = (value) => {
           if (!check[key] && dataItem.v1.split(" ")[0] === value)
             setCheck((state) => ({
@@ -341,7 +341,7 @@ export const CourseLesson = ({ navigation }) => {
       case "ct":
         const wordsTest = [...dataItem.v1.split(" "), ...dataItem.v2.split(" ")]
           .filter((item) => Boolean(item))
-          .sort();
+          .sort(() => Math.random() - 0.5);
         const setValueCT = (value) => {
           if (!check[key] && dataItem.v1.split(" ")[0] === value)
             setCheck((state) => ({
