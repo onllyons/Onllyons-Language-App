@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const stylesCourse_lesson = StyleSheet.create({
   videoContainer: {
+    flex: 1,
     width: "100%",
     height: "37%",
     borderRadius: 12,
@@ -271,11 +272,8 @@ export const stylesCourse_lesson = StyleSheet.create({
   },
   btnQuizPosition1: {
     width: "50%",
-    paddingRigh: "2.5%",
+    paddingRight: "2.5%",
     marginBottom: "2.5%",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
   },
   btnQuizPosition2: {
     width: "50%",

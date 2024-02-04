@@ -30,6 +30,7 @@ import { faRotateLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
 // styles
 import { stylesCourse_lesson as styles } from "../course_lesson.styles";
 import globalCss from "../css/globalCss";
+import { ContainerButtons } from "../components/ContainerButtons/ContainerButtons";
 
 const { width } = Dimensions.get("window");
 
@@ -88,7 +89,7 @@ export const CourseLesson = ({ navigation }) => {
   const updateProgressBar = (newIndex) => {
     // TODO tester NOW
     //console.log("dataFull[index].type", dataFull[newIndex].type);
-    if (!quizActive && newIndex >= startQuizIndex.current) {
+    /* if (!quizActive && newIndex >= startQuizIndex.current) {
       Animated.timing(quizWidth.current, {
         toValue: width - 70,
         duration: 500,
@@ -98,8 +99,8 @@ export const CourseLesson = ({ navigation }) => {
       setQuizActive(true);
     } else if (quizActive && newIndex < startQuizIndex.current)
       setQuizActive(false);
-    else if (dataFull[newIndex].type !== "carousel")
-      setQuizActive(dataFull[newIndex].type !== "carousel");
+    else if (dataFull[newIndex].type !== "carousel") */
+    setQuizActive(dataFull[newIndex].type !== "carousel");
 
     setIndex(newIndex);
   };
@@ -224,140 +225,17 @@ export const CourseLesson = ({ navigation }) => {
               />
             </View>
 
-            <View style={styles.groupQuizBtn}>
-              <View style={styles.btnQuizPosition1}>
-                <TouchableOpacity
-                  disabled={Boolean(check[key])}
-                  style={[
-                    {
-                      ...(check[key] && dataItem.v1 === check[key]
-                        ? {
-                            ...(dataItem.v1 === currentQuest
-                              ? globalCss.correct
-                              : globalCss.incorrect),
-                          }
-                        : undefined),
-                    },
-                  ]}
-                  onPress={() =>
-                    setCurrentQuest(key, dataItem.v1, currentQuest)
-                  }
-                >
-                  <Text
-                    style={[
-                      styles.btnQuizStyle,
-                      {
-                        color:
-                          check[key] && dataItem.v1 === check[key]
-                            ? "white"
-                            : "black",
-                      },
-                    ]}
-                  >
-                    {dataItem.v1}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.btnQuizPosition2}>
-                <TouchableOpacity
-                  disabled={Boolean(check[key])}
-                  style={[
-                    {
-                      ...(check[key] && dataItem.v2 === check[key]
-                        ? {
-                            ...(dataItem.v2 === currentQuest
-                              ? globalCss.correct
-                              : globalCss.incorrect),
-                          }
-                        : undefined),
-                    },
-                  ]}
-                  onPress={() =>
-                    setCurrentQuest(key, dataItem.v2, currentQuest)
-                  }
-                >
-                  <Text
-                    style={[
-                      styles.btnQuizStyle,
-                      {
-                        color:
-                          check[key] && dataItem.v2 === check[key]
-                            ? "white"
-                            : "black",
-                      },
-                    ]}
-                  >
-                    {dataItem.v2}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.btnQuizPosition1}>
-                <TouchableOpacity
-                  disabled={Boolean(check[key])}
-                  style={[
-                    {
-                      ...(check[key] && dataItem.v3 === check[key]
-                        ? {
-                            ...(dataItem.v3 === currentQuest
-                              ? globalCss.correct
-                              : globalCss.incorrect),
-                          }
-                        : undefined),
-                    },
-                  ]}
-                  onPress={() =>
-                    setCurrentQuest(key, dataItem.v3, currentQuest)
-                  }
-                >
-                  <Text
-                    style={[
-                      styles.btnQuizStyle,
-                      {
-                        color:
-                          check[key] && dataItem.v3 === check[key]
-                            ? "white"
-                            : "black",
-                      },
-                    ]}
-                  >
-                    {dataItem.v3}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.btnQuizPosition2}>
-                <TouchableOpacity
-                  disabled={Boolean(check[key])}
-                  style={[
-                    {
-                      ...(check[key] && dataItem.v4 === check[key]
-                        ? {
-                            ...(dataItem.v4 === currentQuest
-                              ? globalCss.correct
-                              : globalCss.incorrect),
-                          }
-                        : undefined),
-                    },
-                  ]}
-                  onPress={() =>
-                    setCurrentQuest(key, dataItem.v4, currentQuest)
-                  }
-                >
-                  <Text
-                    style={[
-                      styles.btnQuizStyle,
-                      {
-                        color:
-                          check[key] && dataItem.v4 === check[key]
-                            ? "white"
-                            : "black",
-                      },
-                    ]}
-                  >
-                    {dataItem.v4}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+            <ContainerButtons
+              disabled={Boolean(check[key])}
+              keyId={key}
+              checkKey={check[key]}
+              dataItemV1={dataItem.v1}
+              dataItemV2={dataItem.v2}
+              dataItemV3={dataItem.v3}
+              dataItemV4={dataItem.v4}
+              currentQuest={currentQuest}
+              setCurrentQuest={setCurrentQuest}
+            />
           </View>
         );
       case "i":
@@ -372,128 +250,17 @@ export const CourseLesson = ({ navigation }) => {
                 uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/course/content/images/${dataItem.file_path}`,
               }}
             />
-            <View style={styles.groupQuizBtn}>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition1,
-                  {
-                    ...(check[key] && dataItem.v1 === check[key]
-                      ? {
-                          ...(dataItem.v1 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v1, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v1 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v1}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition2,
-                  {
-                    ...(check[key] && dataItem.v2 === check[key]
-                      ? {
-                          ...(dataItem.v2 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v2, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v2 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v2}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition1,
-                  {
-                    ...(check[key] && dataItem.v3 === check[key]
-                      ? {
-                          ...(dataItem.v3 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v3, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v3 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v3}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition2,
-                  {
-                    ...(check[key] && dataItem.v4 === check[key]
-                      ? {
-                          ...(dataItem.v4 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v4, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v4 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v4}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <ContainerButtons
+              disabled={Boolean(check[key])}
+              keyId={key}
+              checkKey={check[key]}
+              dataItemV1={dataItem.v1}
+              dataItemV2={dataItem.v2}
+              dataItemV3={dataItem.v3}
+              dataItemV4={dataItem.v4}
+              currentQuest={currentQuest}
+              setCurrentQuest={setCurrentQuest}
+            />
           </View>
         );
       case "a":
@@ -506,128 +273,17 @@ export const CourseLesson = ({ navigation }) => {
               name={dataItem.file_path}
               isFocused={indexItem === index}
             />
-            <View style={styles.groupQuizBtn}>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition1,
-                  {
-                    ...(check[key] && dataItem.v1 === check[key]
-                      ? {
-                          ...(dataItem.v1 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v1, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v1 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v1}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition2,
-                  {
-                    ...(check[key] && dataItem.v2 === check[key]
-                      ? {
-                          ...(dataItem.v2 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v2, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v2 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v2}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition1,
-                  {
-                    ...(check[key] && dataItem.v3 === check[key]
-                      ? {
-                          ...(dataItem.v3 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v3, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v3 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v3}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition2,
-                  {
-                    ...(check[key] && dataItem.v4 === check[key]
-                      ? {
-                          ...(dataItem.v4 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v4, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v4 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v4}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <ContainerButtons
+              disabled={Boolean(check[key])}
+              keyId={key}
+              checkKey={check[key]}
+              dataItemV1={dataItem.v1}
+              dataItemV2={dataItem.v2}
+              dataItemV3={dataItem.v3}
+              dataItemV4={dataItem.v4}
+              currentQuest={currentQuest}
+              setCurrentQuest={setCurrentQuest}
+            />
           </View>
         );
       case "ca":
@@ -680,16 +336,18 @@ export const CourseLesson = ({ navigation }) => {
             </View>
           </View>
         );
-
       case "ct":
         const wordsTest = dataItem.v1.split(" ");
         const setValueCT = (value) => {
-          if (!check[key] && words[0] === value)
+          if (!check[key] && wordsTest[0] === value)
             setCheck((state) => ({
               ...state,
               [key]: value,
             }));
-          else if (dataItem.v1.includes(`${check[key]} ${value}`))
+          else if (
+            check[key] &&
+            dataItem.v1?.includes(`${check[key]} ${value}`)
+          )
             setCheck((state) => ({
               ...state,
               [key]: `${state[key]} ${value}`,
@@ -771,129 +429,17 @@ export const CourseLesson = ({ navigation }) => {
               <Text style={styles.baseTitleImg}>{dataItem.description}</Text>
             </LinearGradient>
 
-            <View style={styles.groupQuizBtn}>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition1,
-                  {
-                    ...(check[key] && dataItem.v1 === check[key]
-                      ? {
-                          ...(dataItem.v1 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v1, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v1 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v1}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition2,
-                  {
-                    ...(check[key] && dataItem.v2 === check[key]
-                      ? {
-                          ...(dataItem.v2 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v2, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v2 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v2}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition1,
-                  {
-                    ...(check[key] && dataItem.v3 === check[key]
-                      ? {
-                          ...(dataItem.v3 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v3, currentQuest)}
-              >
-                <Text
-                  disabled={Boolean(check[key])}
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v3 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v3}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                disabled={Boolean(check[key])}
-                style={[
-                  styles.btnQuizPosition2,
-                  {
-                    ...(check[key] && dataItem.v4 === check[key]
-                      ? {
-                          ...(dataItem.v4 === currentQuest
-                            ? globalCss.correct
-                            : globalCss.incorrect),
-                        }
-                      : undefined),
-                  },
-                ]}
-                onPress={() => setCurrentQuest(key, dataItem.v4, currentQuest)}
-              >
-                <Text
-                  style={[
-                    styles.btnQuizStyle,
-                    {
-                      color:
-                        check[key] && dataItem.v4 === check[key]
-                          ? "white"
-                          : "black",
-                    },
-                  ]}
-                >
-                  {dataItem.v4}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <ContainerButtons
+              disabled={Boolean(check[key])}
+              keyId={key}
+              checkKey={check[key]}
+              dataItemV1={dataItem.v1}
+              dataItemV2={dataItem.v2}
+              dataItemV3={dataItem.v3}
+              dataItemV4={dataItem.v4}
+              currentQuest={currentQuest}
+              setCurrentQuest={setCurrentQuest}
+            />
           </View>
         );
       default:
@@ -964,9 +510,20 @@ export const CourseLesson = ({ navigation }) => {
         </View>
         <SwiperButtonsContainer
           isDisabled={
-            !check[
+            (!check[
               `${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`
-            ] && dataFull?.[index]?.type !== "carousel"
+            ] &&
+              dataFull?.[index]?.type !== "carousel") ||
+            ((dataFull?.[index]?.variant === "ca" ||
+              dataFull?.[index]?.variant === "ct") &&
+              check[
+                `${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`
+              ] !== dataFull?.[index]?.v1) ||
+            (dataFull?.[index]?.variant === "k" &&
+              check[
+                `${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`
+              ].toLocaleLowerCase() !==
+                dataFull?.[index]?.v1.toLocaleLowerCase())
           }
           onRightPress={handleRightButtonPress}
           isPressedContinue={isPressedContinue}
