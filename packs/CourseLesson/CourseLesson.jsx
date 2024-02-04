@@ -404,13 +404,16 @@ export const CourseLesson = ({ navigation }) => {
                 style={globalCss.input}
                 value={check[key]}
                 onChangeText={(value) => {
+                  const rightValue = value
+                    .trim()
+                    .replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
                   setCurrentCheck((state) => ({
                     ...state,
-                    [key]: value === dataItem.v1,
+                    [key]: rightValue === dataItem.v1,
                   }));
                   setCheck((state) => ({
                     ...state,
-                    [key]: value,
+                    [key]: rightValue,
                   }));
                 }}
               />
