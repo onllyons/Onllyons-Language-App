@@ -304,7 +304,7 @@ export const CourseLesson = ({ navigation }) => {
           ...(dataItem.v2?.split(" ") || []),
         ]
           .filter((item) => item.length > 0)
-          .sort((a, b) => b > a);
+          .sort((a, b) => b.length - a.length);
         const setValueCA = (value) => {
           if (!check[key] && dataItem.v1.split(" ")[0] === value)
             setCheck((state) => ({
@@ -368,7 +368,7 @@ export const CourseLesson = ({ navigation }) => {
           ...(dataItem.v2?.split(" ") || []),
         ]
           .filter((item) => item.length > 0)
-          .sort((a, b) => b > a);
+          .sort((a, b) => b.length - a.length);
         const setValueCT = (value) => {
           if (!check[key] && dataItem.v1.split(" ")[0] === value)
             setCheck((state) => ({
