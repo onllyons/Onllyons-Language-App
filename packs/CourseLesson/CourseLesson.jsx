@@ -567,8 +567,9 @@ export const CourseLesson = ({ navigation }) => {
             (dataFull?.[index]?.variant === "k" &&
               check[
                 `${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`
-              ].toLocaleLowerCase() !==
-                dataFull?.[index]?.v1.toLocaleLowerCase())
+              ]
+                .toLocaleLowerCase()
+                .trim() !== dataFull?.[index]?.v1.toLocaleLowerCase().trim())
           }
           onRightPress={handleRightButtonPress}
           isPressedContinue={isPressedContinue}
