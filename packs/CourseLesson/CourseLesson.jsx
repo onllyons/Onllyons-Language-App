@@ -165,7 +165,7 @@ export const CourseLesson = ({ navigation }) => {
     const key = `${dataItem.type}${indexItem}${dataItem.id}`;
     const currentQuest = dataItem[`v${dataItem.correct}`] || "";
     // TODO test data NOW
-    //if (indexItem === index) console.log("dataItem", dataItem);
+    if (indexItem === index) console.log("dataItem", dataItem);
 
     if (!dataItem) return null;
     const keyStr = `carousel-${dataItem.series}-${indexItem}`;
@@ -287,9 +287,12 @@ export const CourseLesson = ({ navigation }) => {
           </View>
         );
       case "ca":
-        const words = [...dataItem.v1.split(" "), ...dataItem.v2.split(" ")]
-          .filter((item) => Boolean(item))
-          .sort(() => Math.random() - 0.5);
+        const words = [
+          ...dataItem.v1.split(" "),
+          ...(dataItem.v2?.split(" ") || []),
+        ]
+          .filter((item) => item.length > 0)
+          .sort((a, b) => b > a);
         const setValueCA = (value) => {
           if (!check[key] && dataItem.v1.split(" ")[0] === value)
             setCheck((state) => ({
@@ -343,9 +346,12 @@ export const CourseLesson = ({ navigation }) => {
           </View>
         );
       case "ct":
-        const wordsTest = [...dataItem.v1.split(" "), ...dataItem.v2.split(" ")]
-          .filter((item) => Boolean(item))
-          .sort(() => Math.random() - 0.5);
+        const wordsTest = [
+          ...dataItem.v1.split(" "),
+          ...(dataItem.v2?.split(" ") || []),
+        ]
+          .filter((item) => item.length > 0)
+          .sort((a, b) => b > a);
         const setValueCT = (value) => {
           if (!check[key] && dataItem.v1.split(" ")[0] === value)
             setCheck((state) => ({
@@ -382,7 +388,9 @@ export const CourseLesson = ({ navigation }) => {
 
             <View style={styles.groupQuizBtn}>
               {wordsTest.map((word, wordIndex) =>
-                check[key] && check[key].includes(word) ? null : (
+                check[key] &&
+                check[key].includes(word) &&
+                !dataItem.v2.includes(word) ? null : (
                   <TouchableOpacity
                     key={`word-${wordIndex}`}
                     style={styles.btnQuizPositionCa}
