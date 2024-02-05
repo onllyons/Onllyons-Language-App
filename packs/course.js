@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo} from "react";
+import React, {useState, useRef, useEffect, useMemo} from "react";
 import globalCss from "./css/globalCss";
 import {
     View,
@@ -35,6 +35,43 @@ export default function CourseScreen({navigation}) {
     const phrasesCompleted = useRef({})
 
     const [loader, setLoader] = useState(false)
+
+    // анимация для начального верхнего изображения
+    const moveAnimation = useRef(new Animated.Value(0)).current;
+    const imageYPos = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+      Animated.loop( // Repetă animația
+        Animated.sequence([ // Creează o secvență de animații
+          Animated.timing(moveAnimation, {
+            toValue: -10, // Mișcă în sus cu 10 unități
+            duration: 1000, // Durata animației în milisecunde
+            useNativeDriver: true, // Folosește driverul nativ pentru performanță îmbunătățită
+          }),
+          Animated.timing(moveAnimation, {
+            toValue: 0, // Mișcă înapoi la poziția inițială
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    }, []);
+    const startImageAnimation = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(imageYPos, {
+            toValue: 10, // Mișcă imaginea în jos cu 10 unități (nu pixeli, deoarece React Native folosește unități de densitate independentă)
+            duration: 1000, // Durata animației în milisecunde
+            useNativeDriver: true, // Folosește driver-ul nativ pentru performanță îmbunătățită
+          }),
+          Animated.timing(imageYPos, {
+            toValue: -10, // Mișcă imaginea înapoi în sus
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    };
+    // etd анимация для начального верхнего изображения
 
     const handleScroll = (nativeEvent) => {
         let currCategoryOnScroll = currentCategory
@@ -220,7 +257,7 @@ export default function CourseScreen({navigation}) {
                 </View>
                 <View style={globalCss.itemNavTabUser}>
                     <Image
-                        source={require("./images/other_images/nav-top/sapphire.webp")}
+                        source={require("./images/other_images/nav-top/insurance.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text
@@ -244,7 +281,7 @@ export default function CourseScreen({navigation}) {
                 <TouchableOpacity style={globalCss.itemNavTabUser}
                                   onPress={() => toggleNavTopMenu(0)}>
                     <Image
-                        source={require("./images/other_images/nav-top/star.png")}
+                        source={require("./images/other_images/nav-top/pero.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text
@@ -309,8 +346,6 @@ export default function CourseScreen({navigation}) {
                 {/*    />*/}
                 {/*</TouchableOpacity>*/}
             </View>
-
-            {/* 11111111111111111111111111 */}
 
             <Modal
                 isVisible={isModalVisible}
@@ -405,20 +440,50 @@ export default function CourseScreen({navigation}) {
             >
                 <View style={styles.container}>
                     <View style={styles.contentFlashCards}>
-                        {/* 2222222222 */}
+                        {/*  
                         <TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
                             <Text>subscription modal</Text>
                         </TouchableOpacity>
-                        {loadedCategories.map((category) => (
+                        */}
+                        {loadedCategories.map((category, categoryIndex) => (
                             <View key={category}
                                   onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>
 
-                                <View style={styles.categoryTitleBg}>
+                                {/* aici */}
+                                {categoryIndex > 0 && (
+                                  <View style={styles.categoryTitleBg}>
+                                    <View style={styles.hrLine}></View>
                                     <Text style={styles.categoryTitle}>
-                                        {data[category].categoryTitle}
+                                      {data[category].categoryTitle}
                                     </Text>
+                                    <View style={styles.hrLine}></View>
+                                  </View>
+                                )}
+
+
+
+
+                                {/*
+                                <View>
+                                    <Image source={require("./images/El/course/Group.png")} style={styles.elCourseImg}/>
                                 </View>
-                               
+                                */}
+
+
+                                <View>
+                                    <Animated.View
+                                      style={{
+                                        transform: [{ translateY: moveAnimation }],
+                                      }}
+                                    >
+                                      <Image source={require("./images/other_images/start.png")} style={styles.startImg}/>
+                                    </Animated.View>
+                                </View>
+
+
+                                
+
+
                                 {data[category].items.map((item, index) => (
                                     // <DefaultButtonDown style={[
                                     //     {
@@ -459,11 +524,11 @@ export default function CourseScreen({navigation}) {
                                         <Text>
                                             <FontAwesomeIcon
                                                 icon={faStar}
-                                                size={18}
+                                                size={30}
                                                 style={styles.iconFlash}
                                             />
                                         </Text>
-                                        <Text>{item.title}</Text>
+                                        {/*<Text>{item.title}</Text>*/}
 
                                     </TouchableOpacity>
                                 ))}
@@ -602,13 +667,7 @@ const styles = StyleSheet.create({
         // alignItems: "center",
         // alignContent: "center",
     },
-    categoryTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
-        paddingTop: 10,
-        paddingLeft: 10,
-    },
+
     infoCourseTitle: {
         color: 'white',
         fontSize: 19,
@@ -753,7 +812,47 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         textAlign: 'center',
         marginTop: '1%',
-    }
+    },
+
+    categoryTitleBg:{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
+        marginVertical: '15%',
+    },
+    hrLine:{
+        flex: 1,
+        height: 2,
+        backgroundColor: '#ababab',
+        marginHorizontal: '4.5%',
+
+    },
+    categoryTitle: {
+        maxWidth: '50%',
+        fontSize: 20,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        color: '#ababab',
+    },
+    iconFlash: {
+        color: '#ababab',
+    },
+    startImg:{
+        width: 107,
+        height: 57,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+    },
+    elCourseImg:{
+        width: 150,
+        height: 220,
+        position: 'absolute',
+        right: 25,
+        top: 120,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+    },
 });
 
 
