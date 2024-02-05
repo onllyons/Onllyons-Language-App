@@ -6,6 +6,7 @@ import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 import Loader from "./components/Loader";
 import globalCss from "./css/globalCss";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 
 export default function BooksCategoryScreen({route}) {
     const navigation = useNavigation();
@@ -17,12 +18,16 @@ export default function BooksCategoryScreen({route}) {
 
     useEffect(() => {
         setLoading(true);
-        fetch('/ru/ru-en/backend/mobile_app/ajax/books/get_books.php')
-            .then(response => response.json())
-            .then(data => {
-                const filteredData = data.filter(item => item.type_category === category);
-                setData(filteredData);
-                setTotalItems(filteredData.length);
+
+        console.log("---------" + category + "---------")
+        sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,
+            {category: category},
+            navigation,
+            {success: false}
+        )
+            .then(({data}) => {
+                setData(data);
+                setTotalItems(data.length);
             })
             .catch(error => console.error('Error:', error))
             .finally(() => setLoading(false));
