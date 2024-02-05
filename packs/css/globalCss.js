@@ -2,6 +2,10 @@ import { StyleSheet } from "react-native";
 
 const globalCss = StyleSheet.create({
   NavTopStartApp: {},
+  MenuBottomFixed: {
+    
+  },
+
   navBottomApp: {
     borderBottomLeftRadius: 30,
     backgroundColor: "red",
@@ -61,6 +65,9 @@ const globalCss = StyleSheet.create({
   },
   gry: {
     color: "#636363",
+  },
+  whiteDarker: {
+    color: "#bfbfbf",
   },
   white: {
     color: "#ffff",

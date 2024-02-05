@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef } from "react";
 import { AVPlaybackStatusSuccess, Audio, ResizeMode, Video } from "expo-av";
 
 // styles
-import { stylesCourse_lesson as styles } from "../../course_lesson.styles";
+import { stylesCourse_lesson as styles } from "../../css/course_lesson.styles";
 
 type VideoCustomProps = {
   index: string | number;

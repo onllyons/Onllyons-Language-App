@@ -25,10 +25,10 @@ import { sendDefaultRequest, SERVER_AJAX_URL } from "../utils/Requests";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 // icons
-import { faRotateLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faRotateLeft, faTimes, faLightbulb } from "@fortawesome/free-solid-svg-icons";
 
 // styles
-import { stylesCourse_lesson as styles } from "../course_lesson.styles";
+import { stylesCourse_lesson as styles } from "../css/course_lesson.styles";
 import globalCss from "../css/globalCss";
 import { ContainerButtons } from "../components/ContainerButtons/ContainerButtons";
 
@@ -41,7 +41,7 @@ export const CourseLesson = ({ navigation }) => {
   const [quizActive, setQuizActive] = useState(false);
   const [isPressedContinue, setIsPressedContinue] = useState(false);
   const [showCongratulationsModal, setShowCongratulationsModal] =
-    useState(false);
+  useState(false);
   const [isPressedQuizStart1, setIsPressedStartQuiz1] = useState(false);
   const [isPressedQuizRestart, setIsPressedRestartQuiz] = useState(false);
   const [totalSlides, setTotalSlides] = useState(0);
@@ -53,6 +53,15 @@ export const CourseLesson = ({ navigation }) => {
   const issetSeriesNext = useRef(true);
   const quizWidth = useRef(new Animated.Value(width - 100));
   const startQuizIndex = useRef(0);
+  // effect btn audio var ca
+  const [buttonStates, setButtonStates] = useState({});
+
+  const setButtonState = (index, isPressed) => {
+    setButtonStates(prevState => ({
+      ...prevState,
+      [index]: isPressed
+    }));
+  };
 
   const calculateCorrectPercentage = () => {
     const all = Object.values(currentCheck).length;
@@ -65,6 +74,27 @@ export const CourseLesson = ({ navigation }) => {
       wrongCount: unRight,
     };
   };
+
+
+
+  const [showHint, setShowHint] = useState(false);
+
+const handleShowHint = (key, hintValue) => {
+    setCheck((state) => ({
+        ...state,
+        [key]: hintValue,
+    }));
+
+    setShowHint(true);
+
+    setTimeout(() => {
+        setShowHint(false);
+    }, 2000);
+};
+
+
+
+
 
   const setCurrentQuest = (key, value, currentValue) => {
     setCurrentCheck((state) => ({ ...state, [key]: value === currentValue }));
@@ -155,10 +185,10 @@ export const CourseLesson = ({ navigation }) => {
     setShowCongratulationsModal(true);
     //navigation.goBack();
 
-    Toast.show({
-      type: "success",
-      text1: "Финиш",
-    });
+    // Toast.show({
+    //   type: "success",
+    //   text1: "Финиш",
+    // });
   };
 
   const isCurrentWord = (word, checkKey, dataItemV1, dataItemV2) => {
@@ -343,24 +373,27 @@ export const CourseLesson = ({ navigation }) => {
             </View>
 
             <View style={styles.groupQuizBtn}>
-              {words.map((word, wordIndex) =>
-                isCurrentWord(
-                  word,
-                  check[key],
-                  dataItem.v1,
-                  dataItem.v2
-                ) ? null : (
+              {words.map((word, wordIndex) => {
+                const isButtonPressed = buttonStates[wordIndex] || false;
+
+                return isCurrentWord(word, check[key], dataItem.v1, dataItem.v2) ? null : (
                   <TouchableOpacity
                     key={`word-${wordIndex}`}
-                    style={styles.btnQuizPositionCa}
                     onPress={() => {
                       setValueCA(word);
                     }}
+                    style={[
+                      styles.btnQuizPositionCa, 
+                      isButtonPressed ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry
+                    ]}
+                    onPressIn={() => setButtonState(wordIndex, true)}
+                    onPressOut={() => setButtonState(wordIndex, false)}
+                    activeOpacity={1}
                   >
                     <Text style={styles.btnQuizStyleCa}>{word}</Text>
                   </TouchableOpacity>
-                )
-              )}
+                );
+              })}
             </View>
           </View>
         );
@@ -406,25 +439,35 @@ export const CourseLesson = ({ navigation }) => {
             </View>
 
             <View style={styles.groupQuizBtn}>
-              {wordsTest.map((word, wordIndex) =>
-                isCurrentWord(
-                  word,
-                  check[key],
-                  dataItem.v1,
-                  dataItem.v2
-                ) ? null : (
+              {wordsTest.map((word, wordIndex) => {
+                // Verifică dacă butonul a fost apăsat înainte de a începe returnarea JSX
+                const isButtonPressed = buttonStates[wordIndex] || false;
+
+                // Continuă cu restul logicii doar dacă cuvântul curent nu este selectat
+                if (isCurrentWord(word, check[key], dataItem.v1, dataItem.v2)) {
+                  return null;
+                }
+
+                return (
                   <TouchableOpacity
                     key={`word-${wordIndex}`}
-                    style={styles.btnQuizPositionCa}
+                    style={[
+                      styles.btnQuizPositionCa, 
+                      isButtonPressed ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry
+                    ]}
+                    onPressIn={() => setButtonState(wordIndex, true)}
+                    onPressOut={() => setButtonState(wordIndex, false)}
+                    activeOpacity={1}
                     onPress={() => {
                       setValueCT(word);
                     }}
                   >
                     <Text style={styles.btnQuizStyleCa}>{word}</Text>
                   </TouchableOpacity>
-                )
-              )}
+                );
+              })}
             </View>
+
           </View>
         );
       case "k":
@@ -435,11 +478,11 @@ export const CourseLesson = ({ navigation }) => {
               <Text style={globalCss.bold700}>{dataItem.description}</Text>
             </View>
 
-            <View style={[styles.inputView, styles.inputContainer1]}>
+            <View style={[styles.inputViewKeyboard, styles.inputContainerKeyboard]}>
               <TextInput
                 placeholder="Напиши пропущенное слово."
                 placeholderTextColor="#a5a5a5"
-                style={globalCss.input}
+                style={styles.input}
                 value={check[key]}
                 onChangeText={(value) => {
                   const rightValue = value.replace(
@@ -459,7 +502,15 @@ export const CourseLesson = ({ navigation }) => {
                   }));
                 }}
               />
+              <TouchableOpacity style={styles.btnGetHint} onPress={() => handleShowHint(key, dataItem.v1)}> 
+                  <Text style={styles.btnGetHintTxt}>
+                      <FontAwesomeIcon icon={faLightbulb} size={20} style={globalCss.whiteDarker}/>
+                  </Text>
+              </TouchableOpacity>
+
+
             </View>
+            
           </View>
         );
       case "t":
@@ -494,7 +545,7 @@ export const CourseLesson = ({ navigation }) => {
       default:
         return (
           <Text key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
-            error ? {dataItem.series} : {dataItem.v1}
+            ...
           </Text>
         );
     }
@@ -613,7 +664,7 @@ export const CourseLesson = ({ navigation }) => {
               <Image
                 style={styles.succesImgQuiz}
                 source={
-                  calculateCorrectPercentage().percent >= 70
+                  calculateCorrectPercentage().percent >= 50
                     ? require("../images/El/succesLesson.png")
                     : require("../images/El/badLesson.png")
                 }
@@ -745,7 +796,7 @@ const SwiperButtonsContainer = ({
         activeOpacity={1}
       >
         <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-          {issetSeriesNext ? "Следующая серия" : "Финиш"}
+          {issetSeriesNext ? "Завершить тест" : "Завершить урок"}
         </Text>
       </TouchableOpacity>
     ) : (
@@ -771,7 +822,7 @@ const SwiperButtonsContainer = ({
 
     <TouchableOpacity
       style={styles.btnabs}
-      onPress={() => onJumpToSlide(7)}
+      onPress={() => onJumpToSlide(17)}
       activeOpacity={1}
     >
       <Text style={[globalCss.buttonText, globalCss.textUpercase]}>

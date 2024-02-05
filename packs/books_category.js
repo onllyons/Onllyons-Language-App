@@ -17,7 +17,7 @@ export default function BooksCategoryScreen({route}) {
 
     useEffect(() => {
         setLoading(true);
-        fetch('https://www.language.onllyons.com/ru/ru-en/backend/mobile_app/sergiu/books.php')
+        fetch('/ru/ru-en/backend/mobile_app/ajax/books/get_books.php')
             .then(response => response.json())
             .then(data => {
                 const filteredData = data.filter(item => item.type_category === category);

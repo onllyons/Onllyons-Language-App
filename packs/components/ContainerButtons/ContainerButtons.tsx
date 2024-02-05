@@ -81,12 +81,12 @@ export const ContainerButtons: FunctionComponent<ContainerButtonsProps> = ({
     );
   };
   return (
-    <View style={{ flex: 1, marginTop: 20 }}>
-      <View style={{ flexDirection: "row", gap: 20, marginBottom: 20 }}>
+    <View style={{ marginTop: '10%', justifyContent: "center", }}>
+      <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}>
         {button(dataItemV1)}
         {button(dataItemV2)}
       </View>
-      <View style={{ flexDirection: "row", gap: 20 }}>
+      <View style={{ flexDirection: "row", gap: 12 }}>
         {button(dataItemV3)}
         {button(dataItemV4)}
       </View>

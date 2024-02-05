@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import { AVPlaybackStatus, AVPlaybackStatusSuccess, Audio } from "expo-av";
 
 // icons
@@ -8,7 +8,8 @@ import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 // styles
-import { stylesCourse_lesson as styles } from "../../course_lesson.styles";
+import { stylesCourse_lesson as styles } from "../../css/course_lesson.styles";
+import globalCss from "../../css/globalCss";
 
 type SoundCustomProps = {
   name: string;
@@ -23,6 +24,7 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
 }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [AudioQuiz, setAudioQuiz] = useState(false);
 
   const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     if (status.isLoaded && status.didJustFinish) {
@@ -76,14 +78,22 @@ export const SoundCustom: FunctionComponent<SoundCustomProps> = ({
   }, [isFocused, name]);
 
   return (
-    <TouchableOpacity onPress={() => playSound(name)}>
-      <Text style={styles.audioWord}>
-        <FontAwesomeIcon
-          icon={isPlaying ? faCirclePause : faCirclePlay}
-          size={40}
-          style={{ color: "#1f80ff" }}
-        />
-      </Text>
-    </TouchableOpacity>
+<TouchableOpacity 
+  onPress={() => playSound(name)}
+  style={[ styles.audioTouchable, AudioQuiz ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
+  onPressIn={() => setAudioQuiz(true)}
+  onPressOut={() => setAudioQuiz(false)}
+  activeOpacity={1}
+>
+  <Text style={styles.audioWord}>
+    <FontAwesomeIcon
+      icon={isPlaying ? faCirclePause : faCirclePlay}
+      size={60}
+      style={{ color: "#1f80ff" }}
+    />
+  </Text>
+</TouchableOpacity>
+
+
   );
 };

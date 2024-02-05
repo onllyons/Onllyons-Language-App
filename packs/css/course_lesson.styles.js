@@ -1,12 +1,7 @@
 import { StyleSheet } from "react-native";
 
 export const stylesCourse_lesson = StyleSheet.create({
-  videoContainer: {
-    flex: 1,
-    width: "100%",
-    height: "37%",
-    borderRadius: 12,
-  },
+
   groupBtnQuizFinish: {
     flexDirection: "row",
   },
@@ -51,13 +46,42 @@ export const stylesCourse_lesson = StyleSheet.create({
   },
   slideIn: {
     flex: 1,
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  videoContainerGroup: {
+    width: "100%",
+    minHeight: "11%",
     justifyContent: "center",
+    alignItems: "center",
+  },
+    base_title: {
+    color: "#212121",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  videoContainer: { 
+    width: "100%",
+    height: 300,
+    borderRadius: 12, 
+  },
+    imageContainerGroup: {
+    backgroundColor: "red",
+    width: "100%",
+    height: 300,
+    borderRadius: 14,
+    justifyContent: "center",
+  },
+    variantImageStyle: {
+    width: "100%",
+    height: 300,
+    resizeMode: "cover",
+    borderRadius: 10,
   },
   swiperContent: {
     height: "100%",
     backgroundColor: "white",
   },
-
   containerVideoLesson: {
     width: "90%",
     height: "50%",
@@ -187,17 +211,10 @@ export const stylesCourse_lesson = StyleSheet.create({
     alignItems: "center",
   },
   bgGroupTitleCourse1: {
-    marginTop: "9%",
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 10,
-  },
-  videoContainerGroup: {
-    width: "100%",
-    minHeight: "11%",
-    justifyContent: "center",
-    alignItems: "center",
-    alignContent: "center",
+    marginTop: '10%',
   },
   inputView: {
     borderBottomWidth: 2.1,
@@ -213,14 +230,38 @@ export const stylesCourse_lesson = StyleSheet.create({
     paddingBottom: 17,
     paddingTop: 17,
     paddingRight: 12,
-    marginBottom: 12,
   },
-  base_title: {
-    color: "#212121",
-    fontSize: 16,
-    textAlign: "center",
+    inputViewKeyboard: {
+    borderBottomWidth: 2.1,
+    borderColor: "#e0e0e0",
+    flexDirection: "row",
+    borderLeftWidth: 2.1,
+    borderRightWidth: 2.1,
+    paddingLeft: 12,
   },
-
+  inputContainerKeyboard: {
+    borderTopWidth: 2.1,
+    borderRadius: 14,
+    paddingBottom: 0,
+    paddingTop: 0,
+    paddingRight: 0,
+  },
+  btnGetHint:{
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    borderRadius: 14,
+    minWidth: '15%',
+  },
+  btnGetHintTxt:{
+    marginTop: 6,
+  },
+  input: {
+    color: "#636363",
+    fontSize: 17,
+    minHeight: '10%',
+    flex: 1,
+  },
   groupTitleCourse1: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -245,7 +286,7 @@ export const stylesCourse_lesson = StyleSheet.create({
   groupQuizBtn: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: "9%",
+    marginTop: "4%",
   },
   btnQuizStyle: {
     color: "#616161",
@@ -258,12 +299,22 @@ export const stylesCourse_lesson = StyleSheet.create({
     borderColor: "#E0E0E0",
   },
   btnQuizPositionCa: {
+    // width: "50%",
+    // height: 150,
+    borderRadius: 10,
+    marginBottom: '3%',
     paddingVertical: "4%",
     paddingHorizontal: "4%",
     marginRight: "3%",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    // Umbra pentru Android
+    elevation: 8, // Ajustați pentru a controla "înălțimea" și vizibilitatea umbrei pe Android
   },
   btnQuizStyleCa: {
     color: "#616161",
@@ -280,19 +331,6 @@ export const stylesCourse_lesson = StyleSheet.create({
     paddingLeft: "2.5%",
     marginBottom: "2.5%",
   },
-  variantImageStyle: {
-    width: "100%",
-    height: "37%",
-    resizeMode: "cover",
-    borderRadius: 10,
-  },
-  imageContainerGroup: {
-    backgroundColor: "red",
-    width: "100%",
-    height: "37%",
-    borderRadius: 14,
-    justifyContent: "center",
-  },
   baseTitleImg: {
     color: "black",
     fontWeight: "600",
@@ -300,6 +338,23 @@ export const stylesCourse_lesson = StyleSheet.create({
     textAlign: "center",
     width: "100%",
     marginVertical: "6.5%",
+  },
+  audioTouchable:{
+    width: "50%",
+    height: 150,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: 'center',
+    marginBottom: '10%',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
   audioWord: {},
   succesImg: {

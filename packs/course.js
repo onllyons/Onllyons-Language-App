@@ -15,6 +15,7 @@ import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
 import {DefaultButtonDown} from "./components/buttons/DefaultButtonDown";
 import {SubscribeModal} from "./components/SubscribeModal";
+import {MenuBottomFixed} from "./components/MenuBottomFixed";
 
 export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
@@ -440,11 +441,15 @@ export default function CourseScreen({navigation}) {
             >
                 <View style={styles.container}>
                     <View style={styles.contentFlashCards}>
-                        {/*  
-                        <TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
+
+                        {/*<TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
                             <Text>subscription modal</Text>
                         </TouchableOpacity>
-                        */}
+
+                        <View style={globalCss.MenuBottomFixed}>
+                          <MenuBottomFixed/>
+                        </View>*/}
+                       
                         {loadedCategories.map((category, categoryIndex) => (
                             <View key={category}
                                   onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>

@@ -606,7 +606,7 @@ export default function FlashCardsLearning({route, navigation}) {
                             <Image
                                 style={styles.succesImgQuiz}
                                 source={
-                                    calculateCorrectPercentage() >= 70
+                                    calculateCorrectPercentage() >= 50
                                         ? require("./images/El/succesLesson.png")
                                         : require("./images/El/badLesson.png")
                                 }
