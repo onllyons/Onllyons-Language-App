@@ -29,8 +29,9 @@ export default function BooksCategoryScreen({route}) {
                 setData(data);
                 setTotalItems(data.length);
             })
-            .catch(error => console.error('Error:', error))
-            .finally(() => setLoading(false));
+            .finally(() => {
+                setTimeout(() => setLoading(false), 1)
+            });
     }, [category]);
 
     const loadMoreItems = () => {
