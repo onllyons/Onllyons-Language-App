@@ -413,12 +413,12 @@ export default function CourseScreen({navigation}) {
                             <View key={category}
                                   onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>
 
-                                {/*<View style={styles.categoryTitleBg}>
+                                <View style={styles.categoryTitleBg}>
                                     <Text style={styles.categoryTitle}>
                                         {data[category].categoryTitle}
                                     </Text>
                                 </View>
-                                */}
+                               
                                 {data[category].items.map((item, index) => (
                                     // <DefaultButtonDown style={[
                                     //     {
