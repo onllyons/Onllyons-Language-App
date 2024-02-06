@@ -2,9 +2,6 @@ import { StyleSheet } from "react-native";
 
 const globalCss = StyleSheet.create({
   NavTopStartApp: {},
-  MenuBottomFixed: {
-    
-  },
 
   navBottomApp: {
     borderBottomLeftRadius: 30,
