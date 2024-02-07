@@ -13,6 +13,7 @@ import Answers from "./components/games/Answers";
 import Buttons from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
+import {SubscribeModal} from "./components/SubscribeModal";
 
 export default function GameQuiz({navigation}) {
     const [data, setData] = useState([]);
@@ -23,6 +24,7 @@ export default function GameQuiz({navigation}) {
     const [isHelpUsed, setIsHelpUsed] = useState(false);
     const [showIncorrectStyle, setShowIncorrectStyle] = useState(false);
     const [preHelpAnswers, setPreHelpAnswers] = useState([])
+    const [subscribeModalVisible, setSubscribeModalVisible] = useState(false)
     const stats = useRef({
         time: 0,
         series: 0,
@@ -65,9 +67,7 @@ export default function GameQuiz({navigation}) {
     }
 
     const checkBlocked = () => {
-        if (blocked.current) {
-            navigation.navigate("SubscribeScreen")
-        }
+        if (blocked.current) setSubscribeModalVisible(true)
     }
 
     const getQuestions = () => {
@@ -250,13 +250,6 @@ export default function GameQuiz({navigation}) {
         setPreHelpAnswers([])
         setRestartCount(restartCount + 1)
         stats.current.time = 0
-
-        for (let i = data[0].answers.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [data[0].answers[i], data[0].answers[j]] = [data[0].answers[j], data[0].answers[i]];
-        }
-
-        setData(data);
     };
 
     if (loading) {
@@ -266,6 +259,7 @@ export default function GameQuiz({navigation}) {
 
     return (
         <View style={styles.container}>
+            <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
             <View style={styles.sectionTop}>
 
                 <TouchableOpacity onPress={() => navigation.navigate('GamesScreen')}

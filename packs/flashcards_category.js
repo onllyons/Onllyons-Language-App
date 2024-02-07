@@ -64,7 +64,6 @@ export default function FlashCardsCategory({route, navigation}) {
             {success: false}
         )
             .then(({data}) => {
-                console.log(data)
                 setData(data);
             })
             .catch((err) => {
