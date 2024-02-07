@@ -131,6 +131,7 @@ const FlashCardWords = ({navigation}) => {
                                     <FontAwesomeIcon icon={faStar} size={30} style={styles.iconFlash}/>
                                 </Text>
                             </TouchableOpacity>
+                            <Text>{item.finished ? "Эта карточка завершена" : ""}</Text>
                             <Text style={styles.titleFlashCards}>{item.title_category}</Text>
                         </View>
                     ))}
