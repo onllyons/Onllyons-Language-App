@@ -496,11 +496,11 @@ export default function CourseScreen({navigation}) {
                                 )}
 
 
-                                {/*
+                                
                             <View>
                                 <Image source={require("./images/El/course/Group.png")} style={styles.elCourseImg}/>
                             </View>
-                            */}
+                            
 
 
                                 <View>
