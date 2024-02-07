@@ -6,7 +6,7 @@ import {
     StyleSheet,
     Image,
     ScrollView,
-    TouchableOpacity, Animated, Dimensions, Pressable, Easing
+    TouchableOpacity, Animated, Dimensions, Pressable
 } from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faStar} from "@fortawesome/free-solid-svg-icons";
@@ -32,8 +32,7 @@ export default function CourseScreen({navigation}) {
 
     const [isCardPressedCourseTitle, setIsCardPressedCourseTitle] = useState(false);
 
-    const finishedCounter = useRef({})
-    const phrasesCompleted = useRef({})
+    const categoriesData = useRef({})
 
     const [loader, setLoader] = useState(false)
 
@@ -112,8 +111,7 @@ export default function CourseScreen({navigation}) {
                 const initialCategories = Object.keys(groupedData).slice(0, 1);
                 setLoadedCategories(initialCategories);
 
-                finishedCounter.current = data.finishedCounter
-                phrasesCompleted.current = data.phrasesCompleted
+                categoriesData.current = data.categoriesData
 
                 if (initialCategories.length > 0) {
                     setCurrentCategory({
@@ -294,7 +292,7 @@ export default function CourseScreen({navigation}) {
                         style={globalCss.imageNavTop}
                     />
                     <Text
-                        style={globalCss.dataNavTop}>{finishedCounter.current[currentCategory.url] ? finishedCounter.current[currentCategory.url] : 0}</Text>
+                        style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["finished"] : 0}</Text>
                 </View>
                 <TouchableOpacity style={globalCss.itemNavTabUser}
                                   onPress={() => toggleNavTopMenu("test")}>
@@ -318,7 +316,7 @@ export default function CourseScreen({navigation}) {
                         style={globalCss.imageNavTop}
                     />
                     <Text
-                        style={globalCss.dataNavTop}>{phrasesCompleted.current[currentCategory.url] ? phrasesCompleted.current[currentCategory.url] : 0}</Text>
+                        style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["phrasesCompleted"] : 0}</Text>
 
                     <AnimatedNavTopArrow id={0} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
@@ -416,7 +414,7 @@ export default function CourseScreen({navigation}) {
                             />
                             <View style={styles.titleLessonCat}>
                                 <Text style={styles.titleLessonCatSubject}>Subject 1</Text>
-                                <Text style={styles.titleLessonCatTxt}>350 базовых английских слов</Text>
+                                <Text style={styles.titleLessonCatTxt}>{currentCategory.name}</Text>
                             </View>
                         </View>
 
@@ -429,8 +427,8 @@ export default function CourseScreen({navigation}) {
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>20 уроков</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд навстречу 20 увлекательным
+                                    <Text style={styles.titleDetLessonCatSubject}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["courses"] : 0} уроков</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд навстречу {categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["courses"] : 0} увлекательным
                                         приключениям!</Text>
                                 </View>
                             </View>
@@ -443,10 +441,8 @@ export default function CourseScreen({navigation}) {
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>351 испытаний</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие через 351
-                                        мир
-                                        возможностей!</Text>
+                                    <Text style={styles.titleDetLessonCatSubject}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["quizzes"] : 0} испытаний</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие через {categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["quizzes"] : 0} мир возможностей!</Text>
                                 </View>
                             </View>
 
@@ -458,7 +454,7 @@ export default function CourseScreen({navigation}) {
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>Более 6 часов погружения</Text>
+                                    <Text style={styles.titleDetLessonCatSubject}>Более {Math.floor(categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["coursesHours"] : 0)} часов погружения</Text>
                                     <Text style={styles.titleDetLessonCatTxt}>полного погружения в знания</Text>
                                 </View>
                             </View>
