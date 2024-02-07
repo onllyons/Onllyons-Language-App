@@ -553,6 +553,7 @@ export default function CourseScreen({navigation}) {
                                         activeOpacity={1}
                                     >
                                         <Text>
+                                            {item.finished ? "Этот урок завершен" : ""}
                                             <FontAwesomeIcon
                                                 icon={faStar}
                                                 size={30}
