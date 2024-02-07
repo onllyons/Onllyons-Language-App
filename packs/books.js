@@ -16,6 +16,7 @@ export default function BooksScreen({navigation}) {
     const finishedBooks = useRef(0)
 
     useMemo(() => {
+        console.log(data)
         setLoading(true);
 
         sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,

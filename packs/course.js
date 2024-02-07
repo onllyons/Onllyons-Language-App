@@ -6,7 +6,7 @@ import {
     StyleSheet,
     Image,
     ScrollView,
-    TouchableOpacity, Animated
+    TouchableOpacity, Animated, Dimensions, Pressable, Easing
 } from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faStar} from "@fortawesome/free-solid-svg-icons";
@@ -15,6 +15,7 @@ import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
 import {DefaultButtonDown} from "./components/buttons/DefaultButtonDown";
 import {SubscribeModal} from "./components/SubscribeModal";
+import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
 
 export default function CourseScreen({navigation}) {
     const [pressedCards, setPressedCards] = useState({});
@@ -40,36 +41,36 @@ export default function CourseScreen({navigation}) {
     const moveAnimation = useRef(new Animated.Value(0)).current;
     const imageYPos = useRef(new Animated.Value(0)).current;
     useEffect(() => {
-      Animated.loop( // Repetă animația
-        Animated.sequence([ // Creează o secvență de animații
-          Animated.timing(moveAnimation, {
-            toValue: -10, // Mișcă în sus cu 10 unități
-            duration: 1000, // Durata animației în milisecunde
-            useNativeDriver: true, // Folosește driverul nativ pentru performanță îmbunătățită
-          }),
-          Animated.timing(moveAnimation, {
-            toValue: 0, // Mișcă înapoi la poziția inițială
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-        ]),
-      ).start();
+        Animated.loop( // Repetă animația
+            Animated.sequence([ // Creează o secvență de animații
+                Animated.timing(moveAnimation, {
+                    toValue: -10, // Mișcă în sus cu 10 unități
+                    duration: 1000, // Durata animației în milisecunde
+                    useNativeDriver: true, // Folosește driverul nativ pentru performanță îmbunătățită
+                }),
+                Animated.timing(moveAnimation, {
+                    toValue: 0, // Mișcă înapoi la poziția inițială
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ]),
+        ).start();
     }, []);
     const startImageAnimation = () => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(imageYPos, {
-            toValue: 10, // Mișcă imaginea în jos cu 10 unități (nu pixeli, deoarece React Native folosește unități de densitate independentă)
-            duration: 1000, // Durata animației în milisecunde
-            useNativeDriver: true, // Folosește driver-ul nativ pentru performanță îmbunătățită
-          }),
-          Animated.timing(imageYPos, {
-            toValue: -10, // Mișcă imaginea înapoi în sus
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-        ]),
-      ).start();
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(imageYPos, {
+                    toValue: 10, // Mișcă imaginea în jos cu 10 unități (nu pixeli, deoarece React Native folosește unități de densitate independentă)
+                    duration: 1000, // Durata animației în milisecunde
+                    useNativeDriver: true, // Folosește driver-ul nativ pentru performanță îmbunătățită
+                }),
+                Animated.timing(imageYPos, {
+                    toValue: -10, // Mișcă imaginea înapoi în sus
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ]),
+        ).start();
     };
     // etd анимация для начального верхнего изображения
 
@@ -192,27 +193,41 @@ export default function CourseScreen({navigation}) {
     // Current opened menu
     const openedNavMenu = useRef(null)
 
+    // Nav top background
+    const {width: windowWidth} = Dimensions.get("window");
+    const navTopBgTranslateX = useRef(new Animated.Value(windowWidth))
+    const navTopBgOpacity = useRef(new Animated.Value(0))
+
     // Open/close nav menu by id
-    const toggleNavTopMenu = (id) => {
+    const toggleNavTopMenu = (id = null) => {
+        if (id === null) {
+            if (openedNavMenu.current !== null) id = openedNavMenu.current
+            else return
+        }
+
         if (openedNavMenu.current !== null && openedNavMenu.current !== id) {
             Animated.parallel([
                 Animated.spring(topPositionNavTopMenus[openedNavMenu.current], {
                     toValue: 0,
                     duration: 500,
+                    bounciness: 0,
                     useNativeDriver: true,
                 }),
                 topPositionNavTopArrows[openedNavMenu.current] && Animated.spring(topPositionNavTopArrows[openedNavMenu.current], {
                     toValue: 0,
                     duration: 500,
+                    bounciness: 0,
                     useNativeDriver: true,
                 }),
                 Animated.spring(topPositionNavTopMenus[id], {
                     toValue: heightsNav.current.navTopMenu[id] - 1,
                     duration: 500,
+                    bounciness: 0,
                     useNativeDriver: true,
                 }),
                 topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
                     toValue: -8,
+                    bounciness: 0,
                     duration: 500,
                     useNativeDriver: true,
                 }),
@@ -221,16 +236,34 @@ export default function CourseScreen({navigation}) {
             Animated.parallel([
                 Animated.spring(topPositionNavTopMenus[id], {
                     toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 1,
+                    bounciness: 0,
                     duration: 500,
                     useNativeDriver: true,
                 }),
                 topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
                     toValue: openedNavMenu.current === id ? 0 : -8,
+                    bounciness: 0,
                     duration: 500,
                     useNativeDriver: true,
                 })
             ]).start();
+
+            Animated.timing(navTopBgTranslateX.current, {
+                toValue: openedNavMenu.current === id ? windowWidth : 0,
+                duration: 1,
+                delay: openedNavMenu.current === id ? 500 : 0,
+                useNativeDriver: true,
+            }).start()
+            Animated.timing(navTopBgOpacity.current, {
+                toValue: openedNavMenu.current === id ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true,
+            }).start()
         }
+
+        // Fade bottom nav menu
+        if (openedNavMenu.current === id) fadeOutNav()
+        else if (openedNavMenu.current === null) fadeInNav(() => toggleNavTopMenu())
 
         openedNavMenu.current = openedNavMenu.current === id ? null : id
     };
@@ -316,6 +349,10 @@ export default function CourseScreen({navigation}) {
                 <Text style={stylesTest.navTopModalText}>1sadasda</Text>
             </AnimatedNavTopMenu>
 
+            {/* Background for nav menu */}
+            <AnimatedNavTopBg navTopBgTranslateX={navTopBgTranslateX.current}
+                              navTopBgOpacity={navTopBgOpacity.current} toggleNavTopMenu={toggleNavTopMenu}/>
+
             <View style={{...styles.infoCourseSubject, top: heightsNav.current.navTop}}>
                 <TouchableOpacity
                     style={[styles.cardCategoryTitle, isCardPressedCourseTitle ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
@@ -327,7 +364,8 @@ export default function CourseScreen({navigation}) {
                     <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
                 </TouchableOpacity>
 
-                <DefaultButtonDown style={{...styles.infoCourseBtn, ...globalCss.buttonGreen}} onPress={toggleModal}>
+                <DefaultButtonDown style={{...styles.infoCourseBtn, ...globalCss.buttonGreen}}
+                                   onPress={toggleModal}>
                     <Image
                         source={require('./images/icon/infoCategory.png')}
                         style={styles.infoCategoryImg}
@@ -357,15 +395,15 @@ export default function CourseScreen({navigation}) {
                 <View style={styles.modal}>
 
                     {/*<View style={styles.headerModalCat}>
-                    <TouchableOpacity style={styles.closeModalCourse} onPress={toggleModal}>
-                      <Text>
-                          <FontAwesomeIcon icon={faTimes} size={30} style={globalCss.link}/>
-                      </Text>
-                    </TouchableOpacity>
-                    <View style={styles.headerTitleModalCat}>
-                      <Text style={styles.headerTitleModalCatTxt}>Обзор категории</Text>
-                    </View>
-                </View> */}
+                <TouchableOpacity style={styles.closeModalCourse} onPress={toggleModal}>
+                  <Text>
+                      <FontAwesomeIcon icon={faTimes} size={30} style={globalCss.link}/>
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.headerTitleModalCat}>
+                  <Text style={styles.headerTitleModalCatTxt}>Обзор категории</Text>
+                </View>
+            </View> */}
 
                     <ScrollView
                         ref={scrollViewRef}
@@ -406,7 +444,8 @@ export default function CourseScreen({navigation}) {
                                 />
                                 <View style={styles.titleDetLessonCat}>
                                     <Text style={styles.titleDetLessonCatSubject}>351 испытаний</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие через 351 мир
+                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие через 351
+                                        мир
                                         возможностей!</Text>
                                 </View>
                             </View>
@@ -442,46 +481,42 @@ export default function CourseScreen({navigation}) {
                     <View style={styles.contentFlashCards}>
 
                         {/*<TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
-                            <Text>subscription modal</Text>
-                        </TouchableOpacity>*/}
-                       
+                        <Text>subscription modal</Text>
+                    </TouchableOpacity>*/}
+
                         {loadedCategories.map((category, categoryIndex) => (
                             <View key={category}
                                   onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>
 
                                 {/* aici */}
                                 {categoryIndex > 0 && (
-                                  <View style={styles.categoryTitleBg}>
-                                    <View style={styles.hrLine}></View>
-                                    <Text style={styles.categoryTitle}>
-                                      {data[category].categoryTitle}
-                                    </Text>
-                                    <View style={styles.hrLine}></View>
-                                  </View>
+                                    <View style={styles.categoryTitleBg}>
+                                        <View style={styles.hrLine}></View>
+                                        <Text style={styles.categoryTitle}>
+                                            {data[category].categoryTitle}
+                                        </Text>
+                                        <View style={styles.hrLine}></View>
+                                    </View>
                                 )}
 
 
-
-
                                 {/*
-                                <View>
-                                    <Image source={require("./images/El/course/Group.png")} style={styles.elCourseImg}/>
-                                </View>
-                                */}
+                            <View>
+                                <Image source={require("./images/El/course/Group.png")} style={styles.elCourseImg}/>
+                            </View>
+                            */}
 
 
                                 <View>
                                     <Animated.View
-                                      style={{
-                                        transform: [{ translateY: moveAnimation }],
-                                      }}
+                                        style={{
+                                            transform: [{translateY: moveAnimation}],
+                                        }}
                                     >
-                                      <Image source={require("./images/other_images/start.png")} style={styles.startImg}/>
+                                        <Image source={require("./images/other_images/start.png")}
+                                               style={styles.startImg}/>
                                     </Animated.View>
                                 </View>
-
-
-                                
 
 
                                 {data[category].items.map((item, index) => (
@@ -558,7 +593,7 @@ const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows})
 
 const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, heightsNav}) => {
     if (!topPositionNavTopMenus[id]) topPositionNavTopMenus[id] = new Animated.Value(0)
-    if (!heightsNav.current.navTopMenu[id]) heightsNav.current.navTopMenu[id] = 999
+    if (!heightsNav.current.navTopMenu[id]) heightsNav.current.navTopMenu[id] = 99999
 
     return (
         <Animated.View
@@ -572,6 +607,20 @@ const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, he
             <View style={stylesTest.navTopModalIn}>
                 {children}
             </View>
+        </Animated.View>
+    )
+})
+
+const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggleNavTopMenu}) => {
+    return (
+        <Animated.View
+            style={{
+                ...stylesTest.navTopBg,
+                opacity: navTopBgOpacity,
+                transform: [{translateX: navTopBgTranslateX}]
+            }}
+        >
+            <Pressable style={{width: "100%", height: "100%"}} onPress={() => toggleNavTopMenu()}></Pressable>
         </Animated.View>
     )
 })
@@ -603,14 +652,22 @@ const stylesTest = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
+        zIndex: 3
+    },
+    navTopBg: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         zIndex: 2,
-        backgroundColor: "rgba(0, 0, 0, 0.2)"
+        backgroundColor: "rgba(0, 0, 0, 0.5)"
     },
 
     navTopModalIn: {
         padding: 20,
         width: "100%",
-        backgroundColor: "#3a3a3a"
+        backgroundColor: "#fff"
     },
 
     navTopModalText: {
@@ -814,14 +871,14 @@ const styles = StyleSheet.create({
         marginTop: '1%',
     },
 
-    categoryTitleBg:{
+    categoryTitleBg: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         alignContent: 'center',
         marginVertical: '15%',
     },
-    hrLine:{
+    hrLine: {
         flex: 1,
         height: 2,
         backgroundColor: '#ababab',
@@ -838,13 +895,13 @@ const styles = StyleSheet.create({
     iconFlash: {
         color: '#ababab',
     },
-    startImg:{
+    startImg: {
         width: 107,
         height: 57,
         resizeMode: 'contain',
         alignSelf: 'center',
     },
-    elCourseImg:{
+    elCourseImg: {
         width: 150,
         height: 220,
         position: 'absolute',

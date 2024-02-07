@@ -1,6 +1,6 @@
 import {StatusBar} from "expo-status-bar";
-import {Image, View} from "react-native";
-import {NavigationContainer} from "@react-navigation/native";
+import {Image, Text, View, Animated} from "react-native";
+import {NavigationContainer, useNavigation} from "@react-navigation/native";
 import {
     createStackNavigator,
     CardStyleInterpolators,
@@ -42,8 +42,8 @@ import {
     setSuccessCallback,
 } from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
-import React, {useEffect, useState} from "react";
-import {MenuBottomFixed} from "./packs/components/MenuBottomFixed";
+import React from "react";
+import {FadeNavMenu} from "./packs/components/FadeNavMenu";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -51,276 +51,11 @@ const handleTabPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 };
 
-////////////////////////////////
-// Dont need
-////////////////////////////////
-
-// function UserProfileMenu() {
-//     return (
-//         <Stack.Navigator>
-//             <Stack.Screen
-//                 name="MenuScreen"
-//                 component={MenuScreen}
-//                 options={{headerShown: false}}
-//             />
-//             <Stack.Screen
-//                 name="UserData"
-//                 component={UserData}
-//                 options={{title: "Профиль", headerBackTitle: "Назад"}}
-//             />
-//             <Stack.Screen
-//                 name="UserSettings"
-//                 component={UserSettings}
-//                 options={{title: "Настройки", headerBackTitle: "Назад"}}
-//             />
-//             <Stack.Screen
-//                 name="UserSubscriptionManage"
-//                 component={UserSubscriptionManage}
-//                 options={{title: "Управление подпиской", headerBackTitle: "Назад"}}
-//             />
-//         </Stack.Navigator>
-//     );
-// }
-
-// function MenuCourseLesson() {
-//     return (
-//         <Stack.Navigator>
-//             <Stack.Screen
-//                 name="CourseScreen"
-//                 component={CourseScreen}
-//                 options={{headerShown: false}}
-//             />
-//         </Stack.Navigator>
-//     );
-// }
-
-// function MenuBooksReading() {
-//     return (
-//         <Stack.Navigator>
-//             <Stack.Screen
-//                 name="BooksScreen"
-//                 component={BooksScreen}
-//                 options={{headerShown: false}}
-//             />
-//         </Stack.Navigator>
-//     );
-// }
-
-// function MenuGames() {
-//     return (
-//         <Stack.Navigator>
-//             <Stack.Screen
-//                 name="GamesScreen"
-//                 component={GamesScreen}
-//                 options={{headerShown: false}}
-//             />
-//         </Stack.Navigator>
-//     );
-// }
-
-// function MenuFlasCards() {
-//     return (
-//         <Stack.Navigator>
-//             <Stack.Screen
-//                 name="FlashCardsScreen"
-//                 component={FlashCardsScreen}
-//                 options={{headerShown: false}}
-//             />
-//         </Stack.Navigator>
-//     );
-// }
-
-// function MainTabNavigator() {
-//     const navigation = useNavigation();
-//
-//     return (
-//         <Tab.Navigator
-//             screenOptions={({route}) => ({
-//                 tabBarIcon: ({size, focused}) => {
-//                     let iconImage;
-//                     if (route.name === "MenuCourseLesson") {
-//                         iconImage = require("./packs/images/nav-icon/course.png");
-//                     } else if (route.name === "MenuBooksReading") {
-//                         iconImage = require("./packs/images/nav-icon/book-open.png");
-//                     } else if (route.name === "MenuGames") {
-//                         iconImage = require("./packs/images/nav-icon/game.png");
-//                     } else if (route.name === "MenuFlasCards") {
-//                         iconImage = require("./packs/images/nav-icon/flashcards.png");
-//                     } else if (route.name === "UserProfileMenu") {
-//                         iconImage = require("./packs/images/nav-icon/more.png");
-//                     }
-//
-//                     const imageStyle = focused
-//                         ? {
-//                             width: size + 10,
-//                             height: size + 10,
-//                             // color: '#8ac0e6'
-//                         }
-//                         : {
-//                             width: size + 10,
-//                             height: size + 10,
-//                             // color: '#8ac0e6'
-//                         };
-//                     return (
-//                         <Image
-//                             source={iconImage}
-//                             style={[imageStyle, globalCss.navImage]}
-//                         />
-//                     );
-//                 },
-//                 tabBarActiveTintColor: "#8ac0e6",
-//                 tabBarInactiveTintColor: "red",
-//                 tabBarStyle: {
-//                     backgroundColor: "#ffffff",
-//                     borderTopLeftRadius: 20,
-//                     borderTopRightRadius: 20,
-//                     height: 100,
-//                     paddingTop: 20,
-//                 },
-//             })}
-//         >
-//             {/*<Tab.Screen*/}
-//             {/*    name="MenuCourseLesson"*/}
-//             {/*    component={MenuCourseLesson}*/}
-//             {/*    options={{title: "Курс", headerShown: false}}*/}
-//             {/*    listeners={{*/}
-//             {/*        tabPress: (e) => {*/}
-//             {/*            e.preventDefault();*/}
-//             {/*            handleTabPress();*/}
-//             {/*            navigation.navigate("MenuCourseLesson");*/}
-//             {/*        },*/}
-//             {/*    }}*/}
-//             {/*/>*/}
-//
-//             {/*<Tab.Screen*/}
-//             {/*    name="MenuBooksReading"*/}
-//             {/*    component={MenuBooksReading}*/}
-//             {/*    options={{title: "Книги", headerShown: false}}*/}
-//             {/*    listeners={{*/}
-//             {/*        tabPress: (e) => {*/}
-//             {/*            e.preventDefault();*/}
-//             {/*            handleTabPress();*/}
-//             {/*            navigation.navigate("MenuBooksReading");*/}
-//             {/*        },*/}
-//             {/*    }}*/}
-//             {/*/>*/}
-//
-//             {/*<Tab.Screen*/}
-//             {/*    name="MenuGames"*/}
-//             {/*    component={MenuGames}*/}
-//             {/*    options={{title: "Играть", headerShown: false}}*/}
-//             {/*    listeners={{*/}
-//             {/*        tabPress: (e) => {*/}
-//             {/*            e.preventDefault();*/}
-//             {/*            handleTabPress();*/}
-//             {/*            navigation.navigate("MenuGames");*/}
-//             {/*        },*/}
-//             {/*    }}*/}
-//             {/*/>*/}
-//
-//             {/*<Tab.Screen*/}
-//             {/*    name="MenuFlasCards"*/}
-//             {/*    component={MenuFlasCards}*/}
-//             {/*    options={{title: "Флэш-карты", headerShown: false}}*/}
-//             {/*    listeners={{*/}
-//             {/*        tabPress: (e) => {*/}
-//             {/*            e.preventDefault();*/}
-//             {/*            handleTabPress();*/}
-//             {/*            navigation.navigate("MenuFlasCards");*/}
-//             {/*        },*/}
-//             {/*    }}*/}
-//             {/*/>*/}
-//
-//             {/*<Tab.Screen*/}
-//             {/*    name="UserProfileMenu"*/}
-//             {/*    component={UserProfileMenu}*/}
-//             {/*    options={{title: "Меню", headerShown: false}}*/}
-//             {/*    listeners={{*/}
-//             {/*        tabPress: (e) => {*/}
-//             {/*            e.preventDefault();*/}
-//             {/*            handleTabPress();*/}
-//             {/*            navigation.navigate("UserProfileMenu");*/}
-//             {/*        },*/}
-//             {/*    }}*/}
-//             {/*/>*/}
-//         </Tab.Navigator>
-//     );
-// }
-
-////////////////////////////////
-
-function AppStack({paddingBottom}) {
-    const [callbackComplete, setCallbackComplete] = useState(false);
-
-    useEffect(() => {
-        setSuccessCallback(() => setCallbackComplete(true));
-    }, []);
-
-    return callbackComplete ? (
-        <Stack.Navigator
-            screenOptions={{
-                headerBackTitleVisible: false,
-                headerStyle: globalCss.NavTopStartApp,
-                cardStyle: {
-                    paddingBottom: paddingBottom, // Устанавливаем отступ для всех экранов
-                },
-            }}
-        >
-            {!isAuthenticated() ? (
-                <>
-                    <Stack.Screen
-                        name="StartPageScreen"
-                        component={StartPageScreen}
-                        options={{headerShown: false}}
-                    />
-                    {/*<Stack.Screen*/}
-                    {/*    name="MainTabNavigator"*/}
-                    {/*    component={MainTabNavigator}*/}
-                    {/*    options={{headerShown: false}}*/}
-                    {/*/>*/}
-                    <Stack.Screen
-                        name="MenuCourseLesson"
-                        component={CourseScreen}
-                        options={{headerShown: false}}
-                    />
-                </>
-            ) : (
-                <>
-                    {/*<Stack.Screen*/}
-                    {/*    name="MainTabNavigator"*/}
-                    {/*    component={MainTabNavigator}*/}
-                    {/*    options={{headerShown: false}}*/}
-                    {/*/>*/}
-                    <Stack.Screen
-                        name="MenuCourseLesson"
-                        component={CourseScreen}
-                        options={{headerShown: false}}
-                    />
-                    <Stack.Screen
-                        name="StartPageScreen"
-                        component={StartPageScreen}
-                        options={{headerShown: false}}
-                    />
-                </>
-            )}
-
+function UserProfileMenu() {
+    return (
+        <Stack.Navigator>
             <Stack.Screen
-                name="MenuBooksReading"
-                component={BooksScreen}
-                options={{headerShown: false}}
-            />
-            <Stack.Screen
-                name="GamesScreen"
-                component={GamesScreen}
-                options={{headerShown: false}}
-            />
-            <Stack.Screen
-                name="FlashCardsScreen"
-                component={FlashCardsScreen}
-                options={{headerShown: false}}
-            />
-            <Stack.Screen
-                name="UserProfileMenu"
+                name="MenuScreen"
                 component={MenuScreen}
                 options={{headerShown: false}}
             />
@@ -337,8 +72,212 @@ function AppStack({paddingBottom}) {
             <Stack.Screen
                 name="UserSubscriptionManage"
                 component={UserSubscriptionManage}
-                options={{title: "Управление подпиской", headerBackTitle: "Назад", cardStyle: {paddingBottom: 100}}}
+                options={{title: "Управление подпиской", headerBackTitle: "Назад"}}
             />
+        </Stack.Navigator>
+    );
+}
+
+function MenuCourseLesson() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="CourseScreen"
+                component={CourseScreen}
+                options={{headerShown: false}}
+            />
+        </Stack.Navigator>
+    );
+}
+
+function MenuBooksReading() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="BooksScreen"
+                component={BooksScreen}
+                options={{headerShown: false}}
+            />
+        </Stack.Navigator>
+    );
+}
+
+function MenuGames() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="GamesScreen"
+                component={GamesScreen}
+                options={{headerShown: false}}
+            />
+        </Stack.Navigator>
+    );
+}
+
+function MenuFlasCards() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="FlashCardsScreen"
+                component={FlashCardsScreen}
+                options={{headerShown: false}}
+            />
+        </Stack.Navigator>
+    );
+}
+
+function MainTabNavigator() {
+    const navigation = useNavigation();
+
+    return (
+        <Tab.Navigator
+            screenOptions={({route}) => ({
+                tabBarIcon: ({size, focused}) => {
+                    let iconImage;
+                    if (route.name === "MenuCourseLesson") {
+                        iconImage = require("./packs/images/nav-icon/course.png");
+                    } else if (route.name === "MenuBooksReading") {
+                        iconImage = require("./packs/images/nav-icon/book-open.png");
+                    } else if (route.name === "MenuGames") {
+                        iconImage = require("./packs/images/nav-icon/game.png");
+                    } else if (route.name === "MenuFlasCards") {
+                        iconImage = require("./packs/images/nav-icon/flashcards.png");
+                    } else if (route.name === "UserProfileMenu") {
+                        iconImage = require("./packs/images/nav-icon/more.png");
+                    }
+
+                    const imageStyle = focused
+                        ? {
+                            width: size + 10,
+                            height: size + 10,
+                            // color: '#8ac0e6'
+                        }
+                        : {
+                            width: size + 10,
+                            height: size + 10,
+                            // color: '#8ac0e6'
+                        };
+                    return (
+                        <Image
+                            source={iconImage}
+                            style={[imageStyle, globalCss.navImage]}
+                        />
+                    );
+                },
+                tabBarActiveTintColor: "#8ac0e6",
+                tabBarInactiveTintColor: "red",
+                tabBarStyle: {
+                    backgroundColor: "#ffffff",
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    height: 100,
+                    paddingTop: 20
+                }
+            })}
+        >
+            <Tab.Screen
+                name="MenuCourseLesson"
+                component={MenuCourseLesson}
+                options={{title: "Курс", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuCourseLesson");
+                    },
+                }}
+            />
+
+            <Tab.Screen
+                name="MenuBooksReading"
+                component={MenuBooksReading}
+                options={{title: "Книги", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuBooksReading");
+                    },
+                }}
+            />
+
+            <Tab.Screen
+                name="MenuGames"
+                component={MenuGames}
+                options={{title: "Игры", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuGames");
+                    },
+                }}
+            />
+
+            <Tab.Screen
+                name="MenuFlasCards"
+                component={MenuFlasCards}
+                options={{title: "Флэш-карты", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("MenuFlasCards");
+                    },
+                }}
+            />
+
+            <Tab.Screen
+                name="UserProfileMenu"
+                component={UserProfileMenu}
+                options={{title: "Меню", headerShown: false}}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        handleTabPress();
+                        navigation.navigate("UserProfileMenu");
+                    },
+                }}
+            />
+        </Tab.Navigator>
+    );
+}
+
+function AppStack() {
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                headerBackTitleVisible: false,
+                headerStyle: globalCss.NavTopStartApp,
+            }}
+        >
+            {!isAuthenticated() ? (
+                <>
+                    <Stack.Screen
+                        name="StartPageScreen"
+                        component={StartPageScreen}
+                        options={{headerShown: false}}
+                    />
+                    <Stack.Screen
+                        name="MainTabNavigator"
+                        component={MainTabNavigator}
+                        options={{headerShown: false}}
+                    />
+                </>
+            ) : (
+                <>
+                    <Stack.Screen
+                        name="MainTabNavigator"
+                        component={MainTabNavigator}
+                        options={{headerShown: false}}
+                    />
+                    <Stack.Screen
+                        name="StartPageScreen"
+                        component={StartPageScreen}
+                        options={{headerShown: false}}
+                    />
+                </>
+            )}
 
             <Stack.Screen
                 name="LoginScreen"
@@ -410,8 +349,6 @@ function AppStack({paddingBottom}) {
                 options={{headerShown: false}}
             />
         </Stack.Navigator>
-    ) : (
-        <></>
     );
 }
 
@@ -451,15 +388,12 @@ const toastConfig = {
 };
 
 export default function App() {
-    const [appStackPadding, setAppStackPadding] = useState(0)
-
     return (
         <>
             <AuthProvider>
                 <NavigationContainer>
-                    <AppStack paddingBottom={appStackPadding}/>
+                    <AppStack/>
                     <StatusBar style="auto"/>
-                    <MenuBottomFixed setAppStackPadding={setAppStackPadding}/>
                 </NavigationContainer>
             </AuthProvider>
             <Toast
@@ -467,6 +401,7 @@ export default function App() {
                 config={toastConfig}
                 onPress={() => Toast.hide()}
             />
+            <FadeNavMenu/>
         </>
     );
 }

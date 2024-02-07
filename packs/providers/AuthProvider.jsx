@@ -14,11 +14,6 @@ import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 
 const AuthContext = createContext("user context doesnt exists");
 
-const callback = {
-  callback: null,
-  complete: false,
-};
-
 let user = {};
 let tokens = {
   mobileToken: "",
@@ -68,11 +63,6 @@ export const getUser = () => user;
 
 export const getTokens = () => tokens;
 
-export const setSuccessCallback = (func) => {
-  if (callback.complete) func();
-  else callback.callback = func();
-};
-
 export const setTokens = (obj) => {
   if (typeof obj === "object") {
     if (!obj.mobileToken) obj.mobileToken = tokens.mobileToken;
@@ -114,8 +104,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   useMemo(() => {
-    callback.complete = false;
-
     setLoader(true);
 
     retrieveData()
@@ -174,11 +162,6 @@ export const AuthProvider = ({ children }) => {
           text1: "Ошибка при обращении к серверу",
         });
       })
-      .finally(() => {
-        if (callback.callback) callback.callback();
-
-        callback.complete = true;
-      });
   }, []);
 
   useEffect(() => {
@@ -203,7 +186,6 @@ export const AuthProvider = ({ children }) => {
         getTokens,
         login,
         logout,
-        setSuccessCallback,
         setTokens,
       }}
     >
