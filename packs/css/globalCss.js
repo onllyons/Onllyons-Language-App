@@ -60,6 +60,9 @@ const globalCss = StyleSheet.create({
   link: {
     color: "#3ca6ff",
   },
+  orange: {
+    color: "#FF9600",
+  },
   gry: {
     color: "#636363",
   },

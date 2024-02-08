@@ -1,5 +1,4 @@
 import React, {useState, useRef, useEffect, useMemo} from "react";
-import globalCss from "./css/globalCss";
 import {
     View,
     Text,
@@ -8,12 +7,26 @@ import {
     ScrollView,
     TouchableOpacity, Animated, Dimensions, Pressable
 } from "react-native";
+
+// button info category from card top fixed
+import {DefaultButtonDown} from "./components/buttons/DefaultButtonDown";
+
+// fonts
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faStar} from "@fortawesome/free-solid-svg-icons";
+
+// icons
+import {faStar, faFire} from "@fortawesome/free-solid-svg-icons";
+
+// styles
+import globalCss from "./css/globalCss";
+import {stylesCourse_lesson as styles} from "./css/course_main.styles";
+
+// progress bar
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
-import {DefaultButtonDown} from "./components/buttons/DefaultButtonDown";
 import {SubscribeModal} from "./components/SubscribeModal";
 import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
 
@@ -35,6 +48,9 @@ export default function CourseScreen({navigation}) {
     const categoriesData = useRef({})
 
     const [loader, setLoader] = useState(false)
+
+    const [isCardPressedSentences, setIsCardSentences] = useState(false);
+    const [isCardPressedProcente, setIsCardProgressProcente] = useState(false);
 
     // анимация для начального верхнего изображения
     const moveAnimation = useRef(new Animated.Value(0)).current;
@@ -279,72 +295,260 @@ export default function CourseScreen({navigation}) {
 
             <View style={globalCss.navTabUser}
                   onLayout={event => heightsNav.current.navTop = event.nativeEvent.layout.height}>
-                <View style={globalCss.itemNavTabUser}>
+                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("language")}>
                     <Image
                         source={require("./images/other_images/nav-top/english.webp")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>EN</Text>
-                </View>
-                <View style={globalCss.itemNavTabUser}>
+                    <AnimatedNavTopArrow id={"language"} topPositionNavTopArrows={topPositionNavTopArrows}>
+                        <Image
+                            source={require("./images/icon/arrowTop.png")}
+                            style={styles.navTopArrow}
+                        />
+                    </AnimatedNavTopArrow>
+                </TouchableOpacity>
+                <TouchableOpacity style={globalCss.itemNavTabUser}  onPress={() => toggleNavTopMenu("courseLessonAnalytics")}>
                     <Image
                         source={require("./images/other_images/nav-top/insurance.png")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text
-                        style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["finished"] : 0}</Text>
-                </View>
-                <TouchableOpacity style={globalCss.itemNavTabUser}
-                                  onPress={() => toggleNavTopMenu("test")}>
+                    <Text style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["finished"] : 0}</Text>
+                    <AnimatedNavTopArrow id={"courseLessonAnalytics"} topPositionNavTopArrows={topPositionNavTopArrows}>
+                        <Image
+                            source={require("./images/icon/arrowTop.png")}
+                            style={styles.navTopArrow}
+                        />
+                    </AnimatedNavTopArrow>
+                </TouchableOpacity>
+                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("consecutiveDaysSeries")}>
                     <Image
                         source={require("./images/other_images/nav-top/flame.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>4</Text>
 
-                    <AnimatedNavTopArrow id={"test"} topPositionNavTopArrows={topPositionNavTopArrows}>
+                    <AnimatedNavTopArrow id={"consecutiveDaysSeries"} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
-                            style={stylesTest.navTopArrow}
+                            style={styles.navTopArrow}
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
-                <TouchableOpacity style={globalCss.itemNavTabUser}
-                                  onPress={() => toggleNavTopMenu(0)}>
+                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu(0)}>
                     <Image
                         source={require("./images/other_images/nav-top/pero.png")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text
-                        style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["phrasesCompleted"] : 0}</Text>
-
+                    <Text style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["phrasesCompleted"] : 0}</Text>
+ 
                     <AnimatedNavTopArrow id={0} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
-                            style={stylesTest.navTopArrow}
+                            style={styles.navTopArrow}
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
             </View>
 
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"language"}>
+                <View style={styles.containerSentences}>
+                    <View style={styles.rowContainerLanguageSelect}>
+                        <TouchableOpacity style={styles.containerLanguageSelect}>
+                            <Image
+                                source={require('./images/country-flags/usa.png')}
+                                style={styles.flagsLang}
+                            />
+                            <View style={globalCss.alignSelfCenter}>
+                                <Text style={styles.textLangSelect}>English</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.containerLanguageSelect}>
+                            <Image
+                                source={require('./images/country-flags/addmore.png')}
+                                style={styles.flagsLang}
+                            />
+                            <View style={globalCss.alignSelfCenter}>
+                                <Text style={styles.textLangSelect}>Добавить</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </AnimatedNavTopMenu>
+
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"courseLessonAnalytics"}>
+                <View style={styles.containerSentences}>
+                    <Text style={styles.timeframe1}>cite lectii o invatat din totalul existent</Text>
+                    <Text style={styles.timeframe1}>ce procentaj</Text>
+                    <Text style={styles.timeframe1}>cite minute o invatat sau ore</Text>
+                    <Text style={styles.timeframe1}>cite quiz o trecut din existente se poate si procent</Text>
+                    <Text style={styles.timeframe1}>Текущая серия</Text>
+                    <Text style={styles.timeframe1}>Текущая серия</Text>
+                    <Text style={styles.timeframe1}>Текущая серия</Text>
+                    <Text style={styles.timeframe1}>Текущая серия</Text>
+                    <Text style={styles.timeframe1}>Текущая серия</Text>
+                </View>
+            </AnimatedNavTopMenu>
+
+
+
             {/* First nav menu */}
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"test"}>
-                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
-                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
-                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
-                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
-                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
-                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
-                <Text style={stylesTest.navTopModalText}>Hello World!</Text>
+            {/* aici */}
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"consecutiveDaysSeries"}>
+                <View style={styles.containerSentences}>
+
+                    
+
+                    
+                    <View style={styles.containerResultDataSce1}>
+                      <View style={styles.cardDataDayCurrent}>
+                          <Image
+                              source={require('./images/other_images/fire.png')}
+                              style={styles.imageAnalyticsDay}
+                          />
+                          <Text style={styles.percentage1}>3 дня дней</Text>
+                          <Text style={styles.timeframe1}>Текущая серия</Text>
+                      </View>
+
+                      <View style={styles.cardDataDayLong}>
+                          <Image
+                              source={require('./images/other_images/deadline.png')}
+                              style={styles.imageAnalyticsDay}
+                          />
+                          <Text style={styles.percentage1}>3 дня дней</Text>
+                          <Text style={styles.timeframe1}>Самая длинная серия</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.containerResultDataSce1}>
+                        <View style={styles.boxDay}>
+                            <Text style={styles.dayW}>Пн</Text>
+                            <Image
+                                source={require('./images/other_images/check.png')}
+                                style={styles.imageAnalyticsDayCheck}
+                            />
+                        </View>
+                        <View style={styles.boxDay}>
+                            <Text style={styles.dayW}>Вт</Text>
+                            <Image
+                                source={require('./images/other_images/checkGry.png')}
+                                style={styles.imageAnalyticsDayCheck}
+                            />
+                        </View>
+                        <View style={styles.boxDay}>
+                            <Text style={styles.dayW}>Ср</Text>
+                            <Image
+                                source={require('./images/other_images/check.png')}
+                                style={styles.imageAnalyticsDayCheck}
+                            />
+                        </View>
+                        <View style={styles.boxDay}>
+                            <Text style={styles.dayW}>Чт</Text>
+                            <Image
+                                source={require('./images/other_images/check.png')}
+                                style={styles.imageAnalyticsDayCheck}
+                            />
+                        </View>
+                        <View style={styles.boxDay}>
+                            <Text style={styles.dayW}>Пт</Text>
+                            <Image
+                                source={require('./images/other_images/checkBlue.png')}
+                                style={styles.imageAnalyticsDayCheck}
+                            />
+                        </View>
+                        <View style={styles.boxDay}>
+                            <Text style={styles.dayW}>Сб</Text>
+                            <Image
+                                source={require('./images/other_images/checkBlue.png')}
+                                style={styles.imageAnalyticsDayCheck}
+                            />
+                        </View>
+                        <View style={styles.boxDay}>
+                            <Text style={styles.dayW}>Вс</Text>
+                            <Image
+                                source={require('./images/other_images/checkGry.png')}
+                                style={styles.imageAnalyticsDayCheck}
+                            />
+                        </View>
+                    </View>
+                    <View style={globalCss.alignItemsCenter}>
+                        <Text style={styles.titleh7}>
+                            <FontAwesomeIcon icon={faFire} size={20} style={{ color: 'orange', marginRight: 7 }} /> 
+                            You're on fire!
+                        </Text>
+                    </View>
+                      
+
+                    {/* way to go! */}
+                    {/* Nice work! */}
+                    {/* Great job! */}
+                    {/* Keep it up! */}
+                    {/* Well done! */}
+                    {/* Fantastic! */}
+                    {/* Keep on shining! */}
+                    {/* Brilliant execution! */}
+                    {/* You're smashing it! */}
+                    {/* Outstanding performance! */}
+                    {/* You're killing it! */}
+
+                </View>
             </AnimatedNavTopMenu>
 
             {/* Second nav menu */}
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={0}>
-                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
-                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
-                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
-                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
-                <Text style={stylesTest.navTopModalText}>1sadasda</Text>
+            <AnimatedNavTopMenu 
+              topPositionNavTopMenus={topPositionNavTopMenus} 
+              heightsNav={heightsNav} 
+              id={0}>
+
+                <View style={styles.containerSentences}>
+                  <Text style={styles.titleh5}>Фразы, которые ты освоил</Text>
+                  <Text style={styles.titleh6}>Твой Прогресс в Обучении!</Text>
+
+                  <View style={styles.rowBlockSentences}>
+
+                    <AnimatedCircularProgress
+                      size={160}
+                      width={21}
+                      fill={75}
+                      tintColor="#ffd100"
+                      backgroundColor="#748895"
+                      lineCap="round"
+                    >
+                      {
+                        (fill) => (
+                          <>
+                            <Text style={styles.resultProgressBar}>
+                              {`${Math.round(fill)}%`}
+                            </Text>
+                          </>
+                        )
+                      }
+                    </AnimatedCircularProgress>
+
+                          <View style={styles.containerResultDataSce}>
+                            <TouchableOpacity 
+                              style={[styles.cardDataSce, isCardPressedSentences ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
+                              onPressIn={() => setIsCardSentences(true)}
+                              onPressOut={() => setIsCardSentences(false)}
+                              activeOpacity={1}
+                            >
+                                <Text style={styles.percentage}>341</Text>
+                                <Text style={styles.timeframe}>Всего изучено из 5888</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                              style={[styles.cardDataSce, isCardPressedProcente ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
+                              onPressIn={() => setIsCardProgressProcente(true)}
+                              onPressOut={() => setIsCardProgressProcente(false)}
+                              activeOpacity={1}
+                            >
+                                <Text style={styles.percentage}>44%</Text>
+                                <Text style={styles.timeframe}>Прогресс курса из 100%</Text>
+                            </TouchableOpacity>
+                          </View>
+
+                  </View>
+                </View>
+
             </AnimatedNavTopMenu>
 
             {/* Background for nav menu */}
@@ -484,7 +688,6 @@ export default function CourseScreen({navigation}) {
                             <View key={category}
                                   onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>
 
-                                {/* aici */}
                                 {categoryIndex > 0 && (
                                     <View style={styles.categoryTitleBg}>
                                         <View style={styles.hrLine}></View>
@@ -579,7 +782,7 @@ const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows})
     return (
         <Animated.View
             style={{
-                ...stylesTest.navTopArrowView,
+                ...styles.navTopArrowView,
                 transform: [{translateY: topPositionNavTopArrows[id]}]
             }}
         >
@@ -595,13 +798,13 @@ const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, he
     return (
         <Animated.View
             style={{
-                ...stylesTest.navTopModal,
+                ...styles.navTopModal,
                 top: -heightsNav.current.navTopMenu[id] + heightsNav.current.navTop,
                 transform: [{translateY: topPositionNavTopMenus[id]}]
             }}
             onLayout={event => heightsNav.current.navTopMenu[id] = Math.ceil(event.nativeEvent.layout.height + 1)}
         >
-            <View style={stylesTest.navTopModalIn}>
+            <View style={styles.navTopModalIn}>
                 {children}
             </View>
         </Animated.View>
@@ -612,7 +815,7 @@ const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggl
     return (
         <Animated.View
             style={{
-                ...stylesTest.navTopBg,
+                ...styles.navTopBg,
                 opacity: navTopBgOpacity,
                 transform: [{translateX: navTopBgTranslateX}]
             }}
@@ -621,294 +824,6 @@ const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggl
         </Animated.View>
     )
 })
-
-const stylesTest = StyleSheet.create({
-    arrows: {
-        position: 'absolute',
-        bottom: "100%",
-        left: 0,
-        right: 0,
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center"
-    },
-
-    navTopArrowView: {
-        position: 'absolute',
-        bottom: -10,
-    },
-
-    navTopArrow: {
-        width: 10,
-        height: 10,
-        resizeMode: 'contain'
-    },
-
-    navTopModal: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 3
-    },
-    navTopBg: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 2,
-        backgroundColor: "rgba(0, 0, 0, 0.5)"
-    },
-
-    navTopModalIn: {
-        padding: 20,
-        width: "100%",
-        backgroundColor: "#fff"
-    },
-
-    navTopModalText: {
-        textAlign: 'center',
-    },
-})
-
-const styles = StyleSheet.create({
-    container: {},
-    bgCourse: {
-        backgroundColor: "#ffffff",
-    },
-    card: {
-        width: 70,
-        height: 56,
-        marginBottom: "5%",
-        borderRadius: 300,
-        alignItems: "center",
-        justifyContent: "center",
-        shadowOffset: {width: 0, height: 8},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
-    },
-
-    infoCourseSubject: {
-        position: 'absolute',
-        top: '12%',
-        left: '5%',
-        right: '5%',
-        width: '90%',
-        height: 95,
-        marginTop: "2%",
-        flexDirection: 'row',
-        zIndex: 1,
-    },
-
-    cardPressed: {
-        shadowOffset: {width: 0, height: 0},
-        transform: [{translateY: 4}],
-    },
-    bgGry: {
-        backgroundColor: "#e5e5e5",
-        shadowColor: "#b7b7b7",
-    },
-    bgGryPressed: {
-        backgroundColor: "#f9f9f9",
-        borderColor: "#d8d8d8",
-    },
-    contentFlashCards: {
-        flexDirection: "column",
-        // flexWrap: "wrap",
-        // justifyContent: "center",
-        // alignItems: "center",
-        // alignContent: "center",
-    },
-
-    infoCourseTitle: {
-        color: 'white',
-        fontSize: 19,
-        width: '80%',
-        marginLeft: '5%',
-        textTransform: 'uppercase',
-        fontWeight: '600',
-    },
-    cardCategoryTitle: {
-        width: '73%',
-        height: '100%',
-        borderTopLeftRadius: 12,
-        borderBottomLeftRadius: 12,
-        justifyContent: 'center',
-        alignSelf: 'center',
-        textAlign: 'center',
-        shadowOffset: {width: 0, height: 6},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
-    },
-    infoCourseBtn: {
-        width: '27%',
-        height: '100%',
-        borderTopRightRadius: 12,
-        borderBottomRightRadius: 12,
-        justifyContent: 'center',
-        alignSelf: 'center',
-        textAlign: 'center',
-        shadowOffset: {width: 0, height: 6},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
-    },
-    infoCourseTxtSubCat: {
-        color: '#d1ffb1',
-        fontSize: 15,
-        width: '80%',
-        marginLeft: '5%',
-        textTransform: 'uppercase',
-        fontWeight: '700',
-    },
-    infoCategoryImg: {
-        width: '30%',
-        height: '30%',
-        resizeMode: 'contain',
-        alignSelf: 'center',
-    },
-    modal: {
-        height: '73%',
-        backgroundColor: '#efefef',
-        borderRadius: 10,
-    },
-    modalCourseContent: {
-        paddingLeft: '4%',
-        paddingRight: '4%',
-        paddingBottom: '4%',
-    },
-    closeModalCourse: {
-        marginTop: '2%',
-        padding: 10,
-    },
-    courseCatImg: {
-        width: 130,
-        height: 130,
-        resizeMode: 'contain',
-    },
-    infoCatTitle: {
-        flexDirection: 'row',
-        backgroundColor: 'white',
-        borderRadius: 25,
-        paddingTop: '5%',
-        paddingLeft: '2%',
-        paddingRight: '5%',
-        paddingBottom: '5%',
-    },
-    titleLessonCat: {
-        width: '62%',
-        justifyContent: 'center',
-        paddingLeft: '4%',
-    },
-    titleLessonCatTxt: {
-        fontSize: 20,
-        color: '#212121',
-        fontWeight: '500',
-    },
-    titleLessonCatSubject: {
-        fontSize: 16,
-        color: '#6949FF',
-    },
-    courseDetCatImg: {
-        width: 57,
-        height: 57,
-        resizeMode: 'contain',
-    },
-    infoDetExtraCat: {
-        backgroundColor: 'white',
-        borderRadius: 25,
-        paddingTop: '6%',
-        paddingLeft: '6%',
-        paddingRight: '6%',
-        paddingBottom: '6%',
-        marginTop: '5%',
-    },
-    infoDetCatTitle: {
-        flexDirection: 'row',
-        marginBottom: '0'
-    },
-    titleDetLessonCat: {
-        width: '62%',
-        justifyContent: 'center',
-        paddingLeft: '5%',
-    },
-    titleDetLessonCatSubject: {
-        fontSize: 17.5,
-        color: '#212121',
-        fontWeight: '500',
-        textTransform: 'uppercase',
-    },
-    titleDetLessonCatTxt: {
-        fontSize: 16,
-        color: '#616161',
-    },
-    horizontalLine: {
-        width: '90%',
-        alignSelf: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEEEEE',
-        marginVertical: '7%',
-    },
-    headerModalCat: {
-        flexDirection: 'row',
-    },
-    headerTitleModalCat: {
-        justifyContent: 'center',
-        alignSelf: 'center',
-    },
-    headerTitleModalCatTxt: {
-        fontSize: 18,
-        color: '#212121',
-        textTransform: 'uppercase',
-        alignSelf: 'center',
-        textAlign: 'center',
-        marginTop: '1%',
-    },
-
-    categoryTitleBg: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignContent: 'center',
-        marginVertical: '15%',
-    },
-    hrLine: {
-        flex: 1,
-        height: 2,
-        backgroundColor: '#ababab',
-        marginHorizontal: '4.5%',
-
-    },
-    categoryTitle: {
-        maxWidth: '50%',
-        fontSize: 20,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        color: '#ababab',
-    },
-    iconFlash: {
-        color: '#ababab',
-    },
-    startImg: {
-        width: 107,
-        height: 57,
-        resizeMode: 'contain',
-        alignSelf: 'center',
-    },
-    elCourseImg: {
-        width: 150,
-        height: 220,
-        position: 'absolute',
-        right: 25,
-        top: 120,
-        resizeMode: 'contain',
-        alignSelf: 'center',
-    },
-});
-
 
 
 
