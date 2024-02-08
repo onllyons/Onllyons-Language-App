@@ -165,13 +165,11 @@ function MainTabNavigator() {
                         />
                     );
                 },
-                tabBarActiveTintColor: "#8ac0e6",
-                tabBarInactiveTintColor: "red",
+                tabBarActiveTintColor: "#000000",
+                tabBarInactiveTintColor: "#7b7b7b",
                 tabBarStyle: {
                     backgroundColor: "#ffffff",
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    height: 100,
+                    height: '11%',
                     paddingTop: 20
                 }
             })}

@@ -9,6 +9,7 @@ const globalCss = StyleSheet.create({
   },
   navImage: {
     alignSelf: "center",
+    marginBottom: '10%',
   },
   alignItemsCenter: {
     alignItems: "center",
