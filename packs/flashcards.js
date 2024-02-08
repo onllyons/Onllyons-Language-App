@@ -1,10 +1,20 @@
 import React, {useState, useRef, useMemo} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions, Animated, Pressable,} from 'react-native';
+
+// styles
 import globalCss from './css/globalCss';
+import {stylesnav_dropdown as navDropdown} from "./css/navDropDownTop.styles";
+
+// fonts
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+// icons
 import {faStar} from '@fortawesome/free-solid-svg-icons';
-import Loader from "./components/Loader";
+
+// for nav top
+import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
+
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import Loader from "./components/Loader";
 
 const FlashCardWords = ({navigation}) => {
     const [pressedCards, setPressedCards] = useState({});
@@ -40,6 +50,95 @@ const FlashCardWords = ({navigation}) => {
             })
     }, []);
 
+// Nav top Menu
+    const heightsNav = useRef({
+        navTop: 100,
+        navTopMenu: {}
+    });
+
+    // For animation slide
+    const topPositionNavTopMenus = useRef({}).current;
+
+    // For animation arrows
+    const topPositionNavTopArrows = useRef({}).current;
+
+    // Current opened menu
+    const openedNavMenu = useRef(null)
+
+    // Nav top background
+    const {width: windowWidth} = Dimensions.get("window");
+    const navTopBgTranslateX = useRef(new Animated.Value(windowWidth))
+    const navTopBgOpacity = useRef(new Animated.Value(0))
+
+    // Open/close nav menu by id
+    const toggleNavTopMenu = (id = null) => {
+        if (id === null) {
+            if (openedNavMenu.current !== null) id = openedNavMenu.current
+            else return
+        }
+
+        if (openedNavMenu.current !== null && openedNavMenu.current !== id) {
+            Animated.parallel([
+                Animated.spring(topPositionNavTopMenus[openedNavMenu.current], {
+                    toValue: 0,
+                    duration: 500,
+                    bounciness: 0,
+                    useNativeDriver: true,
+                }),
+                topPositionNavTopArrows[openedNavMenu.current] && Animated.spring(topPositionNavTopArrows[openedNavMenu.current], {
+                    toValue: 0,
+                    duration: 500,
+                    bounciness: 0,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(topPositionNavTopMenus[id], {
+                    toValue: heightsNav.current.navTopMenu[id] - 1,
+                    duration: 500,
+                    bounciness: 0,
+                    useNativeDriver: true,
+                }),
+                topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
+                    toValue: -8,
+                    bounciness: 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        } else {
+            Animated.parallel([
+                Animated.spring(topPositionNavTopMenus[id], {
+                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 1,
+                    bounciness: 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                }),
+                topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
+                    toValue: openedNavMenu.current === id ? 0 : -8,
+                    bounciness: 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                })
+            ]).start();
+
+            Animated.timing(navTopBgTranslateX.current, {
+                toValue: openedNavMenu.current === id ? windowWidth : 0,
+                duration: 1,
+                delay: openedNavMenu.current === id ? 500 : 0,
+                useNativeDriver: true,
+            }).start()
+            Animated.timing(navTopBgOpacity.current, {
+                toValue: openedNavMenu.current === id ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true,
+            }).start()
+        }
+
+        // Fade bottom nav menu
+        if (openedNavMenu.current === id) fadeOutNav()
+        else if (openedNavMenu.current === null) fadeInNav(() => toggleNavTopMenu())
+
+        openedNavMenu.current = openedNavMenu.current === id ? null : id
+    };
 
     const onPressIn = (id) => {
         setPressedCards(prevState => ({...prevState, [id]: true}));
@@ -79,13 +178,19 @@ const FlashCardWords = ({navigation}) => {
                     />
                     <Text style={globalCss.dataNavTop}>EN</Text>
                 </View>
-                <View style={globalCss.itemNavTabUser}>
+                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("lessonsLearned")}>
                     <Image
-                        source={require("./images/other_images/nav-top/open-book.png")}
+                        source={require("./images/other_images/nav-top/inkwell.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>{navTopData.finished}</Text>
-                </View>
+                    <AnimatedNavTopArrow id={"lessonsLearned"} topPositionNavTopArrows={topPositionNavTopArrows}>
+                        <Image
+                            source={require("./images/icon/arrowTop.png")}
+                            style={navDropdown.navTopArrow}
+                        />
+                    </AnimatedNavTopArrow>
+                </TouchableOpacity>
                 <View style={globalCss.itemNavTabUser}>
                     <Image
                         source={require("./images/other_images/nav-top/flame.png")}
@@ -93,14 +198,75 @@ const FlashCardWords = ({navigation}) => {
                     />
                     <Text style={globalCss.dataNavTop}>{navTopData.series}</Text>
                 </View>
-                <TouchableOpacity style={globalCss.itemNavTabUser}>
+                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("knownWords")}>
                     <Image
-                        source={require("./images/other_images/nav-top/star.png")}
+                        source={require("./images/other_images/nav-top/flash-card.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>{navTopData.words}</Text>
+                    <AnimatedNavTopArrow id={"knownWords"} topPositionNavTopArrows={topPositionNavTopArrows}>
+                        <Image
+                            source={require("./images/icon/arrowTop.png")}
+                            style={navDropdown.navTopArrow}
+                        />
+                    </AnimatedNavTopArrow>
                 </TouchableOpacity>
             </View>
+
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"lessonsLearned"}>
+            <View style={navDropdown.containerSentences}>
+
+                  <Text style={navDropdown.titleh5}>Пройденные уроки</Text>
+                  <Text style={navDropdown.titleh6}>Сколько уроков я прошёл?</Text>
+
+                <View style={navDropdown.containerCourseData}>
+                  <View style={navDropdown.cardCourseData}>
+                    <View style={navDropdown.iconContainerRead}>
+                        <Image
+                            source={require('./images/other_images/knowledge.png')}
+                            style={navDropdown.booksImgCard}
+                        />
+                    </View>
+                    <View style={navDropdown.dividerCourseData} />
+                    <View style={navDropdown.fluencyContainer}>
+                      <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
+                      <Text style={[navDropdown.fluencyText, globalCss.green]}>23 / 557</Text>
+                    </View>
+                  </View>
+                </View>
+
+            </View>
+        </AnimatedNavTopMenu>
+
+        <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"knownWords"}>
+            <View style={navDropdown.containerSentences}>
+
+                  <Text style={navDropdown.titleh5}>Изученные слова</Text>
+                  <Text style={navDropdown.titleh6}>Сколько слов я изучил?</Text>
+
+                <View style={navDropdown.containerCourseData}>
+                  <View style={navDropdown.cardCourseData}>
+                    <View style={navDropdown.iconContainerRead}>
+                        <Image
+                            source={require('./images/other_images/tasks.png')}
+                            style={navDropdown.booksImgCard}
+                        />
+                    </View>
+                    <View style={navDropdown.dividerCourseData} />
+                    <View style={navDropdown.fluencyContainer}>
+                      <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
+                      <Text style={[navDropdown.fluencyText, globalCss.green]}>11 / 5351</Text>
+                    </View>
+                  </View>
+                </View>
+
+            </View>
+        </AnimatedNavTopMenu>
+
+            {/* Background for nav menu */}
+            <AnimatedNavTopBg navTopBgTranslateX={navTopBgTranslateX.current} navTopBgOpacity={navTopBgOpacity.current} toggleNavTopMenu={toggleNavTopMenu}/>
+
+
 
             <ScrollView
                 contentContainerStyle={{paddingTop: 30, paddingBottom: 220}}
@@ -141,6 +307,54 @@ const FlashCardWords = ({navigation}) => {
     );
 };
 
+const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows}) => {
+    if (!topPositionNavTopArrows[id]) topPositionNavTopArrows[id] = new Animated.Value(0)
+
+    return (
+        <Animated.View
+            style={{
+                ...navDropdown.navTopArrowView,
+                transform: [{translateY: topPositionNavTopArrows[id]}]
+            }}
+        >
+            {children}
+        </Animated.View>
+    )
+})
+
+const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, heightsNav}) => {
+    if (!topPositionNavTopMenus[id]) topPositionNavTopMenus[id] = new Animated.Value(0)
+    if (!heightsNav.current.navTopMenu[id]) heightsNav.current.navTopMenu[id] = 99999
+
+    return (
+        <Animated.View
+            style={{
+                ...navDropdown.navTopModal,
+                top: -heightsNav.current.navTopMenu[id] + heightsNav.current.navTop,
+                transform: [{translateY: topPositionNavTopMenus[id]}]
+            }}
+            onLayout={event => heightsNav.current.navTopMenu[id] = Math.ceil(event.nativeEvent.layout.height + 1)}
+        >
+            <View style={navDropdown.navTopModalIn}>
+                {children}
+            </View>
+        </Animated.View>
+    )
+})
+
+const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggleNavTopMenu}) => {
+    return (
+        <Animated.View
+            style={{
+                ...navDropdown.navTopBg,
+                opacity: navTopBgOpacity,
+                transform: [{translateX: navTopBgTranslateX}]
+            }}
+        >
+            <Pressable style={{width: "100%", height: "100%"}} onPress={() => toggleNavTopMenu()}></Pressable>
+        </Animated.View>
+    )
+})
 
 const styles = StyleSheet.create({
     container: {

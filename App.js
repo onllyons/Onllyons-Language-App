@@ -136,15 +136,15 @@ function MainTabNavigator() {
                 tabBarIcon: ({size, focused}) => {
                     let iconImage;
                     if (route.name === "MenuCourseLesson") {
-                        iconImage = require("./packs/images/nav-icon/course.png");
+                        iconImage = require("./packs/images/nav-icon/graduation-cap.png");
                     } else if (route.name === "MenuBooksReading") {
-                        iconImage = require("./packs/images/nav-icon/book-open.png");
+                        iconImage = require("./packs/images/nav-icon/open-book.png");
                     } else if (route.name === "MenuGames") {
-                        iconImage = require("./packs/images/nav-icon/game.png");
+                        iconImage = require("./packs/images/nav-icon/game-controller.png");
                     } else if (route.name === "MenuFlasCards") {
                         iconImage = require("./packs/images/nav-icon/flashcards.png");
                     } else if (route.name === "UserProfileMenu") {
-                        iconImage = require("./packs/images/nav-icon/more.png");
+                        iconImage = require("./packs/images/nav-icon/menu.png");
                     }
 
                     const imageStyle = focused

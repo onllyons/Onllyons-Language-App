@@ -4,12 +4,10 @@ import {
     Text,
     StyleSheet,
     Image,
+    Alert, 
     ScrollView,
     TouchableOpacity, Animated, Dimensions, Pressable
 } from "react-native";
-
-// button info category from card top fixed
-import {DefaultButtonDown} from "./components/buttons/DefaultButtonDown";
 
 // fonts
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -20,6 +18,7 @@ import {faStar, faFire} from "@fortawesome/free-solid-svg-icons";
 // styles
 import globalCss from "./css/globalCss";
 import {stylesCourse_lesson as styles} from "./css/course_main.styles";
+import {stylesnav_dropdown as navDropdown} from "./css/navDropDownTop.styles";
 
 // progress bar
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -190,12 +189,15 @@ export default function CourseScreen({navigation}) {
         return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
     };
 
+    
+
+    // Nav top Menu
+
     const heightsNav = useRef({
         navTop: 100,
         navTopMenu: {}
     });
 
-    // Nav top Menu
     // For animation slide
     const topPositionNavTopMenus = useRef({}).current;
 
@@ -287,6 +289,19 @@ export default function CourseScreen({navigation}) {
         setModalVisible(!isModalVisible);
     };
 
+const handleButtonPress = () => {
+  // Afiseaza alerta cu mesajul dorit în limba rusă
+  Alert.alert(
+    "Новые языки скоро будут добавлены",
+    "В скором времени будут добавлены новые языки",
+    [
+      { text: "OK" }
+    ],
+    { cancelable: false }
+  );
+
+};
+
     return (
         <View>
             <Loader visible={loader}/>
@@ -302,20 +317,20 @@ export default function CourseScreen({navigation}) {
                     <AnimatedNavTopArrow id={"language"} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
-                            style={styles.navTopArrow}
+                            style={navDropdown.navTopArrow}
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
                 <TouchableOpacity style={globalCss.itemNavTabUser}  onPress={() => toggleNavTopMenu("courseLessonAnalytics")}>
                     <Image
-                        source={require("./images/other_images/nav-top/insurance.png")}
+                        source={require("./images/other_images/nav-top/graduate.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["finished"] : 0}</Text>
                     <AnimatedNavTopArrow id={"courseLessonAnalytics"} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
-                            style={styles.navTopArrow}
+                            style={navDropdown.navTopArrow}
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
@@ -329,13 +344,13 @@ export default function CourseScreen({navigation}) {
                     <AnimatedNavTopArrow id={"consecutiveDaysSeries"} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
-                            style={styles.navTopArrow}
+                            style={navDropdown.navTopArrow}
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
                 <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu(0)}>
                     <Image
-                        source={require("./images/other_images/nav-top/pero.png")}
+                        source={require("./images/other_images/nav-top/feather.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["phrasesCompleted"] : 0}</Text>
@@ -343,31 +358,31 @@ export default function CourseScreen({navigation}) {
                     <AnimatedNavTopArrow id={0} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
-                            style={styles.navTopArrow}
+                            style={navDropdown.navTopArrow}
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
             </View>
 
             <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"language"}>
-                <View style={styles.containerSentences}>
-                    <View style={styles.rowContainerLanguageSelect}>
-                        <TouchableOpacity style={styles.containerLanguageSelect}>
+                <View style={navDropdown.containerSentences}>
+                    <View style={navDropdown.rowContainerLanguageSelect}>
+                        <TouchableOpacity style={navDropdown.containerLanguageSelect}>
                             <Image
                                 source={require('./images/country-flags/usa.png')}
-                                style={styles.flagsLang}
+                                style={navDropdown.flagsLang}
                             />
                             <View style={globalCss.alignSelfCenter}>
-                                <Text style={styles.textLangSelect}>English</Text>
+                                <Text style={navDropdown.textLangSelect}>English</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.containerLanguageSelect}>
+                        <TouchableOpacity style={navDropdown.containerLanguageSelect} onPress={handleButtonPress}>
                             <Image
                                 source={require('./images/country-flags/addmore.png')}
-                                style={styles.flagsLang}
+                                style={navDropdown.flagsLang}
                             />
                             <View style={globalCss.alignSelfCenter}>
-                                <Text style={styles.textLangSelect}>Добавить</Text>
+                                <Text style={navDropdown.textLangSelect}>Добавить</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -375,16 +390,62 @@ export default function CourseScreen({navigation}) {
             </AnimatedNavTopMenu>
 
             <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"courseLessonAnalytics"}>
-                <View style={styles.containerSentences}>
-                    <Text style={styles.timeframe1}>cite lectii o invatat din totalul existent</Text>
-                    <Text style={styles.timeframe1}>ce procentaj</Text>
-                    <Text style={styles.timeframe1}>cite minute o invatat sau ore</Text>
-                    <Text style={styles.timeframe1}>cite quiz o trecut din existente se poate si procent</Text>
-                    <Text style={styles.timeframe1}>Текущая серия</Text>
-                    <Text style={styles.timeframe1}>Текущая серия</Text>
-                    <Text style={styles.timeframe1}>Текущая серия</Text>
-                    <Text style={styles.timeframe1}>Текущая серия</Text>
-                    <Text style={styles.timeframe1}>Текущая серия</Text>
+                <View style={navDropdown.containerSentences}>
+
+                    <View style={navDropdown.containerCourseData}>
+                      <View style={navDropdown.cardCourseData}>
+                        <View style={navDropdown.iconContainer}>
+
+                            <View style={navDropdown.cardMiddleProcenteCourse}>
+                                <View style={navDropdown.cardMiddleProcenteRow}>
+                                    <Text style={navDropdown.textProcenteCourse}>25</Text>
+                                    <Text style={navDropdown.textProcenteCourse1}>%</Text>
+                                </View>
+                            </View>
+                            <Image
+                                source={require('./images/other_images/sheet1.png')}
+                                style={navDropdown.courseSheet}
+                            />
+
+                        </View>
+                        <View style={navDropdown.dividerCourseData} />
+                        <View style={navDropdown.fluencyContainer}>
+                          <Text style={navDropdown.iconSubText}>УРОВЕНЬ</Text>
+                          <Text style={[navDropdown.fluencyText, globalCss.green]}>Intermediate</Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    <View style={navDropdown.containerSheet}>
+                      <View style={navDropdown.cardSheet}>
+                        
+                        <View style={navDropdown.sectionSheet2}>
+                          <Text style={navDropdown.header}>ВСЕГО УРОКОВ</Text>
+                          <Text style={navDropdown.numberSheetTxt}>35 / 295</Text>
+                        </View>
+
+                        <View style={navDropdown.sectionSheetBorder}>
+                            <View style={navDropdown.sectionSheet1}>
+                              <Text style={navDropdown.headerSheet}>ВИКТОРИНЫ</Text>
+                              <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>231</Text>
+                            </View>
+                            <View style={navDropdown.sectionSheet}>
+                              <Text style={navDropdown.headerSheet}>ОБЩЕЕ ВРЕМЯ</Text>
+                              <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>
+                                23 часа
+                                {/* 1 час */}
+                                {/* 2 часа */}
+                                {/* 5-20 часов */}
+                                {/* 21 час */}
+                                {/* 22-24 часа */}
+                                {/* 25 - ...(infinity) часов */}
+                              </Text>
+                            </View>
+                        </View>
+                                
+                        </View>
+                    </View>
+              
                 </View>
             </AnimatedNavTopMenu>
 
@@ -393,84 +454,84 @@ export default function CourseScreen({navigation}) {
             {/* First nav menu */}
             {/* aici */}
             <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"consecutiveDaysSeries"}>
-                <View style={styles.containerSentences}>
+                <View style={navDropdown.containerSentences}>
 
                     
 
                     
-                    <View style={styles.containerResultDataSce1}>
-                      <View style={styles.cardDataDayCurrent}>
+                    <View style={navDropdown.containerResultDataSce1}>
+                      <View style={navDropdown.cardDataDayCurrent}>
                           <Image
                               source={require('./images/other_images/fire.png')}
-                              style={styles.imageAnalyticsDay}
+                              style={navDropdown.imageAnalyticsDay}
                           />
-                          <Text style={styles.percentage1}>3 дня дней</Text>
-                          <Text style={styles.timeframe1}>Текущая серия</Text>
+                          <Text style={navDropdown.percentage1}>3 дня дней</Text>
+                          <Text style={navDropdown.timeframe1}>Текущая серия</Text>
                       </View>
 
-                      <View style={styles.cardDataDayLong}>
+                      <View style={navDropdown.cardDataDayLong}>
                           <Image
                               source={require('./images/other_images/deadline.png')}
-                              style={styles.imageAnalyticsDay}
+                              style={navDropdown.imageAnalyticsDay}
                           />
-                          <Text style={styles.percentage1}>3 дня дней</Text>
-                          <Text style={styles.timeframe1}>Самая длинная серия</Text>
+                          <Text style={navDropdown.percentage1}>3 дня дней</Text>
+                          <Text style={navDropdown.timeframe1}>Самая длинная серия</Text>
                       </View>
                     </View>
 
-                    <View style={styles.containerResultDataSce1}>
-                        <View style={styles.boxDay}>
-                            <Text style={styles.dayW}>Пн</Text>
+                    <View style={navDropdown.containerResultDataSce1}>
+                        <View style={navDropdown.boxDay}>
+                            <Text style={navDropdown.dayW}>Пн</Text>
                             <Image
                                 source={require('./images/other_images/check.png')}
-                                style={styles.imageAnalyticsDayCheck}
+                                style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
-                        <View style={styles.boxDay}>
-                            <Text style={styles.dayW}>Вт</Text>
+                        <View style={navDropdown.boxDay}>
+                            <Text style={navDropdown.dayW}>Вт</Text>
                             <Image
                                 source={require('./images/other_images/checkGry.png')}
-                                style={styles.imageAnalyticsDayCheck}
+                                style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
-                        <View style={styles.boxDay}>
-                            <Text style={styles.dayW}>Ср</Text>
+                        <View style={navDropdown.boxDay}>
+                            <Text style={navDropdown.dayW}>Ср</Text>
                             <Image
                                 source={require('./images/other_images/check.png')}
-                                style={styles.imageAnalyticsDayCheck}
+                                style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
-                        <View style={styles.boxDay}>
-                            <Text style={styles.dayW}>Чт</Text>
+                        <View style={navDropdown.boxDay}>
+                            <Text style={navDropdown.dayW}>Чт</Text>
                             <Image
                                 source={require('./images/other_images/check.png')}
-                                style={styles.imageAnalyticsDayCheck}
+                                style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
-                        <View style={styles.boxDay}>
-                            <Text style={styles.dayW}>Пт</Text>
+                        <View style={navDropdown.boxDay}>
+                            <Text style={navDropdown.dayW}>Пт</Text>
                             <Image
                                 source={require('./images/other_images/checkBlue.png')}
-                                style={styles.imageAnalyticsDayCheck}
+                                style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
-                        <View style={styles.boxDay}>
-                            <Text style={styles.dayW}>Сб</Text>
+                        <View style={navDropdown.boxDay}>
+                            <Text style={navDropdown.dayW}>Сб</Text>
                             <Image
                                 source={require('./images/other_images/checkBlue.png')}
-                                style={styles.imageAnalyticsDayCheck}
+                                style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
-                        <View style={styles.boxDay}>
-                            <Text style={styles.dayW}>Вс</Text>
+                        <View style={navDropdown.boxDay}>
+                            <Text style={navDropdown.dayW}>Вс</Text>
                             <Image
                                 source={require('./images/other_images/checkGry.png')}
-                                style={styles.imageAnalyticsDayCheck}
+                                style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                     </View>
                     <View style={globalCss.alignItemsCenter}>
-                        <Text style={styles.titleh7}>
+                        <Text style={navDropdown.titleh7}>
                             <FontAwesomeIcon icon={faFire} size={20} style={{ color: 'orange', marginRight: 7 }} /> 
                             You're on fire!
                         </Text>
@@ -498,11 +559,11 @@ export default function CourseScreen({navigation}) {
               heightsNav={heightsNav} 
               id={0}>
 
-                <View style={styles.containerSentences}>
-                  <Text style={styles.titleh5}>Фразы, которые ты освоил</Text>
-                  <Text style={styles.titleh6}>Твой Прогресс в Обучении!</Text>
+                <View style={navDropdown.containerSentences}>
+                  <Text style={navDropdown.titleh5}>Фразы, которые ты освоил</Text>
+                  <Text style={navDropdown.titleh6}>Твой Прогресс в Обучении!</Text>
 
-                  <View style={styles.rowBlockSentences}>
+                  <View style={navDropdown.rowBlockSentences}>
 
                     <AnimatedCircularProgress
                       size={160}
@@ -515,7 +576,7 @@ export default function CourseScreen({navigation}) {
                       {
                         (fill) => (
                           <>
-                            <Text style={styles.resultProgressBar}>
+                            <Text style={navDropdown.resultProgressBar}>
                               {`${Math.round(fill)}%`}
                             </Text>
                           </>
@@ -523,24 +584,24 @@ export default function CourseScreen({navigation}) {
                       }
                     </AnimatedCircularProgress>
 
-                          <View style={styles.containerResultDataSce}>
+                          <View style={navDropdown.containerResultDataSce}>
                             <TouchableOpacity 
-                              style={[styles.cardDataSce, isCardPressedSentences ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
+                              style={[navDropdown.cardDataSce, isCardPressedSentences ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
                               onPressIn={() => setIsCardSentences(true)}
                               onPressOut={() => setIsCardSentences(false)}
                               activeOpacity={1}
                             >
-                                <Text style={styles.percentage}>341</Text>
-                                <Text style={styles.timeframe}>Всего изучено из 5888</Text>
+                                <Text style={navDropdown.percentage}>341</Text>
+                                <Text style={navDropdown.timeframe}>Всего изучено из 5888</Text>
                             </TouchableOpacity>
                             <TouchableOpacity 
-                              style={[styles.cardDataSce, isCardPressedProcente ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
+                              style={[navDropdown.cardDataSce, isCardPressedProcente ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
                               onPressIn={() => setIsCardProgressProcente(true)}
                               onPressOut={() => setIsCardProgressProcente(false)}
                               activeOpacity={1}
                             >
-                                <Text style={styles.percentage}>44%</Text>
-                                <Text style={styles.timeframe}>Прогресс курса из 100%</Text>
+                                <Text style={navDropdown.percentage}>44%</Text>
+                                <Text style={navDropdown.timeframe}>Прогресс курса из 100%</Text>
                             </TouchableOpacity>
                           </View>
 
@@ -550,8 +611,7 @@ export default function CourseScreen({navigation}) {
             </AnimatedNavTopMenu>
 
             {/* Background for nav menu */}
-            <AnimatedNavTopBg navTopBgTranslateX={navTopBgTranslateX.current}
-                              navTopBgOpacity={navTopBgOpacity.current} toggleNavTopMenu={toggleNavTopMenu}/>
+            <AnimatedNavTopBg navTopBgTranslateX={navTopBgTranslateX.current} navTopBgOpacity={navTopBgOpacity.current} toggleNavTopMenu={toggleNavTopMenu}/>
 
             <View style={{...styles.infoCourseSubject, top: heightsNav.current.navTop}}>
                 <TouchableOpacity
@@ -614,11 +674,11 @@ export default function CourseScreen({navigation}) {
                         </View>
 
                         <View style={styles.infoDetExtraCat}>
-
+ 
 
                             <View style={styles.infoDetCatTitle}>
                                 <Image
-                                    source={require("./images/icon/book.png")}
+                                    source={require("./images/icon/online-education.png")}
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
@@ -632,7 +692,7 @@ export default function CourseScreen({navigation}) {
 
                             <View style={styles.infoDetCatTitle}>
                                 <Image
-                                    source={require("./images/icon/brain.png")}
+                                    source={require("./images/icon/test.png")}
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
@@ -645,7 +705,7 @@ export default function CourseScreen({navigation}) {
 
                             <View style={styles.infoDetCatTitle}>
                                 <Image
-                                    source={require("./images/icon/hourglass.png")}
+                                    source={require("./images/icon/limited-time.png")}
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
@@ -758,7 +818,7 @@ const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows})
     return (
         <Animated.View
             style={{
-                ...styles.navTopArrowView,
+                ...navDropdown.navTopArrowView,
                 transform: [{translateY: topPositionNavTopArrows[id]}]
             }}
         >
@@ -774,13 +834,13 @@ const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, he
     return (
         <Animated.View
             style={{
-                ...styles.navTopModal,
+                ...navDropdown.navTopModal,
                 top: -heightsNav.current.navTopMenu[id] + heightsNav.current.navTop,
                 transform: [{translateY: topPositionNavTopMenus[id]}]
             }}
             onLayout={event => heightsNav.current.navTopMenu[id] = Math.ceil(event.nativeEvent.layout.height + 1)}
         >
-            <View style={styles.navTopModalIn}>
+            <View style={navDropdown.navTopModalIn}>
                 {children}
             </View>
         </Animated.View>
@@ -791,7 +851,7 @@ const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggl
     return (
         <Animated.View
             style={{
-                ...styles.navTopBg,
+                ...navDropdown.navTopBg,
                 opacity: navTopBgOpacity,
                 transform: [{translateX: navTopBgTranslateX}]
             }}

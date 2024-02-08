@@ -72,6 +72,9 @@ const globalCss = StyleSheet.create({
   white: {
     color: "#ffff",
   },
+  green: {
+    color: "#7ec81a",
+  },
   blueLight: {
     color: "#8895bc",
   },
