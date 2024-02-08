@@ -247,4 +247,14 @@ export const stylesCourse_lesson = StyleSheet.create({
     fontStyle: "italic",
     textAlign: "center",
   },
+  finishedCourseLesson:{
+    backgroundColor: '#ffd700',
+    shadowColor: "#d4b200",
+  },
+  finishedCourseLessonIcon:{
+    color: 'white'
+  },
 });
+
+
+

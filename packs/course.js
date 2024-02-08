@@ -780,9 +780,8 @@ const handleButtonPress = () => {
                                                 marginLeft: `${getMarginLeftForCard(index)}%`,
                                             },
                                             styles.card,
-                                            pressedCards[item.id]
-                                                ? [styles.cardPressed, styles.bgGryPressed]
-                                                : styles.bgGry,
+                                            pressedCards[item.id] ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry,
+                                            item.finished ? styles.finishedCourseLesson : null,
                                         ]}
                                         onPress={() =>
                                             navigation.navigate("CourseLesson", {url: item.url})
@@ -792,17 +791,16 @@ const handleButtonPress = () => {
                                         activeOpacity={1}
                                     >
                                         <Text>
-                                            {item.finished ? "Этот урок завершен" : ""}
                                             <FontAwesomeIcon
                                                 icon={faStar}
                                                 size={30}
-                                                style={styles.iconFlash}
+                                                style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
                                             />
                                         </Text>
                                         {/*<Text>{item.title}</Text>*/}
-
                                     </TouchableOpacity>
                                 ))}
+
                             </View>
                         ))}
                     </View>
