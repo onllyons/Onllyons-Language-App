@@ -27,17 +27,23 @@ export default function GamesScreen({ navigation }) {
   };
 
   return (
-    <View style={[globalCss.row, styles.container]}>
-      {cardData.map((card) => (
-        <Card
-          key={card.id}
-          card={card}
-          isPressed={pressedCard === card.id}
-          onPress={() => handlePress(card.id)}
-          onPressIn={() => setPressedCard(card.id)}
-          onPressOut={() => setPressedCard(null)}
-        />
-      ))}
+    <View style={styles.container}>
+      <Text style={styles.titlePage}>
+        Quiz game
+      </Text>
+
+      <View style={[globalCss.row, styles.containerCards]}>
+        {cardData.map((card) => (
+          <Card
+            key={card.id}
+            card={card}
+            isPressed={pressedCard === card.id}
+            onPress={() => handlePress(card.id)}
+            onPressIn={() => setPressedCard(card.id)}
+            onPressOut={() => setPressedCard(null)}
+          />
+        ))}
+      </View>
     </View>
   );
 }
@@ -61,7 +67,17 @@ const Card = ({ card, isPressed, onPress, onPressIn, onPressOut }) => (
 const styles = StyleSheet.create({
   container:{
     padding: 20,
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  containerCards:{
+    backgroundColor: 'white',
+  },
+  titlePage:{
     marginTop: '13%',
+    fontSize: 30,
+    fontWeight: '600',
+    color: '#333333',
   },
   card: {
     flexBasis: '48%',

@@ -323,7 +323,7 @@ const handleButtonPress = () => {
                 </TouchableOpacity>
                 <TouchableOpacity style={globalCss.itemNavTabUser}  onPress={() => toggleNavTopMenu("courseLessonAnalytics")}>
                     <Image
-                        source={require("./images/other_images/nav-top/graduate.png")}
+                        source={require("./images/other_images/nav-top/mortarboard.png")}
                         style={globalCss.imageNavTop}
                     />
                     <Text style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["finished"] : 0}</Text>
@@ -692,7 +692,7 @@ const handleButtonPress = () => {
 
                             <View style={styles.infoDetCatTitle}>
                                 <Image
-                                    source={require("./images/icon/test.png")}
+                                    source={require("./images/icon/decision-making.png")}
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>

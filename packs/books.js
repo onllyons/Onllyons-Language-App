@@ -370,6 +370,7 @@ const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggl
 const styles = StyleSheet.create({
     container: {
         flex: 1, 
+        backgroundColor: 'white',
     },
     cell: {
         marginRight: '8%',
@@ -377,7 +378,7 @@ const styles = StyleSheet.create({
     card: {
         width: '100%',
         marginBottom: '0%',
-        borderRadius: 7,
+        borderRadius: 12,
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
