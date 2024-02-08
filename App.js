@@ -44,6 +44,7 @@ import {
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import React from "react";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
+import Test_buttons_screen from "./packs/test_buttons_screen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -347,6 +348,14 @@ function AppStack() {
                 name="BooksReading"
                 component={BooksReading}
                 options={{headerShown: false}}
+            />
+
+            {/* -------------------------- */}
+
+            <Stack.Screen
+                name="Test_buttons_screen"
+                component={Test_buttons_screen}
+                options={{title: "Test buttons"}}
             />
         </Stack.Navigator>
     );

@@ -111,7 +111,6 @@ export default function CourseScreen({navigation}) {
         }
     };
 
-
     useMemo(() => {
         setLoader(true)
 
@@ -195,7 +194,6 @@ export default function CourseScreen({navigation}) {
         navTop: 100,
         navTopMenu: {}
     });
-
 
     // Nav top Menu
     // For animation slide
@@ -566,25 +564,18 @@ export default function CourseScreen({navigation}) {
                     <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
                 </TouchableOpacity>
 
-                <DefaultButtonDown style={{...styles.infoCourseBtn, ...globalCss.buttonGreen}}
-                                   onPress={toggleModal}>
+                <TouchableOpacity
+                    style={[styles.infoCourseBtn, globalCss.buttonGreen]} // isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] :
+                    // onPressIn={() => setIsCardPressedCourseDetails(true)}
+                    // onPressOut={() => setIsCardPressedCourseDetails(false)}
+                    onPress={toggleModal}
+                    activeOpacity={1}
+                >
                     <Image
                         source={require('./images/icon/infoCategory.png')}
                         style={styles.infoCategoryImg}
                     />
-                </DefaultButtonDown>
-                {/*<TouchableOpacity*/}
-                {/*    style={[styles.infoCourseBtn, isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}*/}
-                {/*    onPressIn={() => setIsCardPressedCourseDetails(true)}*/}
-                {/*    onPressOut={() => setIsCardPressedCourseDetails(false)}*/}
-                {/*    onPress={toggleModal}*/}
-                {/*    activeOpacity={1}*/}
-                {/*>*/}
-                {/*    <Image*/}
-                {/*        source={require('./images/icon/infoCategory.png')}*/}
-                {/*        style={styles.infoCategoryImg}*/}
-                {/*    />*/}
-                {/*</TouchableOpacity>*/}
+                </TouchableOpacity>
             </View>
 
             <Modal
@@ -678,6 +669,9 @@ export default function CourseScreen({navigation}) {
                 onLayout={(e) => startLayoutY.current = e.nativeEvent.layout.y}
             >
                 <View style={styles.container}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Test_buttons_screen")}>
+                        <Text>Test animated buttons</Text>
+                    </TouchableOpacity>
                     <View style={styles.contentFlashCards}>
 
                         {/*<TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
@@ -719,24 +713,6 @@ export default function CourseScreen({navigation}) {
 
 
                                 {data[category].items.map((item, index) => (
-                                    // <DefaultButtonDown style={[
-                                    //     {
-                                    //         marginLeft: `${getMarginLeftForCard(index)}%`,
-                                    //     },
-                                    //     styles.card,
-                                    //     pressedCards[item.id]
-                                    //         ? [styles.cardPressed, styles.bgGryPressed]
-                                    //         : styles.bgGry,
-                                    // ]} onPress={() => navigation.navigate("CourseLesson", {url: item.url})}>
-                                    //     <Text>
-                                    //         <FontAwesomeIcon
-                                    //             icon={faStar}
-                                    //             size={18}
-                                    //             style={styles.iconFlash}
-                                    //         />
-                                    //     </Text>
-                                    //     <Text>{item.title}</Text>
-                                    // </DefaultButtonDown>
                                     <TouchableOpacity
                                         key={item.id}
                                         style={[
