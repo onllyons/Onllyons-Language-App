@@ -286,8 +286,6 @@ export default function CourseScreen({navigation}) {
         }
     }
 
-    console.log(heightsNav)
-
     return (
         <View>
             <Loader visible={loader}/>
@@ -328,7 +326,7 @@ export default function CourseScreen({navigation}) {
                         source={require("./images/other_images/nav-top/flame.png")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text style={globalCss.dataNavTop}>4</Text>
+                    <Text style={globalCss.dataNavTop}>{seriesData.current.currentSeries ? seriesData.current.currentSeries : 0}</Text>
 
                     <AnimatedNavTopArrow id={"consecutiveDaysSeries"} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
@@ -337,7 +335,7 @@ export default function CourseScreen({navigation}) {
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
-                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu(0)}>
+                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("phrasesModal")}>
                     <Image
                         source={require("./images/other_images/nav-top/feather.png")}
                         style={globalCss.imageNavTop}
@@ -345,7 +343,7 @@ export default function CourseScreen({navigation}) {
                     <Text
                         style={globalCss.dataNavTop}>{getCategoryData("phrasesCompleted")}</Text>
 
-                    <AnimatedNavTopArrow id={0} topPositionNavTopArrows={topPositionNavTopArrows}>
+                    <AnimatedNavTopArrow id={"phrasesModal"} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
                             style={navDropdown.navTopArrow}
@@ -448,7 +446,7 @@ export default function CourseScreen({navigation}) {
                                 source={require('./images/other_images/fire.png')}
                                 style={navDropdown.imageAnalyticsDay}
                             />
-                            <Text style={navDropdown.percentage1}>{seriesData.current.currentSeries} {getDayWord(seriesData.current.currentSeries)}</Text>
+                            <Text style={navDropdown.percentage1}>{seriesData.current.currentSeries ? seriesData.current.currentSeries : 0} {getDayWord(seriesData.current.currentSeries)}</Text>
                             <Text style={navDropdown.timeframe1}>Текущая серия</Text>
                         </View>
 
@@ -457,7 +455,7 @@ export default function CourseScreen({navigation}) {
                                 source={require('./images/other_images/deadline.png')}
                                 style={navDropdown.imageAnalyticsDay}
                             />
-                            <Text style={navDropdown.percentage1}>{seriesData.current.maxSeries} {getDayWord(seriesData.current.maxSeries)}</Text>
+                            <Text style={navDropdown.percentage1}>{seriesData.current.maxSeries ? seriesData.current.maxSeries : 0} {getDayWord(seriesData.current.maxSeries)}</Text>
                             <Text style={navDropdown.timeframe1}>Самая длинная серия</Text>
                         </View>
                     </View>
@@ -540,7 +538,7 @@ export default function CourseScreen({navigation}) {
             <AnimatedNavTopMenu
                 topPositionNavTopMenus={topPositionNavTopMenus}
                 heightsNav={heightsNav}
-                id={0}
+                id={"phrasesModal"}
                 navTopMenuCallbacks={navTopMenuCallbacks}
                 onOpen={() => {
                     if (phrasesPercent.category !== currentCategory.url) {
