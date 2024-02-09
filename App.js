@@ -1,5 +1,5 @@
 import {StatusBar} from "expo-status-bar";
-import {Image, Text, View, Animated} from "react-native";
+import {Image} from "react-native";
 import {NavigationContainer, useNavigation} from "@react-navigation/native";
 import {
     createStackNavigator,
@@ -39,12 +39,10 @@ import UserSubscriptionManage from "./packs/user-profile/userSubscriptionManage"
 import {
     AuthProvider,
     isAuthenticated,
-    setSuccessCallback,
 } from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import React from "react";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
-import Test_buttons_screen from "./packs/test_buttons_screen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -170,6 +168,7 @@ function MainTabNavigator() {
                 tabBarStyle: {
                     backgroundColor: "#ffffff",
                     height: '11%',
+                    minHeight: 90,
                     paddingTop: 20
                 }
             })}
@@ -346,14 +345,6 @@ function AppStack() {
                 name="BooksReading"
                 component={BooksReading}
                 options={{headerShown: false}}
-            />
-
-            {/* -------------------------- */}
-
-            <Stack.Screen
-                name="Test_buttons_screen"
-                component={Test_buttons_screen}
-                options={{title: "Test buttons"}}
             />
         </Stack.Navigator>
     );

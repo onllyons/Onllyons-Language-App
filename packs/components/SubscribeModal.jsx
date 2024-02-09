@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     titleDetLessonCatSubject: {
         fontSize: 17.5,
         color: '#212121',
-        fontWeight: '500',
+        fontWeight: "500",
         textTransform: 'uppercase',
     },
     titleDetLessonCat: {

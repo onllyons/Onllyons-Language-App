@@ -1,10 +1,10 @@
-import {Animated, Pressable, StyleSheet, TouchableOpacity, View} from "react-native";
-import React, {useRef, useState} from "react";
+import {Animated, Pressable, TouchableOpacity, View, ViewStyle} from "react-native";
+import React, {useEffect, useRef, useState} from "react";
 
 type AnimatedButtonShadowProps = {
     children: React.ReactNode,
-    styleContainer?: object,
-    styleContainerIn?: object,
+    styleContainer?: ViewStyle,
+    styleContainerIn?: ViewStyle,
     styleButton?: object,
     type?: "touchable" | "default",
     durationIn?: number, // Milliseconds start animation
@@ -18,8 +18,15 @@ type AnimatedButtonShadowProps = {
     shadowHeightAdditional?: number,
     shadowPositionYAdditional?: number,
     shadowPositionXAdditional?: number,
+
     shadowBorderRadius?: number,
+    shadowTopLeftBorderRadius?: number,
+    shadowTopRightBorderRadius?: number,
+    shadowBottomLeftBorderRadius?: number,
+    shadowBottomRightBorderRadius?: number,
+
     shadowColor?: string,
+    shadowDisplayAnimate?: "none" | "slide",
 
     onPress?: () => void,
     onPressIn?: () => void,
@@ -43,8 +50,15 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     shadowHeightAdditional = 0,
     shadowPositionYAdditional = 0,
     shadowPositionXAdditional = 0,
+
     shadowBorderRadius = 14,
+    shadowTopLeftBorderRadius,
+    shadowTopRightBorderRadius,
+    shadowBottomLeftBorderRadius,
+    shadowBottomRightBorderRadius,
+
     shadowColor = "#636363",
+    shadowDisplayAnimate = "none",
 
     onPress,
     onPressIn,
@@ -52,8 +66,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
 }) => {
     const transitionContainerY = useRef(new Animated.Value(0));
     const transitionContainerX = useRef(new Animated.Value(0));
-    const transitionShadowY = useRef(new Animated.Value(moveByY));
-    const transitionShadowX = useRef(new Animated.Value(moveByX));
+    const transitionShadowY = useRef(new Animated.Value(shadowDisplayAnimate === "slide" ? 0 : moveByY));
+    const transitionShadowX = useRef(new Animated.Value(shadowDisplayAnimate === "slide" ? 0 : moveByX));
     const opacityShadow = useRef(new Animated.Value(1));
     const [buttonData, setButtonData] = useState({
         height: 0,
@@ -126,6 +140,23 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
         ]).start()
     }
 
+    useEffect(() => {
+        if (buttonData.width !== 0 && shadowDisplayAnimate === "slide") {
+            Animated.parallel([
+                moveByY !== 0 && Animated.timing(transitionShadowY.current, {
+                    toValue: moveByY,
+                    duration: durationOut,
+                    useNativeDriver: true,
+                }),
+                moveByX !== 0 && Animated.timing(transitionShadowX.current, {
+                    toValue: moveByX,
+                    duration: durationOut,
+                    useNativeDriver: true,
+                })
+            ]).start()
+        }
+    }, [buttonData])
+
     let ButtonComponent = null
 
     if (type === "touchable") ButtonComponent = TouchableOpacity
@@ -150,7 +181,10 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                             width: buttonData.width + shadowWidthAdditional,
                             height: buttonData.height + shadowHeightAdditional,
                             backgroundColor: shadowColor,
-                            borderRadius: shadowBorderRadius,
+                            borderTopLeftRadius: typeof shadowTopLeftBorderRadius !== "undefined" ? shadowTopLeftBorderRadius : shadowBorderRadius,
+                            borderTopRightRadius: typeof shadowTopRightBorderRadius !== "undefined" ? shadowTopRightBorderRadius : shadowBorderRadius,
+                            borderBottomLeftRadius: typeof shadowBottomLeftBorderRadius !== "undefined" ? shadowBottomLeftBorderRadius : shadowBorderRadius,
+                            borderBottomRightRadius: typeof shadowBottomRightBorderRadius !== "undefined" ? shadowBottomRightBorderRadius : shadowBorderRadius,
                             opacity: opacityShadow.current,
 
                             transform: [
@@ -163,12 +197,16 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                     <ButtonComponent
                         activeOpacity={activeOpacity}
                         style={styleButton}
-                        onLayout={(e) => setButtonData({
-                            height: e.nativeEvent.layout.height,
-                            width: e.nativeEvent.layout.width,
-                            x: e.nativeEvent.layout.x,
-                            y: e.nativeEvent.layout.y
-                        })}
+                        onLayout={(e) => {
+                            if (buttonData.height === 0) {
+                                setButtonData({
+                                    height: e.nativeEvent.layout.height,
+                                    width: e.nativeEvent.layout.width,
+                                    x: e.nativeEvent.layout.x,
+                                    y: e.nativeEvent.layout.y
+                                })
+                            }
+                        }}
                         onPressIn={() => {
                             handlePressIn()
 

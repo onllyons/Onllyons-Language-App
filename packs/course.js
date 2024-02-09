@@ -2,9 +2,8 @@ import React, {useState, useRef, useEffect, useMemo} from "react";
 import {
     View,
     Text,
-    StyleSheet,
     Image,
-    Alert, 
+    Alert,
     ScrollView,
     TouchableOpacity, Animated, Dimensions, Pressable
 } from "react-native";
@@ -21,92 +20,68 @@ import {stylesCourse_lesson as styles} from "./css/course_main.styles";
 import {stylesnav_dropdown as navDropdown} from "./css/navDropDownTop.styles";
 
 // progress bar
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
 import {SubscribeModal} from "./components/SubscribeModal";
 import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
+import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
+import {useNavigation} from "@react-navigation/native";
+import {getDayWord, getHourWord} from "./utils/Utls";
 
 export default function CourseScreen({navigation}) {
-    const [pressedCards, setPressedCards] = useState({});
     const [data, setData] = useState(null);
-    const [loadedCategories, setLoadedCategories] = useState([]);
+    const [showDataToIndex, setShowDataToIndex] = useState(3)
     const [currentCategory, setCurrentCategory] = useState({
         name: "",
-        url: ""
+        url: "",
+        subject: 1
     });
+    const [phrasesPercent, setPhrasesPercent] = useState({
+        category: "",
+        percent: 0
+    })
     const scrollViewRef = useRef(null);
 
     const startLayoutY = useRef(0)
-    const categoriesPos = useRef({})
-
-    const [isCardPressedCourseTitle, setIsCardPressedCourseTitle] = useState(false);
+    const categoriesPos = useRef([])
 
     const categoriesData = useRef({})
+    const seriesData = useRef({})
+    const generalInfo = useRef({})
 
     const [loader, setLoader] = useState(false)
 
-    const [isCardPressedSentences, setIsCardSentences] = useState(false);
-    const [isCardPressedProcente, setIsCardProgressProcente] = useState(false);
-
-    // анимация для начального верхнего изображения
-    const moveAnimation = useRef(new Animated.Value(0)).current;
-    const imageYPos = useRef(new Animated.Value(0)).current;
-    useEffect(() => {
-        Animated.loop( // Repetă animația
-            Animated.sequence([ // Creează o secvență de animații
-                Animated.timing(moveAnimation, {
-                    toValue: -10, // Mișcă în sus cu 10 unități
-                    duration: 1000, // Durata animației în milisecunde
-                    useNativeDriver: true, // Folosește driverul nativ pentru performanță îmbunătățită
-                }),
-                Animated.timing(moveAnimation, {
-                    toValue: 0, // Mișcă înapoi la poziția inițială
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-            ]),
-        ).start();
-    }, []);
-    const startImageAnimation = () => {
-        Animated.loop(
-            Animated.sequence([
-                Animated.timing(imageYPos, {
-                    toValue: 10, // Mișcă imaginea în jos cu 10 unități (nu pixeli, deoarece React Native folosește unități de densitate independentă)
-                    duration: 1000, // Durata animației în milisecunde
-                    useNativeDriver: true, // Folosește driver-ul nativ pentru performanță îmbunătățită
-                }),
-                Animated.timing(imageYPos, {
-                    toValue: -10, // Mișcă imaginea înapoi în sus
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-            ]),
-        ).start();
-    };
-    // etd анимация для начального верхнего изображения
+    const skipLoaded = useRef(true)
 
     const handleScroll = (nativeEvent) => {
         let currCategoryOnScroll = currentCategory
+        let currShowToDataIndex = 0
 
-        for (const category of Object.keys(categoriesPos.current)) {
-            if (nativeEvent.contentOffset.y >= categoriesPos.current[category]) {
+        for (const value of categoriesPos.current) {
+            if (nativeEvent.contentOffset.y >= value[1]) {
                 currCategoryOnScroll = {
-                    name: data[category].categoryTitle,
-                    url: category
+                    name: data[value[0]].categoryTitle.trim(),
+                    url: value[0],
+                    subject: value[2]
                 }
+
+                currShowToDataIndex = value[2]
+
+                break
             }
         }
 
-        if (currCategoryOnScroll.name !== currentCategory.name) {
-            setCurrentCategory(currCategoryOnScroll)
-        }
-
-        // Funcție pentru a verifica dacă utilizatorul a ajuns aproape de sfârșitul listei
-        if (nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y >= nativeEvent.contentSize.height - 150) {
-            loadNextCategory();
+        if (currCategoryOnScroll.name !== currentCategory.name) setCurrentCategory(currCategoryOnScroll)
+        if (currShowToDataIndex >= showDataToIndex) {
+            if (!skipLoaded.current) {
+                setShowDataToIndex(Math.min(Object.keys(data).length, currShowToDataIndex + 3))
+                skipLoaded.current = true
+            } else {
+                skipLoaded.current = false
+            }
         }
     };
 
@@ -122,30 +97,22 @@ export default function CourseScreen({navigation}) {
                 const groupedData = groupByCategory(data.data);
                 setData(groupedData);
 
-                const initialCategories = Object.keys(groupedData).slice(0, 1);
-                setLoadedCategories(initialCategories);
+                const firstCategory = Object.keys(groupedData)[0];
 
                 categoriesData.current = data.categoriesData
+                seriesData.current = data.seriesData
+                generalInfo.current = data.generalInfo
 
-                if (initialCategories.length > 0) {
-                    setCurrentCategory({
-                        name: groupedData[initialCategories[0]].categoryTitle,
-                        url: initialCategories[0]
-                    });
-                }
-            })
-            .catch((err) => {
-                if (typeof err === "object") {
-                    if (!err.tokensError) {
-                        navigation.goBack()
-                    }
-                }
+                setCurrentCategory({
+                    name: groupedData[firstCategory].categoryTitle.trim(),
+                    url: firstCategory,
+                    subject: 1
+                });
             })
             .finally(() => {
                 setTimeout(() => setLoader(false), 1)
             })
     }, []);
-
 
     // Funcție pentru gruparea datelor pe categorii
     const groupByCategory = (data) => {
@@ -165,33 +132,9 @@ export default function CourseScreen({navigation}) {
         }, {});
     };
 
-
-    // Funcție pentru încărcarea următoarei categorii
-    const loadNextCategory = () => {
-        const allCategories = Object.keys(data);
-        const nextIndex = loadedCategories.length;
-
-        if (nextIndex < allCategories.length) {
-            setLoadedCategories([...loadedCategories, allCategories[nextIndex]]);
-        }
-    }
-
-    const onPressIn = (id) => {
-        setPressedCards((prevState) => ({...prevState, [id]: true}));
-    };
-
-    const onPressOut = (id) => {
-        setPressedCards((prevState) => ({...prevState, [id]: false}));
-    };
-
-    const getMarginLeftForCard = (index) => {
-        const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
-        return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
-    };
-
-    
-
     // Nav top Menu
+
+    const navTopMenuCallbacks = useRef({}).current
 
     const heightsNav = useRef({
         navTop: 100,
@@ -212,14 +155,22 @@ export default function CourseScreen({navigation}) {
     const navTopBgTranslateX = useRef(new Animated.Value(windowWidth))
     const navTopBgOpacity = useRef(new Animated.Value(0))
 
+    // Bug on android
+    const [firstOpenMenu, setFirstOpenMenu] = useState(false)
+
     // Open/close nav menu by id
     const toggleNavTopMenu = (id = null) => {
+        if (!firstOpenMenu) setFirstOpenMenu(true)
+
         if (id === null) {
             if (openedNavMenu.current !== null) id = openedNavMenu.current
             else return
         }
 
         if (openedNavMenu.current !== null && openedNavMenu.current !== id) {
+            navTopMenuCallbacks[openedNavMenu.current].onClose()
+            navTopMenuCallbacks[id].onOpen()
+
             Animated.parallel([
                 Animated.spring(topPositionNavTopMenus[openedNavMenu.current], {
                     toValue: 0,
@@ -234,7 +185,7 @@ export default function CourseScreen({navigation}) {
                     useNativeDriver: true,
                 }),
                 Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: heightsNav.current.navTopMenu[id] - 1,
+                    toValue: heightsNav.current.navTopMenu[id] - 1 + heightsNav.current.navTop,
                     duration: 500,
                     bounciness: 0,
                     useNativeDriver: true,
@@ -247,9 +198,12 @@ export default function CourseScreen({navigation}) {
                 }),
             ]).start();
         } else {
+            if (openedNavMenu.current === id) navTopMenuCallbacks[id].onClose()
+            else navTopMenuCallbacks[id].onOpen()
+
             Animated.parallel([
                 Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 1,
+                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 1 + heightsNav.current.navTop,
                     bounciness: 0,
                     duration: 500,
                     useNativeDriver: true,
@@ -289,18 +243,50 @@ export default function CourseScreen({navigation}) {
         setModalVisible(!isModalVisible);
     };
 
-const handleButtonPress = () => {
-  // Afiseaza alerta cu mesajul dorit în limba rusă
-  Alert.alert(
-    "Новые языки скоро будут добавлены",
-    "В скором времени будут добавлены новые языки",
-    [
-      { text: "OK" }
-    ],
-    { cancelable: false }
-  );
+    const handleButtonPress = () => {
+        // Afiseaza alerta cu mesajul dorit în limba rusă
+        Alert.alert(
+            "Новые языки скоро будут добавлены",
+            "В скором времени будут добавлены новые языки",
+            [
+                {text: "OK"}
+            ],
+            {cancelable: false}
+        );
 
-};
+    };
+
+    const getCategoryData = (value, undefinedValue = 0) => {
+        return categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url][value] : undefinedValue
+    }
+
+    const getImgByVisit = day => {
+        if (!seriesData.current["daysVisited"]) return require("./images/other_images/checkGry.png")
+
+        return seriesData.current["daysVisited"][day]["visited"] ? (seriesData.current["daysVisited"][day]["visitedMore"] ? require("./images/other_images/checkBlue.png") : require("./images/other_images/check.png")) : require("./images/other_images/checkGry.png")
+    }
+
+    const SyllableGroup = () => {
+        switch (seriesData.current["syllableGroup"]) {
+            case 3:
+                return (
+                    <Text>Группа 3</Text>
+                )
+
+            case 2:
+                return (
+                    <Text>Группа 2</Text>
+                )
+
+            case 1:
+            default:
+                return (
+                    <Text>Группа 1</Text>
+                )
+        }
+    }
+
+    console.log(heightsNav)
 
     return (
         <View>
@@ -321,12 +307,14 @@ const handleButtonPress = () => {
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
-                <TouchableOpacity style={globalCss.itemNavTabUser}  onPress={() => toggleNavTopMenu("courseLessonAnalytics")}>
+                <TouchableOpacity style={globalCss.itemNavTabUser}
+                                  onPress={() => toggleNavTopMenu("courseLessonAnalytics")}>
                     <Image
                         source={require("./images/other_images/nav-top/mortarboard.png")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["finished"] : 0}</Text>
+                    <Text
+                        style={globalCss.dataNavTop}>{getCategoryData("finished")}</Text>
                     <AnimatedNavTopArrow id={"courseLessonAnalytics"} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
@@ -334,7 +322,8 @@ const handleButtonPress = () => {
                         />
                     </AnimatedNavTopArrow>
                 </TouchableOpacity>
-                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("consecutiveDaysSeries")}>
+                <TouchableOpacity style={globalCss.itemNavTabUser}
+                                  onPress={() => toggleNavTopMenu("consecutiveDaysSeries")}>
                     <Image
                         source={require("./images/other_images/nav-top/flame.png")}
                         style={globalCss.imageNavTop}
@@ -353,8 +342,9 @@ const handleButtonPress = () => {
                         source={require("./images/other_images/nav-top/feather.png")}
                         style={globalCss.imageNavTop}
                     />
-                    <Text style={globalCss.dataNavTop}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["phrasesCompleted"] : 0}</Text>
- 
+                    <Text
+                        style={globalCss.dataNavTop}>{getCategoryData("phrasesCompleted")}</Text>
+
                     <AnimatedNavTopArrow id={0} topPositionNavTopArrows={topPositionNavTopArrows}>
                         <Image
                             source={require("./images/icon/arrowTop.png")}
@@ -364,7 +354,7 @@ const handleButtonPress = () => {
                 </TouchableOpacity>
             </View>
 
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"language"}>
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"language"} navTopMenuCallbacks={navTopMenuCallbacks}>
                 <View style={navDropdown.containerSentences}>
                     <View style={navDropdown.rowContainerLanguageSelect}>
                         <TouchableOpacity style={navDropdown.containerLanguageSelect}>
@@ -389,154 +379,147 @@ const handleButtonPress = () => {
                 </View>
             </AnimatedNavTopMenu>
 
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"courseLessonAnalytics"}>
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav}
+                                id={"courseLessonAnalytics"} navTopMenuCallbacks={navTopMenuCallbacks}>
                 <View style={navDropdown.containerSentences}>
 
                     <View style={navDropdown.containerCourseData}>
-                      <View style={navDropdown.cardCourseData}>
-                        <View style={navDropdown.iconContainer}>
+                        <View style={navDropdown.cardCourseData}>
+                            <View style={navDropdown.iconContainer}>
 
-                            <View style={navDropdown.cardMiddleProcenteCourse}>
-                                <View style={navDropdown.cardMiddleProcenteRow}>
-                                    <Text style={navDropdown.textProcenteCourse}>25</Text>
-                                    <Text style={navDropdown.textProcenteCourse1}>%</Text>
+                                <View style={navDropdown.cardMiddleProcenteCourse}>
+                                    <View style={navDropdown.cardMiddleProcenteRow}>
+                                        <Text style={navDropdown.textProcenteCourse}>{generalInfo.current.courses ? Math.floor(generalInfo.current.coursesCompleted / generalInfo.current.courses * 100) : 0}</Text>
+                                        <Text style={navDropdown.textProcenteCourse1}>%</Text>
+                                    </View>
                                 </View>
-                            </View>
-                            <Image
-                                source={require('./images/other_images/sheet1.png')}
-                                style={navDropdown.courseSheet}
-                            />
+                                <Image
+                                    source={require('./images/other_images/sheet1.png')}
+                                    style={navDropdown.courseSheet}
+                                />
 
+                            </View>
+                            <View style={navDropdown.dividerCourseData}/>
+                            <View style={navDropdown.fluencyContainer}>
+                                <Text style={navDropdown.iconSubText}>УРОВЕНЬ</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{generalInfo.current.level ? generalInfo.current.level : "Beginner"}</Text>
+                            </View>
                         </View>
-                        <View style={navDropdown.dividerCourseData} />
-                        <View style={navDropdown.fluencyContainer}>
-                          <Text style={navDropdown.iconSubText}>УРОВЕНЬ</Text>
-                          <Text style={[navDropdown.fluencyText, globalCss.green]}>Intermediate</Text>
-                        </View>
-                      </View>
                     </View>
 
                     <View style={navDropdown.containerSheet}>
-                      <View style={navDropdown.cardSheet}>
-                        
-                        <View style={navDropdown.sectionSheet2}>
-                          <Text style={navDropdown.header}>ВСЕГО УРОКОВ</Text>
-                          <Text style={navDropdown.numberSheetTxt}>35 / 295</Text>
-                        </View>
+                        <View style={navDropdown.cardSheet}>
 
-                        <View style={navDropdown.sectionSheetBorder}>
-                            <View style={navDropdown.sectionSheet1}>
-                              <Text style={navDropdown.headerSheet}>ВИКТОРИНЫ</Text>
-                              <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>231</Text>
+                            <View style={navDropdown.sectionSheet2}>
+                                <Text style={navDropdown.header}>ВСЕГО УРОКОВ</Text>
+                                <Text style={navDropdown.numberSheetTxt}>{generalInfo.current.courses ? `${generalInfo.current.coursesCompleted} / ${generalInfo.current.courses}` : "0 / 0"}</Text>
                             </View>
-                            <View style={navDropdown.sectionSheet}>
-                              <Text style={navDropdown.headerSheet}>ОБЩЕЕ ВРЕМЯ</Text>
-                              <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>
-                                23 часа
-                                {/* 1 час */}
-                                {/* 2 часа */}
-                                {/* 5-20 часов */}
-                                {/* 21 час */}
-                                {/* 22-24 часа */}
-                                {/* 25 - ...(infinity) часов */}
-                              </Text>
+
+                            <View style={navDropdown.sectionSheetBorder}>
+                                <View style={navDropdown.sectionSheet1}>
+                                    <Text style={navDropdown.headerSheet}>ВИКТОРИНЫ</Text>
+                                    <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>{generalInfo.current.quizzes ? `${generalInfo.current.quizzesCompleted} / ${generalInfo.current.quizzes}` : "0 / 0"}</Text>
+                                </View>
+                                <View style={navDropdown.sectionSheet}>
+                                    <Text style={navDropdown.headerSheet}>ОБЩЕЕ ВРЕМЯ</Text>
+                                    <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>
+                                        {generalInfo.current.coursesCompletedHours ? Math.floor(generalInfo.current.coursesCompletedHours) : 0} {getHourWord(generalInfo.current.coursesCompletedHours)}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
-                                
+
                         </View>
                     </View>
-              
+
                 </View>
             </AnimatedNavTopMenu>
 
 
-
             {/* First nav menu */}
             {/* aici */}
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"consecutiveDaysSeries"}>
+            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav}
+                                id={"consecutiveDaysSeries"} navTopMenuCallbacks={navTopMenuCallbacks}>
                 <View style={navDropdown.containerSentences}>
 
-                    
 
-                    
                     <View style={navDropdown.containerResultDataSce1}>
-                      <View style={navDropdown.cardDataDayCurrent}>
-                          <Image
-                              source={require('./images/other_images/fire.png')}
-                              style={navDropdown.imageAnalyticsDay}
-                          />
-                          <Text style={navDropdown.percentage1}>3 дня дней</Text>
-                          <Text style={navDropdown.timeframe1}>Текущая серия</Text>
-                      </View>
+                        <View style={navDropdown.cardDataDayCurrent}>
+                            <Image
+                                source={require('./images/other_images/fire.png')}
+                                style={navDropdown.imageAnalyticsDay}
+                            />
+                            <Text style={navDropdown.percentage1}>{seriesData.current.currentSeries} {getDayWord(seriesData.current.currentSeries)}</Text>
+                            <Text style={navDropdown.timeframe1}>Текущая серия</Text>
+                        </View>
 
-                      <View style={navDropdown.cardDataDayLong}>
-                          <Image
-                              source={require('./images/other_images/deadline.png')}
-                              style={navDropdown.imageAnalyticsDay}
-                          />
-                          <Text style={navDropdown.percentage1}>3 дня дней</Text>
-                          <Text style={navDropdown.timeframe1}>Самая длинная серия</Text>
-                      </View>
+                        <View style={navDropdown.cardDataDayLong}>
+                            <Image
+                                source={require('./images/other_images/deadline.png')}
+                                style={navDropdown.imageAnalyticsDay}
+                            />
+                            <Text style={navDropdown.percentage1}>{seriesData.current.maxSeries} {getDayWord(seriesData.current.maxSeries)}</Text>
+                            <Text style={navDropdown.timeframe1}>Самая длинная серия</Text>
+                        </View>
                     </View>
 
                     <View style={navDropdown.containerResultDataSce1}>
                         <View style={navDropdown.boxDay}>
                             <Text style={navDropdown.dayW}>Пн</Text>
                             <Image
-                                source={require('./images/other_images/check.png')}
+                                source={getImgByVisit("Mon")}
                                 style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                         <View style={navDropdown.boxDay}>
                             <Text style={navDropdown.dayW}>Вт</Text>
                             <Image
-                                source={require('./images/other_images/checkGry.png')}
+                                source={getImgByVisit("Tue")}
                                 style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                         <View style={navDropdown.boxDay}>
                             <Text style={navDropdown.dayW}>Ср</Text>
                             <Image
-                                source={require('./images/other_images/check.png')}
+                                source={getImgByVisit("Wed")}
                                 style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                         <View style={navDropdown.boxDay}>
                             <Text style={navDropdown.dayW}>Чт</Text>
                             <Image
-                                source={require('./images/other_images/check.png')}
+                                source={getImgByVisit("Thu")}
                                 style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                         <View style={navDropdown.boxDay}>
                             <Text style={navDropdown.dayW}>Пт</Text>
                             <Image
-                                source={require('./images/other_images/checkBlue.png')}
+                                source={getImgByVisit("Fri")}
                                 style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                         <View style={navDropdown.boxDay}>
                             <Text style={navDropdown.dayW}>Сб</Text>
                             <Image
-                                source={require('./images/other_images/checkBlue.png')}
+                                source={getImgByVisit("Sat")}
                                 style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                         <View style={navDropdown.boxDay}>
                             <Text style={navDropdown.dayW}>Вс</Text>
                             <Image
-                                source={require('./images/other_images/checkGry.png')}
+                                source={getImgByVisit("Sun")}
                                 style={navDropdown.imageAnalyticsDayCheck}
                             />
                         </View>
                     </View>
                     <View style={globalCss.alignItemsCenter}>
                         <Text style={navDropdown.titleh7}>
-                            <FontAwesomeIcon icon={faFire} size={20} style={{ color: 'orange', marginRight: 7 }} /> 
-                            You're on fire!
+                            <FontAwesomeIcon icon={faFire} size={20} style={{color: 'orange', marginRight: 7}}/>
+                            <SyllableGroup/>
                         </Text>
                     </View>
-                      
+
 
                     {/* way to go! */}
                     {/* Nice work! */}
@@ -554,88 +537,102 @@ const handleButtonPress = () => {
             </AnimatedNavTopMenu>
 
             {/* Second nav menu */}
-            <AnimatedNavTopMenu 
-              topPositionNavTopMenus={topPositionNavTopMenus} 
-              heightsNav={heightsNav} 
-              id={0}>
+            <AnimatedNavTopMenu
+                topPositionNavTopMenus={topPositionNavTopMenus}
+                heightsNav={heightsNav}
+                id={0}
+                navTopMenuCallbacks={navTopMenuCallbacks}
+                onOpen={() => {
+                    if (phrasesPercent.category !== currentCategory.url) {
+                        setPhrasesPercent({
+                            category: currentCategory.url,
+                            percent: Math.floor(getCategoryData("phrasesCompleted") / getCategoryData("allPhrases") * 100)
+                        })
+                    }
+                }}
+            >
 
                 <View style={navDropdown.containerSentences}>
-                  <Text style={navDropdown.titleh5}>Фразы, которые ты освоил</Text>
-                  <Text style={navDropdown.titleh6}>Твой Прогресс в Обучении!</Text>
+                    <Text style={navDropdown.titleh5}>Фразы, которые ты освоил</Text>
+                    <Text style={navDropdown.titleh6}>Твой Прогресс в Обучении!</Text>
 
-                  <View style={navDropdown.rowBlockSentences}>
+                    <View style={navDropdown.rowBlockSentences}>
+                        <AnimatedCircularProgress
+                            size={160}
+                            width={21}
+                            fill={phrasesPercent.category === currentCategory.url ? phrasesPercent.percent : 0}
+                            tintColor="#ffd100"
+                            backgroundColor="#748895"
+                            lineCap="round"
+                        >
+                            {
+                                (fill) => (
+                                    <>
+                                        <Text style={navDropdown.resultProgressBar}>
+                                            {`${Math.round(fill)}%`}
+                                        </Text>
+                                    </>
+                                )
+                            }
+                        </AnimatedCircularProgress>
 
-                    <AnimatedCircularProgress
-                      size={160}
-                      width={21}
-                      fill={75}
-                      tintColor="#ffd100"
-                      backgroundColor="#748895"
-                      lineCap="round"
-                    >
-                      {
-                        (fill) => (
-                          <>
-                            <Text style={navDropdown.resultProgressBar}>
-                              {`${Math.round(fill)}%`}
-                            </Text>
-                          </>
-                        )
-                      }
-                    </AnimatedCircularProgress>
-
-                          <View style={navDropdown.containerResultDataSce}>
-                            <TouchableOpacity 
-                              style={[navDropdown.cardDataSce, isCardPressedSentences ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
-                              onPressIn={() => setIsCardSentences(true)}
-                              onPressOut={() => setIsCardSentences(false)}
-                              activeOpacity={1}
+                        <View style={navDropdown.containerResultDataSce}>
+                            <AnimatedButtonShadow
+                                styleContainer={navDropdown.cardDataSceContainer}
+                                styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
+                                shadowColor={"#d8d8d8"}
+                                moveByY={3}
                             >
-                                <Text style={navDropdown.percentage}>341</Text>
-                                <Text style={navDropdown.timeframe}>Всего изучено из 5888</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity 
-                              style={[navDropdown.cardDataSce, isCardPressedProcente ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
-                              onPressIn={() => setIsCardProgressProcente(true)}
-                              onPressOut={() => setIsCardProgressProcente(false)}
-                              activeOpacity={1}
+                                <Text style={navDropdown.percentage}>{getCategoryData("phrasesCompleted")}</Text>
+                                <Text style={navDropdown.timeframe}>Всего изучено из {getCategoryData("allPhrases")}</Text>
+                            </AnimatedButtonShadow>
+
+                            <AnimatedButtonShadow
+                                styleContainer={navDropdown.cardDataSceContainer}
+                                styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
+                                shadowColor={"#d8d8d8"}
+                                moveByY={3}
                             >
-                                <Text style={navDropdown.percentage}>44%</Text>
+                                <Text style={navDropdown.percentage}>{Math.floor(getCategoryData("phrasesCompleted") / getCategoryData("allPhrases") * 100)}%</Text>
                                 <Text style={navDropdown.timeframe}>Прогресс курса из 100%</Text>
-                            </TouchableOpacity>
-                          </View>
+                            </AnimatedButtonShadow>
+                        </View>
 
-                  </View>
+                    </View>
                 </View>
 
             </AnimatedNavTopMenu>
 
             {/* Background for nav menu */}
-            <AnimatedNavTopBg navTopBgTranslateX={navTopBgTranslateX.current} navTopBgOpacity={navTopBgOpacity.current} toggleNavTopMenu={toggleNavTopMenu}/>
+            <AnimatedNavTopBg navTopBgTranslateX={navTopBgTranslateX.current} navTopBgOpacity={navTopBgOpacity.current}
+                              toggleNavTopMenu={toggleNavTopMenu}/>
 
             <View style={{...styles.infoCourseSubject, top: heightsNav.current.navTop}}>
-                <TouchableOpacity
-                    style={[styles.cardCategoryTitle, isCardPressedCourseTitle ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
-                    onPressIn={() => setIsCardPressedCourseTitle(true)}
-                    onPressOut={() => setIsCardPressedCourseTitle(false)}
-                    activeOpacity={1}
+                <AnimatedButtonShadow
+                    styleContainer={styles.cardCategoryTitleContainer}
+                    shadowBorderRadius={12}
+                    shadowBottomRightBorderRadius={0}
+                    shadowColor={"#398205"}
+                    styleButton={[styles.cardCategoryTitle, globalCss.buttonGreen]}
                 >
-                    <Text style={styles.infoCourseTxtSubCat}>Subject 1</Text>
+                    <Text style={styles.infoCourseTxtSubCat}>Subject {currentCategory.subject}</Text>
                     <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
 
-                <TouchableOpacity
-                    style={[styles.infoCourseBtn, globalCss.buttonGreen]} // isCardPressedCourseDetails ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] :
-                    // onPressIn={() => setIsCardPressedCourseDetails(true)}
-                    // onPressOut={() => setIsCardPressedCourseDetails(false)}
+                <AnimatedButtonShadow
                     onPress={toggleModal}
-                    activeOpacity={1}
+
+                    styleContainer={styles.infoCourseBtnContainer}
+                    shadowBorderRadius={12}
+                    shadowBottomLeftBorderRadius={0}
+                    shadowColor={"#398205"}
+                    styleButton={[styles.infoCourseBtn, globalCss.buttonGreen]}
                 >
                     <Image
                         source={require('./images/icon/infoCategory.png')}
                         style={styles.infoCategoryImg}
                     />
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
             </View>
 
             <Modal
@@ -668,13 +665,13 @@ const handleButtonPress = () => {
                                 style={styles.courseCatImg}
                             />
                             <View style={styles.titleLessonCat}>
-                                <Text style={styles.titleLessonCatSubject}>Subject 1</Text>
+                                <Text style={styles.titleLessonCatSubject}>Subject {currentCategory.subject}</Text>
                                 <Text style={styles.titleLessonCatTxt}>{currentCategory.name}</Text>
                             </View>
                         </View>
 
                         <View style={styles.infoDetExtraCat}>
- 
+
 
                             <View style={styles.infoDetCatTitle}>
                                 <Image
@@ -682,8 +679,10 @@ const handleButtonPress = () => {
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["courses"] : 0} уроков</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд навстречу {categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["courses"] : 0} увлекательным
+                                    <Text
+                                        style={styles.titleDetLessonCatSubject}>{getCategoryData("courses")} уроков</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд
+                                        навстречу {getCategoryData("courses")} увлекательным
                                         приключениям!</Text>
                                 </View>
                             </View>
@@ -696,8 +695,11 @@ const handleButtonPress = () => {
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>{categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["quizzes"] : 0} испытаний</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие через {categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["quizzes"] : 0} мир возможностей!</Text>
+                                    <Text
+                                        style={styles.titleDetLessonCatSubject}>{getCategoryData("quizzes")} испытаний</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие
+                                        через {getCategoryData("quizzes")} мир
+                                        возможностей!</Text>
                                 </View>
                             </View>
 
@@ -709,7 +711,9 @@ const handleButtonPress = () => {
                                     style={styles.courseDetCatImg}
                                 />
                                 <View style={styles.titleDetLessonCat}>
-                                    <Text style={styles.titleDetLessonCatSubject}>Более {Math.floor(categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url]["coursesHours"] : 0)} часов погружения</Text>
+                                    <Text
+                                        style={styles.titleDetLessonCatSubject}>Более {Math.floor(getCategoryData("coursesHours"))} часов
+                                        погружения</Text>
                                     <Text style={styles.titleDetLessonCatTxt}>полного погружения в знания</Text>
                                 </View>
                             </View>
@@ -723,92 +727,143 @@ const handleButtonPress = () => {
 
             <ScrollView
                 ref={scrollViewRef}
-                contentContainerStyle={{paddingTop: 140, paddingBottom: 20}}
+                contentContainerStyle={{paddingTop: 140, paddingBottom: 100, minHeight: "100%"}}
                 style={styles.bgCourse}
                 onScroll={e => handleScroll(e.nativeEvent)}
+                scrollEventThrottle={8}
                 onLayout={(e) => startLayoutY.current = e.nativeEvent.layout.y}
             >
                 <View style={styles.container}>
-                    <TouchableOpacity onPress={() => navigation.navigate("Test_buttons_screen")}>
-                        <Text>Test animated buttons</Text>
-                    </TouchableOpacity>
                     <View style={styles.contentFlashCards}>
 
+                        <Categories data={data} categoriesPos={categoriesPos}
+                                    startLayoutY={startLayoutY} showDataToIndex={showDataToIndex}/>
                         {/*<TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
                         <Text>subscription modal</Text>
                     </TouchableOpacity>*/}
-
-                        {loadedCategories.map((category, categoryIndex) => (
-                            <View key={category}
-                                  onLayout={(event) => categoriesPos.current[category] = event.nativeEvent.layout.y + startLayoutY.current}>
-
-                                {categoryIndex > 0 && (
-                                    <View style={styles.categoryTitleBg}>
-                                        <View style={styles.hrLine}></View>
-                                        <Text style={styles.categoryTitle}>
-                                            {data[category].categoryTitle}
-                                        </Text>
-                                        <View style={styles.hrLine}></View>
-                                    </View>
-                                )}
-
-
-                                
-                            <View>
-                                <Image source={require("./images/El/course/Group.png")} style={styles.elCourseImg}/>
-                            </View>
-                            
-
-
-                                <View>
-                                    <Animated.View
-                                        style={{
-                                            transform: [{translateY: moveAnimation}],
-                                        }}
-                                    >
-                                        <Image source={require("./images/other_images/start.png")}
-                                               style={styles.startImg}/>
-                                    </Animated.View>
-                                </View>
-
-
-                                {data[category].items.map((item, index) => (
-                                    <TouchableOpacity
-                                        key={item.id}
-                                        style={[
-                                            {
-                                                marginLeft: `${getMarginLeftForCard(index)}%`,
-                                            },
-                                            styles.card,
-                                            pressedCards[item.id] ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry,
-                                            item.finished ? styles.finishedCourseLesson : null,
-                                        ]}
-                                        onPress={() =>
-                                            navigation.navigate("CourseLesson", {url: item.url})
-                                        }
-                                        onPressIn={() => onPressIn(item.id)}
-                                        onPressOut={() => onPressOut(item.id)}
-                                        activeOpacity={1}
-                                    >
-                                        <Text>
-                                            <FontAwesomeIcon
-                                                icon={faStar}
-                                                size={30}
-                                                style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
-                                            />
-                                        </Text>
-                                        {/*<Text>{item.title}</Text>*/}
-                                    </TouchableOpacity>
-                                ))}
-
-                            </View>
-                        ))}
                     </View>
                 </View>
             </ScrollView>
         </View>
     );
 }
+
+const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToIndex}) => {
+    if (!data) return null
+
+    const {width: windowWidth} = Dimensions.get("window");
+    const navigation = useNavigation()
+
+    const getMarginLeftForCard = (index) => {
+        const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
+        return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
+    };
+
+    // анимация для начального верхнего изображения
+    const moveAnimation = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.loop( // Repetă animația
+            Animated.sequence([ // Creează o secvență de animații
+                Animated.timing(moveAnimation, {
+                    toValue: -10, // Mișcă în sus cu 10 unități
+                    duration: 1000, // Durata animației în milisecunde
+                    useNativeDriver: true, // Folosește driverul nativ pentru performanță îmbunătățită
+                }),
+                Animated.timing(moveAnimation, {
+                    toValue: 0, // Mișcă înapoi la poziția inițială
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ]),
+        ).start();
+    }, []);
+
+    const arrayData = Object.keys(data).slice(0, showDataToIndex)
+    const imagesAnim = {}
+
+    arrayData.forEach(category => {
+        imagesAnim[category] = []
+
+        for (let i = 1; i <= Math.floor(data[category].items.length / 5.4); i++) imagesAnim[category].push(120 * i + (i > 1 ? (i - 1) * 330 : 0))
+    })
+
+    return arrayData.map((category, categoryIndex) => (
+        <View key={category}
+              style={{position: "relative"}}
+              onLayout={(event) => {
+                  if (categoriesPos.current.length >= showDataToIndex) return
+
+                  categoriesPos.current.push([category, event.nativeEvent.layout.y + startLayoutY.current, categoryIndex + 1])
+
+                  if (showDataToIndex <= categoriesPos.current.length) categoriesPos.current.sort((a, b) => b[1] - a[1]);
+              }}>
+
+            {categoryIndex > 0 && (
+                <View style={styles.categoryTitleBg}>
+                    <View style={styles.hrLine}></View>
+                    <Text style={styles.categoryTitle}>
+                        {data[category].categoryTitle}
+                    </Text>
+                    <View style={styles.hrLine}></View>
+                </View>
+            )}
+
+            {imagesAnim[category].map((posTop, index) => (
+                <Animated.View
+                    key={index}
+                    style={{
+                        transform: [{translateY: moveAnimation}],
+                    }}
+                >
+                    <Image source={require("./images/El/course/Group.png")} style={[styles.elCourseImg, {top: posTop, width: windowWidth / 3}]}/>
+                </Animated.View>
+            ))}
+
+            <View>
+                <Animated.View
+                    style={{
+                        transform: [{translateY: moveAnimation}],
+                    }}
+                >
+                    <Image source={require("./images/other_images/start.png")}
+                           style={styles.startImg}/>
+                </Animated.View>
+            </View>
+
+            {data[category].items.map((item, index) => (
+                <AnimatedButtonShadow
+                    key={item.id}
+                    shadowColor={"#828080"}
+                    shadowBorderRadius={300}
+                    shadowDisplayAnimate={"slide"}
+                    moveByY={10}
+                    styleButton={[
+                        {
+                            marginLeft: `${getMarginLeftForCard(index)}%`,
+                        },
+                        styles.card,
+                        styles.bgGry,
+                        item.finished ? styles.finishedCourseLesson : null,
+                    ]}
+                    onPress={() =>
+                        navigation.navigate("CourseLesson", {url: item.url})
+                    }
+                >
+                    <Text>
+                        <FontAwesomeIcon
+                            icon={faStar}
+                            size={30}
+                            style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
+                        />
+                    </Text>
+                    {/*<Text>{item.title}</Text>*/}
+                </AnimatedButtonShadow>
+            ))}
+
+        </View>
+    ))
+})
 
 const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows}) => {
     if (!topPositionNavTopArrows[id]) topPositionNavTopArrows[id] = new Animated.Value(0)
@@ -825,15 +880,20 @@ const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows})
     )
 })
 
-const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, heightsNav}) => {
+const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, heightsNav, navTopMenuCallbacks, onOpen, onClose}) => {
     if (!topPositionNavTopMenus[id]) topPositionNavTopMenus[id] = new Animated.Value(0)
     if (!heightsNav.current.navTopMenu[id]) heightsNav.current.navTopMenu[id] = 99999
+
+    navTopMenuCallbacks[id] = {
+        onOpen: onOpen ? onOpen : () => {},
+        onClose: onClose ? onClose : () => {}
+    }
 
     return (
         <Animated.View
             style={{
                 ...navDropdown.navTopModal,
-                top: -heightsNav.current.navTopMenu[id] + heightsNav.current.navTop,
+                top: -heightsNav.current.navTopMenu[id],
                 transform: [{translateY: topPositionNavTopMenus[id]}]
             }}
             onLayout={event => heightsNav.current.navTopMenu[id] = Math.ceil(event.nativeEvent.layout.height + 1)}

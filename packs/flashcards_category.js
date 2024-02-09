@@ -82,16 +82,16 @@ export default function FlashCardsCategory({route, navigation}) {
 
 
     const getCategoryImageAndText = (categoryValue) => {
-        switch (categoryValue) {
-            case "1":
+        switch (Number(categoryValue)) {
+            case 1:
                 return {
                     imageSource: require('./images/icon/1-star.png')
                 };
-            case "2":
+            case 2:
                 return {
                     imageSource: require('./images/icon/2-star.png')
                 };
-            case "3":
+            case 3:
                 return {
                     imageSource: require('./images/icon/3-star.png')
                 };

@@ -1,9 +1,10 @@
-import {Animated, Pressable, TouchableOpacity} from "react-native";
+import {Animated, Pressable, TouchableOpacity, ViewStyle} from "react-native";
 import React, {useRef} from "react";
 
 type AnimatedButtonMoveProps = {
     children: React.ReactNode,
-    style?: object,
+    styleContainer?: ViewStyle,
+    styleButton?: ViewStyle,
     type?: "touchable" | "default",
     durationIn?: number, // Milliseconds start animation
     durationOut?: number, // Milliseconds end animation
@@ -18,7 +19,8 @@ type AnimatedButtonMoveProps = {
 
 export const AnimatedButtonMove: React.FC<AnimatedButtonMoveProps> = ({
     children,
-    style = {},
+    styleContainer = {},
+    styleButton = {},
     type = "default",
     durationIn = 150,
     durationOut = 150,
@@ -48,22 +50,6 @@ export const AnimatedButtonMove: React.FC<AnimatedButtonMoveProps> = ({
         }).start()
     }
 
-    const handlePress = () => {
-        Animated.parallel([
-            Animated.timing(transitionY.current, {
-                toValue: moveBy,
-                duration: durationIn,
-                useNativeDriver: true,
-            }),
-            Animated.timing(transitionY.current, {
-                toValue: 0,
-                delay: durationIn,
-                duration: durationOut,
-                useNativeDriver: true,
-            })
-        ]).start()
-    }
-
     let ButtonComponent = null
 
     if (type === "touchable") ButtonComponent = TouchableOpacity
@@ -71,17 +57,11 @@ export const AnimatedButtonMove: React.FC<AnimatedButtonMoveProps> = ({
 
     return (
         <Animated.View
-            style={[style, {transform: [{translateY: transitionY.current}]}]}
+            style={[styleContainer, {transform: [{translateY: transitionY.current}]}]}
         >
             <ButtonComponent
+                style={[styleButton]}
                 activeOpacity={activeOpacity}
-                // style={{
-                //     width: "100%",
-                //     height: "100%",
-                //     display: "flex",
-                //     alignItems: "center",
-                //     justifyContent: "center"
-                // }}
                 onPressIn={() => {
                     handlePressIn()
 
@@ -97,11 +77,7 @@ export const AnimatedButtonMove: React.FC<AnimatedButtonMoveProps> = ({
                     }
                 }}
                 onPress={() => {
-                    handlePress()
-
-                    if (onPress) {
-                        onPress()
-                    }
+                    if (onPress) onPress()
                 }}
             >
                 {children}

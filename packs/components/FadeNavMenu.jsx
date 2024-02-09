@@ -22,7 +22,6 @@ export const fadeOutNav = () => {
 }
 
 export const fadeInNav = (callback = null) => {
-    console.log(opacity._value)
     Animated.parallel([
         Animated.timing(opacity, {
             toValue: 1,
@@ -46,7 +45,8 @@ export const FadeNavMenu = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            height: 100,
+            height: "11.02%",
+            minHeight: 90,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             transform: [{translateY: translateY}],
             opacity: opacity

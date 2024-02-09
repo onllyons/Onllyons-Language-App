@@ -957,13 +957,13 @@ const styles = StyleSheet.create({
     tophoneticsBritish: {
         textAlign: "center",
         color: "#0036ff",
-        fontWeight: 300,
+        fontWeight: "300",
         fontSize: 20,
     },
     tophoneticsAmerican: {
         textAlign: "center",
         color: "#0036ff",
-        fontWeight: 300,
+        fontWeight: "300",
         fontSize: 20,
     },
     word_ru: {
