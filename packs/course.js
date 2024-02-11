@@ -109,6 +109,7 @@ export default function CourseScreen({navigation}) {
                     subject: 1
                 });
             })
+            .catch(() => {})
             .finally(() => {
                 setTimeout(() => setLoader(false), 1)
             })
@@ -544,7 +545,7 @@ export default function CourseScreen({navigation}) {
                     if (phrasesPercent.category !== currentCategory.url) {
                         setPhrasesPercent({
                             category: currentCategory.url,
-                            percent: Math.floor(getCategoryData("phrasesCompleted") / getCategoryData("allPhrases") * 100)
+                            percent: getCategoryData("phrasesCompleted") > 0 ? Math.floor(getCategoryData("phrasesCompleted") / getCategoryData("allPhrases") * 100) : 0
                         })
                     }
                 }}
@@ -591,7 +592,7 @@ export default function CourseScreen({navigation}) {
                                 shadowColor={"#d8d8d8"}
                                 moveByY={3}
                             >
-                                <Text style={navDropdown.percentage}>{Math.floor(getCategoryData("phrasesCompleted") / getCategoryData("allPhrases") * 100)}%</Text>
+                                <Text style={navDropdown.percentage}>{phrasesPercent.percent}%</Text>
                                 <Text style={navDropdown.timeframe}>Прогресс курса из 100%</Text>
                             </AnimatedButtonShadow>
                         </View>
@@ -725,7 +726,7 @@ export default function CourseScreen({navigation}) {
 
             <ScrollView
                 ref={scrollViewRef}
-                contentContainerStyle={{paddingTop: 140, paddingBottom: 100, minHeight: "100%"}}
+                contentContainerStyle={{paddingTop: 140, paddingBottom: 130, minHeight: "100%"}}
                 style={styles.bgCourse}
                 onScroll={e => handleScroll(e.nativeEvent)}
                 scrollEventThrottle={8}
@@ -736,9 +737,6 @@ export default function CourseScreen({navigation}) {
 
                         <Categories data={data} categoriesPos={categoriesPos}
                                     startLayoutY={startLayoutY} showDataToIndex={showDataToIndex}/>
-                        {/*<TouchableOpacity onPress={() => setSubscriptionVisible(true)} activeOpacity={1}>
-                        <Text>subscription modal</Text>
-                    </TouchableOpacity>*/}
                     </View>
                 </View>
             </ScrollView>
@@ -781,9 +779,23 @@ const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToInd
     const imagesAnim = {}
 
     arrayData.forEach(category => {
+        const length = Math.floor(data[category].items.length / 6)
+
         imagesAnim[category] = []
 
-        for (let i = 1; i <= Math.floor(data[category].items.length / 5.4); i++) imagesAnim[category].push(120 * i + (i > 1 ? (i - 1) * 330 : 0))
+        if (length >= 1) {
+            imagesAnim[category].push({
+                top: 3 * (56 + 20) - 110,
+                right: 25,
+                image: require("./images/El/course/Group.png")
+            })
+
+            imagesAnim[category].push({
+                top: (data[category].items.length - (data[category].items.length % 6) - (length > 2 ? 6 : 0)) * (56 + 20) - 110, // 110 half image height, 56 + 20 - button height + magrinBottom
+                left: 25,
+                image: require("./images/El/course/Group.png")
+            })
+        }
     })
 
     return arrayData.map((category, categoryIndex) => (
@@ -807,15 +819,18 @@ const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToInd
                 </View>
             )}
 
-            {imagesAnim[category].map((posTop, index) => (
-                <Animated.View
-                    key={index}
-                    style={{
-                        transform: [{translateY: moveAnimation}],
-                    }}
-                >
-                    <Image source={require("./images/El/course/Group.png")} style={[styles.elCourseImg, {top: posTop, width: windowWidth / 3}]}/>
-                </Animated.View>
+            {imagesAnim[category].map((value, index) => (
+                <View key={index}>
+                    <Image
+                        source={value.image}
+                        style={[
+                            styles.elCourseImg,
+                            {top: value.top, width: windowWidth / 3},
+                            value.right && {right: value.right},
+                            value.left && {left: value.left}
+                        ]}
+                    />
+                </View>
             ))}
 
             <View>
@@ -832,7 +847,7 @@ const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToInd
             {data[category].items.map((item, index) => (
                 <AnimatedButtonShadow
                     key={item.id}
-                    shadowColor={"#828080"}
+                    shadowColor={item.finished ? "#a08511" : "#828080"}
                     shadowBorderRadius={300}
                     shadowDisplayAnimate={"slide"}
                     moveByY={10}
@@ -855,7 +870,6 @@ const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToInd
                             style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
                         />
                     </Text>
-                    {/*<Text>{item.title}</Text>*/}
                 </AnimatedButtonShadow>
             ))}
 
@@ -916,16 +930,3 @@ const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggl
         </Animated.View>
     )
 })
-
-
-
-
-
-
-
-
-
-
-
-
-

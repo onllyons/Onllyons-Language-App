@@ -216,8 +216,8 @@ export const stylesCourse_lesson = StyleSheet.create({
         width: 150,
         height: 220,
         position: "absolute",
-        right: 25,
-        top: 120,
+        // right: 25,
+        // top: 120,
         resizeMode: "contain",
         alignSelf: "center",
     },
@@ -235,8 +235,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         textAlign: "center",
     },
     finishedCourseLesson: {
-        backgroundColor: '#ffd700',
-        shadowColor: "#d4b200",
+        backgroundColor: '#ffd700'
     },
     finishedCourseLessonIcon: {
         color: 'white'
