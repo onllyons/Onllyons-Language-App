@@ -1,5 +1,5 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView} from 'react-native';
 import Swiper from 'react-native-swiper';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons';
@@ -9,6 +9,7 @@ import {isAuthenticated, login} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
+import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 const ProgressBar = ({currentIndex, totalCount}) => {
     const progress = (currentIndex + 1) / totalCount;
@@ -21,11 +22,6 @@ const ProgressBar = ({currentIndex, totalCount}) => {
 
 export default function IntroductionScreen({navigation}) {
     const swiperRef = useRef(null);
-    const [isPressedContinue, setIsPressedContinue] = useState(false);
-    const [isPressedRegistration, setIsPressedRegistration] = useState(false);
-    const [isPressedLevel1, setIsPressedLevel1] = useState(false);
-    const [isPressedLevel2, setIsPressedLevel2] = useState(false);
-    const [isPressedLevel3, setIsPressedLevel3] = useState(false);
     const [index, setIndex] = useState(0);
     const [isLastSlide, setIsLastSlide] = useState(false);
     const totalSlides = 7;
@@ -60,11 +56,6 @@ export default function IntroductionScreen({navigation}) {
         swiperRef.current?.scrollBy(1);
     }, []);
 
-    const handleBackButtonPress = () => {
-        navigation.goBack();
-    };
-
-
     const handleRegister = () => {
         if (isAuthenticated()) {
             Toast.show({
@@ -97,9 +88,7 @@ export default function IntroductionScreen({navigation}) {
             <Loader visible={loader}/>
 
             <View style={styles.row}>
-
-
-                <TouchableOpacity onPress={handleBackButtonPress} style={styles.backBtn}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <Text><FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.gry}/></Text>
                 </TouchableOpacity>
                 <ProgressBar currentIndex={index} totalCount={totalSlides}/>
@@ -125,22 +114,21 @@ export default function IntroductionScreen({navigation}) {
                     />
                 </View>
                 <View style={styles.slideLevel}>
-                    <View style={styles.slideFormInp}>
+                    <ScrollView style={styles.slideFormInp} contentContainerStyle={{paddingTop: 25, paddingBottom: 100}}>
                         <Image
                             source={require('../images/El/regIm.png')}
                             style={styles.imageReg}
                         />
 
                         <View>
-                            <TouchableOpacity
-                                style={[globalCss.buttonRow,
-                                    isPressedLevel1
-                                        ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                        : globalCss.buttonGry1,
-                                    userData.selectedLevel === 0 && styles.selectedButton]}
-                                onPressIn={() => setIsPressedLevel1(true)}
-                                onPressOut={() => setIsPressedLevel1(false)}
-                                activeOpacity={1}
+                            <AnimatedButtonShadow
+                                styleButton={[
+                                    globalCss.buttonRow,
+                                    globalCss.buttonGry1,
+                                    userData.selectedLevel === 0 && styles.selectedButton
+                                ]}
+                                permanentlyActive={userData.selectedLevel === 0}
+                                shadowColor={"gray1"}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 0}))}
                             >
                                 <Image
@@ -148,17 +136,15 @@ export default function IntroductionScreen({navigation}) {
                                     style={styles.imageRegLevel}
                                 />
                                 <Text style={styles.buttonText}>Я знаю некоторые слова и фразы</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[globalCss.buttonRow,
-                                    isPressedLevel2
-                                        ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                        : globalCss.buttonGry1,
-                                    userData.selectedLevel === 1 && styles.selectedButton]}
-
-                                onPressIn={() => setIsPressedLevel2(true)}
-                                onPressOut={() => setIsPressedLevel2(false)}
-                                activeOpacity={1}
+                            </AnimatedButtonShadow>
+                            <AnimatedButtonShadow
+                                styleButton={[
+                                    globalCss.buttonRow,
+                                    globalCss.buttonGry1,
+                                    userData.selectedLevel === 1 && styles.selectedButton
+                                ]}
+                                permanentlyActive={userData.selectedLevel === 1}
+                                shadowColor={"gray1"}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 1}))}
                             >
                                 <Image
@@ -166,17 +152,15 @@ export default function IntroductionScreen({navigation}) {
                                     style={styles.imageRegLevel}
                                 />
                                 <Text style={styles.buttonText}>Я могу вести простой разговор</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[globalCss.buttonRow,
-                                    isPressedLevel3
-                                        ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                        : globalCss.buttonGry1,
-                                    userData.selectedLevel === 2 && styles.selectedButton]}
-
-                                onPressIn={() => setIsPressedLevel3(true)}
-                                onPressOut={() => setIsPressedLevel3(false)}
-                                activeOpacity={1}
+                            </AnimatedButtonShadow>
+                            <AnimatedButtonShadow
+                                styleButton={[
+                                    globalCss.buttonRow,
+                                    globalCss.buttonGry1,
+                                    userData.selectedLevel === 2 && styles.selectedButton
+                                ]}
+                                permanentlyActive={userData.selectedLevel === 2}
+                                shadowColor={"gray1"}
                                 onPress={() => setUserData(prev => ({...prev, selectedLevel: 2}))}
                             >
                                 <Image
@@ -184,11 +168,11 @@ export default function IntroductionScreen({navigation}) {
                                     style={styles.imageRegLevel}
                                 />
                                 <Text style={styles.buttonText}>У меня средний уровень или выше</Text>
-                            </TouchableOpacity>
+                            </AnimatedButtonShadow>
                         </View>
 
 
-                    </View>
+                    </ScrollView>
                 </View>
                 <View style={styles.slideLevel}>
 
@@ -281,48 +265,29 @@ export default function IntroductionScreen({navigation}) {
                         </Text>
                     </View>
                 </View>
-
-
             </Swiper>
             <SwiperButtonsContainer
                 onRightPress={handleRightButtonPress}
-                isPressedContinue={isPressedContinue}
-                setIsPressedContinue={setIsPressedContinue}
                 isLastSlide={isLastSlide}
                 handleRegister={handleRegister}
-                isPressedRegistration={isPressedRegistration}
-                setIsPressedRegistration={setIsPressedRegistration}
             />
-
-
         </View>
     );
 }
 
-const SwiperButtonsContainer = ({onRightPress, isPressedContinue, setIsPressedContinue, isLastSlide, handleRegister, isPressedRegistration, setIsPressedRegistration}) => (
+const SwiperButtonsContainer = ({onRightPress, isLastSlide, handleRegister}) => (
     <View style={styles.swiperButtonsContainer}>
-        {!isLastSlide && (
-            <TouchableOpacity
-                style={[globalCss.button, isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedPurple] : globalCss.buttonPurple]}
-                onPress={onRightPress}
-                onPressIn={() => setIsPressedContinue(true)}
-                onPressOut={() => setIsPressedContinue(false)}
-                activeOpacity={1}
-            >
-                <Text style={[globalCss.buttonText, globalCss.textUpercase]}>Продолжить</Text>
-            </TouchableOpacity>
-        )}
-        {isLastSlide && (
-            <TouchableOpacity
-                style={[globalCss.button, isPressedRegistration ? [globalCss.buttonPressed, globalCss.buttonPressedPurple] : globalCss.buttonPurple]}
-                onPressIn={() => setIsPressedRegistration(true)}
-                onPressOut={() => setIsPressedRegistration(false)}
-                activeOpacity={1}
-                onPress={handleRegister}
-            >
-                <Text style={[globalCss.buttonText, globalCss.textUpercase]}>Зарегистрироваться</Text>
-            </TouchableOpacity>
-        )}
+        <AnimatedButtonShadow
+            styleButton={[globalCss.button, globalCss.buttonPurple]}
+            onPress={() => {
+                if (isLastSlide) handleRegister()
+                else onRightPress()
+            }}
+            size={"full"}
+            shadowColor={"purple"}
+        >
+            <Text style={[globalCss.buttonText, globalCss.textUpercase]}>{isLastSlide ? "Зарегистрироваться" : "Продолжить"}</Text>
+        </AnimatedButtonShadow>
     </View>
 );
 

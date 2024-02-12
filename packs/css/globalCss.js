@@ -132,11 +132,7 @@ const globalCss = StyleSheet.create({
     paddingHorizontal: 32,
     alignItems: "center",
     borderRadius: 14,
-    marginBottom: 20,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 0,
+    marginBottom: 20
   },
   button: {
     width: "100%",
@@ -151,12 +147,10 @@ const globalCss = StyleSheet.create({
     transform: [{ translateY: 4 }],
   },
   buttonBlue: {
-    backgroundColor: "#1cb0f6",
-    shadowColor: "#368fc3",
+    backgroundColor: "#1cb0f6"
   },
   buttonPurple: {
-    backgroundColor: "#6949FF",
-    shadowColor: "#4631A8",
+    backgroundColor: "#6949FF"
   },
   buttonWhite: {
     backgroundColor: "#ffffff"
@@ -166,8 +160,7 @@ const globalCss = StyleSheet.create({
     shadowColor: "#cbcbcb",
   },
   buttonGry1: {
-    backgroundColor: "#f3f3f3",
-    shadowColor: "#c5c5c5",
+    backgroundColor: "#f3f3f3"
   },
   buttonGreen: {
     backgroundColor: "#57cc04",

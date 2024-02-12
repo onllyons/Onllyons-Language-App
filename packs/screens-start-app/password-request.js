@@ -4,7 +4,6 @@ import {
     Text,
     View,
     TextInput,
-    TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
@@ -13,10 +12,10 @@ import globalCss from '../css/globalCss';
 import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
+import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 export default function PasswordScreen({navigation}) {
     const [email, setEmail] = useState("");
-    const [pressSignIn, setPressSignIn] = useState(false);
 
     const [loader, setLoader] = useState(false)
 
@@ -50,17 +49,17 @@ export default function PasswordScreen({navigation}) {
                     />
                 </View>
 
-                <TouchableOpacity
-                    style={[
+                <AnimatedButtonShadow
+                    styleButton={[
                         globalCss.button,
-                        pressSignIn ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen,
+                        globalCss.buttonGreen,
                     ]}
-                    onPressIn={() => setPressSignIn(true)}
-                    onPressOut={() => setPressSignIn(false)}
                     onPress={handleRequestPassword}
+                    shadowColor={"green"}
+                    size={"full"}
                 >
                     <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUppercase]}>Получить ссылку</Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
             </View>
         </TouchableWithoutFeedback>
     );

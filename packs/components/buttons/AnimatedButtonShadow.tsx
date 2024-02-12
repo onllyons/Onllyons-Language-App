@@ -1,7 +1,21 @@
 import {Animated, Pressable, TouchableOpacity, View, ViewStyle} from "react-native";
 import React, {useEffect, useRef, useState} from "react";
 
+// Ready-made shadow colors
+export const SHADOW_COLORS = {
+    green: "#439e04",
+    blue: "#368fc3",
+    purple: "#4631A8",
+    gray1: "#c5c5c5",
+    gray2: "#828080",
+    gray: "#d8d8d8",
+    yellow: "#a08511"
+} as const
+
+type SHADOW_COLOR = keyof typeof SHADOW_COLORS;
+
 type AnimatedButtonShadowProps = {
+    permanentlyActive?: boolean,
     children: React.ReactNode,
     styleContainer?: ViewStyle,
     styleContainerIn?: ViewStyle,
@@ -11,6 +25,7 @@ type AnimatedButtonShadowProps = {
     durationOut?: number, // Milliseconds end animation
     moveByY?: number, // Positive value - animation down, negative value - animation up
     moveByX?: number, // Positive value - animation left, negative value - animation right
+    size?: "default" | "full"
 
     activeOpacity?: number, // Only for type === "touchable"
 
@@ -27,7 +42,7 @@ type AnimatedButtonShadowProps = {
     shadowBottomLeftBorderRadius?: number,
     shadowBottomRightBorderRadius?: number,
 
-    shadowColor?: string,
+    shadowColor?: SHADOW_COLOR | string,
     shadowDisplayAnimate?: "none" | "slide",
 
     onPress?: (event) => void,
@@ -37,6 +52,7 @@ type AnimatedButtonShadowProps = {
 };
 
 export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
+    permanentlyActive = null,
     children,
     styleContainer = {},
     styleContainerIn = {},
@@ -46,8 +62,9 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     durationOut = 150,
     moveByY = 5,
     moveByX = 0,
+    size = "default",
 
-                                                                              refButton,
+    refButton,
 
     activeOpacity = 0.75,
 
@@ -81,6 +98,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
         x: 0,
         y: 0
     })
+    const permanentlyActiveRef = useRef(permanentlyActive)
+    permanentlyActiveRef.current = permanentlyActive
 
     const handlePressIn = () => {
         Animated.parallel([
@@ -115,6 +134,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     }
 
     const handlePressOut = () => {
+        if (permanentlyActiveRef.current) return
+
         Animated.parallel([
             moveByY !== 0 && Animated.timing(transitionContainerY.current, {
                 toValue: 0,
@@ -163,6 +184,13 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
         }
     }, [buttonData])
 
+    useEffect(() => {
+        if (permanentlyActive === null) return
+
+        if (permanentlyActive) handlePressIn()
+        else handlePressOut()
+    }, [permanentlyActive])
+
     let ButtonComponent = null
 
     if (type === "touchable") ButtonComponent = TouchableOpacity
@@ -171,6 +199,7 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     return (
             <Animated.View
                 style={[
+                    size === "full" && {width: "100%"},
                     styleContainer, {
                     transform: [
                         {translateY: transitionContainerY.current},
@@ -186,7 +215,7 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                             left: buttonData.x + shadowPositionXAdditional,
                             width: buttonData.width + shadowWidthAdditional,
                             height: buttonData.height + shadowHeightAdditional,
-                            backgroundColor: shadowColor,
+                            backgroundColor: SHADOW_COLORS[shadowColor] ? SHADOW_COLORS[shadowColor] : shadowColor,
                             borderTopLeftRadius: typeof shadowTopLeftBorderRadius !== "undefined" ? shadowTopLeftBorderRadius : shadowBorderRadius,
                             borderTopRightRadius: typeof shadowTopRightBorderRadius !== "undefined" ? shadowTopRightBorderRadius : shadowBorderRadius,
                             borderBottomLeftRadius: typeof shadowBottomLeftBorderRadius !== "undefined" ? shadowBottomLeftBorderRadius : shadowBorderRadius,
@@ -203,7 +232,7 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                     <ButtonComponent
                         ref={refButton}
                         activeOpacity={activeOpacity}
-                        style={styleButton}
+                        style={[size === "full" && {width: "100%"}, styleButton]}
                         onLayout={(e) => {
                             if (onLayout) onLayout(e)
 
@@ -240,3 +269,4 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
             </Animated.View>
     );
 };
+

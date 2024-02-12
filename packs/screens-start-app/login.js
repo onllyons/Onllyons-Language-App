@@ -8,10 +8,9 @@ import {isAuthenticated, login} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
+import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 export default function LoginScreen({navigation}) {
-    const [PressSignIn, setPressSignIn] = useState(false);
-    const [isPressGoogleProfile, setIsPressGoogleProfile] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [userData, setUserData] = useState({username: "", password: ""})
 
@@ -80,32 +79,28 @@ export default function LoginScreen({navigation}) {
                     </Text>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity
-                style={[globalCss.button, PressSignIn ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
-                onPressIn={() => setPressSignIn(true)}
-                onPressOut={() => setPressSignIn(false)}
+            <AnimatedButtonShadow
+                styleButton={[globalCss.button, globalCss.buttonGreen]}
+                shadowColor={"green"}
+                size={"full"}
                 onPress={handleLogin}
-                activeOpacity={1}
             >
                 <Text style={[globalCss.buttonText, globalCss.bold]}>ВХОД</Text>
-            </TouchableOpacity>
+            </AnimatedButtonShadow>
             <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("PasswordScreen")}>
                 <Text style={[globalCss.link, globalCss.bold]}>ЗАБЫЛИ ПАРОЛЬ?</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-                style={[
+            <AnimatedButtonShadow
+                styleButton={[
                     globalCss.button,
-                    isPressGoogleProfile
-                        ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
-                        : globalCss.buttonBlue,
+                    globalCss.buttonBlue,
                 ]}
-                onPressIn={() => setIsPressGoogleProfile(true)}
-                onPressOut={() => setIsPressGoogleProfile(false)}
                 onPress={() => navigation.navigate("LoginGoogleScreen")}
-                activeOpacity={1}
+                size={"full"}
+                shadowColor={"blue"}
             >
                 <Text style={[globalCss.buttonText, globalCss.bold]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
-            </TouchableOpacity>
+            </AnimatedButtonShadow>
             <Text style={styles.termsText}>
                 Выполняя вход в аккаунт Onllyons Language, вы соглашаетесь с
                 нашими <Text style={globalCss.bold}>Условиями</Text> и

@@ -27,7 +27,7 @@ import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
 import {SubscribeModal} from "./components/SubscribeModal";
 import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
-import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
+import {AnimatedButtonShadow, SHADOW_COLORS} from "./components/buttons/AnimatedButtonShadow";
 import {useNavigation} from "@react-navigation/native";
 import {calculatePercentage, formatDayWord, getHoursOrMinutes} from "./utils/Utls";
 
@@ -568,7 +568,7 @@ export default function CourseScreen({navigation}) {
                             <AnimatedButtonShadow
                                 styleContainer={navDropdown.cardDataSceContainer}
                                 styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
-                                shadowColor={"#d8d8d8"}
+                                shadowColor={"gray"}
                                 moveByY={3}
                             >
                                 <Text style={navDropdown.percentage}>{generalInfo.current.phrasesCompleted}</Text>
@@ -578,7 +578,7 @@ export default function CourseScreen({navigation}) {
                             <AnimatedButtonShadow
                                 styleContainer={navDropdown.cardDataSceContainer}
                                 styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
-                                shadowColor={"#d8d8d8"}
+                                shadowColor={"gray"}
                                 moveByY={3}
                             >
                                 <Text style={navDropdown.percentage}>{phrasesPercent}%</Text>
@@ -600,7 +600,7 @@ export default function CourseScreen({navigation}) {
                     styleContainer={styles.cardCategoryTitleContainer}
                     shadowBorderRadius={12}
                     shadowBottomRightBorderRadius={0}
-                    shadowColor={getCategoryData("backgroundShadow", "#398205")}
+                    shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
                     styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
                     <Text style={styles.infoCourseTxtSubCat}>Subject {currentCategory.subject}</Text>
@@ -613,7 +613,7 @@ export default function CourseScreen({navigation}) {
                     styleContainer={styles.infoCourseBtnContainer}
                     shadowBorderRadius={12}
                     shadowBottomLeftBorderRadius={0}
-                    shadowColor={getCategoryData("backgroundShadow", "#398205")}
+                    shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
                     styleButton={[styles.infoCourseBtn, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
                     <Image
@@ -870,7 +870,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
         <>
             <AnimatedButtonShadow
                 refButton={buttonRef}
-                shadowColor={item.finished ? "#a08511" : "#828080"}
+                shadowColor={item.finished ? "yellow" : "gray2"}
                 shadowBorderRadius={300}
                 shadowDisplayAnimate={"slide"}
                 moveByY={10}
@@ -977,7 +977,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                                 globalCss.buttonGreen,
                                 {marginBottom: 0}
                             ]}
-                            shadowColor={"#398205"}
+                            shadowColor={"green"}
                             // green shadow
                             // shadowColor={"#e6e4e4"}
                             activeOpacity={1}

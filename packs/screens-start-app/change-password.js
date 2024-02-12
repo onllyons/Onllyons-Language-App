@@ -8,9 +8,9 @@ import Toast from "react-native-toast-message";
 import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
+import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 export default function ChangePasswordScreen({navigation}) {
-    const [PressSignIn, setPressSignIn] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [loader, setLoader] = useState(false)
@@ -109,15 +109,14 @@ export default function ChangePasswordScreen({navigation}) {
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity
-                    style={[globalCss.button, PressSignIn ? [globalCss.buttonPressed, globalCss.buttonPressedGreen] : globalCss.buttonGreen]}
-                    onPressIn={() => setPressSignIn(true)}
-                    onPressOut={() => setPressSignIn(false)}
+                <AnimatedButtonShadow
+                    styleButton={[globalCss.button, globalCss.buttonGreen]}
                     onPress={handleChangePassword}
-                    activeOpacity={1}
+                    shadowColor={"green"}
+                    size={"full"}
                 >
                     <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Сохранить пароль</Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
 
             </View>
         </TouchableWithoutFeedback>
