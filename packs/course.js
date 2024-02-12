@@ -62,7 +62,7 @@ export default function CourseScreen({navigation}) {
                 currCategoryOnScroll = {
                     name: data[value[0]].categoryTitle.trim(),
                     url: value[0],
-                    subject: value[2]
+                    subject: value[2],
                 }
 
                 currShowToDataIndex = value[2]
@@ -100,11 +100,11 @@ export default function CourseScreen({navigation}) {
                 seriesData.current = data.seriesData
                 generalInfo.current = data.generalInfo
 
-                setCurrentCategory({
+                setCurrentCategory(prev => ({
                     name: groupedData[firstCategory].categoryTitle.trim(),
                     url: firstCategory,
                     subject: 1
-                });
+                }));
             })
             .catch(() => {})
             .finally(() => {
@@ -605,8 +605,8 @@ export default function CourseScreen({navigation}) {
                     styleContainer={styles.cardCategoryTitleContainer}
                     shadowBorderRadius={12}
                     shadowBottomRightBorderRadius={0}
-                    shadowColor={"#398205"}
-                    styleButton={[styles.cardCategoryTitle, globalCss.buttonGreen]}
+                    shadowColor={getCategoryData("backgroundShadow", "#398205")}
+                    styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
                     <Text style={styles.infoCourseTxtSubCat}>Subject {currentCategory.subject}</Text>
                     <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
@@ -618,8 +618,8 @@ export default function CourseScreen({navigation}) {
                     styleContainer={styles.infoCourseBtnContainer}
                     shadowBorderRadius={12}
                     shadowBottomLeftBorderRadius={0}
-                    shadowColor={"#398205"}
-                    styleButton={[styles.infoCourseBtn, globalCss.buttonGreen]}
+                    shadowColor={getCategoryData("backgroundShadow", "#398205")}
+                    styleButton={[styles.infoCourseBtn, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
                     <Image
                         source={require('./images/icon/infoCategory.png')}

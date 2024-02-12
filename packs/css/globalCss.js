@@ -115,7 +115,6 @@ const globalCss = StyleSheet.create({
   },
   bgGreen: {
     backgroundColor: "#57cc04",
-    shadowColor: "#439c04",
     borderColor: "transparent",
   },
   bgGryPressed: {
