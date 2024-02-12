@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faTimes,
   faRotateRight,
-  faCheck,
+  faGear,
   faCirclePlay,
   faCirclePause,
 } from "@fortawesome/free-solid-svg-icons";
@@ -221,7 +221,7 @@ export default function BooksScreen({ navigation }) {
 
         <TouchableOpacity style={styles.settingsBtn} onPress={handleOpenPress}>
           <Text>
-            <FontAwesomeIcon icon={faCheck} size={30} style={globalCss.blue} />
+            <FontAwesomeIcon icon={faGear} size={30} style={globalCss.blue} />
           </Text>
         </TouchableOpacity>
       </View>
@@ -310,30 +310,32 @@ export default function BooksScreen({ navigation }) {
         index={-1}
       >
         <BottomSheetView style={styles.contentBottomSheet}>
-          <View style={styles.audioBtnSave}>
-            <Text style={styles.audioTxtSave}>Пометить как прочитанное</Text>
+            <View style={styles.settingsGroup}>
+                <Text style={styles.settingsIPA}>Пометить как прочитанное</Text>
 
-            <Switch
-              trackColor={{ false: "#d1d1d1", true: "#4ADE80" }}
-              thumbColor={finished ? "#ffffff" : "#f4f3f4"}
-              disabled={finished}
-              ios_backgroundColor="#d1d1d1"
-              onValueChange={handleFinish}
-              value={finished}
-            />
-          </View>
-          <View style={styles.audioBtnSave}>
-            <Text style={styles.audioTxtSave}>Добавить в закладки</Text>
+                <Switch
+                  trackColor={{ false: "#d1d1d1", true: "#4ADE80" }}
+                  thumbColor={finished ? "#ffffff" : "#f4f3f4"}
+                  disabled={finished}
+                  ios_backgroundColor="#d1d1d1"
+                  onValueChange={handleFinish}
+                  value={finished}
+                />
+            </View>
 
-            <Switch
-              trackColor={{ false: "#d1d1d1", true: "#4ADE80" }}
-              thumbColor={saved ? "#ffffff" : "#f4f3f4"}
-              ios_backgroundColor="#d1d1d1"
-              onValueChange={handleBookmark}
-              value={saved}
-            />
-          </View>
+            <View style={styles.settingsGroup}>
+                <Text style={styles.settingsIPA}>Добавить в закладки</Text>
+
+                <Switch
+                  trackColor={{ false: "#d1d1d1", true: "#4ADE80" }}
+                  thumbColor={saved ? "#ffffff" : "#f4f3f4"}
+                  ios_backgroundColor="#d1d1d1"
+                  onValueChange={handleBookmark}
+                  value={saved}
+                />
+            </View>
         </BottomSheetView>
+
       </BottomSheet>
     </GestureHandlerRootView>
   );
@@ -345,17 +347,22 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingTop: "12%",
   },
-  audioBtnSave: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 20,
-  },
-  audioTxtSave: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#343541",
-    flex: 1,
-  },
+ 
+      settingsGroup: {
+        paddingHorizontal: 20,
+        marginBottom: "2%",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        alignContent: "center",
+    },
+        settingsIPA: {
+        fontSize: 18,
+        fontWeight: "500",
+        color: "#343541",
+        flex: 1,
+    }, 
+ 
   audioPlyr: {
     position: "absolute",
     flexDirection: "row",
@@ -391,15 +398,16 @@ const styles = StyleSheet.create({
   },
   titleBook: {
     fontSize: 21,
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#343541",
     alignSelf: "center",
+    marginBottom: 10,
   },
   titleAuthor: {
     color: "#343541",
     fontSize: 16,
     alignSelf: "center",
-    marginBottom: 10,
+    marginBottom: 30,
   },
 
   progressBarContainer: {
@@ -413,11 +421,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffeb3b",
     borderRadius: 10,
   },
-  settingsBtn: {
+  settingsBtn: { 
     width: "14%",
     paddingVertical: "3%",
     alignItems: "center",
-    backgroundColor: "red",
     alignContent: "center",
   },
   textContainer: {
