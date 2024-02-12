@@ -617,7 +617,7 @@ export default function CourseScreen({navigation}) {
                     styleButton={[styles.infoCourseBtn, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
                     <Image
-                        source={require('./images/icon/infoCategory.png')}
+                        source={require('./images/icon/list.png')}
                         style={styles.infoCategoryImg}
                     />
                 </AnimatedButtonShadow>
