@@ -69,7 +69,7 @@ export const stylesCourse_lesson = StyleSheet.create({
     },
     infoCourseBtnContainer: {
         width: "27%",
-        height: "100%"
+        height: "100%" 
     },
     infoCourseTxtSubCat: {
         color: "#d1ffb1",
@@ -80,8 +80,8 @@ export const stylesCourse_lesson = StyleSheet.create({
         fontWeight: "700",
     },
     infoCategoryImg: {
-        width: "30%",
-        height: "30%",
+        width: 35,
+        height: 35,
         resizeMode: "contain",
         alignSelf: "center",
     },
