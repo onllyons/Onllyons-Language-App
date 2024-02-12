@@ -838,7 +838,8 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
     const buttonRef = useRef(null)
     const positions = useRef({
         arrowX: 0,
-        modalY: 0
+        modalY: 0,
+        arrowBottom: false
     })
 
     const scale = useRef(new Animated.Value(0.5))
@@ -890,27 +891,43 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                         // Scroll if needed
                         if (toBeModalPos > windowHeight) {
                             const scrollTo = currentScrollData.current.y + toBeModalPos - windowHeight
+                            let delay = 100
+                            let arrowBottom = false
 
+                            // Show modal on top button if it doesn't fit
                             if (scrollTo > currentScrollData.current.contentHeight) {
                                 console.log("big")
+                                delay = 0
+                                modalY -= 140
+                                arrowBottom = true
+                            } else {
+                                modalY -= toBeModalPos - windowHeight
                             }
-                            modalY -= toBeModalPos - windowHeight
 
                             scrollRef.current.scrollToOffset({
                                 offset: currentScrollData.current.y + toBeModalPos - windowHeight,
                                 animated: true
                             })
 
-                            setScrollEnable(false)
+                            if (delay > 0) setScrollEnable(false)
 
                             setTimeout(() => {
-                                positions.current = {arrowX: x - (windowWidth * 0.1) + w / 2 - 10, modalY: modalY}
+                                positions.current = {
+                                    arrowBottom: arrowBottom,
+                                    arrowX: x - (windowWidth * 0.1) + w / 2 - 10,
+                                    modalY: modalY
+                                }
                                 setShowModal(true)
                                 setVisibleModal(true)
-                                setScrollEnable(true)
-                            }, 100)
+
+                                if (delay > 0) setScrollEnable(true)
+                            }, delay)
                         } else {
-                            positions.current = {arrowX: x - (windowWidth * 0.1) + w / 2 - 10, modalY: modalY}
+                            positions.current = {
+                                arrowBottom: false,
+                                arrowX: x - (windowWidth * 0.1) + w / 2 - 10,
+                                modalY: modalY
+                            }
                             setShowModal(true)
                             setVisibleModal(true)
                         }
@@ -959,14 +976,19 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                         {/* Arrow */}
                         <Image
                             source={require("./images/icon/arrowGrayTopDropdown.png")}
-                            style={{
-                                position: "absolute",
-                                top: -18,
-                                left: positions.current.arrowX,
-                                width: 20,
-                                height: 20,
-                                resizeMode: "contain",
-                            }}
+                            style={[
+                                {
+                                    position: "absolute",
+                                    left: positions.current.arrowX,
+                                    width: 20,
+                                    height: 20,
+                                    resizeMode: "contain",
+                                },
+                                positions.current.arrowBottom ? {
+                                    bottom: -18,
+                                    transform: [{rotate: "180deg"}],
+                                } : {top: -18}
+                            ]}
                         />
 
                         <Text style={styles.bold}>Lesson name: {item.title}</Text>
@@ -978,8 +1000,6 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                                 {marginBottom: 0}
                             ]}
                             shadowColor={"green"}
-                            // green shadow
-                            // shadowColor={"#e6e4e4"}
                             activeOpacity={1}
 
                             onPress={() => navigation.navigate("CourseLesson", {url: item.url})}
