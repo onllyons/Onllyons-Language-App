@@ -29,7 +29,7 @@ import {SubscribeModal} from "./components/SubscribeModal";
 import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {useNavigation} from "@react-navigation/native";
-import {getDayWord, getHourWord} from "./utils/Utls";
+import {calculatePercentage, getDayWord, getHourWord} from "./utils/Utls";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState(null);
@@ -388,7 +388,7 @@ export default function CourseScreen({navigation}) {
 
                                 <View style={navDropdown.cardMiddleProcenteCourse}>
                                     <View style={navDropdown.cardMiddleProcenteRow}>
-                                        <Text style={navDropdown.textProcenteCourse}>{generalInfo.current.courses ? Math.floor(generalInfo.current.coursesCompleted / generalInfo.current.courses * 100) : 0}</Text>
+                                        <Text style={navDropdown.textProcenteCourse}>{generalInfo.current.coursesCompleted ? calculatePercentage(generalInfo.current.coursesCompleted, generalInfo.current.courses, true) : 0}</Text>
                                         <Text style={navDropdown.textProcenteCourse1}>%</Text>
                                     </View>
                                 </View>
@@ -545,7 +545,7 @@ export default function CourseScreen({navigation}) {
                     if (phrasesPercent.category !== currentCategory.url) {
                         setPhrasesPercent({
                             category: currentCategory.url,
-                            percent: getCategoryData("phrasesCompleted") > 0 ? Math.floor(getCategoryData("phrasesCompleted") / getCategoryData("allPhrases") * 100) : 0
+                            percent: calculatePercentage(getCategoryData("phrasesCompleted"), getCategoryData("allPhrases"))
                         })
                     }
                 }}
@@ -583,7 +583,7 @@ export default function CourseScreen({navigation}) {
                                 moveByY={3}
                             >
                                 <Text style={navDropdown.percentage}>{getCategoryData("phrasesCompleted")}</Text>
-                                <Text style={navDropdown.timeframe}>Всего изучено из {getCategoryData("allPhrases")}</Text>
+                                <Text style={navDropdown.timeframe}>Всего изучено из {generalInfo.current.phrases ? generalInfo.current.phrases : 0}</Text>
                             </AnimatedButtonShadow>
 
                             <AnimatedButtonShadow

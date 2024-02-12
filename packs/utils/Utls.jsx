@@ -41,3 +41,15 @@ export function getHourWord(count) {
         return "часов";
     }
 }
+
+export function calculatePercentage(value, total, withFloat = false) {
+    if (value === 0) return 0
+
+    const percentage = (value / total) * 100;
+
+    if (percentage < 10 && withFloat) {
+        return percentage.toFixed(1);
+    } else {
+        return Math.floor(percentage);
+    }
+}
