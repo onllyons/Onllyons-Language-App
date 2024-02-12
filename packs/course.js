@@ -29,7 +29,7 @@ import {SubscribeModal} from "./components/SubscribeModal";
 import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {useNavigation} from "@react-navigation/native";
-import {calculatePercentage, getDayWord, getHourWord} from "./utils/Utls";
+import {calculatePercentage, formatDayWord, getHoursOrMinutes} from "./utils/Utls";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState(null);
@@ -422,7 +422,7 @@ export default function CourseScreen({navigation}) {
                                 <View style={navDropdown.sectionSheet}>
                                     <Text style={navDropdown.headerSheet}>ОБЩЕЕ ВРЕМЯ</Text>
                                     <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>
-                                        {generalInfo.current.coursesCompletedHours ? Math.floor(generalInfo.current.coursesCompletedHours) : 0} {getHourWord(generalInfo.current.coursesCompletedHours)}
+                                        {generalInfo.current.coursesCompletedHours ? getHoursOrMinutes(generalInfo.current.coursesCompletedHours, true) : 0}
                                     </Text>
                                 </View>
                             </View>
@@ -447,7 +447,7 @@ export default function CourseScreen({navigation}) {
                                 source={require('./images/other_images/fire.png')}
                                 style={navDropdown.imageAnalyticsDay}
                             />
-                            <Text style={navDropdown.percentage1}>{seriesData.current.currentSeries ? seriesData.current.currentSeries : 0} {getDayWord(seriesData.current.currentSeries)}</Text>
+                            <Text style={navDropdown.percentage1}>{formatDayWord(seriesData.current.currentSeries)}</Text>
                             <Text style={navDropdown.timeframe1}>Текущая серия</Text>
                         </View>
 
@@ -456,7 +456,7 @@ export default function CourseScreen({navigation}) {
                                 source={require('./images/other_images/deadline.png')}
                                 style={navDropdown.imageAnalyticsDay}
                             />
-                            <Text style={navDropdown.percentage1}>{seriesData.current.maxSeries ? seriesData.current.maxSeries : 0} {getDayWord(seriesData.current.maxSeries)}</Text>
+                            <Text style={navDropdown.percentage1}>{formatDayWord(seriesData.current.maxSeries)}</Text>
                             <Text style={navDropdown.timeframe1}>Самая длинная серия</Text>
                         </View>
                     </View>
