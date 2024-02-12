@@ -12,6 +12,10 @@ export function debounce(func, wait) {
     }
 }
 
+/////////////////////////
+// Format words
+/////////////////////////
+
 export function formatDayWord(days) {
     if (!days) days = 0
 
@@ -68,6 +72,76 @@ export function formatMinutesWord(minutes) {
     
     return `${minutes} ${text}`;
 }
+
+export function formatLessonWord(count) {
+    if (!count) count = 0;
+
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+
+    let text = "уроков";
+
+    if (mod10 === 1 && mod100 !== 11) {
+        text = "урок";
+    } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+        text = "урока";
+    }
+
+    return `${count} ${text}`;
+}
+
+export function formatTrialWord(count) {
+    if (!count) count = 0;
+
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+
+    let text = "испытаний";
+
+    if (mod10 === 1 && mod100 !== 11) {
+        text = "испытание";
+    } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+        text = "испытания";
+    }
+
+    return `${count} ${text}`;
+}
+
+export function formatExcitingWord(count) {
+    if (!count) count = 0;
+
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+
+    let text = "увлекательным";
+
+    if (mod10 === 1 && mod100 !== 11) {
+        text = "увлекательным";
+    } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+        text = "увлекательными";
+    }
+
+    return text;
+}
+
+export function formatAdventureWord(count) {
+    if (!count) count = 0;
+
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+
+    let text = "приключениям";
+
+    if (mod10 === 1 && mod100 !== 11) {
+        text = "приключению";
+    } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+        text = "приключениям";
+    }
+
+    return text;
+}
+
+/////////////////////////
 
 export function getHoursOrMinutes(hours, withWord = false) {
     if (!hours) hours = 0

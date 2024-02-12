@@ -29,7 +29,14 @@ import {SubscribeModal} from "./components/SubscribeModal";
 import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
 import {AnimatedButtonShadow, SHADOW_COLORS} from "./components/buttons/AnimatedButtonShadow";
 import {useNavigation} from "@react-navigation/native";
-import {calculatePercentage, formatDayWord, getHoursOrMinutes} from "./utils/Utls";
+import {
+    calculatePercentage, formatAdventureWord,
+    formatDayWord, formatExcitingWord,
+    formatHoursWord,
+    formatLessonWord,
+    formatTrialWord,
+    getHoursOrMinutes
+} from "./utils/Utls";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
@@ -667,10 +674,8 @@ export default function CourseScreen({navigation}) {
                                 />
                                 <View style={styles.titleDetLessonCat}>
                                     <Text
-                                        style={styles.titleDetLessonCatSubject}>{getCategoryData("courses")} уроков</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд
-                                        навстречу {getCategoryData("courses")} увлекательным
-                                        приключениям!</Text>
+                                        style={styles.titleDetLessonCatSubject}>{formatLessonWord(getCategoryData("courses"))}</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд навстречу {getCategoryData("courses")} {formatExcitingWord(getCategoryData("courses"))} {formatAdventureWord(getCategoryData("courses"))}!</Text>
                                 </View>
                             </View>
 
@@ -683,8 +688,9 @@ export default function CourseScreen({navigation}) {
                                 />
                                 <View style={styles.titleDetLessonCat}>
                                     <Text
-                                        style={styles.titleDetLessonCatSubject}>{getCategoryData("quizzes")} испытаний</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Отправляйся в путешествие
+                                        style={styles.titleDetLessonCatSubject}>{formatTrialWord(getCategoryData("quizzes"))}</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>
+                                        Отправляйся в путешествие
                                         через {getCategoryData("quizzes")} мир
                                         возможностей!</Text>
                                 </View>
@@ -699,8 +705,7 @@ export default function CourseScreen({navigation}) {
                                 />
                                 <View style={styles.titleDetLessonCat}>
                                     <Text
-                                        style={styles.titleDetLessonCatSubject}>Более {Math.floor(getCategoryData("coursesHours"))} часов
-                                        погружения</Text>
+                                        style={styles.titleDetLessonCatSubject}>Более {formatHoursWord(Math.floor(getCategoryData("coursesHours")))} погружения</Text>
                                     <Text style={styles.titleDetLessonCatTxt}>полного погружения в знания</Text>
                                 </View>
                             </View>
