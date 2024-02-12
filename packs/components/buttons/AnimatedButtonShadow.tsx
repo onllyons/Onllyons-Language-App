@@ -19,6 +19,8 @@ type AnimatedButtonShadowProps = {
     shadowPositionYAdditional?: number,
     shadowPositionXAdditional?: number,
 
+    refButton?: any,
+
     shadowBorderRadius?: number,
     shadowTopLeftBorderRadius?: number,
     shadowTopRightBorderRadius?: number,
@@ -28,9 +30,10 @@ type AnimatedButtonShadowProps = {
     shadowColor?: string,
     shadowDisplayAnimate?: "none" | "slide",
 
-    onPress?: () => void,
-    onPressIn?: () => void,
-    onPressOut?: () => void
+    onPress?: (event) => void,
+    onPressIn?: (event) => void,
+    onPressOut?: (event) => void
+    onLayout?: (event) => void
 };
 
 export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
@@ -43,6 +46,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     durationOut = 150,
     moveByY = 5,
     moveByX = 0,
+
+                                                                              refButton,
 
     activeOpacity = 0.75,
 
@@ -62,7 +67,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
 
     onPress,
     onPressIn,
-    onPressOut
+    onPressOut,
+    onLayout
 }) => {
     const transitionContainerY = useRef(new Animated.Value(0));
     const transitionContainerX = useRef(new Animated.Value(0));
@@ -195,9 +201,12 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                     />
 
                     <ButtonComponent
+                        ref={refButton}
                         activeOpacity={activeOpacity}
                         style={styleButton}
                         onLayout={(e) => {
+                            if (onLayout) onLayout(e)
+
                             if (buttonData.height === 0) {
                                 setButtonData({
                                     height: e.nativeEvent.layout.height,
@@ -207,22 +216,22 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                                 })
                             }
                         }}
-                        onPressIn={() => {
+                        onPressIn={(event) => {
                             handlePressIn()
 
                             if (onPressIn) {
-                                onPressIn()
+                                onPressIn(event)
                             }
                         }}
-                        onPressOut={() => {
+                        onPressOut={(event) => {
                             handlePressOut()
 
                             if (onPressOut) {
-                                onPressOut()
+                                onPressOut(event)
                             }
                         }}
-                        onPress={() => {
-                            if (onPress) onPress()
+                        onPress={(event) => {
+                            if (onPress) onPress(event)
                         }}
                     >
                         {children}

@@ -5,7 +5,7 @@ import {
     Image,
     Alert,
     ScrollView,
-    TouchableOpacity, Animated, Dimensions, Pressable
+    TouchableOpacity, Animated, Dimensions, Pressable, FlatList
 } from "react-native";
 
 // fonts
@@ -32,55 +32,45 @@ import {useNavigation} from "@react-navigation/native";
 import {calculatePercentage, formatDayWord, getHoursOrMinutes} from "./utils/Utls";
 
 export default function CourseScreen({navigation}) {
-    const [data, setData] = useState(null);
-    const [showDataToIndex, setShowDataToIndex] = useState(3)
+    const [data, setData] = useState({});
     const [currentCategory, setCurrentCategory] = useState({
         name: "",
         url: "",
         subject: 1
     });
     const [phrasesPercent, setPhrasesPercent] = useState(0)
-    const scrollViewRef = useRef(null);
+    const flatListRef = useRef(null);
 
     const startLayoutY = useRef(0)
-    const categoriesPos = useRef([])
 
+    const currentScrollData = useRef({
+        x: 0,
+        y: 0,
+        contentHeight: 0
+    })
     const categoriesData = useRef({})
     const seriesData = useRef({})
     const generalInfo = useRef({})
 
     const [loader, setLoader] = useState(false)
 
-    const skipLoaded = useRef(true)
+    const [categories, setCategories] = useState([])
 
-    const handleScroll = (nativeEvent) => {
-        let currCategoryOnScroll = currentCategory
-        let currShowToDataIndex = 0
+    const onViewableItemsChanged = ({viewableItems}) => {
+        if (!viewableItems[0] || !categoriesData.current[viewableItems[0]["item"]]) return
 
-        for (const value of categoriesPos.current) {
-            if (nativeEvent.contentOffset.y >= value[1]) {
-                currCategoryOnScroll = {
-                    name: data[value[0]].categoryTitle.trim(),
-                    url: value[0],
-                    subject: value[2],
-                }
+        const category = viewableItems[0]["item"]
 
-                currShowToDataIndex = value[2]
-
-                break
-            }
+        let currCategoryOnScroll = {
+            name: categoriesData.current[category]["name"].trim(),
+            url: category,
+            subject: viewableItems[0]["index"] + 1,
         }
 
         if (currCategoryOnScroll.name !== currentCategory.name) setCurrentCategory(currCategoryOnScroll)
-        if (currShowToDataIndex >= showDataToIndex) {
-            if (!skipLoaded.current) {
-                setShowDataToIndex(Math.min(Object.keys(data).length, currShowToDataIndex + 3))
-                skipLoaded.current = true
-            } else {
-                skipLoaded.current = false
-            }
-        }
     };
+
+    const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}])
 
     useMemo(() => {
         setLoader(true)
@@ -92,19 +82,22 @@ export default function CourseScreen({navigation}) {
         )
             .then(data => {
                 const groupedData = groupByCategory(data.data);
-                setData(groupedData);
-
                 const firstCategory = Object.keys(groupedData)[0];
+                const categories = []
+
+                Object.keys(groupedData).forEach(cat => categories.push(cat))
 
                 categoriesData.current = data.categoriesData
                 seriesData.current = data.seriesData
                 generalInfo.current = data.generalInfo
 
-                setCurrentCategory(prev => ({
+                setCurrentCategory({
                     name: groupedData[firstCategory].categoryTitle.trim(),
                     url: firstCategory,
                     subject: 1
-                }));
+                });
+                setCategories(categories)
+                setData(groupedData);
             })
             .catch(() => {})
             .finally(() => {
@@ -183,7 +176,7 @@ export default function CourseScreen({navigation}) {
                     useNativeDriver: true,
                 }),
                 Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: heightsNav.current.navTopMenu[id] - 1 + heightsNav.current.navTop,
+                    toValue: heightsNav.current.navTopMenu[id] - 2 + heightsNav.current.navTop,
                     duration: 500,
                     bounciness: 0,
                     useNativeDriver: true,
@@ -201,7 +194,7 @@ export default function CourseScreen({navigation}) {
 
             Animated.parallel([
                 Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 1 + heightsNav.current.navTop,
+                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 2 + heightsNav.current.navTop,
                     bounciness: 0,
                     duration: 500,
                     useNativeDriver: true,
@@ -283,6 +276,8 @@ export default function CourseScreen({navigation}) {
                 )
         }
     }
+
+    const [scrollEnable, setScrollEnable] = useState(true)
 
     return (
         <View>
@@ -649,7 +644,6 @@ export default function CourseScreen({navigation}) {
             </View> */}
 
                     <ScrollView
-                        ref={scrollViewRef}
                         contentContainerStyle={{paddingTop: 25, paddingBottom: 80}}
                         style={styles.modalCourseContent}>
                         <View style={styles.infoCatTitle}>
@@ -718,36 +712,37 @@ export default function CourseScreen({navigation}) {
 
             <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
 
-            <ScrollView
-                ref={scrollViewRef}
-                contentContainerStyle={{paddingTop: 140, paddingBottom: 130, minHeight: "100%"}}
+            <FlatList
+                ref={flatListRef}
+                data={categories}
+                scrollEnabled={scrollEnable}
+                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+                renderItem={({item, index}) => (
+                    <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
+                )}
+                contentContainerStyle={{ paddingTop: 140, paddingBottom: 130, minHeight: "100%" }}
                 style={styles.bgCourse}
-                onScroll={e => handleScroll(e.nativeEvent)}
+                onScroll={(event) => {
+                    currentScrollData.current = {
+                        ...currentScrollData.current,
+                        x: event.nativeEvent.contentOffset.x,
+                        y: event.nativeEvent.contentOffset.y
+                    }
+                }}
+                onContentSizeChange={(contentWidth, contentHeight) => {
+                    currentScrollData.current.contentHeight = contentHeight
+                }}
                 scrollEventThrottle={8}
-                onLayout={(e) => startLayoutY.current = e.nativeEvent.layout.y}
-            >
-                <View style={styles.container}>
-                    <View style={styles.contentFlashCards}>
-
-                        <Categories data={data} categoriesPos={categoriesPos}
-                                    startLayoutY={startLayoutY} showDataToIndex={showDataToIndex}/>
-                    </View>
-                </View>
-            </ScrollView>
+                onLayout={(e) => (startLayoutY.current = e.nativeEvent.layout.y)}
+            />
         </View>
     );
 }
 
-const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToIndex}) => {
+const Category = React.memo(({data, category, categoryIndex, scrollRef, categoriesData, currentScrollData, setScrollEnable}) => {
     if (!data) return null
 
     const {width: windowWidth} = Dimensions.get("window");
-    const navigation = useNavigation()
-
-    const getMarginLeftForCard = (index) => {
-        const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
-        return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
-    };
 
     // анимация для начального верхнего изображения
     const moveAnimation = useRef(new Animated.Value(0)).current;
@@ -769,51 +764,36 @@ const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToInd
         ).start();
     }, []);
 
-    const arrayData = Object.keys(data).slice(0, showDataToIndex)
-    const imagesAnim = {}
+    const imagesAnim = []
+    const length = Math.floor(data.items.length / 6)
 
-    arrayData.forEach(category => {
-        const length = Math.floor(data[category].items.length / 6)
+    if (length >= 1) {
+        imagesAnim.push({
+            top: 3 * (56 + 20) - 110,
+            right: 25,
+            image: require("./images/El/course/Group.png")
+        })
 
-        imagesAnim[category] = []
+        imagesAnim.push({
+            top: (data.items.length - (data.items.length % 6) - (length > 2 ? 6 : 0)) * (56 + 20) - 110, // 110 half image height, 56 + 20 - button height + magrinBottom
+            left: 25,
+            image: require("./images/El/course/Group.png")
+        })
+    }
 
-        if (length >= 1) {
-            imagesAnim[category].push({
-                top: 3 * (56 + 20) - 110,
-                right: 25,
-                image: require("./images/El/course/Group.png")
-            })
-
-            imagesAnim[category].push({
-                top: (data[category].items.length - (data[category].items.length % 6) - (length > 2 ? 6 : 0)) * (56 + 20) - 110, // 110 half image height, 56 + 20 - button height + magrinBottom
-                left: 25,
-                image: require("./images/El/course/Group.png")
-            })
-        }
-    })
-
-    return arrayData.map((category, categoryIndex) => (
-        <View key={category}
-              style={{position: "relative"}}
-              onLayout={(event) => {
-                  if (categoriesPos.current.length >= showDataToIndex) return
-
-                  categoriesPos.current.push([category, event.nativeEvent.layout.y + startLayoutY.current, categoryIndex + 1])
-
-                  if (showDataToIndex <= categoriesPos.current.length) categoriesPos.current.sort((a, b) => b[1] - a[1]);
-              }}>
-
+    return (
+        <View style={{position: "relative"}}>
             {categoryIndex > 0 && (
                 <View style={styles.categoryTitleBg}>
                     <View style={styles.hrLine}></View>
                     <Text style={styles.categoryTitle}>
-                        {data[category].categoryTitle}
+                        {data.categoryTitle}
                     </Text>
                     <View style={styles.hrLine}></View>
                 </View>
             )}
 
-            {imagesAnim[category].map((value, index) => (
+            {imagesAnim.map((value, index) => (
                 <View key={index}>
                     <Image
                         source={value.image}
@@ -838,38 +818,183 @@ const Categories = React.memo(({data, categoriesPos, startLayoutY, showDataToInd
                 </Animated.View>
             </View>
 
-            {data[category].items.map((item, index) => (
-                <AnimatedButtonShadow
-                    key={item.id}
-                    shadowColor={item.finished ? "#a08511" : "#828080"}
-                    shadowBorderRadius={300}
-                    shadowDisplayAnimate={"slide"}
-                    moveByY={10}
-                    styleButton={[
-                        {
-                            marginLeft: `${getMarginLeftForCard(index)}%`,
-                        },
-                        styles.card,
-                        styles.bgGry,
-                        item.finished ? styles.finishedCourseLesson : null,
-                    ]}
-                    onPress={() =>
-                        navigation.navigate("CourseLesson", {url: item.url})
-                    }
-                >
-                    <Text>
-                        <FontAwesomeIcon
-                            icon={faStar}
-                            size={30}
-                            style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
-                        />
-                    </Text>
-                </AnimatedButtonShadow>
+            {data.items.map((item, index) => (
+                <Lesson key={index} item={item} index={index} scrollRef={scrollRef} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable} coursesInCategory={categoriesData.current[category].courses}/>
             ))}
 
         </View>
-    ))
+    )
 })
+
+const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, setScrollEnable}) => {
+    const navigation = useNavigation()
+
+    const [showModal, setShowModal] = useState(false)
+    const [visibleModal, setVisibleModal] = useState(false)
+
+    const windowHeight = Dimensions.get("window").height
+    const windowWidth = Dimensions.get("window").width
+
+    const buttonRef = useRef(null)
+    const positions = useRef({
+        arrowX: 0,
+        modalY: 0
+    })
+
+    const scale = useRef(new Animated.Value(0.5))
+
+    const getMarginLeftForCard = (index) => {
+        const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
+        return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
+    };
+
+    const showMenu = () => {
+        Animated.spring(scale.current, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+            bounciness: 0
+        }).start()
+    }
+
+    const hideMenu = () => {
+        Animated.spring(scale.current, {
+            toValue: 0.5,
+            duration: 300,
+            useNativeDriver: true,
+            bounciness: 0
+        }).start(() => setVisibleModal(false))
+    }
+
+    return (
+        <>
+            <AnimatedButtonShadow
+                refButton={buttonRef}
+                shadowColor={item.finished ? "#a08511" : "#828080"}
+                shadowBorderRadius={300}
+                shadowDisplayAnimate={"slide"}
+                moveByY={10}
+                styleButton={[
+                    {
+                        marginLeft: `${getMarginLeftForCard(index)}%`,
+                    },
+                    styles.card,
+                    styles.bgGry,
+                    item.finished ? styles.finishedCourseLesson : null,
+                ]}
+                onPress={() => {
+                    buttonRef.current.measureInWindow((x, y, w) => {
+                        const toBeModalPos = y + 200 + 70 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings
+                        let modalY = y + 70
+
+                        // Scroll if needed
+                        if (toBeModalPos > windowHeight) {
+                            const scrollTo = currentScrollData.current.y + toBeModalPos - windowHeight
+
+                            if (scrollTo > currentScrollData.current.contentHeight) {
+                                console.log("big")
+                            }
+                            modalY -= toBeModalPos - windowHeight
+
+                            scrollRef.current.scrollToOffset({
+                                offset: currentScrollData.current.y + toBeModalPos - windowHeight,
+                                animated: true
+                            })
+
+                            setScrollEnable(false)
+
+                            setTimeout(() => {
+                                positions.current = {arrowX: x - (windowWidth * 0.1) + w / 2 - 10, modalY: modalY}
+                                setShowModal(true)
+                                setVisibleModal(true)
+                                setScrollEnable(true)
+                            }, 100)
+                        } else {
+                            positions.current = {arrowX: x - (windowWidth * 0.1) + w / 2 - 10, modalY: modalY}
+                            setShowModal(true)
+                            setVisibleModal(true)
+                        }
+                    })
+                }}
+            >
+                <Text>
+                    <FontAwesomeIcon
+                        icon={faStar}
+                        size={30}
+                        style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
+                    />
+                </Text>
+            </AnimatedButtonShadow>
+
+            {showModal && (
+                <Modal
+                    isVisible={visibleModal}
+                    animationIn={"fadeIn"}
+                    animationOut={"fadeOut"}
+                    backdropOpacity={0}
+                    backdropColor={"rgba(0, 0, 0, 0.25)"}
+                    onModalWillShow={() => showMenu()}
+                    onModalWillHide={() => hideMenu()}
+                    onModalHide={() => setShowModal(false)}
+                    onBackdropPress={() => setVisibleModal(false)}
+                >
+                    <Animated.View style={{
+                        position: "absolute",
+                        top: positions.current.modalY,
+                        height: 200,
+                        left: "5%",
+                        width: "90%",
+                        padding: 20,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        backgroundColor: "#f9f9f9",
+                        // green bg
+                        // backgroundColor: "#57cc04",
+                        borderRadius: 25,
+                        borderColor: "#d8d8d8",
+                        borderWidth: 2,
+
+                        transform: [{scale: scale.current}]
+                    }}>
+                        {/* Arrow */}
+                        <Image
+                            source={require("./images/icon/arrowGrayTopDropdown.png")}
+                            style={{
+                                position: "absolute",
+                                top: -18,
+                                left: positions.current.arrowX,
+                                width: 20,
+                                height: 20,
+                                resizeMode: "contain",
+                            }}
+                        />
+
+                        <Text style={styles.bold}>Lesson name: {item.title}</Text>
+                        <Text style={styles.bold}>Lessons: {index + 1} / {coursesInCategory}</Text>
+                        <AnimatedButtonShadow
+                            styleButton={[
+                                globalCss.button,
+                                globalCss.buttonGreen,
+                                {marginBottom: 0}
+                            ]}
+                            shadowColor={"#398205"}
+                            // green shadow
+                            // shadowColor={"#e6e4e4"}
+                            activeOpacity={1}
+
+                            onPress={() => navigation.navigate("CourseLesson", {url: item.url})}
+                        >
+                            <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
+                                Вперёд
+                            </Text>
+                        </AnimatedButtonShadow>
+                    </Animated.View>
+                </Modal>
+            )}
+        </>
+
+    )
+}
 
 const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows}) => {
     if (!topPositionNavTopArrows[id]) topPositionNavTopArrows[id] = new Animated.Value(0)
@@ -899,10 +1024,10 @@ const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, he
         <Animated.View
             style={{
                 ...navDropdown.navTopModal,
-                top: -heightsNav.current.navTopMenu[id],
+                bottom: "100%",
                 transform: [{translateY: topPositionNavTopMenus[id]}]
             }}
-            onLayout={event => heightsNav.current.navTopMenu[id] = Math.ceil(event.nativeEvent.layout.height + 1)}
+            onLayout={event => heightsNav.current.navTopMenu[id] = event.nativeEvent.layout.height}
         >
             <View style={navDropdown.navTopModalIn}>
                 {children}

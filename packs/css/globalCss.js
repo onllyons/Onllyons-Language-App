@@ -144,11 +144,7 @@ const globalCss = StyleSheet.create({
     paddingHorizontal: 32,
     alignItems: "center",
     borderRadius: 14,
-    marginBottom: 20,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 0,
+    marginBottom: 20
   },
   buttonPressed: {
     shadowOffset: { width: 0, height: 0 },
@@ -163,8 +159,7 @@ const globalCss = StyleSheet.create({
     shadowColor: "#4631A8",
   },
   buttonWhite: {
-    backgroundColor: "#ffffff",
-    shadowColor: "#95d5a1",
+    backgroundColor: "#ffffff"
   },
   buttonGry: {
     backgroundColor: "#f1f0f0",
