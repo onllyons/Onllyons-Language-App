@@ -39,10 +39,7 @@ export default function CourseScreen({navigation}) {
         url: "",
         subject: 1
     });
-    const [phrasesPercent, setPhrasesPercent] = useState({
-        category: "",
-        percent: 0
-    })
+    const [phrasesPercent, setPhrasesPercent] = useState(0)
     const scrollViewRef = useRef(null);
 
     const startLayoutY = useRef(0)
@@ -542,12 +539,9 @@ export default function CourseScreen({navigation}) {
                 id={"phrasesModal"}
                 navTopMenuCallbacks={navTopMenuCallbacks}
                 onOpen={() => {
-                    if (phrasesPercent.category !== currentCategory.url) {
-                        setPhrasesPercent({
-                            category: currentCategory.url,
-                            percent: calculatePercentage(getCategoryData("phrasesCompleted"), getCategoryData("allPhrases"))
-                        })
-                    }
+                    const percent = calculatePercentage(generalInfo.current.phrasesCompleted, generalInfo.current.phrases)
+
+                    if (phrasesPercent !== percent) setPhrasesPercent(percent)
                 }}
             >
 
@@ -559,7 +553,7 @@ export default function CourseScreen({navigation}) {
                         <AnimatedCircularProgress
                             size={160}
                             width={21}
-                            fill={phrasesPercent.category === currentCategory.url ? phrasesPercent.percent : 0}
+                            fill={phrasesPercent}
                             tintColor="#ffd100"
                             backgroundColor="#748895"
                             lineCap="round"
@@ -582,7 +576,7 @@ export default function CourseScreen({navigation}) {
                                 shadowColor={"#d8d8d8"}
                                 moveByY={3}
                             >
-                                <Text style={navDropdown.percentage}>{getCategoryData("phrasesCompleted")}</Text>
+                                <Text style={navDropdown.percentage}>{generalInfo.current.phrasesCompleted}</Text>
                                 <Text style={navDropdown.timeframe}>Всего изучено из {generalInfo.current.phrases ? generalInfo.current.phrases : 0}</Text>
                             </AnimatedButtonShadow>
 
@@ -592,7 +586,7 @@ export default function CourseScreen({navigation}) {
                                 shadowColor={"#d8d8d8"}
                                 moveByY={3}
                             >
-                                <Text style={navDropdown.percentage}>{phrasesPercent.percent}%</Text>
+                                <Text style={navDropdown.percentage}>{phrasesPercent}%</Text>
                                 <Text style={navDropdown.timeframe}>Прогресс курса из 100%</Text>
                             </AnimatedButtonShadow>
                         </View>
