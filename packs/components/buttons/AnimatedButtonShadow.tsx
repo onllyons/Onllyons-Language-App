@@ -16,6 +16,7 @@ type SHADOW_COLOR = keyof typeof SHADOW_COLORS;
 
 type AnimatedButtonShadowProps = {
     permanentlyActive?: boolean,
+    permanentlyActiveOpacity?: number,
     children: React.ReactNode,
     styleContainer?: ViewStyle,
     styleContainerIn?: ViewStyle,
@@ -53,6 +54,7 @@ type AnimatedButtonShadowProps = {
 
 export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     permanentlyActive = null,
+    permanentlyActiveOpacity = 1,
     children,
     styleContainer = {},
     styleContainerIn = {},
@@ -92,6 +94,7 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     const transitionShadowY = useRef(new Animated.Value(shadowDisplayAnimate === "slide" ? 0 : moveByY));
     const transitionShadowX = useRef(new Animated.Value(shadowDisplayAnimate === "slide" ? 0 : moveByX));
     const opacityShadow = useRef(new Animated.Value(1));
+    const opacityContainer = useRef(new Animated.Value(1));
     const [buttonData, setButtonData] = useState({
         height: 0,
         width: 0,
@@ -129,7 +132,13 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                 toValue: activeOpacity,
                 duration: 200,
                 useNativeDriver: true,
-            })
+            }),
+
+            permanentlyActiveRef.current && permanentlyActiveOpacity < 1 && Animated.timing(opacityContainer.current, {
+                toValue: permanentlyActiveOpacity,
+                duration: durationIn,
+                useNativeDriver: true,
+            }),
         ]).start()
     }
 
@@ -163,7 +172,13 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                 toValue: 1,
                 duration: 200,
                 useNativeDriver: true,
-            })
+            }),
+
+            permanentlyActiveOpacity < 1 && Animated.timing(opacityContainer.current, {
+                toValue: 1,
+                duration: durationOut,
+                useNativeDriver: true,
+            }),
         ]).start()
     }
 
@@ -200,11 +215,14 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
             <Animated.View
                 style={[
                     size === "full" && {width: "100%"},
-                    styleContainer, {
-                    transform: [
-                        {translateY: transitionContainerY.current},
-                        {translateX: transitionContainerX.current}
-                    ]}
+                    {
+                        opacity: opacityContainer.current,
+                        transform: [
+                            {translateY: transitionContainerY.current},
+                            {translateX: transitionContainerX.current}
+                        ]
+                    },
+                    styleContainer
                 ]}
             >
                 <View style={[{position: "relative"}, styleContainerIn]}>

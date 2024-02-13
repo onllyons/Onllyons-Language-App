@@ -62,13 +62,13 @@ export const stylesCourse_lesson = StyleSheet.create({
     imageContainerGroup: {
         backgroundColor: "red",
         width: "100%",
-        height: 300,
+        height: "50%",
         borderRadius: 14,
         justifyContent: "center",
     },
     variantImageStyle: {
         width: "100%",
-        height: "37%",
+        height: "50%",
         resizeMode: "cover",
         borderRadius: 10,
     },
@@ -200,10 +200,6 @@ export const stylesCourse_lesson = StyleSheet.create({
         shadowRadius: 0,
         elevation: 0,
     },
-    input: {
-        paddingVertical: 18,
-        alignItems: "center",
-    },
     bgGroupTitleCourse1: {
         borderWidth: 1,
         borderColor: "#E0E0E0",
@@ -251,6 +247,8 @@ export const stylesCourse_lesson = StyleSheet.create({
         marginTop: 6,
     },
     input: {
+        paddingVertical: 18,
+        alignItems: "center",
         color: "#636363",
         fontSize: 17,
         minHeight: '10%',
@@ -293,10 +291,10 @@ export const stylesCourse_lesson = StyleSheet.create({
     },
     btnQuizPositionCa: {
         borderRadius: 10,
-        marginBottom: '3%',
-        paddingVertical: "4%",
-        paddingHorizontal: "4%",
-        marginRight: "3%",
+        marginBottom: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        marginRight: 5,
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
@@ -336,11 +334,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
-        borderRightWidth: 2,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        borderRightWidth: 2
     },
     audioWord: {},
     succesImg: {

@@ -4,9 +4,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faCirclePause, faCirclePlay, faVolumeHigh, faVolumeXmark} from "@fortawesome/free-solid-svg-icons";
 import {Video} from "expo-av";
 
-export const CustomVideo = React.memo(({url, isFocused}) => {
+export const CustomVideo = React.memo(({url, isFocused, isQuiz}) => {
     const [status, setStatus] = useState({})
-    const video = useRef(null)
+    const video = useRef({})
 
     useEffect(() => {
         if (!video.current) return
@@ -20,7 +20,7 @@ export const CustomVideo = React.memo(({url, isFocused}) => {
     }
 
     return (
-        <View style={styles.videoContainer}>
+        <View style={[styles.videoContainer, isQuiz && {height: "50%"}]}>
             <Video
                 ref={video}
                 style={styles.video}
@@ -29,7 +29,7 @@ export const CustomVideo = React.memo(({url, isFocused}) => {
                 onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
                 resizeMode="cover"
             />
-            <VideoControls video={video.current} status={status}/>
+            {status.isLoaded && <VideoControls video={video.current} status={status}/>}
         </View>
     )
 })

@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useEffect, useState} from "react";
-import {Text, TouchableOpacity} from "react-native";
+import {Text} from "react-native";
 import {AVPlaybackStatus, Audio} from "expo-av";
 
 // icons
@@ -11,6 +11,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {stylesCourse_lesson as styles} from "../../css/course_lesson.styles";
 import globalCss from "../../css/globalCss";
 import {SERVER_URL} from "../../utils/Requests";
+import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
 
 type SoundCustomProps = {
     name: string;
@@ -25,7 +26,6 @@ export const CustomSound: FunctionComponent<SoundCustomProps> = React.memo(({
 }) => {
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [AudioQuiz, setAudioQuiz] = useState(false);
 
     const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
         if (status.isLoaded && status.didJustFinish) {
@@ -74,17 +74,32 @@ export const CustomSound: FunctionComponent<SoundCustomProps> = React.memo(({
     }, [sound]);
 
     useEffect(() => {
-        if (isFocused) playSound(name);
-        else if (sound) sound.unloadAsync();
-    }, [isFocused, name]);
+        checkFocus()
+    }, [isFocused]);
+
+    const checkFocus = async () => {
+        if (!sound) {
+            if (isFocused) playSound(name)
+            return
+        }
+
+        const status = await sound.getStatusAsync()
+
+        if (!isFocused && status.isPlaying) {
+            sound.pauseAsync()
+            setIsPlaying(false)
+        } else if (isFocused && !status.isPlaying) {
+            sound.replayAsync({shouldPlay: true})
+            setIsPlaying(true)
+        }
+    }
 
     return (
-        <TouchableOpacity
+        <AnimatedButtonShadow
             onPress={() => playSound(name)}
-            style={[styles.audioTouchable, AudioQuiz ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry]}
-            onPressIn={() => setAudioQuiz(true)}
-            onPressOut={() => setAudioQuiz(false)}
-            activeOpacity={1}
+            styleButton={[styles.audioTouchable, globalCss.bgGry]}
+            shadowColor={"gray"}
+            moveByY={3}
         >
             <Text style={styles.audioWord}>
                 <FontAwesomeIcon
@@ -93,8 +108,6 @@ export const CustomSound: FunctionComponent<SoundCustomProps> = React.memo(({
                     style={{color: "#1f80ff"}}
                 />
             </Text>
-        </TouchableOpacity>
-
-
+        </AnimatedButtonShadow>
     );
 })

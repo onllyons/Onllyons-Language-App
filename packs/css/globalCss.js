@@ -291,12 +291,10 @@ const globalCss = StyleSheet.create({
   },
   correct: {
     backgroundColor: "#81b344",
-    shadowColor: "#529302",
     color: "white",
   },
   incorrect: {
     backgroundColor: "#ca3431",
-    shadowColor: "#942320",
     color: "white",
   },
   hint: {

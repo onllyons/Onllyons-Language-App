@@ -30,9 +30,10 @@ import {faRotateLeft, faTimes, faLightbulb} from "@fortawesome/free-solid-svg-ic
 import {stylesCourse_lesson as styles} from "../css/course_lesson.styles";
 import globalCss from "../css/globalCss";
 import {ContainerButtons} from "../components/course/ContainerButtons";
-import {debounce} from "../utils/Utls";
+import {debounce, levenshtein} from "../utils/Utls";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 import {SubscribeModal} from "../components/SubscribeModal";
+import {WordConstruct} from "../components/course/WordConstruct";
 
 const {width} = Dimensions.get("window");
 
@@ -57,42 +58,45 @@ export const CourseLesson = ({navigation}) => {
     const indexRef = useRef(0);
     const quizActiveRef = useRef(false);
     const debouncedSaveProgress = useRef(debounce(saveProgress, 1000))
+    const debouncedCheckText = useRef(debounce(checkTexts, 1000))
 
     const allowCourse = useRef(true)
     const [subscribeModalVisible, setSubscribeModalVisible] = useState(false)
 
-    const calculateCorrectPercentage = () => {
+    const sortedWords = useRef({})
+
+    const calculateCorrectPercentage = useCallback(() => {
         const all = Object.values(currentCheck.current).length;
-        const right = Object.values(currentCheck.current).filter((item) => item).length;
-        const unRight = Object.values(currentCheck.current).filter((item) => !item).length;
+        const right = Object.values(currentCheck.current).filter((item) => item.value).length;
+        const unRight = Object.values(currentCheck.current).filter((item) => !item.value).length;
         return {
             all,
             percent: (right * 100) / all,
             correctCount: right,
             wrongCount: unRight,
         };
-    };
-
-    const [showHint, setShowHint] = useState(false);
+    }, [])
 
     const handleShowHint = (key, hintValue) => {
+        currentCheck.current[key] = {
+            value: false,
+            disableSwipe: false
+        }
+
         setCheck((state) => ({
             ...state,
-            [key]: hintValue,
+            [key]: {
+                value: hintValue,
+                disable: true
+            },
         }));
-
-        setShowHint(true);
-
-        setTimeout(() => {
-            setShowHint(false);
-        }, 2000);
     };
 
 
-    const setCurrentQuest = (key, value, currentValue) => {
-        currentCheck.current = {...currentCheck.current, [key]: value === currentValue};
+    const setCurrentQuest = useCallback((key, value, currentValue) => {
+        currentCheck.current = {...currentCheck.current, [key]: {value: value === currentValue, disableSwipe: false}};
         setCheck((state) => ({...state, [key]: value}));
-    };
+    }, [check])
 
     const handleBackButtonPress = () => {
         try {
@@ -174,6 +178,7 @@ export const CourseLesson = ({navigation}) => {
                     });
                 } else {
                     issetSeriesNext.current = data.issetSeriesNext;
+                    currentCheck.current = {}
 
                     setQuizActive(false);
 
@@ -186,21 +191,30 @@ export const CourseLesson = ({navigation}) => {
                         ...item,
                         type: "carousel",
                     }));
-                    const questions = data.questions.map((item) => ({
-                        ...item,
-                        type: "questions",
-                    }));
+
+                    startQuizIndex.current = carousel.length
+
+                    const questions = data.questions.map((item, indexItem) => {
+                        const key = `questions${indexItem + startQuizIndex.current}${item.id}`
+                        currentCheck.current[key] = {value: false, disableSwipe: true}
+
+                        return {
+                            ...item,
+                            type: "questions",
+                        }
+                    })
 
                     startQuizIndex.current = carousel.length
                     courseId.current = data.courseId
-                    currentCheck.current = {}
+                    sortedWords.current = {}
 
                     setCheck({})
                     setDataFull([...carousel, ...questions]);
-                    setShowCongratulationsModal(false)
                     swiperRef.current?.snapToItem(0, false);
 
                     debouncedSaveProgress.current()
+
+                    setTimeout(() => setShowCongratulationsModal(false), 200)
                 }
 
                 checkAllowCourse()
@@ -209,8 +223,6 @@ export const CourseLesson = ({navigation}) => {
 
     const finish = () => {
         // Finish
-        setShowCongratulationsModal(false)
-
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/course/course_finish.php`,
             {
@@ -221,6 +233,7 @@ export const CourseLesson = ({navigation}) => {
             {success: false}
         )
             .then(() => {
+                setShowCongratulationsModal(false)
                 navigation.goBack();
             })
     };
@@ -230,35 +243,123 @@ export const CourseLesson = ({navigation}) => {
         debouncedSaveProgress.current()
     }
 
-    const isCurrentWord = (word, checkKey, dataItemV1, dataItemV2) => {
-        // TODO
-        /*  console.log(
-          'check[keyId].split(" ").filter((item) => item === word)',
-          checkKey
-        ); */
-        if (word.length <= 3)
-            return checkKey?.split(" ").filter((item) => item === word).length > 0;
-
-        return checkKey && checkKey?.includes(word);
-    };
-
     function restartQuiz() {
-        currentCheck.current = {}
         swiperRef.current?.snapToItem(startQuizIndex.current, false);
-        setShowCongratulationsModal(false)
-        setCheck({})
+
+        setTimeout(() => {
+            Object.keys(currentCheck.current).forEach(key => {
+                currentCheck.current[key].value = false
+                currentCheck.current[key].disableSwipe = true
+            })
+            sortedWords.current = {}
+            setCheck({})
+            setShowCongratulationsModal(false)
+        }, 200)
     }
+
+    // Word construct
+
+    const isUsedWordConstruct = useCallback((index, checkValue) => {
+        if (!checkValue) return false
+
+        return checkValue.indexesPressed[index] && !checkValue.indexesPressed[index].show;
+    }, [])
+
+    const setValueWordConstruct = useCallback((indexItem, indexWord, key) => {
+        if (check[key]) {
+            if (check[key].complete) return
+            else if (check[key].indexesPressed[indexWord] && check[key].indexesPressed[indexWord].changeBg) return
+        }
+
+        const word = sortedWords.current[indexItem]["correctWords"][indexWord]
+        const isLast = !sortedWords.current[indexItem]["correctWords"][indexWord + 1]
+
+        currentCheck.current[key] = {
+            value: isLast,
+            disableSwipe: !isLast
+        }
+
+        if ((!check[key] || check[key].lastCorrectIndex === -1) && indexWord === 0) {
+            setCheck((state) => ({
+                ...state,
+                [key]: {
+                    text: word,
+                    indexesPressed: {...(state[key] ? state[key].indexesPressed : {}), 0: {show: true, correct: true, changeBg: true}},
+                    lastCorrectIndex: indexWord,
+                    complete: isLast
+                },
+            }));
+        } else if (check[key] && !check[key].isLast && check[key].lastCorrectIndex + 1 === indexWord && word) {
+            setCheck((state) => ({
+                ...state,
+                [key]: {
+                    text: `${state[key].text} ${word}`,
+                    indexesPressed: {...state[key].indexesPressed, [indexWord]: {show: true, correct: true, changeBg: true}},
+                    lastCorrectIndex: indexWord,
+                    complete: isLast
+                },
+            }));
+        } else {
+            setCheck((state) => ({
+                ...state,
+                [key]: {
+                    text: state[key] ? state[key].text : "",
+                    indexesPressed: {...(state[key] ? state[key].indexesPressed : {}), [indexWord]: {show: true, correct: false, changeBg: true}},
+                    lastCorrectIndex: state[key] ? state[key].lastCorrectIndex : -1,
+                    complete: false
+                },
+            }));
+        }
+
+        setTimeout(() => {
+            setCheck((state) => ({
+                ...state,
+                [key]: {
+                    ...state[key],
+                    indexesPressed: {
+                        ...state[key].indexesPressed,
+                        [indexWord]: {
+                            show: !state[key].indexesPressed[indexWord].correct,
+                            correct: state[key].indexesPressed[indexWord].correct,
+                            changeBg: false
+                        }
+                    }
+                },
+            }));
+        }, 1000)
+    }, [check])
+
+    const getSortedWordsConstruct = useCallback((indexItem, correctText, ...anotherTexts) => {
+        if (sortedWords.current[indexItem]) {
+            return sortedWords.current[indexItem].allWords
+        } else {
+            const wordsCorrect = correctText.split(" ").filter((item) => item.length > 0)
+            const wordsAdd = anotherTexts.join(" ").split(" ").filter((item) => item.length > 0)
+
+            let words = [
+                ...wordsCorrect,
+                ...wordsAdd,
+            ]
+                .map((word, index) => ([word, index]))
+                .sort(() => Math.random() - 0.5)
+
+            sortedWords.current[indexItem] = {
+                allWords: words,
+                correctWords: wordsCorrect
+            }
+
+            return words
+        }
+    }, [])
 
     const drawCarouselTest = (dataItem, indexItem) => {
         const key = `${dataItem.type}${indexItem}${dataItem.id}`;
         const currentQuest = dataItem[`v${dataItem.correct}`] || "";
-        // TODO test data NOW
-        //if (indexItem === index) console.log("dataItem", dataItem);
 
         if (!dataItem) return null;
         const keyStr = `carousel-${dataItem.series}-${indexItem}`;
 
-        if (dataItem.type === "carousel")
+        if (dataItem.type === "carousel") {
             return (
                 <View key={keyStr} style={styles.slideIn}>
                     <View style={styles.videoContainerGroup}>
@@ -273,6 +374,7 @@ export const CourseLesson = ({navigation}) => {
                         />
                     ) : (
                         <CustomVideo
+                            isQuiz={false}
                             isFocused={allowCourse.current && indexItem === index}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
                         />
@@ -288,6 +390,7 @@ export const CourseLesson = ({navigation}) => {
                     </View>
                 </View>
             );
+        }
 
         switch (dataItem.variant) {
             case "v":
@@ -301,6 +404,7 @@ export const CourseLesson = ({navigation}) => {
                         </View>
 
                         <CustomVideo
+                            isQuiz={true}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/content/videos/${dataItem.file_path}`}
                             isFocused={allowCourse.current && indexItem === index}
                         />
@@ -367,29 +471,8 @@ export const CourseLesson = ({navigation}) => {
                     </View>
                 );
             case "ca":
-                const words = [
-                    ...dataItem.v1.split(" "),
-                    ...(dataItem.v2?.split(" ") || []),
-                ]
-                    .filter((item) => item.length > 0)
-                    .sort((a, b) => b.length - a.length);
-                const setValueCA = (value) => {
-                    currentCheck.current = {
-                        ...currentCheck.current,
-                        [key]: true,
-                    }
+                const wordsCa = getSortedWordsConstruct(indexItem, dataItem.v1, dataItem.v2)
 
-                    if (!check[key] && dataItem.v1.split(" ")[0] === value)
-                        setCheck((state) => ({
-                            ...state,
-                            [key]: value,
-                        }));
-                    else if (dataItem.v1.includes(`${check[key]} ${value}`))
-                        setCheck((state) => ({
-                            ...state,
-                            [key]: `${state[key]} ${value}`,
-                        }));
-                };
                 return (
                     <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
@@ -403,60 +486,24 @@ export const CourseLesson = ({navigation}) => {
                             <TextInput
                                 placeholder="Выберите правдивые слова"
                                 placeholderTextColor="#a5a5a5"
-                                value={check[key]}
+                                value={check[key] ? check[key].text : ""}
                                 editable={false}
                                 style={globalCss.input}
                             />
                         </View>
 
                         <View style={styles.groupQuizBtn}>
-                            {words.map((word, wordIndex) => {
-                                return isCurrentWord(word, check[key], dataItem.v1, dataItem.v2) ? null : (
-                                    <AnimatedButtonShadow
-                                        key={`word-${wordIndex}`}
-                                        onPress={() => {
-                                            setValueCA(word);
-                                        }}
-                                        styleButton={[
-                                            styles.btnQuizPositionCa,
-                                            globalCss.bgGry
-                                        ]}
-                                        shadowColor={"gray"}
-                                    >
-                                        <Text style={styles.btnQuizStyleCa}>{word}</Text>
-                                    </AnimatedButtonShadow>
+                            {wordsCa.map((word) => {
+                                return !isUsedWordConstruct(word[1], check[key]) && (
+                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]}/>
                                 );
                             })}
                         </View>
                     </View>
                 );
             case "ct":
-                const wordsTest = [
-                    ...dataItem.v1.split(" "),
-                    ...(dataItem.v2?.split(" ") || []),
-                ]
-                    .filter((item) => item.length > 0)
-                    .sort((a, b) => b.length - a.length);
-                const setValueCT = (value) => {
-                    currentCheck.current = {
-                        ...currentCheck.current,
-                        [key]: true,
-                    }
+                const wordsCt = getSortedWordsConstruct(indexItem, dataItem.v1, dataItem.v2)
 
-                    if (!check[key] && dataItem.v1.split(" ")[0] === value)
-                        setCheck((state) => ({
-                            ...state,
-                            [key]: value,
-                        }));
-                    else if (
-                        check[key] &&
-                        dataItem.v1?.includes(`${check[key]} ${value}`)
-                    )
-                        setCheck((state) => ({
-                            ...state,
-                            [key]: `${state[key]} ${value}`,
-                        }));
-                };
                 return (
                     <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
@@ -466,36 +513,16 @@ export const CourseLesson = ({navigation}) => {
                             <TextInput
                                 placeholder="Выберите правдивые слова"
                                 placeholderTextColor="#a5a5a5"
-                                value={check[key]}
+                                value={check[key] ? check[key].text : ""}
                                 editable={false}
                                 style={globalCss.input}
                             />
                         </View>
 
                         <View style={styles.groupQuizBtn}>
-                            {wordsTest.map((word, wordIndex) => {
-                                // Verifică dacă butonul a fost apăsat înainte de a începe returnarea JSX
-                                const isButtonPressed = buttonStates[wordIndex] || false;
-
-                                // Continuă cu restul logicii doar dacă cuvântul curent nu este selectat
-                                if (isCurrentWord(word, check[key], dataItem.v1, dataItem.v2)) {
-                                    return null;
-                                }
-
-                                return (
-                                    <AnimatedButtonShadow
-                                        key={`word-${wordIndex}`}
-                                        style={[
-                                            styles.btnQuizPositionCa,
-                                            globalCss.bgGry
-                                        ]}
-                                        shadowColor={"gray"}
-                                        onPress={() => {
-                                            setValueCT(word);
-                                        }}
-                                    >
-                                        <Text style={styles.btnQuizStyleCa}>{word}</Text>
-                                    </AnimatedButtonShadow>
+                            {wordsCt.map((word) => {
+                                return !isUsedWordConstruct(word[1], check[key]) && (
+                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]}/>
                                 );
                             })}
                         </View>
@@ -512,26 +539,43 @@ export const CourseLesson = ({navigation}) => {
 
                         <View style={[styles.inputViewKeyboard, styles.inputContainerKeyboard]}>
                             <TextInput
+                                editable={check[key] ? !check[key].disable : true}
                                 placeholder="Напиши пропущенное слово."
                                 placeholderTextColor="#a5a5a5"
                                 style={styles.input}
-                                value={check[key]}
+                                value={check[key] ? check[key].value : ""}
                                 onChangeText={(value) => {
-                                    const rightValue = value.replace(
-                                        /[.,\/#\!$%\^&\*;:{}=\-_`~()]/g,
-                                        ""
-                                    );
-
-                                    currentCheck.current = {
-                                        ...currentCheck.current,
-                                        [key]:
-                                        rightValue.toLocaleLowerCase().trim() ===
-                                        dataItem.v1.toLocaleLowerCase(),
+                                    currentCheck.current[key] = {
+                                        value: false,
+                                        disableSwipe: true
                                     }
+
+                                    debouncedCheckText.current(dataItem.v1, value, 3, 3, (correct) => {
+                                        if (check[key] && check[key].disable) return
+
+                                        if (correct) {
+                                            currentCheck.current[key] = {
+                                                value: true,
+                                                disableSwipe: false
+                                            }
+
+                                            setCheck((state) => ({
+                                                ...state,
+                                                [key]: {
+                                                    value: value,
+                                                    disable: true
+                                                },
+                                            }));
+                                        }
+                                    })
+
                                     setCheck((state) => ({
                                         ...state,
-                                        [key]: rightValue,
-                                    }));
+                                        [key]: {
+                                            value: value,
+                                            disable: false
+                                        },
+                                    }))
                                 }}
                             />
                             <TouchableOpacity style={styles.btnGetHint}
@@ -540,10 +584,7 @@ export const CourseLesson = ({navigation}) => {
                                     <FontAwesomeIcon icon={faLightbulb} size={20} style={globalCss.whiteDarker}/>
                                 </Text>
                             </TouchableOpacity>
-
-
                         </View>
-
                     </View>
                 );
             case "t":
@@ -583,6 +624,14 @@ export const CourseLesson = ({navigation}) => {
                 );
         }
     };
+
+    const checkDisabledSwipeButtons = () => {
+        const currentKey = `${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`
+
+        if (!currentCheck.current[currentKey]) return false
+
+        return currentCheck.current[currentKey].disableSwipe
+    }
 
     useEffect(() => {
         updateSlider(currentSeries.current);
@@ -624,15 +673,7 @@ export const CourseLesson = ({navigation}) => {
                     />
                 </View>
                 <SwiperButtonsContainer
-                    isDisabled={
-                        (!check[`${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`] && dataFull?.[index]?.type !== "carousel")
-                        || ((dataFull?.[index]?.variant === "ca" || dataFull?.[index]?.variant === "ct")
-                            && check[`${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`] !== dataFull?.[index]?.v1)
-                        || (dataFull?.[index]?.variant === "k"
-                            && check[`${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`]
-                                .toLocaleLowerCase()
-                                .trim() !== dataFull?.[index]?.v1.toLocaleLowerCase().trim())
-                    }
+                    isDisabled={checkDisabledSwipeButtons()}
                     onRightPress={handleRightButtonPress}
                     showQuizResult={showQuizResult}
                     index={index}
@@ -749,6 +790,86 @@ export const CourseLesson = ({navigation}) => {
     );
 };
 
+const checkTexts = (oldText, newText, partiallyCoincidesMax = 3, allowWordDiff = 3, callback = null) => {
+    const arrOldText = oldText.trim().toLowerCase().split(/[\s\n\r]+/)
+    const arrNewText = newText.trim().toLowerCase().split(/[\s\n\r]+/)
+    let formatNewText = newText.replace(/[,.!?]+/g, "").replace(/[\n\r]+|\s{2,}/g, " ")
+    let formatOldText = oldText.replace(/[,.!?]+/g, "").replace(/[\n\r]+|\s{2,}/g, " ")
+    let diffIndex = {}
+
+    if (Math.abs(formatOldText.length - formatNewText.length) >= allowWordDiff) {
+        // Разница в количестве символов более чем
+        // console.log(`Разница в количестве символов более чем ${allowWordDiff}`)
+        if (callback) callback(false)
+        return false
+    }
+
+    function checkDifferences() {
+        const arrOld = arrOldText.slice(0)
+        const arrNew = arrNewText.slice(0)
+
+        Object.keys(diffIndex).forEach(key => {
+            arrNew.splice(key, 1)
+        })
+
+        for (let i = 0; i < arrOld.length; i++) {
+            if (!arrNew[i]) return
+
+            arrOld[i] = arrOld[i].replace(/[,.!?]*/g, "")
+            arrNew[i] = arrNew[i].replace(/[,.!?]*/g, "")
+
+            const diff = levenshtein(arrOld[i], arrNew[i])
+
+            const toAddIndex = i + (diffIndex.length > 0 ? diffIndex.length : 0)
+
+            if (diff > 0 && !diffIndex[toAddIndex]) {
+                // Percentages
+                const percentages = diff >= arrOld[i].length ? 100 : diff / arrOld[i].length * 100
+
+                diffIndex[toAddIndex] = percentages
+
+                if (percentages > 50) return checkDifferences()
+            }
+        }
+    }
+
+    checkDifferences()
+
+    let partiallyCoincides = false;
+    let notCoincides = false;
+    let partiallyCounter = 0
+
+    Object.keys(diffIndex).forEach(key => {
+        if (diffIndex[key] > 50) {
+            notCoincides = true
+        } else {
+            partiallyCounter++
+            partiallyCoincides = true
+        }
+    })
+
+    if (notCoincides || (newText.length <= 0 && oldText.length > 0)) {
+        // Текст не полностью совпадает
+        // console.log("Текст не совпадает")
+        return false
+    } else if (partiallyCoincides) {
+        if (partiallyCounter <= partiallyCoincidesMax) {
+            // Текст не полностью совпадает
+            // console.log("Текст не полностью совпадает")
+            if (callback) callback(false)
+            return false
+        } else {
+            // Текст не полностью совпадает
+            // console.log("Текст не полностью совпадает")
+            if (callback) callback(false)
+            return false
+        }
+    }
+
+    if (callback) callback(true)
+    return true
+}
+
 const ProgressBar = ({currentIndex, totalCount}) => {
     const progress = (currentIndex + 1) / totalCount;
     return (
@@ -770,10 +891,10 @@ const SwiperButtonsContainer = ({
     <View style={styles.swiperButtonsContainer}>
         <AnimatedButtonShadow
             permanentlyActive={isDisabled}
+            permanentlyActiveOpacity={0.5}
             styleButton={[
                 globalCss.button,
-                globalCss.buttonBlue,
-                {opacity: isDisabled ? 0.5 : 1},
+                globalCss.buttonBlue
             ]}
             shadowColor={"blue"}
             size={"full"}

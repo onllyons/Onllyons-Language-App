@@ -20,7 +20,7 @@ type ContainerButtonsProps = {
     ) => void;
 };
 
-export const ContainerButtons: FunctionComponent<ContainerButtonsProps> = ({
+export const ContainerButtons: FunctionComponent<ContainerButtonsProps> = React.memo(({
     disabled,
     keyId,
     checkKey,
@@ -92,4 +92,4 @@ export const ContainerButtons: FunctionComponent<ContainerButtonsProps> = ({
             </View>
         </View>
     );
-};
+});
