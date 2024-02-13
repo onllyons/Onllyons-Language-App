@@ -768,7 +768,7 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
         Animated.loop( // Repetă animația
             Animated.sequence([ // Creează o secvență de animații
                 Animated.timing(moveAnimation, {
-                    toValue: -10, // Mișcă în sus cu 10 unități
+                    toValue: 10, // Mișcă în sus cu 10 unități
                     duration: 1000, // Durata animației în milisecunde
                     useNativeDriver: true, // Folosește driverul nativ pentru performanță îmbunătățită
                 }),
@@ -824,16 +824,22 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
                 </View>
             ))}
 
-            <View>
+            <View style={{paddingTop: 57, zIndex: 2}}>
                 <Animated.View
                     style={{
-                        transform: [{translateY: moveAnimation}],
+                        position: "absolute",
+                        top: 0,
+                        left: windowWidth / 2 - 38,
+                        transform: [
+                            {translateY: moveAnimation}
+                        ],
                     }}
                 >
                     <Image source={require("./images/other_images/start.png")}
                            style={styles.startImg}/>
                 </Animated.View>
             </View>
+
 
             {data.items.map((item, index) => (
                 <Lesson key={index} item={item} index={index} scrollRef={scrollRef} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable} coursesInCategory={categoriesData.current[category].courses}/>

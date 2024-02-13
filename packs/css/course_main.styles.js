@@ -207,8 +207,8 @@ export const stylesCourse_lesson = StyleSheet.create({
         color: "#ababab",
     },
     startImg: {
-        width: 107,
-        height: 57,
+        width: 74,
+        height: 55,
         resizeMode: "contain",
         alignSelf: "center",
     },
