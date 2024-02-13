@@ -1013,6 +1013,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                         />
 
                         <Text style={styles.bold}>Lesson name: {item.title}</Text>
+                        <Text style={styles.bold}>Tile Lesson: {item.time_lesson}</Text>
                         <Text style={styles.bold}>Lessons: {index + 1} / {coursesInCategory}</Text>
                         <AnimatedButtonShadow
                             styleButton={[
