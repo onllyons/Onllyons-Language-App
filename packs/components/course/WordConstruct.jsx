@@ -4,11 +4,11 @@ import {stylesCourse_lesson as styles} from "../../css/course_lesson.styles";
 import globalCss from "../../css/globalCss";
 import {Text} from "react-native";
 
-export const WordConstruct = React.memo(({word, indexItem, setValueWordConstruct, check}) => {
+export const WordConstruct = React.memo(({word, indexItem, setValueWordConstruct, check, keyItem}) => {
     return (
         <AnimatedButtonShadow
             onPress={() => {
-                setValueWordConstruct(indexItem, word[1], key);
+                setValueWordConstruct(indexItem, word[1], keyItem);
             }}
             permanentlyActive={check && check.indexesPressed[word[1]] && check.indexesPressed[word[1]].changeBg}
             styleButton={[

@@ -495,7 +495,7 @@ export const CourseLesson = ({navigation}) => {
                         <View style={styles.groupQuizBtn}>
                             {wordsCa.map((word) => {
                                 return !isUsedWordConstruct(word[1], check[key]) && (
-                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]}/>
+                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]} keyItem={key}/>
                                 );
                             })}
                         </View>
@@ -522,7 +522,7 @@ export const CourseLesson = ({navigation}) => {
                         <View style={styles.groupQuizBtn}>
                             {wordsCt.map((word) => {
                                 return !isUsedWordConstruct(word[1], check[key]) && (
-                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]}/>
+                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]} keyItem={key}/>
                                 );
                             })}
                         </View>
