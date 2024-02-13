@@ -886,7 +886,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
     const handlePressButton = useCallback(() => {
         buttonRef.current.measureInWindow((x, y, w) => {
-            const toBeModalPos = y + 200 + 70 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings
+            const toBeModalPos = y + 200 + 70 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings modal (top and bottom)
             let modalY = y + 70
 
             // Scroll if needed
@@ -897,7 +897,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
                 // If scrolling is too low, display on top
                 if (scrollTo + windowHeight > currentScrollData.current.contentHeight) {
-                    modalY -= 70 + 200 + 40
+                    modalY -= 70 + 200 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings modal (top and bottom)
                     arrowBottom = true
                     delay = 0
                 } else {
@@ -914,7 +914,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                 setTimeout(() => {
                     positions.current = {
                         arrowBottom: arrowBottom,
-                        arrowX: x - (windowWidth * 0.1) + w / 2 - 10,
+                        arrowX: x - (windowWidth * 0.1) + w / 2 - 10, // 10 - half size arrow
                         modalY: modalY
                     }
                     setShowModal(true)
