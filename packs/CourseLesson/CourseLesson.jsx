@@ -32,6 +32,7 @@ import globalCss from "../css/globalCss";
 import {ContainerButtons} from "../components/course/ContainerButtons";
 import {debounce} from "../utils/Utls";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
+import {SubscribeModal} from "../components/SubscribeModal";
 
 const {width} = Dimensions.get("window");
 
@@ -57,6 +58,9 @@ export const CourseLesson = ({navigation}) => {
     const quizActiveRef = useRef(false);
     const debouncedSaveProgress = useRef(debounce(saveProgress, 1000))
 
+    const allowCourse = useRef(true)
+    const [subscribeModalVisible, setSubscribeModalVisible] = useState(false)
+
     const calculateCorrectPercentage = () => {
         const all = Object.values(currentCheck.current).length;
         const right = Object.values(currentCheck.current).filter((item) => item).length;
@@ -68,7 +72,6 @@ export const CourseLesson = ({navigation}) => {
             wrongCount: unRight,
         };
     };
-
 
     const [showHint, setShowHint] = useState(false);
 
@@ -145,6 +148,10 @@ export const CourseLesson = ({navigation}) => {
         indexRef.current = newIndex
     };
 
+    const checkAllowCourse = () => {
+        if (!allowCourse.current) setSubscribeModalVisible(true)
+    }
+
     const updateSlider = (series) => {
         currentSeries.current = series;
 
@@ -158,6 +165,8 @@ export const CourseLesson = ({navigation}) => {
             {success: false}
         )
             .then((data) => {
+                allowCourse.current = data.allow
+
                 if (!data.carousel.length && !data.questions.length) {
                     Toast.show({
                         type: "error",
@@ -193,6 +202,8 @@ export const CourseLesson = ({navigation}) => {
 
                     debouncedSaveProgress.current()
                 }
+
+                checkAllowCourse()
             })
     };
 
@@ -230,8 +241,6 @@ export const CourseLesson = ({navigation}) => {
 
         return checkKey && checkKey?.includes(word);
     };
-    console.log("check", check);
-    console.log("currentCheck", currentCheck.current);
 
     function restartQuiz() {
         currentCheck.current = {}
@@ -260,11 +269,11 @@ export const CourseLesson = ({navigation}) => {
                         <CustomSound
                             name={dataItem.file_path}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/audio-lessons/${dataItem.file_path}`}
-                            isFocused={indexItem === index}
+                            isFocused={allowCourse.current && indexItem === index}
                         />
                     ) : (
                         <CustomVideo
-                            isFocused={indexItem === index}
+                            isFocused={allowCourse.current && indexItem === index}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
                         />
                     )}
@@ -293,7 +302,7 @@ export const CourseLesson = ({navigation}) => {
 
                         <CustomVideo
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/content/videos/${dataItem.file_path}`}
-                            isFocused={indexItem === index}
+                            isFocused={allowCourse.current && indexItem === index}
                         />
 
                         <ContainerButtons
@@ -342,7 +351,7 @@ export const CourseLesson = ({navigation}) => {
                         </View>
                         <CustomSound
                             name={dataItem.file_path}
-                            isFocused={indexItem === index}
+                            isFocused={allowCourse.current && indexItem === index}
                         />
                         <ContainerButtons
                             disabled={Boolean(check[key])}
@@ -388,7 +397,7 @@ export const CourseLesson = ({navigation}) => {
                         </View>
                         <CustomSound
                             name={dataItem.file_path}
-                            isFocused={indexItem === index}
+                            isFocused={allowCourse.current && indexItem === index}
                         />
                         <View style={[styles.inputView, styles.inputContainer1]}>
                             <TextInput
@@ -581,6 +590,7 @@ export const CourseLesson = ({navigation}) => {
 
     return (
         <>
+            <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
             <View style={styles.swiperContent}>
                 <View style={styles.row}>
                     <TouchableOpacity
@@ -627,6 +637,8 @@ export const CourseLesson = ({navigation}) => {
                     showQuizResult={showQuizResult}
                     index={index}
                     totalSlides={totalSlides}
+                    allowCourse={allowCourse}
+                    setSubscribeModalVisible={setSubscribeModalVisible}
                 />
             </View>
             {showCongratulationsModal && (
@@ -751,8 +763,10 @@ const SwiperButtonsContainer = ({
         onRightPress,
         showQuizResult,
         index,
-        totalSlides
-    }) => (
+        totalSlides,
+        allowCourse,
+        setSubscribeModalVisible
+}) => (
     <View style={styles.swiperButtonsContainer}>
         <AnimatedButtonShadow
             permanentlyActive={isDisabled}
@@ -765,13 +779,17 @@ const SwiperButtonsContainer = ({
             size={"full"}
             onPress={() => {
                 if (!isDisabled) {
-                    if (index === totalSlides - 1) showQuizResult(true)
-                    else onRightPress()
+                    if (!allowCourse.current) {
+                        setSubscribeModalVisible(true)
+                    } else {
+                        if (index === totalSlides - 1) showQuizResult(true)
+                        else onRightPress()
+                    }
                 }
             }}
         >
             <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                {index === totalSlides - 1 ? "Завершить тест" : "Продолжить"}
+                {!allowCourse.current ? "Подписаться" : (index === totalSlides - 1 ? "Завершить тест" : "Продолжить")}
             </Text>
         </AnimatedButtonShadow>
     </View>

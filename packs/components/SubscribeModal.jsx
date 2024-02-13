@@ -2,10 +2,10 @@ import Modal from "react-native-modal";
 import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import globalCss from "../css/globalCss";
 import React, {useRef, useState} from "react";
+import {AnimatedButtonShadow} from "./buttons/AnimatedButtonShadow";
 
 export const SubscribeModal = ({visible, setVisible}) => {
     const scrollViewRef = useRef(null);
-    const [btnNextSubscribe, setbtnNextSubscribe] = useState(false);
 
     return (
         <Modal
@@ -92,15 +92,13 @@ export const SubscribeModal = ({visible, setVisible}) => {
                         </View>
                     </View>
                     {/* 11111 */}
-                    <TouchableOpacity
-                        style={[globalCss.button, globalCss.mt8, btnNextSubscribe ? [globalCss.buttonPressed, globalCss.buttonPressedBlue] : globalCss.buttonBlue]}
+                    <AnimatedButtonShadow
+                        styleButton={[globalCss.button, globalCss.mt8, globalCss.buttonBlue]}
+                        shadowColor={"blue"}
                         onPress={() => setVisible(false)}
-                        onPressIn={() => setbtnNextSubscribe(true)}
-                        onPressOut={() => setbtnNextSubscribe(false)}
-                        activeOpacity={1}
                     >
                         <Text style={globalCss.buttonText}>ПОДПИСАТЬСЯ</Text>
-                    </TouchableOpacity>
+                    </AnimatedButtonShadow>
 
                     <TouchableOpacity style={[globalCss.alignSelfCenter, globalCss.mt4]}
                                       onPress={() => setVisible(false)}>
