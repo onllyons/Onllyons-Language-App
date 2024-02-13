@@ -4,9 +4,16 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faCirclePause, faCirclePlay, faVolumeHigh, faVolumeXmark} from "@fortawesome/free-solid-svg-icons";
 import {Video} from "expo-av";
 
-export const CustomVideo = ({url}) => {
+export const CustomVideo = React.memo(({url, isFocused}) => {
     const [status, setStatus] = useState({})
     const video = useRef(null)
+
+    useEffect(() => {
+        if (!video.current) return
+
+        if (!isFocused && status.isPlaying) video.current.pauseAsync()
+        else if (isFocused && !status.isPlaying) video.current.replayAsync({shouldPlay: true})
+    }, [isFocused])
 
     const handlePlaybackStatusUpdate = status => {
         setStatus(status)
@@ -25,7 +32,7 @@ export const CustomVideo = ({url}) => {
             <VideoControls video={video.current} status={status}/>
         </View>
     )
-}
+})
 
 const VideoControls = ({video, status}) => {
     const opacity = useRef(new Animated.Value(1));
@@ -47,8 +54,9 @@ const VideoControls = ({video, status}) => {
         if (status.isPlaying) {
             await video.pauseAsync();
         } else {
-            if (status.playableDurationMillis <= status.positionMillis) {
+            if (status.durationMillis <= status.positionMillis) {
                 await video.replayAsync()
+                console.log("asdasd")
             } else {
                 await video.playAsync();
             }

@@ -38,6 +38,8 @@ import {
     getHoursOrMinutes
 } from "./utils/Utls";
 import ContentLoader from "react-native-easy-content-loader";
+import {withAnchorPoint} from "react-native-anchor-point";
+import * as Haptics from "expo-haptics";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
@@ -46,6 +48,7 @@ export default function CourseScreen({navigation}) {
         url: "",
         subject: 1
     });
+    const currentCategoryRef = useRef({})
     const [phrasesPercent, setPhrasesPercent] = useState(0)
     const [scrollEnabled, setScrollEnabled] = useState(true)
     const flatListRef = useRef(null);
@@ -76,7 +79,11 @@ export default function CourseScreen({navigation}) {
             subject: viewableItems[0]["index"] + 1,
         }
 
-        if (currCategoryOnScroll.name !== currentCategory.name) setCurrentCategory(currCategoryOnScroll)
+        if (currCategoryOnScroll.name !== currentCategoryRef.current.name) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            setCurrentCategory(currCategoryOnScroll)
+            currentCategoryRef.current = currCategoryOnScroll
+        }
     };
 
     const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}])
@@ -100,11 +107,12 @@ export default function CourseScreen({navigation}) {
                 seriesData.current = data.seriesData
                 generalInfo.current = data.generalInfo
 
-                setCurrentCategory({
+                currentCategoryRef.current = {
                     name: groupedData[firstCategory].categoryTitle.trim(),
                     url: firstCategory,
                     subject: 1
-                });
+                }
+                setCurrentCategory(currentCategoryRef.current);
                 setCategories(categories)
                 setData(groupedData);
             })
@@ -866,6 +874,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
     })
 
     const scale = useRef(new Animated.Value(0.5))
+    const navMenuBottomHeight = windowHeight * .11 > 90 ? windowHeight * .11 : 90
 
     const getMarginLeftForCard = (index) => {
         const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
@@ -875,7 +884,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
     const showMenu = () => {
         Animated.spring(scale.current, {
             toValue: 1,
-            duration: 300,
+            duration: 150,
             useNativeDriver: true,
             bounciness: 0
         }).start()
@@ -884,7 +893,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
     const hideMenu = () => {
         Animated.spring(scale.current, {
             toValue: 0.5,
-            duration: 300,
+            duration: 150,
             useNativeDriver: true,
             bounciness: 0
         }).start(() => setVisibleModal(false))
@@ -892,7 +901,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
     const handlePressButton = useCallback(() => {
         buttonRef.current.measureInWindow((x, y, w) => {
-            const toBeModalPos = y + 200 + 70 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings modal (top and bottom)
+            const toBeModalPos = y + 200 + 70 + 40 + navMenuBottomHeight // 200 - modal height, 70 + additional posY, 40 - additional value
             let modalY = y + 70
 
             // Scroll if needed
@@ -903,7 +912,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
                 // If scrolling is too low, display on top
                 if (scrollTo + windowHeight > currentScrollData.current.contentHeight) {
-                    modalY -= 70 + 200 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings modal (top and bottom)
+                    modalY -= 70 + 200 + 40 // 200 - modal height, 70 + additional posY, 40 - additional value
                     arrowBottom = true
                     delay = 0
                 } else {
@@ -938,6 +947,15 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
             }
         })
     }, []);
+
+    const getTransform = () => {
+        let transform = {
+            transform: [{ scale: scale.current }],
+        };
+
+        const x = positions.current.arrowX / (windowWidth * .9)
+        return withAnchorPoint(transform, { x: x, y: positions.current.arrowBottom ? 1 : 0 }, { width: windowWidth * .9, height: 200 });
+    };
 
 
     return (
@@ -998,7 +1016,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                         borderColor: "#d8d8d8",
                         borderWidth: 2,
 
-                        transform: [{scale: scale.current}]
+                        ...getTransform()
                     }}>
                         {/* Arrow */}
                         <Image
@@ -1027,12 +1045,14 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                                 globalCss.buttonGreen,
                                 {marginBottom: 0}
                             ]}
+                            moveByY={3}
                             shadowColor={"green"}
                             activeOpacity={1}
 
                             onPress={() => {
                                 setVisibleModal(false)
                                 setShowModal(false)
+                                setScrollEnable(true)
                                 navigation.navigate("CourseLesson", {url: item.url})
                             }}
                         >

@@ -4,7 +4,6 @@ import {
     Text,
     TouchableOpacity,
     Dimensions,
-    Animated,
     Image,
     TextInput,
     Modal,
@@ -15,11 +14,11 @@ import {LinearGradient} from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
 
 // components
-import {VideoCustom} from "../components/VideoCustom/VideoCustom";
-import {SoundCustom} from "../components/SoundCustom/SoundCustom";
+import {CustomSound} from "../components/course/CustomSound";
+import {CustomVideo} from "../components/course/CustomVideo";
 
 // helps
-import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
+import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "../utils/Requests";
 
 // fonts
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -30,8 +29,9 @@ import {faRotateLeft, faTimes, faLightbulb} from "@fortawesome/free-solid-svg-ic
 // styles
 import {stylesCourse_lesson as styles} from "../css/course_lesson.styles";
 import globalCss from "../css/globalCss";
-import {ContainerButtons} from "../components/ContainerButtons/ContainerButtons";
+import {ContainerButtons} from "../components/course/ContainerButtons";
 import {debounce} from "../utils/Utls";
+import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 const {width} = Dimensions.get("window");
 
@@ -40,10 +40,7 @@ export const CourseLesson = ({navigation}) => {
     const url = route.params.url;
     const currentSeries = useRef(1);
     const [quizActive, setQuizActive] = useState(false);
-    const [isPressedContinue, setIsPressedContinue] = useState(false);
     const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
-    const [isPressedQuizStart1, setIsPressedStartQuiz1] = useState(false);
-    const [isPressedQuizRestart, setIsPressedRestartQuiz] = useState(false);
     const [totalSlides, setTotalSlides] = useState(0);
     const [index, setIndex] = useState(0);
     const [dataFull, setDataFull] = useState(null);
@@ -51,10 +48,7 @@ export const CourseLesson = ({navigation}) => {
     const currentCheck = useRef({});
     const swiperRef = useRef(null);
     const issetSeriesNext = useRef(true);
-    const quizWidth = useRef(new Animated.Value(width - 100));
     const startQuizIndex = useRef(0);
-    // effect btn audio var ca
-    const [buttonStates, setButtonStates] = useState({});
 
     // For update progress
     const courseId = useRef(-1);
@@ -62,13 +56,6 @@ export const CourseLesson = ({navigation}) => {
     const indexRef = useRef(0);
     const quizActiveRef = useRef(false);
     const debouncedSaveProgress = useRef(debounce(saveProgress, 1000))
-
-    const setButtonState = (index, isPressed) => {
-        setButtonStates(prevState => ({
-            ...prevState,
-            [index]: isPressed
-        }));
-    };
 
     const calculateCorrectPercentage = () => {
         const all = Object.values(currentCheck.current).length;
@@ -116,10 +103,6 @@ export const CourseLesson = ({navigation}) => {
         swiperRef.current?.snapToNext();
     }, []);
 
-    const handleJumpToSlide = useCallback((slideIndex) => {
-        swiperRef.current?.snapToItem(slideIndex);
-    }, []);
-
     function saveProgress() {
         if (courseId.current === -1) return
 
@@ -146,19 +129,6 @@ export const CourseLesson = ({navigation}) => {
 
     const updateProgressBar = (newIndex) => {
         // TODO tester NOW
-        //console.log("dataFull[index].type", dataFull[newIndex].type);
-        /* if (!quizActive && newIndex >= startQuizIndex.current) {
-          Animated.timing(quizWidth.current, {
-            toValue: width - 70,
-            duration: 500,
-            useNativeDriver: false,
-          }).start();
-
-          setQuizActive(true);
-        } else if (quizActive && newIndex < startQuizIndex.current)
-          setQuizActive(false);
-        else if (dataFull[newIndex].type !== "carousel") */
-
         if (quizActive && dataFull[newIndex].type === "carousel") {
             setQuizActive(false);
             quizActiveRef.current = false
@@ -195,7 +165,6 @@ export const CourseLesson = ({navigation}) => {
                     });
                 } else {
                     issetSeriesNext.current = data.issetSeriesNext;
-                    quizWidth.current = new Animated.Value(width - 100);
 
                     setQuizActive(false);
 
@@ -288,19 +257,16 @@ export const CourseLesson = ({navigation}) => {
                     </View>
 
                     {dataItem.file_path.includes("mp3") ? (
-                        <SoundCustom
+                        <CustomSound
                             name={dataItem.file_path}
-                            url={`https://www.language.onllyons.com/ru/ru-en/packs/assest/course/audio-lessons/${dataItem.file_path}`}
+                            url={`${SERVER_URL}/ru/ru-en/packs/assest/course/audio-lessons/${dataItem.file_path}`}
                             isFocused={indexItem === index}
                         />
                     ) : (
-                        <View style={styles.videoContainer}>
-                            <VideoCustom
-                                index={indexItem}
-                                uri={`https://language.onllyons.com/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
-                                isFocused={indexItem === index}
-                            />
-                        </View>
+                        <CustomVideo
+                            isFocused={indexItem === index}
+                            url={`${SERVER_URL}/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
+                        />
                     )}
 
                     <View style={styles.bgGroupTitleCourse1}>
@@ -325,13 +291,10 @@ export const CourseLesson = ({navigation}) => {
                             <Text style={styles.base_title}>{dataItem.description}</Text>
                         </View>
 
-                        <View style={styles.videoContainer}>
-                            <VideoCustom
-                                index={indexItem}
-                                uri={`https://language.onllyons.com/ru/ru-en/packs/assest/course/content/videos/${dataItem.file_path}`}
-                                isFocused={indexItem === index}
-                            />
-                        </View>
+                        <CustomVideo
+                            url={`${SERVER_URL}/ru/ru-en/packs/assest/course/content/videos/${dataItem.file_path}`}
+                            isFocused={indexItem === index}
+                        />
 
                         <ContainerButtons
                             disabled={Boolean(check[key])}
@@ -377,7 +340,7 @@ export const CourseLesson = ({navigation}) => {
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description}</Text>
                         </View>
-                        <SoundCustom
+                        <CustomSound
                             name={dataItem.file_path}
                             isFocused={indexItem === index}
                         />
@@ -423,7 +386,7 @@ export const CourseLesson = ({navigation}) => {
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description}</Text>
                         </View>
-                        <SoundCustom
+                        <CustomSound
                             name={dataItem.file_path}
                             isFocused={indexItem === index}
                         />
@@ -439,24 +402,20 @@ export const CourseLesson = ({navigation}) => {
 
                         <View style={styles.groupQuizBtn}>
                             {words.map((word, wordIndex) => {
-                                const isButtonPressed = buttonStates[wordIndex] || false;
-
                                 return isCurrentWord(word, check[key], dataItem.v1, dataItem.v2) ? null : (
-                                    <TouchableOpacity
+                                    <AnimatedButtonShadow
                                         key={`word-${wordIndex}`}
                                         onPress={() => {
                                             setValueCA(word);
                                         }}
-                                        style={[
+                                        styleButton={[
                                             styles.btnQuizPositionCa,
-                                            isButtonPressed ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry
+                                            globalCss.bgGry
                                         ]}
-                                        onPressIn={() => setButtonState(wordIndex, true)}
-                                        onPressOut={() => setButtonState(wordIndex, false)}
-                                        activeOpacity={1}
+                                        shadowColor={"gray"}
                                     >
                                         <Text style={styles.btnQuizStyleCa}>{word}</Text>
-                                    </TouchableOpacity>
+                                    </AnimatedButtonShadow>
                                 );
                             })}
                         </View>
@@ -515,21 +474,19 @@ export const CourseLesson = ({navigation}) => {
                                 }
 
                                 return (
-                                    <TouchableOpacity
+                                    <AnimatedButtonShadow
                                         key={`word-${wordIndex}`}
                                         style={[
                                             styles.btnQuizPositionCa,
-                                            isButtonPressed ? [globalCss.cardPressed, globalCss.bgGryPressed] : globalCss.bgGry
+                                            globalCss.bgGry
                                         ]}
-                                        onPressIn={() => setButtonState(wordIndex, true)}
-                                        onPressOut={() => setButtonState(wordIndex, false)}
-                                        activeOpacity={1}
+                                        shadowColor={"gray"}
                                         onPress={() => {
                                             setValueCT(word);
                                         }}
                                     >
                                         <Text style={styles.btnQuizStyleCa}>{word}</Text>
-                                    </TouchableOpacity>
+                                    </AnimatedButtonShadow>
                                 );
                             })}
                         </View>
@@ -649,28 +606,9 @@ export const CourseLesson = ({navigation}) => {
                         onSnapToItem={updateProgressBar} // Actualizează bara de progres la scroll
                         renderItem={({item, index}) => (
                             <View style={styles.slideBox}>
-                                <Animated.View
-                                    style={{
-                                        width:
-                                            startQuizIndex.current <= index
-                                                ? quizWidth.current
-                                                : width,
-                                    }}
-                                >
-                                    <View
-                                        style={[
-                                            styles.slide,
-                                            {
-                                                width:
-                                                    startQuizIndex.current <= index
-                                                        ? width - 0
-                                                        : width - 0,
-                                            },
-                                        ]}
-                                    >
-                                        {drawCarouselTest(item, index)}
-                                    </View>
-                                </Animated.View>
+                                <View style={[styles.slide, {width: width}]}>
+                                    {drawCarouselTest(item, index)}
+                                </View>
                             </View>
                         )}
                     />
@@ -686,12 +624,9 @@ export const CourseLesson = ({navigation}) => {
                                 .trim() !== dataFull?.[index]?.v1.toLocaleLowerCase().trim())
                     }
                     onRightPress={handleRightButtonPress}
-                    isPressedContinue={isPressedContinue}
-                    setIsPressedContinue={setIsPressedContinue}
                     showQuizResult={showQuizResult}
                     index={index}
                     totalSlides={totalSlides}
-                    onJumpToSlide={handleJumpToSlide} // ssa sterg sare btn la slaid
                 />
             </View>
             {showCongratulationsModal && (
@@ -761,41 +696,28 @@ export const CourseLesson = ({navigation}) => {
                                 </View>
 
                                 <View style={styles.groupBtnQuizFinish}>
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.buttonRestartQuiz,
-                                            styles.buttonGenQuiz,
-                                            isPressedQuizRestart
-                                                ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                                                : globalCss.buttonGry,
+                                    <AnimatedButtonShadow
+                                        styleButton={[
+                                            styles.buttonEndQuiz,
+                                            globalCss.buttonGry
                                         ]}
-                                        onPressIn={() => setIsPressedRestartQuiz(true)}
-                                        onPressOut={() => setIsPressedRestartQuiz(false)}
-                                        activeOpacity={1}
+                                        styleContainer={styles.buttonRepeatQuizContainer}
+                                        shadowColor={"gray"}
                                         onPress={() => restartQuiz()}
                                     >
-                                        <Text style={styles.modalText}>
-                                            <FontAwesomeIcon
-                                                icon={faRotateLeft}
-                                                size={20}
-                                                style={globalCss.blueLight}
-                                            />
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={[
+                                        <FontAwesomeIcon
+                                            icon={faRotateLeft}
+                                            size={23}
+                                            style={globalCss.blueLight}
+                                        />
+                                    </AnimatedButtonShadow>
+                                    <AnimatedButtonShadow
+                                        styleButton={[
                                             styles.buttonEndQuiz,
-                                            styles.buttonGenQuiz,
-                                            isPressedQuizStart1
-                                                ? [
-                                                    globalCss.buttonPressed,
-                                                    globalCss.buttonPressedGreen,
-                                                ]
-                                                : globalCss.buttonGreen,
+                                            globalCss.buttonGreen
                                         ]}
-                                        activeOpacity={1}
-                                        onPressIn={() => setIsPressedStartQuiz1(true)}
-                                        onPressOut={() => setIsPressedStartQuiz1(false)}
+                                        styleContainer={styles.buttonEndQuizContainer}
+                                        shadowColor={"green"}
                                         onPress={() => {
                                             if (issetSeriesNext.current) updateSlider(currentSeries.current + 1)
                                             else finish()
@@ -804,7 +726,7 @@ export const CourseLesson = ({navigation}) => {
                                         <Text style={styles.modalText}>
                                             {issetSeriesNext.current ? "Дальше" : "Закончить"}
                                         </Text>
-                                    </TouchableOpacity>
+                                    </AnimatedButtonShadow>
                                 </View>
                             </View>
                         </View>
@@ -827,62 +749,30 @@ const ProgressBar = ({currentIndex, totalCount}) => {
 const SwiperButtonsContainer = ({
         isDisabled,
         onRightPress,
-        isPressedContinue,
-        setIsPressedContinue,
         showQuizResult,
         index,
-        totalSlides,
-        onJumpToSlide
+        totalSlides
     }) => (
     <View style={styles.swiperButtonsContainer}>
-        {index === totalSlides - 1 ? (
-            <TouchableOpacity
-                disabled={isDisabled}
-                style={[
-                    globalCss.button,
-                    isPressedContinue
-                        ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
-                        : globalCss.buttonBlue,
-                    {opacity: isDisabled ? 0.5 : 1},
-                ]}
-                onPress={() => showQuizResult(true)}
-                onPressIn={() => setIsPressedContinue(true)}
-                onPressOut={() => setIsPressedContinue(false)}
-                activeOpacity={1}
-            >
-                <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                    Завершить тест
-                </Text>
-            </TouchableOpacity>
-        ) : (
-            <TouchableOpacity
-                disabled={isDisabled}
-                style={[
-                    globalCss.button,
-                    isPressedContinue
-                        ? [globalCss.buttonPressed, globalCss.buttonPressedBlue]
-                        : globalCss.buttonBlue,
-                    {opacity: isDisabled ? 0.5 : 1},
-                ]}
-                onPress={onRightPress}
-                onPressIn={() => setIsPressedContinue(true)}
-                onPressOut={() => setIsPressedContinue(false)}
-                activeOpacity={1}
-            >
-                <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                    Продолжить
-                </Text>
-            </TouchableOpacity>
-        )}
-
-        <TouchableOpacity
-            style={styles.btnabs}
-            onPress={() => onJumpToSlide(17)}
-            activeOpacity={1}
+        <AnimatedButtonShadow
+            permanentlyActive={isDisabled}
+            styleButton={[
+                globalCss.button,
+                globalCss.buttonBlue,
+                {opacity: isDisabled ? 0.5 : 1},
+            ]}
+            shadowColor={"blue"}
+            size={"full"}
+            onPress={() => {
+                if (!isDisabled) {
+                    if (index === totalSlides - 1) showQuizResult(true)
+                    else onRightPress()
+                }
+            }}
         >
             <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
-                onJumpToSlide
+                {index === totalSlides - 1 ? "Завершить тест" : "Продолжить"}
             </Text>
-        </TouchableOpacity>
+        </AnimatedButtonShadow>
     </View>
 );
