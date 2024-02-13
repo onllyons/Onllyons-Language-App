@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useMemo} from "react";
+import React, {useState, useRef, useEffect, useMemo, useCallback} from "react";
 import {
     View,
     Text,
@@ -37,6 +37,7 @@ import {
     formatTrialWord,
     getHoursOrMinutes
 } from "./utils/Utls";
+import ContentLoader from "react-native-easy-content-loader";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
@@ -46,6 +47,7 @@ export default function CourseScreen({navigation}) {
         subject: 1
     });
     const [phrasesPercent, setPhrasesPercent] = useState(0)
+    const [scrollEnabled, setScrollEnabled] = useState(true)
     const flatListRef = useRef(null);
 
     const startLayoutY = useRef(0)
@@ -284,7 +286,9 @@ export default function CourseScreen({navigation}) {
         }
     }
 
-    const [scrollEnable, setScrollEnable] = useState(true)
+    const setScrollEnable = useCallback((value) => {
+        setScrollEnabled(value)
+    }, []);
 
     return (
         <View>
@@ -292,19 +296,27 @@ export default function CourseScreen({navigation}) {
 
             <View style={globalCss.navTabUser}
                   onLayout={event => heightsNav.current.navTop = event.nativeEvent.layout.height}>
-                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("language")}>
-                    <Image
-                        source={require("./images/other_images/nav-top/english.webp")}
-                        style={globalCss.imageNavTop}
-                    />
-                    <Text style={globalCss.dataNavTop}>EN</Text>
-                    <AnimatedNavTopArrow id={"language"} topPositionNavTopArrows={topPositionNavTopArrows}>
+
+                {/*{true ? (*/}
+                {/*    <View>*/}
+                {/*        <ContentLoader active avatar={true} pRows={0} title={false} avatarStyles={{width: 35, height: 35, borderRadius: 10}} />*/}
+                {/*    </View>*/}
+                {/*) : (*/}
+                    <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("language")}>
                         <Image
-                            source={require("./images/icon/arrowTop.png")}
-                            style={navDropdown.navTopArrow}
+                            source={require("./images/other_images/nav-top/english.webp")}
+                            style={globalCss.imageNavTop}
                         />
-                    </AnimatedNavTopArrow>
-                </TouchableOpacity>
+                        <Text style={globalCss.dataNavTop}>EN</Text>
+                        <AnimatedNavTopArrow id={"language"} topPositionNavTopArrows={topPositionNavTopArrows}>
+                            <Image
+                                source={require("./images/icon/arrowTop.png")}
+                                style={navDropdown.navTopArrow}
+                            />
+                        </AnimatedNavTopArrow>
+                    </TouchableOpacity>
+                {/*)}*/}
+
                 <TouchableOpacity style={globalCss.itemNavTabUser}
                                   onPress={() => toggleNavTopMenu("courseLessonAnalytics")}>
                     <Image
@@ -720,7 +732,7 @@ export default function CourseScreen({navigation}) {
             <FlatList
                 ref={flatListRef}
                 data={categories}
-                scrollEnabled={scrollEnable}
+                scrollEnabled={scrollEnabled}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                 renderItem={({item, index}) => (
                     <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
@@ -872,6 +884,56 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
         }).start(() => setVisibleModal(false))
     }
 
+    const handlePressButton = useCallback(() => {
+        buttonRef.current.measureInWindow((x, y, w) => {
+            const toBeModalPos = y + 200 + 70 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings
+            let modalY = y + 70
+
+            // Scroll if needed
+            if (toBeModalPos > windowHeight) {
+                const scrollTo = currentScrollData.current.y + toBeModalPos - windowHeight
+                let delay = 100
+                let arrowBottom = false
+
+                // If scrolling is too low, display on top
+                if (scrollTo + windowHeight > currentScrollData.current.contentHeight) {
+                    modalY -= 70 + 200 + 40
+                    arrowBottom = true
+                    delay = 0
+                } else {
+                    modalY -= toBeModalPos - windowHeight
+
+                    scrollRef.current.scrollToOffset({
+                        offset: scrollTo,
+                        animated: true
+                    })
+                }
+
+                setScrollEnable(false)
+
+                setTimeout(() => {
+                    positions.current = {
+                        arrowBottom: arrowBottom,
+                        arrowX: x - (windowWidth * 0.1) + w / 2 - 10,
+                        modalY: modalY
+                    }
+                    setShowModal(true)
+                    setVisibleModal(true)
+                }, delay)
+            } else {
+                positions.current = {
+                    arrowBottom: false,
+                    arrowX: x - (windowWidth * 0.1) + w / 2 - 10,
+                    modalY: modalY
+                }
+                setShowModal(true)
+                setVisibleModal(true)
+                setScrollEnable(false)
+            }
+        })
+    }, []);
+
+
     return (
         <>
             <AnimatedButtonShadow
@@ -888,56 +950,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                     styles.bgGry,
                     item.finished ? styles.finishedCourseLesson : null,
                 ]}
-                onPress={() => {
-                    buttonRef.current.measureInWindow((x, y, w) => {
-                        const toBeModalPos = y + 200 + 70 + 40 // 200 - modal height, 70 + additional posY, 40 - paddings
-                        let modalY = y + 70
-
-                        // Scroll if needed
-                        if (toBeModalPos > windowHeight) {
-                            const scrollTo = currentScrollData.current.y + toBeModalPos - windowHeight
-                            let delay = 100
-                            let arrowBottom = false
-
-                            // Show modal on top button if it doesn't fit
-                            if (scrollTo > currentScrollData.current.contentHeight) {
-                                console.log("big")
-                                delay = 0
-                                modalY -= 140
-                                arrowBottom = true
-                            } else {
-                                modalY -= toBeModalPos - windowHeight
-                            }
-
-                            scrollRef.current.scrollToOffset({
-                                offset: currentScrollData.current.y + toBeModalPos - windowHeight,
-                                animated: true
-                            })
-
-                            if (delay > 0) setScrollEnable(false)
-
-                            setTimeout(() => {
-                                positions.current = {
-                                    arrowBottom: arrowBottom,
-                                    arrowX: x - (windowWidth * 0.1) + w / 2 - 10,
-                                    modalY: modalY
-                                }
-                                setShowModal(true)
-                                setVisibleModal(true)
-
-                                if (delay > 0) setScrollEnable(true)
-                            }, delay)
-                        } else {
-                            positions.current = {
-                                arrowBottom: false,
-                                arrowX: x - (windowWidth * 0.1) + w / 2 - 10,
-                                modalY: modalY
-                            }
-                            setShowModal(true)
-                            setVisibleModal(true)
-                        }
-                    })
-                }}
+                onPress={handlePressButton}
             >
                 <Text>
                     <FontAwesomeIcon
@@ -956,7 +969,10 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                     backdropOpacity={0}
                     backdropColor={"rgba(0, 0, 0, 0.25)"}
                     onModalWillShow={() => showMenu()}
-                    onModalWillHide={() => hideMenu()}
+                    onModalWillHide={() => {
+                        setScrollEnable(true)
+                        hideMenu()
+                    }}
                     onModalHide={() => setShowModal(false)}
                     onBackdropPress={() => setVisibleModal(false)}
                 >
@@ -1007,7 +1023,11 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                             shadowColor={"green"}
                             activeOpacity={1}
 
-                            onPress={() => navigation.navigate("CourseLesson", {url: item.url})}
+                            onPress={() => {
+                                setVisibleModal(false)
+                                setShowModal(false)
+                                navigation.navigate("CourseLesson", {url: item.url})
+                            }}
                         >
                             <Text style={[globalCss.buttonText, globalCss.textUpercase]}>
                                 Вперёд
