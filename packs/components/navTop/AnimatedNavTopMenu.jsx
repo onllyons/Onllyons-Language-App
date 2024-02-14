@@ -5,7 +5,7 @@ import {
     Pressable, StyleSheet,
     View
 } from "react-native";
-import {fadeInNav, fadeOutNav} from "./FadeNavMenu";
+import {fadeInNav, fadeOutNav} from "../FadeNavMenu";
 
 const AnimatedNavTopContext = createContext("animated nav top context doesnt exists");
 
@@ -220,7 +220,7 @@ export const AnimatedNavTopArrow = ({children, id}) => {
     )
 }
 
-export const AnimatedNavTop = ({children, id, onOpen, onClose}) => {
+export const AnimatedNavTopMenu = ({children, id, onOpen, onClose}) => {
     const {initAnimatedMenu, getAnimatedMenuY} = useAnimatedNavTop()
 
     const callbacks = {

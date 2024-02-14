@@ -18,7 +18,7 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({navTopData}) => {
+const NavTopContent = ({booksData}) => {
     const {setStartPosition} = useAnimatedNavTop()
 
     return (
@@ -29,39 +29,39 @@ const NavTopContent = ({navTopData}) => {
             >
                 <NavTopItemLanguage/>
                 <NavTopItem
-                    text={navTopData.finished}
-                    id={"lessons"}
-                    image={require("../../images/other_images/nav-top/inkwell.png")}
+                    text={booksData.finished}
+                    id={"booksReadedAnalytics"}
+                    image={require("../../images/other_images/nav-top/book.png")}
                 />
                 <NavTopItemSeries/>
                 <NavTopItem
-                    text={navTopData.words}
-                    id={"knownWords"}
-                    image={require("../../images/other_images/nav-top/flash-card.png")}
+                    text={4}
+                    id={"booksSavedAnalytics"}
+                    image={require("../../images/other_images/nav-top/bookmark.png")}
                 />
             </View>
 
             <NavTopItemLanguageMenu/>
             <NavTopItemSeriesMenu/>
 
-            <AnimatedNavTopMenu id={"lessons"}>
+            <AnimatedNavTopMenu id={"booksReadedAnalytics"}>
                 <View style={navDropdown.containerSentences}>
 
-                    <Text style={navDropdown.titleh5}>Пройденные уроки</Text>
-                    <Text style={navDropdown.titleh6}>Сколько уроков я прошёл?</Text>
+                    <Text style={navDropdown.titleh5}>Прочитанные книги</Text>
+                    <Text style={navDropdown.titleh6}>Сколько книг я уже прочитал?</Text>
 
                     <View style={navDropdown.containerCourseData}>
                         <View style={navDropdown.cardCourseData}>
                             <View style={navDropdown.iconContainerRead}>
                                 <Image
-                                    source={require('../../images/other_images/knowledge.png')}
+                                    source={require('../../images/other_images/educationReading.png')}
                                     style={navDropdown.booksImgCard}
                                 />
                             </View>
-                            <View style={navDropdown.dividerCourseData} />
+                            <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>23 / 557</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>23 / 327</Text>
                             </View>
                         </View>
                     </View>
@@ -69,24 +69,24 @@ const NavTopContent = ({navTopData}) => {
                 </View>
             </AnimatedNavTopMenu>
 
-            <AnimatedNavTopMenu id={"knownWords"}>
+            <AnimatedNavTopMenu id={"booksSavedAnalytics"}>
                 <View style={navDropdown.containerSentences}>
 
-                    <Text style={navDropdown.titleh5}>Изученные слова</Text>
-                    <Text style={navDropdown.titleh6}>Сколько слов я изучил?</Text>
+                    <Text style={navDropdown.titleh5}>Сохранённые книги</Text>
+                    <Text style={navDropdown.titleh6}>Общее количество закладок</Text>
 
                     <View style={navDropdown.containerCourseData}>
                         <View style={navDropdown.cardCourseData}>
                             <View style={navDropdown.iconContainerRead}>
                                 <Image
-                                    source={require('../../images/other_images/tasks.png')}
+                                    source={require('../../images/other_images/bookmarks.png')}
                                     style={navDropdown.booksImgCard}
                                 />
                             </View>
-                            <View style={navDropdown.dividerCourseData} />
+                            <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>11 / 5351</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>11 / 327</Text>
                             </View>
                         </View>
                     </View>

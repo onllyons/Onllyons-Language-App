@@ -1,5 +1,5 @@
 import React, {useState, useRef, useMemo} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions, Animated, Pressable,} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
 
 // styles
 import globalCss from './css/globalCss';
@@ -22,8 +22,7 @@ const FlashCardWords = ({navigation}) => {
 
     const navTopData = useRef({
         finished: 0,
-        words: 0,
-        series: 0
+        words: 0
     }).current
 
     useMemo(() => {
@@ -37,7 +36,6 @@ const FlashCardWords = ({navigation}) => {
             .then(data => {
                 navTopData.finished = data.finishedCounter
                 navTopData.words = data.wordsCounter
-                navTopData.series = data.series
 
                 setData(data.data);
                 setVisibleData(data.data.slice(0, 20)); // Afișează primele 20 de carduri inițial

@@ -176,10 +176,7 @@ export default function CourseScreen({navigation}) {
         <View>
             <Loader visible={loader}/>
 
-            <NavTop getCategoryData={getCategoryData} seriesData={seriesData} generalInfo={generalInfo} onLayout={event => {
-                console.log(event.nativeEvent.layout.height)
-                setHeightNav(event.nativeEvent.layout.height)
-            }}/>
+            <NavTop getCategoryData={getCategoryData} seriesData={seriesData.current} generalInfo={generalInfo.current} onLayout={event => setHeightNav(event.nativeEvent.layout.height)}/>
 
             <View style={{...styles.infoCourseSubject, top: heightNav}}>
                 <AnimatedButtonShadow
