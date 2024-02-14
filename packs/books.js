@@ -28,12 +28,13 @@ export default function BooksScreen({navigation}) {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const booksData = useRef({
-        finished: 0
-    }).current
+    const booksInfo = useRef({
+        finished: 0,
+        saved: 0,
+        allBooks: 0
+    })
 
     useMemo(() => {
-        console.log(data)
         setLoading(true);
 
         sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,
@@ -42,7 +43,8 @@ export default function BooksScreen({navigation}) {
             {success: false}
         )
             .then(data => {
-                booksData.finished = data.finishedBooks
+                console.log(data.booksInfo)
+                booksInfo.current = data.booksInfo
 
                 setData(data.data);
 
@@ -70,7 +72,7 @@ export default function BooksScreen({navigation}) {
     return (
         <View style={styles.container}>
 
-            <NavTop booksData={booksData}/>
+            <NavTop data={booksInfo.current}/>
 
             <ScrollView contentContainerStyle={{paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20}}>
                 <Loader visible={loading}/>

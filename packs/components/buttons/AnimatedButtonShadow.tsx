@@ -76,7 +76,7 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     shadowPositionYAdditional = 0,
     shadowPositionXAdditional = 0,
 
-    shadowBorderRadius = 14,
+    shadowBorderRadius = 12,
     shadowTopLeftBorderRadius,
     shadowTopRightBorderRadius,
     shadowBottomLeftBorderRadius,
@@ -216,14 +216,14 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
             <Animated.View
                 style={[
                     size === "full" && {width: "100%"},
+                    styleContainer,
                     {
                         opacity: opacityContainer.current,
                         transform: [
                             {translateY: transitionContainerY.current},
                             {translateX: transitionContainerX.current}
                         ]
-                    },
-                    styleContainer
+                    }
                 ]}
             >
                 <View style={[{position: "relative"}, styleContainerIn]}>
@@ -255,7 +255,7 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                         onLayout={(e) => {
                             if (onLayout) onLayout(e)
 
-                            if (buttonData.height === 0) {
+                            if (buttonData.height === 0 || buttonData.height !== e.nativeEvent.layout.height) {
                                 setButtonData({
                                     height: e.nativeEvent.layout.height,
                                     width: e.nativeEvent.layout.width,

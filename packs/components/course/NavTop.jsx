@@ -149,7 +149,7 @@ const NavTopContent = ({getCategoryData, seriesData, generalInfo, onLayout}) => 
                                 styleContainer={navDropdown.cardDataSceContainer}
                                 styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
                                 shadowColor={"gray"}
-                                moveByY={3}
+                                moveByY={2}
                             >
                                 <Text style={navDropdown.percentage}>{generalInfo.phrasesCompleted}</Text>
                                 <Text style={navDropdown.timeframe}>Всего изучено из {generalInfo.phrases ? generalInfo.phrases : 0}</Text>
@@ -159,9 +159,9 @@ const NavTopContent = ({getCategoryData, seriesData, generalInfo, onLayout}) => 
                                 styleContainer={navDropdown.cardDataSceContainer}
                                 styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
                                 shadowColor={"gray"}
-                                moveByY={3}
+                                moveByY={2}
                             >
-                                <Text style={navDropdown.percentage}>{phrasesPercent}%</Text>
+                                <Text style={navDropdown.percentage}>{percentRef.current}%</Text>
                                 <Text style={navDropdown.timeframe}>Прогресс курса из 100%</Text>
                             </AnimatedButtonShadow>
                         </View>

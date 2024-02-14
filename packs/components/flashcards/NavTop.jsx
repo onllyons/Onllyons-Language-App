@@ -18,7 +18,7 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({navTopData}) => {
+const NavTopContent = ({data}) => {
     const {setStartPosition} = useAnimatedNavTop()
 
     return (
@@ -29,13 +29,13 @@ const NavTopContent = ({navTopData}) => {
             >
                 <NavTopItemLanguage/>
                 <NavTopItem
-                    text={navTopData.finished}
+                    text={data.finished}
                     id={"lessons"}
                     image={require("../../images/other_images/nav-top/inkwell.png")}
                 />
                 <NavTopItemSeries/>
                 <NavTopItem
-                    text={navTopData.words}
+                    text={data.finishedWords}
                     id={"knownWords"}
                     image={require("../../images/other_images/nav-top/flash-card.png")}
                 />
@@ -61,7 +61,7 @@ const NavTopContent = ({navTopData}) => {
                             <View style={navDropdown.dividerCourseData} />
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>23 / 557</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.finished} / {data.allLessons}</Text>
                             </View>
                         </View>
                     </View>
@@ -86,7 +86,7 @@ const NavTopContent = ({navTopData}) => {
                             <View style={navDropdown.dividerCourseData} />
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>11 / 5351</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.finishedWords} / {data.allWords}</Text>
                             </View>
                         </View>
                     </View>

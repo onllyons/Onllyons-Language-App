@@ -22,8 +22,10 @@ const FlashCardWords = ({navigation}) => {
 
     const navTopData = useRef({
         finished: 0,
-        words: 0
-    }).current
+        finishedWords: 0,
+        allLessons: 0,
+        allWords: 0
+    })
 
     useMemo(() => {
         setIsLoading(true); // Activează loader-ul înainte de solicitarea fetch
@@ -34,8 +36,7 @@ const FlashCardWords = ({navigation}) => {
             {success: false}
         )
             .then(data => {
-                navTopData.finished = data.finishedCounter
-                navTopData.words = data.wordsCounter
+                navTopData.current = data.cardsInfo
 
                 setData(data.data);
                 setVisibleData(data.data.slice(0, 20)); // Afișează primele 20 de carduri inițial
@@ -76,7 +77,7 @@ const FlashCardWords = ({navigation}) => {
         <View style={styles.container}>
             <Loader visible={isLoading}/>
 
-            <NavTop navTopData={navTopData}/>
+            <NavTop data={navTopData.current}/>
 
             <ScrollView
                 contentContainerStyle={{paddingTop: 30, paddingBottom: 220}}

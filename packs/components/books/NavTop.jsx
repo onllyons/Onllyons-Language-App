@@ -18,7 +18,7 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({booksData}) => {
+const NavTopContent = ({data}) => {
     const {setStartPosition} = useAnimatedNavTop()
 
     return (
@@ -29,13 +29,13 @@ const NavTopContent = ({booksData}) => {
             >
                 <NavTopItemLanguage/>
                 <NavTopItem
-                    text={booksData.finished}
+                    text={data.finished}
                     id={"booksReadedAnalytics"}
                     image={require("../../images/other_images/nav-top/book.png")}
                 />
                 <NavTopItemSeries/>
                 <NavTopItem
-                    text={4}
+                    text={data.saved}
                     id={"booksSavedAnalytics"}
                     image={require("../../images/other_images/nav-top/bookmark.png")}
                 />
@@ -61,7 +61,7 @@ const NavTopContent = ({booksData}) => {
                             <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>23 / 327</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.finished} / {data.allBooks}</Text>
                             </View>
                         </View>
                     </View>
@@ -86,7 +86,7 @@ const NavTopContent = ({booksData}) => {
                             <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>11 / 327</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.saved} / {data.allBooks}</Text>
                             </View>
                         </View>
                     </View>
