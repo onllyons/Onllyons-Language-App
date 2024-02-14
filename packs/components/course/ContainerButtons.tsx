@@ -3,6 +3,7 @@ import {Text, TouchableOpacity, View} from "react-native";
 
 // styles
 import globalCss from "../../css/globalCss";
+import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
 
 type ContainerButtonsProps = {
     disabled?: boolean;
@@ -33,14 +34,18 @@ export const ContainerButtons: FunctionComponent<ContainerButtonsProps> = React.
 }) => {
     const button = (title: string) => {
         return (
-            <TouchableOpacity
-                disabled={disabled}
-                style={{
+            <AnimatedButtonShadow
+                permanentlyActive={disabled}
+                styleContainer={{
                     flex: 1,
+                }}
+                styleButton={{
+                    width: "100%",
                     paddingVertical: 20,
                     borderRadius: 5,
                     borderWidth: 1,
                     borderColor: "#E0E0E0",
+                    backgroundColor: "#fff",
                     alignItems: "center",
                     justifyContent: "center",
                     ...(checkKey && title === checkKey
@@ -51,7 +56,12 @@ export const ContainerButtons: FunctionComponent<ContainerButtonsProps> = React.
                         }
                         : undefined),
                 }}
-                onPress={() => setCurrentQuest(keyId, title, currentQuest)}
+                shadowColor={"grayWhite"}
+                shadowBorderRadius={5}
+                moveByY={3}
+                onPress={() => {
+                    if (!disabled) setCurrentQuest(keyId, title, currentQuest)
+                }}
             >
                 <Text
                     style={[
@@ -77,7 +87,7 @@ export const ContainerButtons: FunctionComponent<ContainerButtonsProps> = React.
                 >
                     {title}
                 </Text>
-            </TouchableOpacity>
+            </AnimatedButtonShadow>
         );
     };
     return (

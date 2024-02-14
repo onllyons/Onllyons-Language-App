@@ -953,7 +953,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
             transform: [{ scale: scale.current }],
         };
 
-        const x = positions.current.arrowX / (windowWidth * .9)
+        const x = (positions.current.arrowX + 10) / (windowWidth * .8)
         return withAnchorPoint(transform, { x: x, y: positions.current.arrowBottom ? 1 : 0 }, { width: windowWidth * .9, height: 200 });
     };
 
@@ -1050,6 +1050,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                             activeOpacity={1}
 
                             onPress={() => {
+                                scale.current.setValue(0.5)
                                 setVisibleModal(false)
                                 setShowModal(false)
                                 setScrollEnable(true)

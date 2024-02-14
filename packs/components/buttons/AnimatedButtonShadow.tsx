@@ -9,6 +9,7 @@ export const SHADOW_COLORS = {
     gray1: "#c5c5c5",
     gray2: "#828080",
     gray: "#d8d8d8",
+    grayWhite: "#eaeaea",
     yellow: "#a08511"
 } as const
 

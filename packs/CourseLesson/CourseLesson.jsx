@@ -240,6 +240,7 @@ export const CourseLesson = ({navigation}) => {
 
     const showQuizResult = () => {
         setShowCongratulationsModal(true)
+        setCheck({})
         debouncedSaveProgress.current()
     }
 
