@@ -1,5 +1,5 @@
 import React, {useState, useRef, useMemo} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
 
 // styles
 import globalCss from './css/globalCss';
@@ -12,11 +12,10 @@ import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Loader from "./components/Loader";
 import {NavTop} from "./components/flashcards/NavTop";
+import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 
 const FlashCardWords = ({navigation}) => {
-    const [pressedCards, setPressedCards] = useState({});
     const [data, setData] = useState([]);
-    const [visibleData, setVisibleData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const scrollViewRef = useRef(null);
 
@@ -39,39 +38,11 @@ const FlashCardWords = ({navigation}) => {
                 navTopData.current = data.cardsInfo
 
                 setData(data.data);
-                setVisibleData(data.data.slice(0, 20)); // Afișează primele 20 de carduri inițial
             })
             .finally(() => {
                 setTimeout(() => setIsLoading(false), 1)
             })
     }, []);
-
-    const onPressIn = (id) => {
-        setPressedCards(prevState => ({...prevState, [id]: true}));
-    };
-
-    const onPressOut = (id) => {
-        setPressedCards(prevState => ({...prevState, [id]: false}));
-    };
-
-    const handleScroll = (event) => {
-        const offsetY = event.nativeEvent.contentOffset.y;
-        const contentHeight = event.nativeEvent.contentSize.height;
-        const screenHeight = event.nativeEvent.layoutMeasurement.height;
-
-        // Verifică dacă utilizatorul a derulat până la sfârșit
-        if (visibleData.length !== data.length && offsetY + screenHeight >= contentHeight - 20 && !isLoading) {
-            setIsLoading(true);
-
-            // Încarcă următoarele carduri din baza de date
-            const nextVisibleData = data.slice(visibleData.length, visibleData.length + 20);
-
-            setTimeout(() => {
-                setVisibleData(prevVisibleData => [...prevVisibleData, ...nextVisibleData]);
-                setIsLoading(false);
-            }, 1000); // Acesta este un delay simulat pentru a demonstra încărcarea treptată
-        }
-    };
 
     return (
         <View style={styles.container}>
@@ -80,34 +51,30 @@ const FlashCardWords = ({navigation}) => {
             <NavTop data={navTopData.current}/>
 
             <ScrollView
-                contentContainerStyle={{paddingTop: 30, paddingBottom: 220}}
-                onScroll={handleScroll}
+                contentContainerStyle={{paddingTop: 30, paddingBottom: 80, minHeight: "100%"}}
                 scrollEventThrottle={400}
                 ref={scrollViewRef}
             >
                 <View style={styles.contentFlashCards}>
-                    {visibleData.map((item, index) => (
+                    {data.map((item, index) => (
                         <View key={item.id}
                               style={[{width: index % 3 === 0 ? '100%' : '50%'}, globalCss.alignItemsCenter]}>
-                            <TouchableOpacity
-                                style={[
+                            <AnimatedButtonShadow
+                                styleButton={[
                                     styles.card,
-                                    pressedCards[item.id] && styles.cardPressed,
-                                    styles.bgGry,
-                                    pressedCards[item.id] && styles.bgGryPressed,
+                                    styles.bgGry
                                 ]}
+                                shadowColor={"gray"}
+                                shadowBorderRadius={60}
                                 onPress={() => navigation.navigate('FlashCardsWordsCategory', {
                                     codeName: item.code_name,
                                     codeTitle: item.title_category
                                 })}
-                                onPressIn={() => onPressIn(item.id)}
-                                onPressOut={() => onPressOut(item.id)}
-                                activeOpacity={1}
                             >
                                 <Text>
                                     <FontAwesomeIcon icon={faStar} size={30} style={styles.iconFlash}/>
                                 </Text>
-                            </TouchableOpacity>
+                            </AnimatedButtonShadow>
                             <Text>{item.finished ? "Эта карточка завершена" : ""}</Text>
                             <Text style={styles.titleFlashCards}>{item.title_category}</Text>
                         </View>
@@ -140,24 +107,12 @@ const styles = StyleSheet.create({
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
-        borderRightWidth: 2,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
-    },
-    cardPressed: {
-        shadowOffset: {width: 0, height: 0},
-        transform: [{translateY: 4}],
+        borderRightWidth: 2
     },
     bgGry: {
         backgroundColor: '#f9f9f9',
         borderColor: '#d8d8d8',
         shadowColor: '#d8d8d8',
-    },
-    bgGryPressed: {
-        backgroundColor: '#f9f9f9',
-        borderColor: '#d8d8d8',
     },
     contentFlashCards: {
         flexDirection: 'row',
