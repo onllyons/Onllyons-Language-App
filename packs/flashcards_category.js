@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import Loader from "./components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -16,13 +17,11 @@ const shuffleArray = (array) => {
 
 export default function FlashCardsCategory({route, navigation}) {
     const {codeName, codeTitle} = route.params;
-    console.log(codeName)
     const [data, setData] = useState([]);
-    const [pressedCards, setPressedCards] = useState({});
-    const [isPressedContinue, setIsPressedContinue] = useState(false);
+    // const [pressedCards, setPressedCards] = useState({});
     const [loading, setLoading] = useState(false);
     const colors = ['#FF9400', '#7BC70A', '#CE81FF', '#1AB1F6', '#ffcc01', '#FC4849'];
-    const colorsPressed = ['#ffb14c', '#92ea0e', '#deadff', '#59c7f7', '#f9d243', '#f97575'];
+    // const colorsPressed = ['#ffb14c', '#92ea0e', '#deadff', '#59c7f7', '#f9d243', '#f97575'];
 
     const images = [
         require('./images/other_images/flash-cards-leeson/kitty.png'),
@@ -102,13 +101,13 @@ export default function FlashCardsCategory({route, navigation}) {
         }
     };
 
-    const onPressIn = (id) => {
-        setPressedCards(prevState => ({...prevState, [id]: true}));
-    };
-
-    const onPressOut = (id) => {
-        setPressedCards(prevState => ({...prevState, [id]: false}));
-    };
+    // const onPressIn = (id) => {
+    //     setPressedCards(prevState => ({...prevState, [id]: true}));
+    // };
+    //
+    // const onPressOut = (id) => {
+    //     setPressedCards(prevState => ({...prevState, [id]: false}));
+    // };
 
     return (
         <View style={styles.containerMain}>
@@ -125,22 +124,21 @@ export default function FlashCardsCategory({route, navigation}) {
                 </View>
             </View>
 
-            <ScrollView contentContainerStyle={{paddingTop: 0, paddingBottom: 160}}>
+            <ScrollView>
                 <View style={styles.container}>
                     {data.map((item, index) => (
                         <View style={styles.cardLesson} key={item.id}>
-                            <TouchableOpacity
-                                style={[
+                            <AnimatedButtonShadow
+                                styleButton={[
                                     styles.item,
-                                    pressedCards[item.id] && styles.cardPressed,
                                     {
-                                        backgroundColor: pressedCards[item.id] ? colorsPressed[index % colorsPressed.length] : colors[index % colors.length],
+                                        // backgroundColor: pressedCards[item.id] ? colorsPressed[index % colorsPressed.length] : colors[index % colors.length],
+                                        backgroundColor: colors[index % colors.length],
                                         borderColor: '#d8d8d8',
                                     },
                                 ]}
-                                onPressIn={() => onPressIn(item.id)}
-                                onPressOut={() => onPressOut(item.id)}
-                                activeOpacity={1}
+                                shadowColor={"gray"}
+                                shadowBorderRadius={10}
                                 onPress={() => navigation.navigate('FlashCardsWords', {url: item.url})}>
 
                                 <Image
@@ -155,23 +153,22 @@ export default function FlashCardsCategory({route, navigation}) {
                                         style={styles.levelIcon}
                                     />
                                 </View>
-                            </TouchableOpacity>
+                            </AnimatedButtonShadow>
                         </View>
                     ))}
                 </View>
 
-                <TouchableOpacity
-                    style={[styles.containerMessage, isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedGry] : globalCss.buttonGry1]}
-                    onPressIn={() => setIsPressedContinue(true)}
-                    onPressOut={() => setIsPressedContinue(false)}
-                    activeOpacity={1}
+                <AnimatedButtonShadow
+                    styleButton={[styles.containerMessage,  globalCss.buttonGry1]}
+                    shadowColor={"gray1"}
+                    shadowBorderRadius={14}
                 >
                     <Text style={styles.buttonText}>
                         В каждом уроке представлены не более 10 слов, чтобы облегчить изучение и запоминание.
                         Это позволяет более эффективно усваивать материал, сосредотачиваясь на небольшом количестве слов
                         за один раз.
                     </Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
 
 
             </ScrollView>
@@ -197,11 +194,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         alignItems: 'center',
         borderRadius: 14,
-        marginBottom: 20,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        marginBottom: 20
     },
     buttonText: {
         color: 'black',
@@ -235,13 +228,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderLeftWidth: 2,
         borderRightWidth: 2,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
         borderRadius: 10,
-        borderColor: '#d8d8d8',
-        shadowColor: '#d8d8d8',
+        borderColor: '#d8d8d8'
     },
     title: {
         fontSize: 17,
