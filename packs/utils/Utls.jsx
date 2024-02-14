@@ -108,20 +108,18 @@ export function formatTrialWord(count) {
 }
 
 export function formatExcitingWord(count) {
-    if (!count) count = 0;
+    if (!count) return "увлекательным";
 
     const mod10 = count % 10;
     const mod100 = count % 100;
 
-    let text = "увлекательным";
-
     if (mod10 === 1 && mod100 !== 11) {
-        text = "увлекательным";
+        return "увлекательному";
     } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
-        text = "увлекательными";
+        return "увлекательным";
+    } else {
+        return "увлекательным";
     }
-
-    return text;
 }
 
 export function formatAdventureWord(count) {

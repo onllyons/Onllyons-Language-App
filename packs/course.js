@@ -3,43 +3,35 @@ import {
     View,
     Text,
     Image,
-    Alert,
     ScrollView,
-    TouchableOpacity, Animated, Dimensions, Pressable, FlatList
+    Animated, Dimensions, FlatList
 } from "react-native";
 
 // fonts
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 
 // icons
-import {faStar, faFire} from "@fortawesome/free-solid-svg-icons";
+import {faStar} from "@fortawesome/free-solid-svg-icons";
 
 // styles
 import globalCss from "./css/globalCss";
 import {stylesCourse_lesson as styles} from "./css/course_main.styles";
-import {stylesnav_dropdown as navDropdown} from "./css/navDropDownTop.styles";
-
-// progress bar
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
 import {SubscribeModal} from "./components/SubscribeModal";
-import {fadeInNav, fadeOutNav} from "./components/FadeNavMenu";
 import {AnimatedButtonShadow, SHADOW_COLORS} from "./components/buttons/AnimatedButtonShadow";
 import {useNavigation} from "@react-navigation/native";
 import {
-    calculatePercentage, formatAdventureWord,
-    formatDayWord, formatExcitingWord,
+    formatAdventureWord, formatExcitingWord,
     formatHoursWord,
     formatLessonWord,
-    formatTrialWord,
-    getHoursOrMinutes
+    formatTrialWord
 } from "./utils/Utls";
-import ContentLoader from "react-native-easy-content-loader";
 import {withAnchorPoint} from "react-native-anchor-point";
 import * as Haptics from "expo-haptics";
+import {NavTop} from "./components/course/NavTop";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
@@ -49,7 +41,6 @@ export default function CourseScreen({navigation}) {
         subject: 1
     });
     const currentCategoryRef = useRef({})
-    const [phrasesPercent, setPhrasesPercent] = useState(0)
     const [scrollEnabled, setScrollEnabled] = useState(true)
     const flatListRef = useRef(null);
 
@@ -140,110 +131,6 @@ export default function CourseScreen({navigation}) {
         }, {});
     };
 
-    // Nav top Menu
-
-    const navTopMenuCallbacks = useRef({}).current
-
-    const heightsNav = useRef({
-        navTop: 100,
-        navTopMenu: {}
-    });
-
-    // For animation slide
-    const topPositionNavTopMenus = useRef({}).current;
-
-    // For animation arrows
-    const topPositionNavTopArrows = useRef({}).current;
-
-    // Current opened menu
-    const openedNavMenu = useRef(null)
-
-    // Nav top background
-    const {width: windowWidth} = Dimensions.get("window");
-    const navTopBgTranslateX = useRef(new Animated.Value(windowWidth))
-    const navTopBgOpacity = useRef(new Animated.Value(0))
-
-    // Bug on android
-    const [firstOpenMenu, setFirstOpenMenu] = useState(false)
-
-    // Open/close nav menu by id
-    const toggleNavTopMenu = (id = null) => {
-        if (!firstOpenMenu) setFirstOpenMenu(true)
-
-        if (id === null) {
-            if (openedNavMenu.current !== null) id = openedNavMenu.current
-            else return
-        }
-
-        if (openedNavMenu.current !== null && openedNavMenu.current !== id) {
-            navTopMenuCallbacks[openedNavMenu.current].onClose()
-            navTopMenuCallbacks[id].onOpen()
-
-            Animated.parallel([
-                Animated.spring(topPositionNavTopMenus[openedNavMenu.current], {
-                    toValue: 0,
-                    duration: 500,
-                    bounciness: 0,
-                    useNativeDriver: true,
-                }),
-                topPositionNavTopArrows[openedNavMenu.current] && Animated.spring(topPositionNavTopArrows[openedNavMenu.current], {
-                    toValue: 0,
-                    duration: 500,
-                    bounciness: 0,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: heightsNav.current.navTopMenu[id] - 2 + heightsNav.current.navTop,
-                    duration: 500,
-                    bounciness: 0,
-                    useNativeDriver: true,
-                }),
-                topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
-                    toValue: -8,
-                    bounciness: 0,
-                    duration: 500,
-                    useNativeDriver: true,
-                }),
-            ]).start();
-        } else {
-            if (openedNavMenu.current === id) navTopMenuCallbacks[id].onClose()
-            else navTopMenuCallbacks[id].onOpen()
-
-            Animated.parallel([
-                Animated.spring(topPositionNavTopMenus[id], {
-                    toValue: openedNavMenu.current === id ? 0 : heightsNav.current.navTopMenu[id] - 2 + heightsNav.current.navTop,
-                    bounciness: 0,
-                    duration: 500,
-                    useNativeDriver: true,
-                }),
-                topPositionNavTopArrows[id] && Animated.spring(topPositionNavTopArrows[id], {
-                    toValue: openedNavMenu.current === id ? 0 : -8,
-                    bounciness: 0,
-                    duration: 500,
-                    useNativeDriver: true,
-                })
-            ]).start();
-
-            Animated.timing(navTopBgTranslateX.current, {
-                toValue: openedNavMenu.current === id ? windowWidth : 0,
-                duration: 1,
-                delay: openedNavMenu.current === id ? 500 : 0,
-                useNativeDriver: true,
-            }).start()
-            Animated.timing(navTopBgOpacity.current, {
-                toValue: openedNavMenu.current === id ? 0 : 1,
-                duration: 500,
-                useNativeDriver: true,
-            }).start()
-        }
-
-        // Fade bottom nav menu
-        if (openedNavMenu.current === id) fadeOutNav()
-        else if (openedNavMenu.current === null) fadeInNav(() => toggleNavTopMenu())
-
-        openedNavMenu.current = openedNavMenu.current === id ? null : id
-    };
-
     const [isModalVisible, setModalVisible] = useState(false);
     const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
 
@@ -251,378 +138,50 @@ export default function CourseScreen({navigation}) {
         setModalVisible(!isModalVisible);
     };
 
-    const handleButtonPress = () => {
-        // Afiseaza alerta cu mesajul dorit în limba rusă
-        Alert.alert(
-            "Новые языки скоро будут добавлены",
-            "В скором времени будут добавлены новые языки",
-            [
-                {text: "OK"}
-            ],
-            {cancelable: false}
-        );
-
-    };
-
     const getCategoryData = (value, undefinedValue = 0) => {
         return categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url][value] : undefinedValue
-    }
-
-    const getImgByVisit = day => {
-        if (!seriesData.current["daysVisited"]) return require("./images/other_images/checkGry.png")
-
-        return seriesData.current["daysVisited"][day]["visited"] ? (seriesData.current["daysVisited"][day]["visitedMore"] ? require("./images/other_images/checkBlue.png") : require("./images/other_images/check.png")) : require("./images/other_images/checkGry.png")
-    }
-
-    const SyllableGroup = () => {
-        switch (seriesData.current["syllableGroup"]) {
-            case 3:
-                return (
-                    <Text>Группа 3</Text>
-                )
-
-            case 2:
-                return (
-                    <Text>Группа 2</Text>
-                )
-
-            case 1:
-            default:
-                return (
-                    <Text>Группа 1</Text>
-                )
-        }
     }
 
     const setScrollEnable = useCallback((value) => {
         setScrollEnabled(value)
     }, []);
 
+    // const [currentCategories, setCurrentCategories] = useState([]);
+    // const [loading, setLoading] = useState(false);
+    // const [currentPage, setCurrentPage] = useState(0);
+    //
+    // // Подгрузка категорий
+    // const fetchCategories = () => {
+    //     if (loading || categories.length === 0) return;
+    //     setLoading(true);
+    //
+    //     const nextPage = currentPage + 1;
+    //     const startIndex = currentPage * 3;
+    //     const endIndex = startIndex + 3;
+    //     const newCategories = categories.slice(startIndex, endIndex);
+    //
+    //     // Обновляем состояние с новыми категориями
+    //     setCurrentCategories(prevCategories => [...prevCategories, ...newCategories]);
+    //     setCurrentPage(nextPage);
+    //     setLoading(false);
+    // };
+    //
+    // useEffect(() => {
+    //     fetchCategories(); // Загружаем начальные данные при монтировании
+    // }, [categories]);
+
+    const [heightNav, setHeightNav] = useState(100)
+
     return (
         <View>
             <Loader visible={loader}/>
 
-            <View style={globalCss.navTabUser}
-                  onLayout={event => heightsNav.current.navTop = event.nativeEvent.layout.height}>
+            <NavTop getCategoryData={getCategoryData} seriesData={seriesData} generalInfo={generalInfo} onLayout={event => {
+                console.log(event.nativeEvent.layout.height)
+                setHeightNav(event.nativeEvent.layout.height)
+            }}/>
 
-                {/*{true ? (*/}
-                {/*    <View>*/}
-                {/*        <ContentLoader active avatar={true} pRows={0} title={false} avatarStyles={{width: 35, height: 35, borderRadius: 10}} />*/}
-                {/*    </View>*/}
-                {/*) : (*/}
-                    <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("language")}>
-                        <Image
-                            source={require("./images/other_images/nav-top/english.webp")}
-                            style={globalCss.imageNavTop}
-                        />
-                        <Text style={globalCss.dataNavTop}>EN</Text>
-                        <AnimatedNavTopArrow id={"language"} topPositionNavTopArrows={topPositionNavTopArrows}>
-                            <Image
-                                source={require("./images/icon/arrowTop.png")}
-                                style={navDropdown.navTopArrow}
-                            />
-                        </AnimatedNavTopArrow>
-                    </TouchableOpacity>
-                {/*)}*/}
-
-                <TouchableOpacity style={globalCss.itemNavTabUser}
-                                  onPress={() => toggleNavTopMenu("courseLessonAnalytics")}>
-                    <Image
-                        source={require("./images/other_images/nav-top/mortarboard.png")}
-                        style={globalCss.imageNavTop}
-                    />
-                    <Text
-                        style={globalCss.dataNavTop}>{getCategoryData("finished")}</Text>
-                    <AnimatedNavTopArrow id={"courseLessonAnalytics"} topPositionNavTopArrows={topPositionNavTopArrows}>
-                        <Image
-                            source={require("./images/icon/arrowTop.png")}
-                            style={navDropdown.navTopArrow}
-                        />
-                    </AnimatedNavTopArrow>
-                </TouchableOpacity>
-                <TouchableOpacity style={globalCss.itemNavTabUser}
-                                  onPress={() => toggleNavTopMenu("consecutiveDaysSeries")}>
-                    <Image
-                        source={require("./images/other_images/nav-top/flame.png")}
-                        style={globalCss.imageNavTop}
-                    />
-                    <Text style={globalCss.dataNavTop}>{seriesData.current.currentSeries ? seriesData.current.currentSeries : 0}</Text>
-
-                    <AnimatedNavTopArrow id={"consecutiveDaysSeries"} topPositionNavTopArrows={topPositionNavTopArrows}>
-                        <Image
-                            source={require("./images/icon/arrowTop.png")}
-                            style={navDropdown.navTopArrow}
-                        />
-                    </AnimatedNavTopArrow>
-                </TouchableOpacity>
-                <TouchableOpacity style={globalCss.itemNavTabUser} onPress={() => toggleNavTopMenu("phrasesModal")}>
-                    <Image
-                        source={require("./images/other_images/nav-top/feather.png")}
-                        style={globalCss.imageNavTop}
-                    />
-                    <Text
-                        style={globalCss.dataNavTop}>{getCategoryData("phrasesCompleted")}</Text>
-
-                    <AnimatedNavTopArrow id={"phrasesModal"} topPositionNavTopArrows={topPositionNavTopArrows}>
-                        <Image
-                            source={require("./images/icon/arrowTop.png")}
-                            style={navDropdown.navTopArrow}
-                        />
-                    </AnimatedNavTopArrow>
-                </TouchableOpacity>
-            </View>
-
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav} id={"language"} navTopMenuCallbacks={navTopMenuCallbacks}>
-                <View style={navDropdown.containerSentences}>
-                    <View style={navDropdown.rowContainerLanguageSelect}>
-                        <TouchableOpacity style={navDropdown.containerLanguageSelect}>
-                            <Image
-                                source={require('./images/country-flags/usa.png')}
-                                style={navDropdown.flagsLang}
-                            />
-                            <View style={globalCss.alignSelfCenter}>
-                                <Text style={navDropdown.textLangSelect}>English</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={navDropdown.containerLanguageSelect} onPress={handleButtonPress}>
-                            <Image
-                                source={require('./images/country-flags/addmore.png')}
-                                style={navDropdown.flagsLang}
-                            />
-                            <View style={globalCss.alignSelfCenter}>
-                                <Text style={navDropdown.textLangSelect}>Добавить</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </AnimatedNavTopMenu>
-
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav}
-                                id={"courseLessonAnalytics"} navTopMenuCallbacks={navTopMenuCallbacks}>
-                <View style={navDropdown.containerSentences}>
-
-                    <View style={navDropdown.containerCourseData}>
-                        <View style={navDropdown.cardCourseData}>
-                            <View style={navDropdown.iconContainer}>
-
-                                <View style={navDropdown.cardMiddleProcenteCourse}>
-                                    <View style={navDropdown.cardMiddleProcenteRow}>
-                                        <Text style={navDropdown.textProcenteCourse}>{generalInfo.current.coursesCompleted ? calculatePercentage(generalInfo.current.coursesCompleted, generalInfo.current.courses, true) : 0}</Text>
-                                        <Text style={navDropdown.textProcenteCourse1}>%</Text>
-                                    </View>
-                                </View>
-                                <Image
-                                    source={require('./images/other_images/sheet1.png')}
-                                    style={navDropdown.courseSheet}
-                                />
-
-                            </View>
-                            <View style={navDropdown.dividerCourseData}/>
-                            <View style={navDropdown.fluencyContainer}>
-                                <Text style={navDropdown.iconSubText}>УРОВЕНЬ</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{generalInfo.current.level ? generalInfo.current.level : "Beginner"}</Text>
-                            </View>
-                        </View>
-                    </View>
-
-                    <View style={navDropdown.containerSheet}>
-                        <View style={navDropdown.cardSheet}>
-
-                            <View style={navDropdown.sectionSheet2}>
-                                <Text style={navDropdown.header}>ВСЕГО УРОКОВ</Text>
-                                <Text style={navDropdown.numberSheetTxt}>{generalInfo.current.courses ? `${generalInfo.current.coursesCompleted} / ${generalInfo.current.courses}` : "0 / 0"}</Text>
-                            </View>
-
-                            <View style={navDropdown.sectionSheetBorder}>
-                                <View style={navDropdown.sectionSheet1}>
-                                    <Text style={navDropdown.headerSheet}>ВИКТОРИНЫ</Text>
-                                    <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>{generalInfo.current.quizzes ? `${generalInfo.current.quizzesCompleted} / ${generalInfo.current.quizzes}` : "0 / 0"}</Text>
-                                </View>
-                                <View style={navDropdown.sectionSheet}>
-                                    <Text style={navDropdown.headerSheet}>ОБЩЕЕ ВРЕМЯ</Text>
-                                    <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>
-                                        {generalInfo.current.coursesCompletedHours ? getHoursOrMinutes(generalInfo.current.coursesCompletedHours, true) : 0}
-                                    </Text>
-                                </View>
-                            </View>
-
-                        </View>
-                    </View>
-
-                </View>
-            </AnimatedNavTopMenu>
-
-
-            {/* First nav menu */}
-            {/* aici */}
-            <AnimatedNavTopMenu topPositionNavTopMenus={topPositionNavTopMenus} heightsNav={heightsNav}
-                                id={"consecutiveDaysSeries"} navTopMenuCallbacks={navTopMenuCallbacks}>
-                <View style={navDropdown.containerSentences}>
-
-
-                    <View style={navDropdown.containerResultDataSce1}>
-                        <View style={navDropdown.cardDataDayCurrent}>
-                            <Image
-                                source={require('./images/other_images/fire.png')}
-                                style={navDropdown.imageAnalyticsDay}
-                            />
-                            <Text style={navDropdown.percentage1}>{formatDayWord(seriesData.current.currentSeries)}</Text>
-                            <Text style={navDropdown.timeframe1}>Текущая серия</Text>
-                        </View>
-
-                        <View style={navDropdown.cardDataDayLong}>
-                            <Image
-                                source={require('./images/other_images/deadline.png')}
-                                style={navDropdown.imageAnalyticsDay}
-                            />
-                            <Text style={navDropdown.percentage1}>{formatDayWord(seriesData.current.maxSeries)}</Text>
-                            <Text style={navDropdown.timeframe1}>Самая длинная серия</Text>
-                        </View>
-                    </View>
-
-                    <View style={navDropdown.containerResultDataSce1}>
-                        <View style={navDropdown.boxDay}>
-                            <Text style={navDropdown.dayW}>Пн</Text>
-                            <Image
-                                source={getImgByVisit("Mon")}
-                                style={navDropdown.imageAnalyticsDayCheck}
-                            />
-                        </View>
-                        <View style={navDropdown.boxDay}>
-                            <Text style={navDropdown.dayW}>Вт</Text>
-                            <Image
-                                source={getImgByVisit("Tue")}
-                                style={navDropdown.imageAnalyticsDayCheck}
-                            />
-                        </View>
-                        <View style={navDropdown.boxDay}>
-                            <Text style={navDropdown.dayW}>Ср</Text>
-                            <Image
-                                source={getImgByVisit("Wed")}
-                                style={navDropdown.imageAnalyticsDayCheck}
-                            />
-                        </View>
-                        <View style={navDropdown.boxDay}>
-                            <Text style={navDropdown.dayW}>Чт</Text>
-                            <Image
-                                source={getImgByVisit("Thu")}
-                                style={navDropdown.imageAnalyticsDayCheck}
-                            />
-                        </View>
-                        <View style={navDropdown.boxDay}>
-                            <Text style={navDropdown.dayW}>Пт</Text>
-                            <Image
-                                source={getImgByVisit("Fri")}
-                                style={navDropdown.imageAnalyticsDayCheck}
-                            />
-                        </View>
-                        <View style={navDropdown.boxDay}>
-                            <Text style={navDropdown.dayW}>Сб</Text>
-                            <Image
-                                source={getImgByVisit("Sat")}
-                                style={navDropdown.imageAnalyticsDayCheck}
-                            />
-                        </View>
-                        <View style={navDropdown.boxDay}>
-                            <Text style={navDropdown.dayW}>Вс</Text>
-                            <Image
-                                source={getImgByVisit("Sun")}
-                                style={navDropdown.imageAnalyticsDayCheck}
-                            />
-                        </View>
-                    </View>
-                    <View style={globalCss.alignItemsCenter}>
-                        <Text style={navDropdown.titleh7}>
-                            <FontAwesomeIcon icon={faFire} size={20} style={{color: 'orange', marginRight: 7}}/>
-                            <SyllableGroup/>
-                        </Text>
-                    </View>
-
-
-                    {/* way to go! */}
-                    {/* Nice work! */}
-                    {/* Great job! */}
-                    {/* Keep it up! */}
-                    {/* Well done! */}
-                    {/* Fantastic! */}
-                    {/* Keep on shining! */}
-                    {/* Brilliant execution! */}
-                    {/* You're smashing it! */}
-                    {/* Outstanding performance! */}
-                    {/* You're killing it! */}
-
-                </View>
-            </AnimatedNavTopMenu>
-
-            {/* Second nav menu */}
-            <AnimatedNavTopMenu
-                topPositionNavTopMenus={topPositionNavTopMenus}
-                heightsNav={heightsNav}
-                id={"phrasesModal"}
-                navTopMenuCallbacks={navTopMenuCallbacks}
-                onOpen={() => {
-                    const percent = calculatePercentage(generalInfo.current.phrasesCompleted, generalInfo.current.phrases)
-
-                    if (phrasesPercent !== percent) setPhrasesPercent(percent)
-                }}
-            >
-
-                <View style={navDropdown.containerSentences}>
-                    <Text style={navDropdown.titleh5}>Фразы, которые ты освоил</Text>
-                    <Text style={navDropdown.titleh6}>Твой Прогресс в Обучении!</Text>
-
-                    <View style={navDropdown.rowBlockSentences}>
-                        <AnimatedCircularProgress
-                            size={160}
-                            width={21}
-                            fill={phrasesPercent}
-                            tintColor="#ffd100"
-                            backgroundColor="#748895"
-                            lineCap="round"
-                        >
-                            {
-                                (fill) => (
-                                    <>
-                                        <Text style={navDropdown.resultProgressBar}>
-                                            {`${Math.round(fill)}%`}
-                                        </Text>
-                                    </>
-                                )
-                            }
-                        </AnimatedCircularProgress>
-
-                        <View style={navDropdown.containerResultDataSce}>
-                            <AnimatedButtonShadow
-                                styleContainer={navDropdown.cardDataSceContainer}
-                                styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
-                                shadowColor={"gray"}
-                                moveByY={3}
-                            >
-                                <Text style={navDropdown.percentage}>{generalInfo.current.phrasesCompleted}</Text>
-                                <Text style={navDropdown.timeframe}>Всего изучено из {generalInfo.current.phrases ? generalInfo.current.phrases : 0}</Text>
-                            </AnimatedButtonShadow>
-
-                            <AnimatedButtonShadow
-                                styleContainer={navDropdown.cardDataSceContainer}
-                                styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
-                                shadowColor={"gray"}
-                                moveByY={3}
-                            >
-                                <Text style={navDropdown.percentage}>{phrasesPercent}%</Text>
-                                <Text style={navDropdown.timeframe}>Прогресс курса из 100%</Text>
-                            </AnimatedButtonShadow>
-                        </View>
-
-                    </View>
-                </View>
-
-            </AnimatedNavTopMenu>
-
-            {/* Background for nav menu */}
-            <AnimatedNavTopBg navTopBgTranslateX={navTopBgTranslateX.current} navTopBgOpacity={navTopBgOpacity.current}
-                              toggleNavTopMenu={toggleNavTopMenu}/>
-
-            <View style={{...styles.infoCourseSubject, top: heightsNav.current.navTop}}>
+            <View style={{...styles.infoCourseSubject, top: heightNav}}>
                 <AnimatedButtonShadow
                     styleContainer={styles.cardCategoryTitleContainer}
                     shadowBorderRadius={12}
@@ -738,6 +297,11 @@ export default function CourseScreen({navigation}) {
             <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
 
             <FlatList
+                // ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
+                // onEndReached={fetchCategories}
+                // onEndReachedThreshold={0.5}
+                // data={currentCategories}
+
                 ref={flatListRef}
                 data={categories}
                 scrollEnabled={scrollEnabled}
@@ -1068,57 +632,3 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
     )
 }
-
-const AnimatedNavTopArrow = React.memo(({children, id, topPositionNavTopArrows}) => {
-    if (!topPositionNavTopArrows[id]) topPositionNavTopArrows[id] = new Animated.Value(0)
-
-    return (
-        <Animated.View
-            style={{
-                ...navDropdown.navTopArrowView,
-                transform: [{translateY: topPositionNavTopArrows[id]}]
-            }}
-        >
-            {children}
-        </Animated.View>
-    )
-})
-
-const AnimatedNavTopMenu = React.memo(({children, id, topPositionNavTopMenus, heightsNav, navTopMenuCallbacks, onOpen, onClose}) => {
-    if (!topPositionNavTopMenus[id]) topPositionNavTopMenus[id] = new Animated.Value(0)
-    if (!heightsNav.current.navTopMenu[id]) heightsNav.current.navTopMenu[id] = 99999
-
-    navTopMenuCallbacks[id] = {
-        onOpen: onOpen ? onOpen : () => {},
-        onClose: onClose ? onClose : () => {}
-    }
-
-    return (
-        <Animated.View
-            style={{
-                ...navDropdown.navTopModal,
-                bottom: "100%",
-                transform: [{translateY: topPositionNavTopMenus[id]}]
-            }}
-            onLayout={event => heightsNav.current.navTopMenu[id] = event.nativeEvent.layout.height}
-        >
-            <View style={navDropdown.navTopModalIn}>
-                {children}
-            </View>
-        </Animated.View>
-    )
-})
-
-const AnimatedNavTopBg = React.memo(({navTopBgTranslateX, navTopBgOpacity, toggleNavTopMenu}) => {
-    return (
-        <Animated.View
-            style={{
-                ...navDropdown.navTopBg,
-                opacity: navTopBgOpacity,
-                transform: [{translateX: navTopBgTranslateX}]
-            }}
-        >
-            <Pressable style={{width: "100%", height: "100%"}} onPress={() => toggleNavTopMenu()}></Pressable>
-        </Animated.View>
-    )
-})
