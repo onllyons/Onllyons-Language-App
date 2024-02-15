@@ -4,10 +4,9 @@ import * as Haptics from "expo-haptics";
 import Carousel from "react-native-new-snap-carousel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faTimes, faRotateLeft, faGear, faCirclePlay, faCirclePause,} from "@fortawesome/free-solid-svg-icons";
+import {faTimes, faRotateLeft, faGear} from "@fortawesome/free-solid-svg-icons";
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop,} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
-import {Audio} from "expo-av";
 import Loader from "./components/Loader";
 
 import globalCss from "./css/globalCss";
@@ -25,9 +24,6 @@ export default function FlashCardsLearning({route, navigation}) {
     const {url} = route.params;
     const swiperRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [isPressedQuizStart, setIsPressedStartQuiz] = useState(false);
-    const [isPressedQuizStart1, setIsPressedStartQuiz1] = useState(false);
-    const [isPressedQuizRestart, setIsPressedRestartQuiz] = useState(false);
 
     const [isEnabled, setIsEnabled] = useState(false);
     const [isEnabledUsa, setIsEnabledUsa] = useState(true);
@@ -114,17 +110,13 @@ export default function FlashCardsLearning({route, navigation}) {
         setIsLoading(true);
         try {
             const data = await fetchQuizData();
-            if (!data || !Array.isArray(data)) {
-                throw new Error('Invalid data received');
-            }
-
             const random = {}
 
             Object.keys(data).forEach(key => {
                 random[data[key].id] = [2, 1, 4, 3].sort(() => Math.random() - 0.5)
             })
-            setRandomOrders(random)
 
+            setRandomOrders(random)
             setShowQuiz(true);
             setQuizIndex(0);
             setIndex(0)
