@@ -11,6 +11,7 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import {Welcome} from "../components/Welcome";
 import {Audio, InterruptionModeAndroid, InterruptionModeIOS} from "expo-av";
+import {useNavigation} from "@react-navigation/native";
 
 const AuthContext = createContext("user context doesnt exists");
 
@@ -75,6 +76,7 @@ export const setTokens = (obj) => {
 
 export const AuthProvider = ({children}) => {
     const [loader, setLoader] = useState(false);
+    const navigation = useNavigation();
 
     // Loading user data from local storage
     const retrieveData = async () => {
@@ -151,7 +153,12 @@ export const AuthProvider = ({children}) => {
                             text1: "Ошибка, перевойдите в аккаунт",
                         });
 
-                        return logout();
+                        try {
+                            await logout();
+                            navigation.navigate("StartPageScreen")
+                        } catch (err) {
+                            return Promise.reject()
+                        }
                     }
                 }
             })

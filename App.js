@@ -43,6 +43,7 @@ import {
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import React from "react";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
+import {Analytics} from "./packs/components/analytics/Analytics";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -389,12 +390,13 @@ const toastConfig = {
 export default function App() {
     return (
         <>
-            <AuthProvider>
-                <NavigationContainer>
+            <NavigationContainer>
+                <AuthProvider>
+                    <Analytics/>
                     <AppStack/>
                     <StatusBar style="auto"/>
-                </NavigationContainer>
-            </AuthProvider>
+                </AuthProvider>
+            </NavigationContainer>
             <Toast
                 position="bottom"
                 config={toastConfig}

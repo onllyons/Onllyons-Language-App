@@ -1,4 +1,5 @@
 import {Animated, Pressable} from "react-native";
+import {useEffect} from "react";
 
 const opacity = new Animated.Value(0);
 const translateY = new Animated.Value(100);
@@ -39,6 +40,13 @@ export const fadeInNav = (callback = null) => {
 }
 
 export const FadeNavMenu = () => {
+    useEffect(() => {
+        return () => {
+            opacity.stopAnimation()
+            translateY.stopAnimation()
+        };
+    }, []);
+
     return (
         <Animated.View style={{
             position: "absolute",

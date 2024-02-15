@@ -54,7 +54,7 @@ type AnimatedButtonShadowProps = {
     onLayout?: (event) => void
 };
 
-export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
+export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = React.memo(({
     disable = false,
     permanentlyActive = null,
     permanentlyActiveOpacity = 1,
@@ -186,6 +186,17 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     }
 
     useEffect(() => {
+        return () => {
+            transitionContainerY.current.stopAnimation();
+            transitionContainerX.current.stopAnimation();
+            transitionShadowY.current.stopAnimation();
+            transitionShadowX.current.stopAnimation();
+            opacityShadow.current.stopAnimation();
+            opacityContainer.current.stopAnimation();
+        };
+    }, []);
+
+    useEffect(() => {
         if (buttonData.width !== 0 && shadowDisplayAnimate === "slide") {
             Animated.parallel([
                 moveByY !== 0 && Animated.timing(transitionShadowY.current, {
@@ -295,5 +306,5 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                 </View>
             </Animated.View>
     );
-};
+})
 

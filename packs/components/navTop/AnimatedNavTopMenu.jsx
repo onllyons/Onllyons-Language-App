@@ -1,4 +1,4 @@
-import React, {createContext, useCallback, useContext, useRef, useState} from "react";
+import React, {createContext, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {
     Animated,
     Dimensions,
@@ -99,7 +99,7 @@ export const AnimatedNavTopContainer = ({ children }) => {
     const [first, setFirst] = useState(false)
 
     // Open/close nav menu by id
-    const toggleNavTopMenu = (id = null) => {
+    const toggleNavTopMenu = useCallback((id = null) => {
         if (!first) setFirst(true)
 
         if (id === null) {
@@ -176,7 +176,20 @@ export const AnimatedNavTopContainer = ({ children }) => {
         else if (data.openedNavMenu === null) fadeInNav(() => toggleNavTopMenu())
 
         data.openedNavMenu = data.openedNavMenu === id ? null : id
-    };
+    }, [])
+
+    useEffect(() => {
+        return () => {
+            Object.values(data.animatedPositionNavTopMenus).forEach(animatedValue => {
+                animatedValue.stopAnimation();
+            });
+            Object.values(data.animatedPositionNavTopArrows).forEach(animatedValue => {
+                animatedValue.stopAnimation();
+            });
+            data.animatedNavTopBgTranslateX.stopAnimation();
+            data.animatedNavTopBgOpacity.stopAnimation();
+        };
+    }, []);
 
     return (
         <AnimatedNavTopContext.Provider value={{
@@ -255,12 +268,16 @@ export const AnimatedNavTopBg = React.memo(() => {
                 transform: [{translateX: getAnimatedBgX()}]
             }}
         >
-            <Pressable style={{width: "100%", height: "100%"}} onPress={() => toggleNavTopMenu()}></Pressable>
+            <Pressable style={styles.fullSize} onPress={() => toggleNavTopMenu()}></Pressable>
         </Animated.View>
     )
 })
 
 const styles = StyleSheet.create({
+    fullSize: {
+        width: "100%",
+        height: "100%",
+    },
     navTopArrowView: {
         position: "absolute"
     },
