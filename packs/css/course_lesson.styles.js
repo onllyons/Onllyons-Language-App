@@ -3,7 +3,6 @@ import {StyleSheet} from "react-native";
 export const stylesCourse_lesson = StyleSheet.create({
     groupBtnQuizFinish: {
         flexDirection: "row",
-        justifyContent: "center",
         alignItems: "center"
     },
     video: {

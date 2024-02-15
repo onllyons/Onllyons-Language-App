@@ -16,6 +16,7 @@ export const SHADOW_COLORS = {
 type SHADOW_COLOR = keyof typeof SHADOW_COLORS;
 
 type AnimatedButtonShadowProps = {
+    disable?: boolean,
     permanentlyActive?: boolean,
     permanentlyActiveOpacity?: number,
     children: React.ReactNode,
@@ -54,6 +55,7 @@ type AnimatedButtonShadowProps = {
 };
 
 export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
+    disable = false,
     permanentlyActive = null,
     permanentlyActiveOpacity = 1,
     children,
@@ -76,7 +78,7 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
     shadowPositionYAdditional = 0,
     shadowPositionXAdditional = 0,
 
-    shadowBorderRadius = 12,
+    shadowBorderRadius = 14,
     shadowTopLeftBorderRadius,
     shadowTopRightBorderRadius,
     shadowBottomLeftBorderRadius,
@@ -265,6 +267,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                             }
                         }}
                         onPressIn={(event) => {
+                            if (disable) return
+
                             handlePressIn()
 
                             if (onPressIn) {
@@ -272,6 +276,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                             }
                         }}
                         onPressOut={(event) => {
+                            if (disable) return
+
                             handlePressOut()
 
                             if (onPressOut) {
@@ -279,6 +285,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = ({
                             }
                         }}
                         onPress={(event) => {
+                            if (disable) return
+
                             if (onPress) onPress(event)
                         }}
                     >

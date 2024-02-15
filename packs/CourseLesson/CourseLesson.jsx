@@ -761,7 +761,7 @@ export const CourseLesson = ({navigation}) => {
                                     >
                                         <FontAwesomeIcon
                                             icon={faRotateLeft}
-                                            size={23}
+                                            size={20}
                                             style={globalCss.blueLight}
                                         />
                                     </AnimatedButtonShadow>
