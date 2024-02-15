@@ -6,7 +6,7 @@ import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 export default function StartPageScreen({navigation}) {
     useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
     }, []);
 
     return (

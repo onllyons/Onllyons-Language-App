@@ -29,7 +29,7 @@ export default function IntroductionScreen({navigation}) {
     const [loader, setLoader] = useState(false)
 
     useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
     }, []);
 
     const [userData, setUserData] = useState({
@@ -63,7 +63,7 @@ export default function IntroductionScreen({navigation}) {
                 text1: "Вы уже авторизированы"
             });
 
-            navigation.navigate('MainTabNavigator')
+            navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
         } else {
             setLoader(true)
 
@@ -74,7 +74,7 @@ export default function IntroductionScreen({navigation}) {
             )
                 .then(async data => {
                     await login(data.userData, data.tokens)
-                    navigation.navigate('MainTabNavigator')
+                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
                 })
                 .catch(() => {
                 })

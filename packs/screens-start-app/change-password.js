@@ -45,7 +45,7 @@ export default function ChangePasswordScreen({navigation}) {
                 {...data},
                 navigation
             )
-                .then(() => navigation.navigate('MainTabNavigator'))
+                .then(() => navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"}))
                 .catch(() => {})
                 .finally(() => setTimeout(() => setLoader(false), 1))
         }

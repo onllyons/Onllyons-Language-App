@@ -20,7 +20,7 @@ export default function PasswordScreen({navigation}) {
     const [loader, setLoader] = useState(false)
 
     useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
     }, []);
 
     const handleRequestPassword = () => {

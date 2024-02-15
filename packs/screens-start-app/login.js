@@ -17,7 +17,7 @@ export default function LoginScreen({navigation}) {
     const [loader, setLoader] = useState(false)
 
     useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator")
+        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
     }, []);
 
     const togglePasswordVisibility = () => {
@@ -31,7 +31,7 @@ export default function LoginScreen({navigation}) {
                 text1: "Вы уже авторизированы"
             });
 
-            navigation.navigate('MainTabNavigator')
+            navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
         } else {
             setLoader(true)
 
@@ -42,7 +42,7 @@ export default function LoginScreen({navigation}) {
             )
                 .then(async data => {
                     await login(data.userData, data.tokens)
-                    navigation.navigate('MainTabNavigator')
+                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
                 })
                 .catch(() => {})
                 .finally(() => setTimeout(() => setLoader(false), 1))

@@ -130,6 +130,7 @@ function MainTabNavigator() {
 
     return (
         <Tab.Navigator
+            initialRouteName="MenuCourseLesson"
             screenOptions={({route}) => ({
                 tabBarIcon: ({size, focused}) => {
                     let iconImage;
