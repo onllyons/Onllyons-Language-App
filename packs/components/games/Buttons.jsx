@@ -1,28 +1,27 @@
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import globalCss from "../../css/globalCss";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowRightLong, faLightbulb, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
-import React, {useState} from "react";
+import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
 
 const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyle, handleHelp, handleNext, handleRepeat}) => {
-    const [isPressedRepeatBtn, setIsPressedRepeatBtn] = useState(false);
-    const [isPressedHelpBtn, setIsPressedHelpBtn] = useState(false);
-    const [isPressedNextBtn, setIsPressedNextBtn] = useState(false);
+    const visibleNextOrReload = !!(selectedAnswer || isHelpUsed)
+    const visibleHelp = !!((!selectedAnswer || (selectedAnswer && !isAnswerCorrect)) && !isHelpUsed)
+
+    const renewButtons = visibleNextOrReload && visibleHelp
 
     return (
         <View style={styles.groupBtnQuiz}>
-            {(selectedAnswer || isHelpUsed) && (
-                <TouchableOpacity
-                    style={[ 
+            {visibleNextOrReload && (
+                <AnimatedButtonShadow
+                    {...(renewButtons ? {key: 0} : {})}
+                    styleContainer={styles.quizBtnCtrContainer}
+                    styleButton={[
                         styles.quizBtnCtr,
-                        isPressedRepeatBtn
-                            ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                            : globalCss.buttonGry,
+                        globalCss.buttonGry,
                         showIncorrectStyle && globalCss.incorrect // Aplică stilul "incorrect" dacă este necesar
                     ]}
-                    onPressIn={() => setIsPressedRepeatBtn(true)}
-                    onPressOut={() => setIsPressedRepeatBtn(false)}
-                    activeOpacity={1}
+                    shadowColor={showIncorrectStyle ? "red" : "gray"}
                     onPress={handleRepeat}
                 >
                     <Text style={styles.buttonText}>
@@ -32,22 +31,19 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                             style={showIncorrectStyle ? globalCss.correctTxt : globalCss.blueLight}
                         />
                     </Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
             )}
 
 
-            {(!selectedAnswer || (selectedAnswer && !isAnswerCorrect)) &&
-            !isHelpUsed && (
-                <TouchableOpacity
-                    style={[
+            {visibleHelp && (
+                <AnimatedButtonShadow
+                    {...(renewButtons ? {key: 1} : {})}
+                    styleContainer={styles.quizBtnCtrContainer}
+                    styleButton={[
                         styles.quizBtnCtr,
-                        isPressedHelpBtn
-                            ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                            : globalCss.buttonGry,
+                        globalCss.buttonGry,
                     ]}
-                    onPressIn={() => setIsPressedHelpBtn(true)}
-                    onPressOut={() => setIsPressedHelpBtn(false)}
-                    activeOpacity={1}
+                    shadowColor={"gray"}
                     onPress={handleHelp}
                 >
                     <Text style={styles.buttonText}>
@@ -57,21 +53,19 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                             style={globalCss.blueLight}
                         />
                     </Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
             )}
 
-            {(selectedAnswer || isHelpUsed) && (
-                <TouchableOpacity
-                    style={[
+            {visibleNextOrReload && (
+                <AnimatedButtonShadow
+                    {...(renewButtons ? {key: 2} : {})}
+                    styleContainer={styles.quizBtnCtrContainer}
+                    styleButton={[
                         styles.quizBtnCtr,
-                        isPressedNextBtn
-                            ? [globalCss.buttonPressed, globalCss.buttonPressedGry]
-                            : globalCss.buttonGry,
+                        globalCss.buttonGry,
                         (isAnswerCorrect || isHelpUsed) && globalCss.correct,
                     ]}
-                    onPressIn={() => setIsPressedNextBtn(true)}
-                    onPressOut={() => setIsPressedNextBtn(false)}
-                    activeOpacity={1}
+                    shadowColor={isAnswerCorrect || isHelpUsed ? "green" : "gray"}
                     onPress={handleNext}
                 >
                     <Text style={styles.buttonText}>
@@ -81,7 +75,7 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                             style={(isAnswerCorrect || isHelpUsed) ? globalCss.correctTxt : globalCss.blueLight}
                         />
                     </Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
             )}
         </View>
     )
@@ -99,17 +93,15 @@ const styles = StyleSheet.create({
         alignContent: "center",
     },
     quizBtnCtr: {
-        flex: 1,
-        marginHorizontal: "1%",
-        paddingTop: "6%",
-        paddingBottom: "5%",
+        paddingTop: 20,
+        paddingBottom: 15,
         //paddingVertical: 18,
         alignItems: "center",
-        borderRadius: 14,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        borderRadius: 14
+    },
+    quizBtnCtrContainer: {
+        flex: 1,
+        marginHorizontal: "1%",
     },
     buttonText: {
         fontSize: 18,

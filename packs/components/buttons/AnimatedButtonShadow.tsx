@@ -10,7 +10,9 @@ export const SHADOW_COLORS = {
     gray2: "#828080",
     gray: "#d8d8d8",
     grayWhite: "#eaeaea",
-    yellow: "#a08511"
+    yellow: "#a08511",
+    red: "#992926",
+    hint: "#686767"
 } as const
 
 type SHADOW_COLOR = keyof typeof SHADOW_COLORS;
@@ -226,85 +228,85 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = React.m
     else if (type === "default") ButtonComponent = Pressable
 
     return (
-            <Animated.View
-                style={[
-                    size === "full" && {width: "100%"},
-                    styleContainer,
-                    {
-                        opacity: opacityContainer.current,
+        <Animated.View
+            style={[
+                size === "full" && {width: "100%"},
+                styleContainer,
+                {
+                    opacity: opacityContainer.current,
+                    transform: [
+                        {translateY: transitionContainerY.current},
+                        {translateX: transitionContainerX.current}
+                    ]
+                }
+            ]}
+        >
+            <View style={[{position: "relative"}, styleContainerIn]}>
+                <Animated.View
+                    style={{
+                        position: "absolute",
+                        top: buttonData.y + shadowPositionYAdditional,
+                        left: buttonData.x + shadowPositionXAdditional,
+                        width: buttonData.width + shadowWidthAdditional,
+                        height: buttonData.height + shadowHeightAdditional,
+                        backgroundColor: SHADOW_COLORS[shadowColor] ? SHADOW_COLORS[shadowColor] : shadowColor,
+                        borderTopLeftRadius: typeof shadowTopLeftBorderRadius !== "undefined" ? shadowTopLeftBorderRadius : shadowBorderRadius,
+                        borderTopRightRadius: typeof shadowTopRightBorderRadius !== "undefined" ? shadowTopRightBorderRadius : shadowBorderRadius,
+                        borderBottomLeftRadius: typeof shadowBottomLeftBorderRadius !== "undefined" ? shadowBottomLeftBorderRadius : shadowBorderRadius,
+                        borderBottomRightRadius: typeof shadowBottomRightBorderRadius !== "undefined" ? shadowBottomRightBorderRadius : shadowBorderRadius,
+                        opacity: opacityShadow.current,
+
                         transform: [
-                            {translateY: transitionContainerY.current},
-                            {translateX: transitionContainerX.current}
+                            {translateY: transitionShadowY.current},
+                            {translateX: transitionShadowX.current},
                         ]
-                    }
-                ]}
-            >
-                <View style={[{position: "relative"}, styleContainerIn]}>
-                    <Animated.View
-                        style={{
-                            position: "absolute",
-                            top: buttonData.y + shadowPositionYAdditional,
-                            left: buttonData.x + shadowPositionXAdditional,
-                            width: buttonData.width + shadowWidthAdditional,
-                            height: buttonData.height + shadowHeightAdditional,
-                            backgroundColor: SHADOW_COLORS[shadowColor] ? SHADOW_COLORS[shadowColor] : shadowColor,
-                            borderTopLeftRadius: typeof shadowTopLeftBorderRadius !== "undefined" ? shadowTopLeftBorderRadius : shadowBorderRadius,
-                            borderTopRightRadius: typeof shadowTopRightBorderRadius !== "undefined" ? shadowTopRightBorderRadius : shadowBorderRadius,
-                            borderBottomLeftRadius: typeof shadowBottomLeftBorderRadius !== "undefined" ? shadowBottomLeftBorderRadius : shadowBorderRadius,
-                            borderBottomRightRadius: typeof shadowBottomRightBorderRadius !== "undefined" ? shadowBottomRightBorderRadius : shadowBorderRadius,
-                            opacity: opacityShadow.current,
+                    }}
+                />
 
-                            transform: [
-                                {translateY: transitionShadowY.current},
-                                {translateX: transitionShadowX.current},
-                            ]
-                        }}
-                    />
+                <ButtonComponent
+                    ref={refButton}
+                    activeOpacity={activeOpacity}
+                    style={[size === "full" && {width: "100%"}, styleButton]}
+                    onLayout={(e) => {
+                        if (onLayout) onLayout(e)
 
-                    <ButtonComponent
-                        ref={refButton}
-                        activeOpacity={activeOpacity}
-                        style={[size === "full" && {width: "100%"}, styleButton]}
-                        onLayout={(e) => {
-                            if (onLayout) onLayout(e)
+                        if (buttonData.height !== e.nativeEvent.layout.height || buttonData.width !== e.nativeEvent.layout.width) {
+                            setButtonData({
+                                height: e.nativeEvent.layout.height,
+                                width: e.nativeEvent.layout.width,
+                                x: e.nativeEvent.layout.x,
+                                y: e.nativeEvent.layout.y
+                            })
+                        }
+                    }}
+                    onPressIn={(event) => {
+                        if (disable) return
 
-                            if (buttonData.height === 0 || buttonData.height !== e.nativeEvent.layout.height) {
-                                setButtonData({
-                                    height: e.nativeEvent.layout.height,
-                                    width: e.nativeEvent.layout.width,
-                                    x: e.nativeEvent.layout.x,
-                                    y: e.nativeEvent.layout.y
-                                })
-                            }
-                        }}
-                        onPressIn={(event) => {
-                            if (disable) return
+                        handlePressIn()
 
-                            handlePressIn()
+                        if (onPressIn) {
+                            onPressIn(event)
+                        }
+                    }}
+                    onPressOut={(event) => {
+                        if (disable) return
 
-                            if (onPressIn) {
-                                onPressIn(event)
-                            }
-                        }}
-                        onPressOut={(event) => {
-                            if (disable) return
+                        handlePressOut()
 
-                            handlePressOut()
+                        if (onPressOut) {
+                            onPressOut(event)
+                        }
+                    }}
+                    onPress={(event) => {
+                        if (disable) return
 
-                            if (onPressOut) {
-                                onPressOut(event)
-                            }
-                        }}
-                        onPress={(event) => {
-                            if (disable) return
-
-                            if (onPress) onPress(event)
-                        }}
-                    >
-                        {children}
-                    </ButtonComponent>
-                </View>
-            </Animated.View>
+                        if (onPress) onPress(event)
+                    }}
+                >
+                    {children}
+                </ButtonComponent>
+            </View>
+        </Animated.View>
     );
 })
 

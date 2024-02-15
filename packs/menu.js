@@ -1,4 +1,3 @@
-import React, {useState} from 'react';
 import {StyleSheet, ScrollView, Linking, View, Text, Image, TouchableOpacity} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -7,10 +6,10 @@ import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {getUser, isAuthenticated, logout} from "./providers/AuthProvider";
 import globalCss from './css/globalCss';
 import Toast from "react-native-toast-message";
+import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 
 export default function MenuScreen({navigation}) {
     const user = getUser();
-    const [BtnLoggOut, setBtnLoggOut] = useState(false);
 
     return (
         <ScrollView style={styles.container}>
@@ -92,7 +91,7 @@ export default function MenuScreen({navigation}) {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.section}>
+                <View style={[styles.section, {marginVertical: 0, marginTop: 10}]}>
                     <Text style={styles.sectionTitle}>Общая информация</Text>
                     <View style={styles.sectionMenu}>
                         <TouchableOpacity
@@ -127,7 +126,7 @@ export default function MenuScreen({navigation}) {
                     </View>
 
 
-                    <TouchableOpacity
+                    <AnimatedButtonShadow
                         onPress={() => {
                             logout()
                                 .then(() => {
@@ -141,12 +140,11 @@ export default function MenuScreen({navigation}) {
                                 });
                         }}
 
-                        style={[globalCss.button, styles.buttonOut, BtnLoggOut ? [globalCss.buttonPressed, globalCss.bgGry] : globalCss.bgGry]}
-                        onPressIn={() => setBtnLoggOut(true)}
-                        onPressOut={() => setBtnLoggOut(false)}
-                        activeOpacity={1}>
+                        styleButton={[globalCss.button, styles.buttonOut, globalCss.bgGry]}
+                        shadowColor={"gray"}
+                    >
                         <Text style={styles.btnText}>Выйти</Text>
-                    </TouchableOpacity>
+                    </AnimatedButtonShadow>
 
                 </View>
             </View>

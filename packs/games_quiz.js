@@ -88,6 +88,14 @@ export default function GameQuiz({navigation}) {
                     answers: shuffleAnswers(item),
                 }));
                 setData(shuffledData);
+                setSelectedAnswer(null);
+                setIsAnswerCorrect(null);
+                setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
+                setIsHelpUsed(false);
+                setPreHelpAnswers([])
+                setRestartCount(0)
+                stats.current.time = 0
+                stats.current.additionalRating = 0
             })
             .catch((err) => {
                 if (typeof err === "object") {
@@ -225,15 +233,6 @@ export default function GameQuiz({navigation}) {
     };
 
     const handleNext = () => {
-        setSelectedAnswer(null);
-        setIsAnswerCorrect(null);
-        setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
-        setIsHelpUsed(false);
-        setPreHelpAnswers([])
-        setRestartCount(0)
-        stats.current.time = 0
-        stats.current.additionalRating = 0
-
         getQuestions()
     };
 
@@ -307,7 +306,7 @@ const styles = StyleSheet.create({
         paddingTop: "10%",
         backgroundColor: "#eeeff0",
         flexDirection: "row",
-        // justifyContent: "center",
+        justifyContent: "space-between",
         alignItems: "center",
     },
     itemNavTop: {
@@ -315,7 +314,6 @@ const styles = StyleSheet.create({
         paddingTop: '5%',
         paddingBottom: '5%',
         alignItems: "center",
-        flex: 1
     },
     faTrophy: {
         color: '#5e5e5e',
@@ -330,21 +328,15 @@ const styles = StyleSheet.create({
 
     itemNavBtnBack: {
         paddingLeft: '5%',
-        maxWidth: '16%',
     },
     itemRatingGen: {
-        maxWidth: '39%',
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
     itemConsecutive: {
-        maxWidth: '22%',
         paddingLeft: '1%'
     },
     itemClock: {
-        maxWidth: '23%',
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },

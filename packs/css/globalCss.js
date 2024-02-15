@@ -298,8 +298,7 @@ const globalCss = StyleSheet.create({
     color: "white",
   },
   hint: {
-    backgroundColor: "#373737",
-    shadowColor: "#000000",
+    backgroundColor: "#7d7d7d",
   },
   incorrectTxt: { color: "white" },
   correctTxt: { color: "white" },

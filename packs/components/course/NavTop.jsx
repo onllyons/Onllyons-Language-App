@@ -8,7 +8,6 @@ import {
 import {stylesnav_dropdown as navDropdown} from "../../css/navDropDownTop.styles";
 import {calculatePercentage, getHoursOrMinutes} from "../../utils/Utls";
 import {AnimatedCircularProgress} from "react-native-circular-progress";
-import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
 import React, {useEffect, useRef, useState} from "react";
 import {NavTopItem, NavTopItemLanguage, NavTopItemSeries} from "../navTop/NavTopItem";
 import {NavTopItemLanguageMenu, NavTopItemSeriesMenu} from "../navTop/NavTopMenu";
@@ -145,25 +144,15 @@ const NavTopContent = ({getCategoryData, seriesData, generalInfo, onLayout}) => 
                         </AnimatedCircularProgress>
 
                         <View style={navDropdown.containerResultDataSce}>
-                            <AnimatedButtonShadow
-                                styleContainer={navDropdown.cardDataSceContainer}
-                                styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
-                                shadowColor={"gray"}
-                                moveByY={2}
-                            >
+                            <View style={[navDropdown.cardDataSce, globalCss.bgGry, {marginRight: 15}]}>
                                 <Text style={navDropdown.percentage}>{generalInfo.phrasesCompleted}</Text>
                                 <Text style={navDropdown.timeframe}>Всего изучено из {generalInfo.phrases ? generalInfo.phrases : 0}</Text>
-                            </AnimatedButtonShadow>
+                            </View>
 
-                            <AnimatedButtonShadow
-                                styleContainer={navDropdown.cardDataSceContainer}
-                                styleButton={[navDropdown.cardDataSce, globalCss.bgGry]}
-                                shadowColor={"gray"}
-                                moveByY={2}
-                            >
+                            <View style={[navDropdown.cardDataSce, globalCss.bgGry]}>
                                 <Text style={navDropdown.percentage}>{percentRef.current}%</Text>
                                 <Text style={navDropdown.timeframe}>Прогресс курса из 100%</Text>
-                            </AnimatedButtonShadow>
+                            </View>
                         </View>
 
                     </View>

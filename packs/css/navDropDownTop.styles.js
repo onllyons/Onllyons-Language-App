@@ -249,7 +249,8 @@ export const stylesnav_dropdown = StyleSheet.create({
         marginTop: 8,
     },
     cardDataSce: {
-        width: "100%",
+        width: "40%",
+        marginTop: '7%',
         paddingHorizontal: '4%',
         paddingTop: '6%',
         paddingBottom: '6%',
@@ -260,11 +261,6 @@ export const stylesnav_dropdown = StyleSheet.create({
         borderBottomWidth: 2,
         borderLeftWidth: 2,
         borderRightWidth: 2
-    },
-    cardDataSceContainer: {
-        width: "40%",
-        marginTop: '7%',
-        marginHorizontal: '2%'
     },
     percentage1: {
         fontSize: 19,
@@ -280,7 +276,7 @@ export const stylesnav_dropdown = StyleSheet.create({
     },
     containerResultDataSce1: {
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "center"
     },
     dayW: {
         fontSize: 19,
@@ -307,8 +303,8 @@ export const stylesnav_dropdown = StyleSheet.create({
         textAlign: "center",
     },
     containerResultDataSce: {
-        flexDirection: "row",
-        justifyContent: "center"
+        justifyContent: "center",
+        flexDirection: "row"
     },
     percentage: {
         fontSize: 35,
