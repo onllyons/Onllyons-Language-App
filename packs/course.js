@@ -18,7 +18,6 @@ import globalCss from "./css/globalCss";
 import {stylesCourse_lesson as styles} from "./css/course_main.styles";
 
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
-import Loader from "./components/Loader";
 import Modal from 'react-native-modal';
 import {SubscribeModal} from "./components/SubscribeModal";
 import {AnimatedButtonShadow, SHADOW_COLORS} from "./components/buttons/AnimatedButtonShadow";
@@ -32,6 +31,7 @@ import {
 import {withAnchorPoint} from "react-native-anchor-point";
 import * as Haptics from "expo-haptics";
 import {NavTop} from "./components/course/NavTop";
+import ContentLoader from "react-native-easy-content-loader";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
@@ -55,7 +55,7 @@ export default function CourseScreen({navigation}) {
     const seriesData = useRef({})
     const generalInfo = useRef({})
 
-    const [loader, setLoader] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const [categories, setCategories] = useState([])
 
@@ -80,7 +80,7 @@ export default function CourseScreen({navigation}) {
     const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}])
 
     useMemo(() => {
-        setLoader(true)
+        setLoading(true)
 
         sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories.php`,
             {},
@@ -109,7 +109,7 @@ export default function CourseScreen({navigation}) {
             })
             .catch(() => {})
             .finally(() => {
-                setTimeout(() => setLoader(false), 1)
+                setTimeout(() => setLoading(false), 1)
             })
     }, []);
 
@@ -174,23 +174,27 @@ export default function CourseScreen({navigation}) {
 
     return (
         <View>
-            <Loader visible={loader}/>
-
-            <NavTop getCategoryData={getCategoryData} seriesData={seriesData.current} generalInfo={generalInfo.current} onLayout={event => setHeightNav(event.nativeEvent.layout.height)}/>
+            <NavTop loading={loading} getCategoryData={getCategoryData} seriesData={seriesData.current} generalInfo={generalInfo.current} onLayout={event => setHeightNav(event.nativeEvent.layout.height)}/>
 
             <View style={{...styles.infoCourseSubject, top: heightNav}}>
                 <AnimatedButtonShadow
+                    disable={loading}
                     styleContainer={styles.cardCategoryTitleContainer}
                     shadowBorderRadius={12}
                     shadowBottomRightBorderRadius={0}
                     shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
                     styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
-                    <Text style={styles.infoCourseTxtSubCat}>Subject {currentCategory.subject}</Text>
-                    <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
+                    {loading ? (<CurrentCategoryLoader/>) : (
+                        <>
+                            <Text style={styles.infoCourseTxtSubCat}>Subject {currentCategory.subject}</Text>
+                            <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
+                        </>
+                    )}
                 </AnimatedButtonShadow>
 
                 <AnimatedButtonShadow
+                    disable={loading}
                     onPress={toggleModal}
 
                     styleContainer={styles.infoCourseBtnContainer}
@@ -214,18 +218,6 @@ export default function CourseScreen({navigation}) {
                 style={{justifyContent: 'flex-end', margin: 0}}
             >
                 <View style={styles.modal}>
-
-                    {/*<View style={styles.headerModalCat}>
-                <TouchableOpacity style={styles.closeModalCourse} onPress={toggleModal}>
-                  <Text>
-                      <FontAwesomeIcon icon={faTimes} size={30} style={globalCss.link}/>
-                  </Text>
-                </TouchableOpacity>
-                <View style={styles.headerTitleModalCat}>
-                  <Text style={styles.headerTitleModalCatTxt}>Обзор категории</Text>
-                </View>
-            </View> */}
-
                     <ScrollView
                         contentContainerStyle={{paddingTop: 25, paddingBottom: 80}}
                         style={styles.modalCourseContent}>
@@ -300,10 +292,10 @@ export default function CourseScreen({navigation}) {
                 // data={currentCategories}
 
                 ref={flatListRef}
-                data={categories}
-                scrollEnabled={scrollEnabled}
+                data={loading ? ["loadingData"] : categories}
+                scrollEnabled={scrollEnabled && !loading}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-                renderItem={({item, index}) => (
+                renderItem={({item, index}) => loading ? (<CategoryLoader/>) : (
                     <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
                 )}
                 contentContainerStyle={{ paddingTop: 140, paddingBottom: 130, minHeight: "100%" }}
@@ -323,6 +315,82 @@ export default function CourseScreen({navigation}) {
             />
         </View>
     );
+}
+
+const getMarginLeftForCard = (index) => {
+    const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
+    return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
+};
+
+const CurrentCategoryLoader = () => {
+    return (
+        <View>
+            <ContentLoader active pRows={1} tHeight={20} titleStyles={{width: "40%", marginBottom: 2}} pHeight={30} primaryColor={"#d1ffb1"} secondaryColor={"#a5f46d"} title={true}/>
+        </View>
+    )
+}
+
+const CategoryLoader = () => {
+    const {width: windowWidth} = Dimensions.get("window");
+
+    const lessons = new Array(15).fill("");
+
+    return (
+        <View style={{position: "relative", paddingTop: 57}}>
+            <View>
+                <Image
+                    source={require("./images/El/course/1.png")}
+                    style={[
+                        styles.elCourseImg,
+                        {top: 3 * (56 + 20) - 167, width: windowWidth / 3},
+                        {right: 25}
+                    ]}
+                />
+            </View>
+
+            {lessons.map((item, index) => (
+                <LessonLoader key={index} index={index}/>
+            ))}
+        </View>
+    )
+}
+
+const LessonLoader = ({index}) => {
+    return (
+        <ContentLoader active pRows={0} title={false} avatar={true} avatarStyles={{
+            marginLeft: `${getMarginLeftForCard(index)}%`,
+            marginBottom: 20,
+            width: 70,
+            height: 56,
+            borderRadius: 300,
+        }} />
+
+
+        // <AnimatedButtonShadow
+        //     refButton={buttonRef}
+        //     shadowColor={item.finished ? "yellow" : "gray2"}
+        //     shadowBorderRadius={300}
+        //     shadowDisplayAnimate={"slide"}
+        //     moveByY={10}
+        //     styleButton={[
+        //         {
+        //             marginLeft: `${getMarginLeftForCard(index)}%`,
+        //         },
+        //         styles.card,
+        //         styles.bgGry,
+        //         item.finished ? styles.finishedCourseLesson : null,
+        //     ]}
+        //     onPress={handlePressButton}
+        // >
+        //     <Text>
+        //         <FontAwesomeIcon
+        //             icon={faStar}
+        //             size={30}
+        //             style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
+        //         />
+        //     </Text>
+        // </AnimatedButtonShadow>
+    )
 }
 
 const Category = React.memo(({data, category, categoryIndex, scrollRef, categoriesData, currentScrollData, setScrollEnable}) => {
@@ -479,11 +547,6 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
     const scale = useRef(new Animated.Value(0.5))
     const navMenuBottomHeight = windowHeight * .11 > 90 ? windowHeight * .11 : 90
-
-    const getMarginLeftForCard = (index) => {
-        const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
-        return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
-    };
 
     const showMenu = () => {
         Animated.spring(scale.current, {

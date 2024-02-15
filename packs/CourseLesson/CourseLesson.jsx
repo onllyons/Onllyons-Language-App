@@ -34,6 +34,7 @@ import {debounce, levenshtein} from "../utils/Utls";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 import {SubscribeModal} from "../components/SubscribeModal";
 import {WordConstruct} from "../components/course/WordConstruct";
+import {Welcome} from "../components/Welcome";
 
 const {width} = Dimensions.get("window");
 
@@ -51,6 +52,8 @@ export const CourseLesson = ({navigation}) => {
     const swiperRef = useRef(null);
     const issetSeriesNext = useRef(true);
     const startQuizIndex = useRef(0);
+
+    const [loading, setLoading] = useState(true)
 
     // For update progress
     const courseId = useRef(-1);
@@ -158,6 +161,10 @@ export const CourseLesson = ({navigation}) => {
 
     const updateSlider = (series) => {
         currentSeries.current = series;
+        currentCheck.current = {}
+        setLoading(true)
+        setQuizActive(false);
+        setTimeout(() => setShowCongratulationsModal(false))
 
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/course/get_carousel_and_test.php`,
@@ -178,9 +185,6 @@ export const CourseLesson = ({navigation}) => {
                     });
                 } else {
                     issetSeriesNext.current = data.issetSeriesNext;
-                    currentCheck.current = {}
-
-                    setQuizActive(false);
 
                     setTotalSlides(
                         Object.keys(data.carousel).length +
@@ -213,11 +217,12 @@ export const CourseLesson = ({navigation}) => {
                     swiperRef.current?.snapToItem(0, false);
 
                     debouncedSaveProgress.current()
-
-                    setTimeout(() => setShowCongratulationsModal(false), 200)
                 }
 
                 checkAllowCourse()
+            })
+            .finally(() => {
+                setLoading(false)
             })
     };
 
@@ -638,7 +643,7 @@ export const CourseLesson = ({navigation}) => {
         updateSlider(currentSeries.current);
     }, []);
 
-    return (
+    return loading ? (<Welcome/>) : (
         <>
             <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
             <View style={styles.swiperContent}>

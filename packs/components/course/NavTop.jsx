@@ -20,7 +20,7 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({getCategoryData, seriesData, generalInfo, onLayout}) => {
+const NavTopContent = ({loading, getCategoryData, seriesData, generalInfo, onLayout}) => {
     const {setStartPosition} = useAnimatedNavTop()
     const [phrasesPercent, setPhrasesPercent] = useState(0)
     const percentRef = useRef(0)
@@ -37,20 +37,17 @@ const NavTopContent = ({getCategoryData, seriesData, generalInfo, onLayout}) => 
 
                       if (onLayout) onLayout(event)
                   }}>
-                {/*{true ? (*/}
-                {/*    <View>*/}
-                {/*        <ContentLoader active avatar={true} pRows={0} title={false} avatarStyles={{width: 35, height: 35, borderRadius: 10}} />*/}
-                {/*    </View>*/}
-                {/*) : (*/}
 
-                <NavTopItemLanguage/>
+                <NavTopItemLanguage loading={loading}/>
                 <NavTopItem
+                    loading={loading}
                     text={getCategoryData("finished")}
                     id={"general"}
                     image={require("../../images/other_images/nav-top/mortarboard.png")}
                 />
-                <NavTopItemSeries text={seriesData.currentSeries ? seriesData.currentSeries : 0}/>
+                <NavTopItemSeries loading={loading} text={seriesData.currentSeries ? seriesData.currentSeries : 0}/>
                 <NavTopItem
+                    loading={loading}
                     text={getCategoryData("phrasesCompleted")}
                     id={"phrases"}
                     image={require("../../images/other_images/nav-top/feather.png")}
