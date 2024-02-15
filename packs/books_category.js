@@ -4,35 +4,41 @@ import {View, Text, StyleSheet, ScrollView, Image, TouchableOpacity} from "react
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
-import Loader from "./components/Loader";
+// import Loader from "./components/Loader";
 import globalCss from "./css/globalCss";
-import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+// import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 
 export default function BooksCategoryScreen({route}) {
     const navigation = useNavigation();
     const [data, setData] = useState([]);
-    const {category} = route.params;
-    const [loading, setLoading] = useState(false);
+    // const {category} = route.params;
+    const {data: transmittedData, type: transmittedType} = route.params;
+    // const [loading, setLoading] = useState(false);
     const [visibleItems, setVisibleItems] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
 
-    useEffect(() => {
-        setLoading(true);
+    // useEffect(() => {
+        // setLoading(true);
 
-        console.log("---------" + category + "---------")
-        sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,
-            {category: category},
-            navigation,
-            {success: false}
-        )
-            .then(({data}) => {
-                setData(data);
-                setTotalItems(data.length);
-            })
-            .finally(() => {
-                setTimeout(() => setLoading(false), 1)
-            });
-    }, [category]);
+        // console.log("---------" + category + "---------")
+        // sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,
+        //     {category: category},
+        //     navigation,
+        //     {success: false}
+        // )
+        //     .then(({data}) => {
+        //         setData(data);
+        //         setTotalItems(data.length);
+        //     })
+        //     .finally(() => {
+        //         setTimeout(() => setLoading(false), 1)
+        //     });
+    // }, [category]);
+
+    useEffect(() => {
+        setData(transmittedData)
+        setTotalItems(transmittedData.length);
+    }, [transmittedData]);
 
     const loadMoreItems = () => {
         if (visibleItems < totalItems) {
@@ -41,18 +47,18 @@ export default function BooksCategoryScreen({route}) {
     };
 
     const getCategoryImageAndText = (categoryValue) => {
-        switch (categoryValue) {
-            case "1":
+        switch (Number(categoryValue)) {
+            case 1:
                 return {
                     imageSource: require('./images/icon/levelEasy.png'),
                     text: "Начальный уровень"
                 };
-            case "2":
+            case 2:
                 return {
                     imageSource: require('./images/icon/levelMedium.png'),
                     text: "Средний уровень"
                 };
-            case "3":
+            case 3:
                 return {
                     imageSource: require('./images/icon/levelHard.png'),
                     text: "Продвинутый уровень"
@@ -70,7 +76,11 @@ export default function BooksCategoryScreen({route}) {
 
         return (
             <TouchableOpacity onPress={() => navigation.navigate('BooksReading', {id: item.id})}>
-                <View style={styles.item}>
+                <View style={[
+                    styles.item,
+                    // Finished books
+                    transmittedType.type === "category" && item.finished && {backgroundColor: "#57cc04"}
+                ]}>
                     <Image
                         source={{
                             uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/img/${item.image}`,
@@ -96,7 +106,7 @@ export default function BooksCategoryScreen({route}) {
     return (
         <View style={styles.container}>
 
-            <Loader visible={loading}/>
+            {/*<Loader visible={loading}/>*/}
 
             <View style={globalCss.navTabUser}>
                 <TouchableOpacity style={globalCss.itemNavTabUserBtnBack}
@@ -104,7 +114,7 @@ export default function BooksCategoryScreen({route}) {
                     <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue}/>
                 </TouchableOpacity>
                 <View style={globalCss.itemNavTabUserTitleCat}>
-                    <Text style={globalCss.dataCategoryTitle}>{category}</Text>
+                    <Text style={globalCss.dataCategoryTitle}>{transmittedType.text}</Text>
                 </View>
             </View>
 

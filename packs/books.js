@@ -21,16 +21,18 @@ import globalCss from './css/globalCss';
 
 // for nav top
 import {NavTop} from "./components/books/NavTop";
+import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
+import {useNavigation} from "@react-navigation/native";
+import {formatBooksWord} from "./utils/Utls";
 
 export default function BooksScreen({navigation}) {
-    const [pressedCards, setPressedCards] = useState({});
-    const [data, setData] = useState(null);
+    const [data, setData] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const booksInfo = useRef({
-        finished: 0,
-        saved: 0,
+        finished: [],
+        saved: [],
         allBooks: 0
     })
 
@@ -43,7 +45,6 @@ export default function BooksScreen({navigation}) {
             {success: false}
         )
             .then(data => {
-                console.log(data.booksInfo)
                 booksInfo.current = data.booksInfo
 
                 setData(data.data);
@@ -56,17 +57,16 @@ export default function BooksScreen({navigation}) {
             }); // Dezactivează Loader-ul
     }, []);
 
-
-    const onPressIn = (id) => {
-        setPressedCards(prevState => ({...prevState, [id]: true}));
-    };
-
-    const onPressOut = (id) => {
-        setPressedCards(prevState => ({...prevState, [id]: false}));
-    };
-
     const getCategoryBooks = (category) => {
         return data.filter(item => item.type_category === category);
+    };
+
+    const getBooksSaved = () => {
+        return data.filter(item => item.saved);
+    };
+
+    const getBooksFinished = () => {
+        return data.filter(item => item.finished);
     };
 
     return (
@@ -76,70 +76,81 @@ export default function BooksScreen({navigation}) {
 
             <ScrollView contentContainerStyle={{paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20}}>
                 <Loader visible={loading}/>
+                <Category data={getBooksSaved()} type={{type: "saved", text: "Мои книги"}}/>
                 {categories.map((category, index) => (
-                    <View key={index}>
-                        <View style={[globalCss.row, globalCss.mb3]}>
-                            <View>
-                                <Text style={styles.titleCategory}>
-                                    {category}
-                                </Text>
-                                <Text style={styles.totalBooks}>
-                                    {getCategoryBooks(category).length} книг
-                                </Text>
-                            </View>
-                            <TouchableOpacity
-                                style={styles.openCategory}
-                                onPress={() => navigation.navigate('BooksCategory', {category: category})} // Trimite denumirea categoriei la pagina următoare
-                                activeOpacity={1}
-                            >
-                                <View style={styles.openCatTxt}>
-                                    <Text style={styles.catTxt}>
-                                        см. все
-                                    </Text>
-                                    <FontAwesomeIcon icon={faChevronRight} size={18} style={styles.faChevronRight}/>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={globalCss.mb11}>
-                            <Carousel
-                                data={getCategoryBooks(category).slice(0, 10)}
-                                renderItem={({item}) => (
-                                    <View style={styles.cell}>
-                                        <TouchableOpacity
-                                            style={[styles.card, pressedCards[item.id] ? [styles.cardPressed, styles.bgGryPressed] : styles.bgGry]}
-                                            onPress={() => navigation.navigate('BooksReading', {id: item.id})}
-                                            onPressIn={() => onPressIn(item.id)}
-                                            onPressOut={() => onPressOut(item.id)}
-                                            activeOpacity={1}
-                                        >
-                                            <Image
-                                                source={{
-                                                    uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/img/${item.image}`,
-                                                }}
-                                                style={styles.image}
-                                            />
-                                        </TouchableOpacity>
-                                        <Text style={styles.title}>{item.title}</Text>
-                                        <Text style={styles.author}>{item.author}</Text>
-                                    </View>
-                                )}
-                                sliderWidth={Dimensions.get('window').width}
-                                itemWidth={140}
-                                loop={false}
-                                autoplay={false}
-                                inactiveSlideScale={1}
-                                firstItem={0}
-                                enableSnap={false}
-                                contentContainerCustomStyle={{paddingLeft: -10}}
-                            />
-                        </View>
-                    </View>
+                    <Category data={getCategoryBooks(category)} type={{type: "category", text: category}} key={index}/>
                 ))}
+                <Category data={getBooksFinished()} type={{type: "finished", text: "Прочитанные книги"}}/>
             </ScrollView>
         </View>
     );
 }
+
+const Category = React.memo(({data, type}) => {
+    if (data.length === 0) return null
+
+    const navigation = useNavigation()
+
+    return (
+        <View>
+            <View style={[globalCss.row, globalCss.mb3]}>
+                <View>
+                    <Text style={styles.titleCategory}>
+                        {type.text}
+                    </Text>
+                    <Text style={styles.totalBooks}>
+                        {formatBooksWord(data.length)}
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    style={styles.openCategory}
+                    onPress={() => navigation.navigate('BooksCategory', {data: data, type: type})} // Trimite denumirea categoriei la pagina următoare
+                    activeOpacity={1}
+                >
+                    <View style={styles.openCatTxt}>
+                        <Text style={styles.catTxt}>
+                            см. все
+                        </Text>
+                        <FontAwesomeIcon icon={faChevronRight} size={18} style={styles.faChevronRight}/>
+                    </View>
+                </TouchableOpacity>
+            </View>
+
+            <View style={globalCss.mb11}>
+                <Carousel
+                    data={data.slice(0, 10)}
+                    renderItem={({item}) => (
+                        <View style={styles.cell}>
+                            <AnimatedButtonShadow
+                                styleButton={[styles.card, styles.bgGry]}
+                                onPress={() => navigation.navigate('BooksReading', {id: item.id})}
+                                shadowColor={"gray"}
+                                shadowBorderRadius={12}
+                            >
+                                <Image
+                                    source={{
+                                        uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/img/${item.image}`,
+                                    }}
+                                    style={styles.image}
+                                />
+                            </AnimatedButtonShadow>
+                            <Text style={styles.title}>{item.title}</Text>
+                            <Text style={styles.author}>{item.author}</Text>
+                        </View>
+                    )}
+                    sliderWidth={Dimensions.get('window').width}
+                    itemWidth={140}
+                    loop={false}
+                    autoplay={false}
+                    inactiveSlideScale={1}
+                    firstItem={0}
+                    enableSnap={false}
+                    contentContainerCustomStyle={{paddingLeft: -10, paddingRight: 30}}
+                />
+            </View>
+        </View>
+    )
+})
 
 
 const styles = StyleSheet.create({
@@ -157,23 +168,12 @@ const styles = StyleSheet.create({
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
-        borderRightWidth: 2,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-    },
-    cardPressed: {
-        shadowOffset: {width: 0, height: 0},
-        transform: [{translateY: 4}],
+        borderRightWidth: 2
     },
     bgGry: {
         backgroundColor: '#f9f9f9',
         borderColor: '#d8d8d8',
         shadowColor: '#d8d8d8',
-    },
-    bgGryPressed: {
-        backgroundColor: '#f9f9f9',
-        borderColor: '#d8d8d8',
     },
     contentBooks: {
         flexDirection: 'row',
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 15,
-        marginTop: '4%',
+        marginTop: 10,
         fontWeight: 'bold',
         color: 'black',
     },

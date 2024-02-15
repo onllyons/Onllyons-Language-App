@@ -29,13 +29,13 @@ const NavTopContent = ({data}) => {
             >
                 <NavTopItemLanguage/>
                 <NavTopItem
-                    text={data.finished}
+                    text={data.finished.length}
                     id={"booksReadedAnalytics"}
                     image={require("../../images/other_images/nav-top/book.png")}
                 />
                 <NavTopItemSeries/>
                 <NavTopItem
-                    text={data.saved}
+                    text={data.saved.length}
                     id={"booksSavedAnalytics"}
                     image={require("../../images/other_images/nav-top/bookmark.png")}
                 />
@@ -61,7 +61,7 @@ const NavTopContent = ({data}) => {
                             <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.finished} / {data.allBooks}</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.finished.length} / {data.allBooks}</Text>
                             </View>
                         </View>
                     </View>
@@ -86,7 +86,7 @@ const NavTopContent = ({data}) => {
                             <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.saved} / {data.allBooks}</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.saved.length} / {data.allBooks}</Text>
                             </View>
                         </View>
                     </View>

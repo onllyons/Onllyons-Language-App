@@ -139,6 +139,24 @@ export function formatAdventureWord(count) {
     return text;
 }
 
+export function formatBooksWord(count) {
+    let word = "книг";
+
+    if (count % 100 < 11 || count % 100 > 14) {
+        switch (count % 10) {
+            case 1:
+                word = "книга";
+                break;
+            case 2:
+            case 3:
+            case 4:
+                word = "книги";
+                break;
+        }
+    }
+    return `${count} ${word}`;
+}
+
 /////////////////////////
 
 export function getHoursOrMinutes(hours, withWord = false) {
