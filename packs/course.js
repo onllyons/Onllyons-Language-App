@@ -353,18 +353,61 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
     const imagesAnim = []
     const length = Math.floor(data.items.length / 6)
 
-    if (length >= 1) {
-        imagesAnim.push({
-            top: 3 * (56 + 20) - 110,
-            right: 25,
-            image: require("./images/El/course/Group.png")
-        })
+    const getImageByCategory = useCallback((pos) => {
+        switch (categoryIndex) {
+            case 0:
+                if (pos === "first") return require("./images/El/course/1.png")
+                else if (pos === "second") return require("./images/El/course/2.png")
+                break
 
-        imagesAnim.push({
-            top: (data.items.length - (data.items.length % 6) - (length > 2 ? 6 : 0)) * (56 + 20) - 110, // 110 half image height, 56 + 20 - button height + magrinBottom
-            left: 25,
-            image: require("./images/El/course/Group.png")
-        })
+            case 1:
+                if (pos === "first") return require("./images/El/course/3.png")
+                else if (pos === "second") return require("./images/El/course/4.png")
+                break
+
+            case 2:
+                if (pos === "first") return require("./images/El/course/5.png")
+                else if (pos === "second") return require("./images/El/course/6.png")
+                break
+
+            case 3:
+                if (pos === "first") return require("./images/El/course/7.png")
+                else if (pos === "second") return require("./images/El/course/8.png")
+                break
+
+            case 4:
+                if (pos === "first") return require("./images/El/course/7.png")
+                else if (pos === "second") return require("./images/El/course/8.png")
+                break
+
+            case 5:
+                if (pos === "first") return require("./images/El/course/9.png")
+                // 10 картинки нет
+                // else if (pos === "second") return require("./images/El/course/10.png")
+                break
+        }
+    }, [])
+
+    if (length >= 1) {
+        const imageFirst = getImageByCategory("first")
+
+        if (imageFirst) {
+            imagesAnim.push({
+                top: 3 * (56 + 20) - 110,
+                right: 25,
+                image: imageFirst
+            })
+        }
+
+        const imageSecond = getImageByCategory("second")
+
+        if (imageSecond) {
+            imagesAnim.push({
+                top: (data.items.length - (data.items.length % 6) - (length > 2 ? 6 : 0)) * (56 + 20) - 110, // 110 half image height, 56 + 20 - button height + magrinBottom
+                left: 25,
+                image: imageSecond
+            })
+        }
     }
 
     return (
