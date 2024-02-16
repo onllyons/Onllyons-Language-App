@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     },
     infoDetCatTitle: {
         flexDirection: 'row',
-        marginBottom: '0'
+        marginBottom: 0
     },
     horizontalLine: {
         width: '90%',

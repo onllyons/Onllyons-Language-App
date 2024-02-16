@@ -4,7 +4,7 @@ import {
     Text,
     Image,
     ScrollView,
-    Animated, Dimensions, FlatList
+    Animated, Dimensions, FlatList, TouchableOpacity
 } from "react-native";
 
 // fonts
@@ -131,16 +131,11 @@ export default function CourseScreen({navigation}) {
         }, {});
     };
 
-    const [isModalVisible, setModalVisible] = useState(false);
     const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
-
-    const getCategoryData = (value, undefinedValue = 0) => {
+    const getCategoryData = useCallback((value, undefinedValue = 0) => {
         return categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url][value] : undefinedValue
-    }
+    }, [])
 
     const setScrollEnable = useCallback((value) => {
         setScrollEnabled(value)
@@ -176,6 +171,67 @@ export default function CourseScreen({navigation}) {
         <View>
             <NavTop loading={loading} getCategoryData={getCategoryData} seriesData={seriesData.current} generalInfo={generalInfo.current} onLayout={event => setHeightNav(event.nativeEvent.layout.height)}/>
 
+            <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
+
+            <CurrentCategory currentCategory={currentCategory} heightNav={heightNav} getCategoryData={getCategoryData} loading={loading}/>
+
+            <FlatList
+                // ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
+                // onEndReached={fetchCategories}
+                // onEndReachedThreshold={0.5}
+                // data={currentCategories}
+
+                ref={flatListRef}
+                data={loading ? ["loadingData"] : categories}
+                scrollEnabled={scrollEnabled && !loading}
+                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+                renderItem={({item, index}) => loading ? (<CategoryLoader/>) : (
+                    <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
+                )}
+                contentContainerStyle={{ paddingTop: 140, paddingBottom: 130, minHeight: "100%" }}
+                style={styles.bgCourse}
+                onScroll={(event) => {
+                    currentScrollData.current = {
+                        ...currentScrollData.current,
+                        x: event.nativeEvent.contentOffset.x,
+                        y: event.nativeEvent.contentOffset.y
+                    }
+                }}
+                onContentSizeChange={(contentWidth, contentHeight) => {
+                    currentScrollData.current.contentHeight = contentHeight
+                }}
+                ListHeaderComponent={(
+                    <TouchableOpacity onPress={() => navigation.navigate("Test_font_size")}>
+                        <Text>Test font responsive sizes</Text>
+                    </TouchableOpacity>
+                )}
+                scrollEventThrottle={8}
+                onLayout={(e) => (startLayoutY.current = e.nativeEvent.layout.y)}
+                ListFooterComponent={
+                    !loading && categories.length > 0 ? (
+                        <View>
+                            <View style={styles.imgEndCourseView}>
+                                <Image style={styles.imgEndCourse} source={require("./images/El/course/end.png")} />
+                            </View>
+
+                            {/*<View style={styles.imgEndCourseView1}>
+                                <Text>
+                                    Поздравляем с завершением курса по английскому! Теперь у вас есть прочная основа для выражения и достижений. Успехов!
+                                </Text>
+                            </View>*/}
+                        </View>
+                    ) : null
+                }
+            />
+        </View>
+    );
+}
+
+const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData, loading}) => {
+    const [isModalVisible, setModalVisible] = useState(false)
+
+    return (
+        <>
             <View style={{...styles.infoCourseSubject, top: heightNav}}>
                 <AnimatedButtonShadow
                     disable={loading}
@@ -195,7 +251,7 @@ export default function CourseScreen({navigation}) {
 
                 <AnimatedButtonShadow
                     disable={loading}
-                    onPress={toggleModal}
+                    onPress={() => setModalVisible(true)}
 
                     styleContainer={styles.infoCourseBtnContainer}
                     shadowBorderRadius={12}
@@ -215,7 +271,7 @@ export default function CourseScreen({navigation}) {
                 isVisible={isModalVisible}
                 animationIn="slideInUp"
                 animationOut="slideOutDown"
-                onBackdropPress={toggleModal}
+                onBackdropPress={() => setModalVisible(false)}
                 style={{justifyContent: 'flex-end', margin: 0}}
             >
                 <View style={styles.modal}>
@@ -283,55 +339,9 @@ export default function CourseScreen({navigation}) {
                     </ScrollView>
                 </View>
             </Modal>
-
-            <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
-
-            <FlatList
-                // ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
-                // onEndReached={fetchCategories}
-                // onEndReachedThreshold={0.5}
-                // data={currentCategories}
-
-                ref={flatListRef}
-                data={loading ? ["loadingData"] : categories}
-                scrollEnabled={scrollEnabled && !loading}
-                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-                renderItem={({item, index}) => loading ? (<CategoryLoader/>) : (
-                    <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
-                )}
-                contentContainerStyle={{ paddingTop: 140, paddingBottom: 130, minHeight: "100%" }}
-                style={styles.bgCourse}
-                onScroll={(event) => {
-                    currentScrollData.current = {
-                        ...currentScrollData.current,
-                        x: event.nativeEvent.contentOffset.x,
-                        y: event.nativeEvent.contentOffset.y
-                    }
-                }}
-                onContentSizeChange={(contentWidth, contentHeight) => {
-                    currentScrollData.current.contentHeight = contentHeight
-                }}
-                scrollEventThrottle={8}
-                onLayout={(e) => (startLayoutY.current = e.nativeEvent.layout.y)}
-                ListFooterComponent={
-                    !loading && categories.length > 0 ? (
-                        <View>
-                            <View style={styles.imgEndCourseView}>
-                                <Image style={styles.imgEndCourse} source={require("./images/El/course/end.png")} />
-                            </View>
-
-                            {/*<View style={styles.imgEndCourseView1}>
-                                <Text>
-                                    Поздравляем с завершением курса по английскому! Теперь у вас есть прочная основа для выражения и достижений. Успехов!
-                                </Text>
-                            </View>*/}
-                        </View>
-                    ) : null
-                }
-            />
-        </View>
-    );
-}
+        </>
+    )
+})
 
 const getMarginLeftForCard = (index) => {
     const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
@@ -380,32 +390,6 @@ const LessonLoader = ({index}) => {
             height: 56,
             borderRadius: 300,
         }} />
-
-
-        // <AnimatedButtonShadow
-        //     refButton={buttonRef}
-        //     shadowColor={item.finished ? "yellow" : "gray2"}
-        //     shadowBorderRadius={300}
-        //     shadowDisplayAnimate={"slide"}
-        //     moveByY={10}
-        //     styleButton={[
-        //         {
-        //             marginLeft: `${getMarginLeftForCard(index)}%`,
-        //         },
-        //         styles.card,
-        //         styles.bgGry,
-        //         item.finished ? styles.finishedCourseLesson : null,
-        //     ]}
-        //     onPress={handlePressButton}
-        // >
-        //     <Text>
-        //         <FontAwesomeIcon
-        //             icon={faStar}
-        //             size={30}
-        //             style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
-        //         />
-        //     </Text>
-        // </AnimatedButtonShadow>
     )
 }
 

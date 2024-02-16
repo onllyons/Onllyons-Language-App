@@ -142,7 +142,7 @@ export const stylesCourse_lesson = StyleSheet.create({
     },
     infoDetCatTitle: {
         flexDirection: "row",
-        marginBottom: "0",
+        marginBottom: 0,
     },
     titleDetLessonCat: {
         width: "62%",

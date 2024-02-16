@@ -44,6 +44,7 @@ import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import React from "react";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
 import {Analytics} from "./packs/components/analytics/Analytics";
+import Test_font_size from "./packs/test_font_size";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -346,6 +347,13 @@ function AppStack() {
             <Stack.Screen
                 name="BooksReading"
                 component={BooksReading}
+                options={{headerShown: false}}
+            />
+
+
+            <Stack.Screen
+                name="Test_font_size"
+                component={Test_font_size}
                 options={{headerShown: false}}
             />
         </Stack.Navigator>
