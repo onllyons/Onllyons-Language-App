@@ -1,14 +1,17 @@
 import Modal from "react-native-modal";
 import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import globalCss from "../css/globalCss";
-import React, {useRef, useState} from "react";
+import React, {useRef} from "react";
 import {AnimatedButtonShadow} from "./buttons/AnimatedButtonShadow";
+import {useNavigation} from "@react-navigation/native";
 
 export const SubscribeModal = ({visible, setVisible}) => {
     const scrollViewRef = useRef(null);
+    const navigation = useNavigation()
 
     return (
         <Modal
+            onBackButtonPress={() => setVisible(false)}
             isVisible={visible}
             animationIn="slideInUp"
             animationOut="slideOutDown"
@@ -95,7 +98,10 @@ export const SubscribeModal = ({visible, setVisible}) => {
                     <AnimatedButtonShadow
                         styleButton={[globalCss.button, globalCss.mt8, globalCss.buttonBlue]}
                         shadowColor={"blue"}
-                        onPress={() => setVisible(false)}
+                        onPress={() => {
+                            setVisible(false)
+                            navigation.navigate("SubscribeScreen")
+                        }}
                     >
                         <Text style={globalCss.buttonText}>ПОДПИСАТЬСЯ</Text>
                     </AnimatedButtonShadow>

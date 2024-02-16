@@ -211,6 +211,7 @@ export default function CourseScreen({navigation}) {
             </View>
 
             <Modal
+                onBackButtonPress={() => setModalVisible(false)}
                 isVisible={isModalVisible}
                 animationIn="slideInUp"
                 animationOut="slideOutDown"
@@ -687,6 +688,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
             {showModal && (
                 <Modal
+                    onBackButtonPress={() => setVisibleModal(false)}
                     isVisible={visibleModal}
                     animationIn={"fadeIn"}
                     animationOut={"fadeOut"}

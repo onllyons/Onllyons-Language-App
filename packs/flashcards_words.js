@@ -94,6 +94,7 @@ export default function FlashCardsLearning({route, navigation}) {
             if (typeof err === "object") {
                 if (err.action === "openModalMembership") {
                     setSubscribeModalVisible(true)
+                    setBlocked(true)
                 } else {
                     navigation.goBack()
                 }
@@ -269,6 +270,7 @@ export default function FlashCardsLearning({route, navigation}) {
                 if (typeof err === "object") {
                     if (!err.tokensError && err.action === "openModalMembership") {
                         setSubscribeModalVisible(true)
+                        setBlocked(true)
                     }
                 }
             })
@@ -310,6 +312,7 @@ export default function FlashCardsLearning({route, navigation}) {
     };
 
     const handleRightButtonPress = () => {
+        console.log("handleRightButtonPress")
         if (blocked) {
             setSubscribeModalVisible(true)
             return
