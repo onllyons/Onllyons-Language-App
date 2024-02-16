@@ -1,3 +1,5 @@
+import {Dimensions} from "react-native";
+
 export function debounce(func, wait) {
     let timeout
 
@@ -183,6 +185,10 @@ export function calculatePercentage(value, total, withFloat = false) {
     } else {
         return Math.floor(percentage)
     }
+}
+
+export function getFontSize(value) {
+    return value * (0.004 * Dimensions.get("window").width)
 }
 
 // Levenshtein distance
