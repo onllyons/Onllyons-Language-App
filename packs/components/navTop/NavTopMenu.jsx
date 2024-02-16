@@ -76,6 +76,27 @@ export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
     }
 
     const SyllableGroup = () => {
+        const messagesByGroup = {
+            1: [
+                "You're smashing it!",
+                "Outstanding performance!",
+                "You're killing it!",
+                "Keep it up!"
+            ],
+            2: [
+                "Great job!",
+                "Keep on shining!",
+                "Fantastic!",
+                "Brilliant execution!"
+            ],
+            3: [
+                "You're smashing it!",
+                "Outstanding performance!",
+                "You're killing it!",
+                "Keep it up!"
+            ],
+        }
+
         switch (seriesData["syllableGroup"]) {
             case 3:
                 return (
@@ -87,27 +108,11 @@ export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
                 </>
                 )
 
-            case 2:
-                return (
-                <>
-                    <Text style={navDropdown.titleh7}>Great job!</Text>
-                    <Text style={navDropdown.titleh7}>Keep on shining!</Text>
-                    <Text style={navDropdown.titleh7}>Fantastic!</Text>
-                    <Text style={navDropdown.titleh7}>Brilliant execution!</Text>
-                </>
-                )
-
-            case 1:
-                return (
-                <>
-                    <Text style={navDropdown.titleh7}>You're smashing it!</Text>
-                    <Text style={navDropdown.titleh7}>Outstanding performance!</Text>
-                    <Text style={navDropdown.titleh7}>You're killing it!</Text>
-                    <Text style={navDropdown.titleh7}>Keep it up!</Text>
-                </>
-                )
-                
         }
+
+        const messages = messagesByGroup[seriesData["syllableGroup"]] ? messagesByGroup[seriesData["syllableGroup"]] : messagesByGroup[1]
+
+        return <Text style={navDropdown.titleh7}>{messages[Math.floor(Math.random() * messages.length)]}</Text>;
     }
 
     return (
