@@ -1,18 +1,48 @@
-import {StyleSheet, ScrollView, Linking, View, Text, Image, TouchableOpacity} from 'react-native';
+import {StyleSheet, ScrollView, Linking, View, Text, Image, TouchableOpacity, RefreshControl} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 
-import {getUser, isAuthenticated, logout} from "./providers/AuthProvider";
+import {getUser, isAuthenticated, login, logout} from "./providers/AuthProvider";
 import globalCss from './css/globalCss';
 import Toast from "react-native-toast-message";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
+import React, {useCallback, useState} from "react";
+import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function MenuScreen({navigation}) {
-    const user = getUser();
+    const [user, setUser] = useState(getUser());
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+
+        sendDefaultRequest(`${SERVER_AJAX_URL}/user/get_user.php`,
+            {},
+            navigation
+        )
+            .then((data) => login(data.user, data.tokens))
+            .catch(() => {})
+            .finally(() => setRefreshing(false))
+    }, [])
+
+    useFocusEffect(
+        useCallback(() => {
+            setUser(getUser())
+        }, [])
+    );
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }
+        >
             {isAuthenticated() ? (
                 <LinearGradient
                     colors={['#539cff', '#539cff', '#539cff']}

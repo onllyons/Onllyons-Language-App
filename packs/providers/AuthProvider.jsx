@@ -122,16 +122,20 @@ export const AuthProvider = ({children}) => {
                     firstLaunch: firstLaunch,
                 };
 
+                const formData = new FormData();
+                formData.append("tokens", JSON.stringify(getTokens()));
+                formData.append("userId", isAuthenticated() ? user.id : -1);
+
+                Object.keys(deviceInfo).forEach(key => {
+                    formData.append(key, deviceInfo[key]);
+                });
+
                 return axios.post(
                     "https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/get_device_token.php",
-                    {
-                        ...deviceInfo,
-                        tokens: getTokens(),
-                        userId: isAuthenticated() ? user.id : -1,
-                    },
+                    formData,
                     {
                         headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
+                            "Content-Type": "multipart/form-data",
                         },
                     }
                 );
@@ -159,6 +163,8 @@ export const AuthProvider = ({children}) => {
                         } catch (err) {
                             return Promise.reject()
                         }
+                    } else if (data.data.userAvailable && data.data.user) {
+                        return login(data.data.user, data.data.tokens)
                     }
                 }
             })

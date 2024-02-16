@@ -4,7 +4,6 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
-import Toast from "react-native-toast-message";
 import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
@@ -33,22 +32,15 @@ export default function ChangePasswordScreen({navigation}) {
     };
 
     const handleChangePassword = () => {
-        if (!isAuthenticated()) {
-            Toast.show({
-                type: "error",
-                text1: "Вы не авторизированы"
-            });
-        } else {
-            setLoader(true)
+        setLoader(true)
 
-            sendDefaultRequest(`${SERVER_AJAX_URL}/change_password.php`,
-                {...data},
-                navigation
-            )
-                .then(() => navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"}))
-                .catch(() => {})
-                .finally(() => setTimeout(() => setLoader(false), 1))
-        }
+        sendDefaultRequest(`${SERVER_AJAX_URL}/change_password.php`,
+            {...data},
+            navigation
+        )
+            .then(() => navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"}))
+            .catch(() => {})
+            .finally(() => setTimeout(() => setLoader(false), 1))
     }
 
     return (
