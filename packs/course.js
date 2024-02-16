@@ -11,7 +11,7 @@ import {
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 
 // icons
-import {faStar} from "@fortawesome/free-solid-svg-icons";
+import {faStar, faPlay} from "@fortawesome/free-solid-svg-icons";
 
 // styles
 import globalCss from "./css/globalCss";
@@ -656,11 +656,16 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                 ]}
                 onPress={handlePressButton}
             >
-                <Text>
+                <Text style={[{ marginLeft: index === 0 ? 5 : 0 }]}>
+
                     <FontAwesomeIcon
-                        icon={faStar}
-                        size={30}
-                        style={[styles.iconFlash, item.finished ? styles.finishedCourseLessonIcon : null]}
+                      icon={index === 0 ? faPlay : faStar}
+                      size={index === 0 ? 30 : 30}
+                      style={[
+                        styles.iconFlash,
+                        item.finished ? styles.finishedCourseLessonIcon : null,
+                        { marginLeft: index === 0 ? 0 : 0 }
+                      ]}
                     />
                 </Text>
             </AnimatedButtonShadow>
