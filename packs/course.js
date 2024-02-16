@@ -135,7 +135,7 @@ export default function CourseScreen({navigation}) {
 
     const getCategoryData = useCallback((value, undefinedValue = 0) => {
         return categoriesData.current[currentCategory.url] ? categoriesData.current[currentCategory.url][value] : undefinedValue
-    }, [])
+    }, [currentCategory])
 
     const setScrollEnable = useCallback((value) => {
         setScrollEnabled(value)
@@ -229,6 +229,8 @@ export default function CourseScreen({navigation}) {
 
 const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData, loading}) => {
     const [isModalVisible, setModalVisible] = useState(false)
+
+    console.log(currentCategory)
 
     return (
         <>
