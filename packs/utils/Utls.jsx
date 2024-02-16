@@ -65,9 +65,9 @@ export function formatMinutesWord(minutes) {
     let text = "минут";
 
     if (minutes % 10 === 1 && minutes % 100 !== 11) {
-        text = "минута";
+        text = "мин";
     } else if ([2, 3, 4].includes(minutes % 10) && ![12, 13, 14].includes(minutes % 100)) {
-        text = "минуты";
+        text = "мин";
     }
     
     return `${minutes} ${text}`;

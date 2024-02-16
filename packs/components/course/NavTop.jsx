@@ -89,13 +89,13 @@ const NavTopContent = ({loading, getCategoryData, seriesData, generalInfo, onLay
 
                             <View style={navDropdown.sectionSheet2}>
                                 <Text style={navDropdown.header}>ВСЕГО УРОКОВ</Text>
-                                <Text style={navDropdown.numberSheetTxt}>{generalInfo.courses ? `${generalInfo.coursesCompleted} / ${generalInfo.courses}` : "0 / 0"}</Text>
+                                <Text style={navDropdown.numberSheetTxt}>{generalInfo.courses ? `${generalInfo.coursesCompleted}/${generalInfo.courses}` : "0/0"}</Text>
                             </View>
 
                             <View style={navDropdown.sectionSheetBorder}>
                                 <View style={navDropdown.sectionSheet1}>
                                     <Text style={navDropdown.headerSheet}>ВИКТОРИНЫ</Text>
-                                    <Text style={[navDropdown.numberSheetTxt, globalCss.green]}>{generalInfo.quizzes ? `${generalInfo.quizzesCompleted} / ${generalInfo.quizzes}` : "0 / 0"}</Text>
+                                    <Text style={[navDropdown.dateTimeQuizAnalytical, globalCss.green]}>{generalInfo.quizzes ? `${generalInfo.quizzesCompleted}/${generalInfo.quizzes}` : "0/0"}</Text>
                                 </View>
                                 <View style={navDropdown.sectionSheet}>
                                     <Text style={navDropdown.headerSheet}>ОБЩЕЕ ВРЕМЯ</Text>

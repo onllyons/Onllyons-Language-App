@@ -181,6 +181,11 @@ export const stylesnav_dropdown = StyleSheet.create({
         fontWeight: 'bold',
         color: '#6a6a6a',
     },
+    dateTimeQuizAnalytical: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#6a6a6a',
+    },
     sectionSheetBorder: {
         flex: 1,
         borderLeftWidth: 2,
