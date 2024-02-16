@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {StyleSheet} from "react-native";
-import {View, Text, Modal, TextStyle} from "react-native";
+import {View, Modal} from "react-native";
 import {SkypeIndicator} from "react-native-indicators";
 
 interface SpinnerPropTypes {
@@ -8,8 +8,8 @@ interface SpinnerPropTypes {
     animation?: "none" | "slide" | "fade";
     overlayColor?: string;
     size?: number;
-    textContent?: string;
-    textStyle?: TextStyle;
+    // textContent?: string;
+    // textStyle?: TextStyle;
     visible?: boolean;
     customIndicator?: React.ReactNode;
     children?: React.ReactNode;
@@ -32,8 +32,8 @@ const Loader: React.FC<SpinnerPropTypes> = ({
         animation = "fade",
         overlayColor = "rgba(0, 0, 0, 0.5)",
         size = 50,
-        textContent = "LOADING...",
-        textStyle,
+        // textContent = "",
+        // textStyle,
         visible = false,
         customIndicator,
         children,
@@ -61,11 +61,11 @@ const Loader: React.FC<SpinnerPropTypes> = ({
                 {customIndicator || (
                     <Indicator options={{size: size}}/>
                 )}
-                <View style={[styles.textContainer]}>
-                    <View style={[styles.textContainerIn]}>
-                        <Text style={[styles.textContent, textStyle]}>{textContent}</Text>
-                    </View>
-                </View>
+                {/*<View style={[styles.textContainer]}>*/}
+                {/*    <View style={[styles.textContainerIn]}>*/}
+                {/*        <Text style={[styles.textContent, textStyle]}>{textContent}</Text>*/}
+                {/*    </View>*/}
+                {/*</View>*/}
             </View>
         );
     };
@@ -124,25 +124,25 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0
     },
-    textContainer: {
-        alignItems: "center",
-        bottom: 0,
-        flex: 1,
-        justifyContent: "center",
-        left: 0,
-        position: "absolute",
-        right: 0,
-        top: 0
-    },
-    textContainerIn: {
-        padding: 15,
-        top: 80,
-        borderRadius: 12,
-        backgroundColor: "white",
-    },
-    textContent: {
-        fontSize: 10,
-        fontWeight: "bold",
-        color: "#353535",
-    }
+    // textContainer: {
+    //     alignItems: "center",
+    //     bottom: 0,
+    //     flex: 1,
+    //     justifyContent: "center",
+    //     left: 0,
+    //     position: "absolute",
+    //     right: 0,
+    //     top: 0
+    // },
+    // textContainerIn: {
+    //     padding: 15,
+    //     top: 80,
+    //     borderRadius: 12,
+    //     backgroundColor: "white",
+    // },
+    // textContent: {
+    //     fontSize: 10,
+    //     fontWeight: "bold",
+    //     color: "#353535",
+    // }
 });
