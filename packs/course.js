@@ -230,8 +230,6 @@ export default function CourseScreen({navigation}) {
 const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData, loading}) => {
     const [isModalVisible, setModalVisible] = useState(false)
 
-    console.log(currentCategory)
-
     return (
         <>
             <View style={{...styles.infoCourseSubject, top: heightNav}}>
@@ -537,14 +535,26 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
 
 
             {data.items.map((item, index) => (
-                <Lesson key={index} item={item} index={index} scrollRef={scrollRef} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable} coursesInCategory={categoriesData.current[category].courses}/>
+                <Lesson
+                    key={index}
+                    item={item}
+                    index={index}
+                    scrollRef={scrollRef}
+                    currentScrollData={currentScrollData}
+                    setScrollEnable={setScrollEnable}
+                    firstLessonColor={index === 0 ? {
+                        backgroundColor: categoriesData.current[category].background,
+                        shadowColor: categoriesData.current[category].backgroundShadow
+                    } : {}}
+                    coursesInCategory={categoriesData.current[category].courses}
+                />
             ))}
 
         </View>
     )
 })
 
-const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, setScrollEnable}) => {
+const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, setScrollEnable, firstLessonColor}) => {
     const navigation = useNavigation()
 
     const [showModal, setShowModal] = useState(false)
@@ -644,7 +654,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
         <>
             <AnimatedButtonShadow
                 refButton={buttonRef}
-                shadowColor={item.finished ? "yellow" : "gray2"}
+                shadowColor={firstLessonColor.shadowColor ? firstLessonColor.shadowColor : (item.finished ? "yellow" : "gray2")}
                 shadowBorderRadius={300}
                 shadowDisplayAnimate={"slide"}
                 moveByY={10}
@@ -655,6 +665,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                     styles.card,
                     styles.bgGry,
                     item.finished ? styles.finishedCourseLesson : null,
+                    firstLessonColor.backgroundColor && {backgroundColor: firstLessonColor.backgroundColor}
                 ]}
                 onPress={handlePressButton}
             >
