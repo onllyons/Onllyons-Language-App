@@ -187,7 +187,7 @@ export default function CourseScreen({navigation}) {
                 >
                     {loading ? (<CurrentCategoryLoader/>) : (
                         <>
-                            <Text style={styles.infoCourseTxtSubCat}>Subject {currentCategory.subject}</Text>
+                            <Text style={styles.infoCourseTxtSubCat}>Часть {currentCategory.subject}</Text>
                             <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
                         </>
                     )}
@@ -227,7 +227,7 @@ export default function CourseScreen({navigation}) {
                                 style={styles.courseCatImg}
                             />
                             <View style={styles.titleLessonCat}>
-                                <Text style={styles.titleLessonCatSubject}>Subject {currentCategory.subject}</Text>
+                                <Text style={styles.titleLessonCatSubject}>Часть {currentCategory.subject}</Text>
                                 <Text style={styles.titleLessonCatTxt}>{currentCategory.name}</Text>
                             </View>
                         </View>
@@ -435,7 +435,7 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
 
             case 2:
                 if (pos === "first") return require("./images/El/course/5.png")
-                else if (pos === "second") return require("./images/El/course/6.png")
+                else if (pos === "second") return require("./images/El/course/9.png")
                 break
 
             case 3:
@@ -444,15 +444,28 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
                 break
 
             case 4:
-                if (pos === "first") return require("./images/El/course/7.png")
-                else if (pos === "second") return require("./images/El/course/8.png")
+                if (pos === "first") return require("./images/El/course/6.png")
+                else if (pos === "second") return require("./images/El/course/10.png")
                 break
 
             case 5:
-                if (pos === "first") return require("./images/El/course/9.png")
-                // 10 картинки нет
-                // else if (pos === "second") return require("./images/El/course/10.png")
+                if (pos === "first") return require("./images/El/course/11.png")
+                else if (pos === "second") return require("./images/El/course/9.png")
                 break
+            // asd
+            case 6:
+                if (pos === "first") return require("./images/El/course/13.png")
+                else if (pos === "second") return require("./images/El/course/12.png")
+                break
+            case 7:
+                if (pos === "first") return require("./images/El/course/14.png")
+                else if (pos === "second") return require("./images/El/course/15.png")
+                break
+            case 8:
+                if (pos === "first") return require("./images/El/course/16.png")
+                else if (pos === "second") return require("./images/El/course/17.png")
+                break
+            
         }
     }, [])
 

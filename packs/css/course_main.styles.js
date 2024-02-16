@@ -213,7 +213,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         alignSelf: "center",
     },
     elCourseImg: {
-        width: 150,
+        width: 750,
         height: 220,
         position: "absolute",
         // right: 25,
