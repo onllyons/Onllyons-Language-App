@@ -1,4 +1,23 @@
-import {Dimensions} from "react-native";
+import {Dimensions, PixelRatio} from "react-native";
+
+const {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+} = Dimensions.get('window');
+
+
+// Base font size
+const BASE_WIDTH = 375; // design screen width
+const BASE_HEIGHT = 667; // design screen height
+
+const scaleWidth = SCREEN_WIDTH / BASE_WIDTH;
+const scaleHeight = SCREEN_HEIGHT / BASE_HEIGHT;
+const scale = Math.min(scaleWidth, scaleHeight);
+
+export const getFontSize = (size) => {
+    const newSize = size * scale;
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
 
 export function debounce(func, wait) {
     let timeout
@@ -185,10 +204,6 @@ export function calculatePercentage(value, total, withFloat = false) {
     } else {
         return Math.floor(percentage)
     }
-}
-
-export function getFontSize(value) {
-    return value * (0.004 * Dimensions.get("window").width)
 }
 
 // Levenshtein distance

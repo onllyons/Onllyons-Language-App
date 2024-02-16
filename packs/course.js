@@ -26,7 +26,7 @@ import {
     formatAdventureWord, formatExcitingWord,
     formatHoursWord,
     formatLessonWord,
-    formatTrialWord
+    formatTrialWord, getFontSize
 } from "./utils/Utls";
 import {withAnchorPoint} from "react-native-anchor-point";
 import * as Haptics from "expo-haptics";
@@ -243,8 +243,8 @@ const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData
                 >
                     {loading ? (<CurrentCategoryLoader/>) : (
                         <>
-                            <Text style={styles.infoCourseTxtSubCat}>Часть {currentCategory.subject}</Text>
-                            <Text style={styles.infoCourseTitle}>{currentCategory.name}</Text>
+                            <Text style={{...styles.infoCourseTxtSubCat, fontSize: getFontSize(16)}}>Часть {currentCategory.subject}</Text>
+                            <Text style={{...styles.infoCourseTitle, fontSize: getFontSize(18)}}>{currentCategory.name}</Text>
                         </>
                     )}
                 </AnimatedButtonShadow>
