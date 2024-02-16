@@ -3,9 +3,9 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity, Image} from "react
 import globalCss from './css/globalCss';
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
-import Loader from "./components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
+import {Welcome} from "./components/Welcome";
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -109,11 +109,8 @@ export default function FlashCardsCategory({route, navigation}) {
     //     setPressedCards(prevState => ({...prevState, [id]: false}));
     // };
 
-    return (
+    return loading ? (<Welcome/>) : (
         <View style={styles.containerMain}>
-            <Loader visible={loading}/>
-
-
             <View style={globalCss.navTabUser}>
                 <TouchableOpacity style={globalCss.itemNavTabUserBtnBack}
                                   onPress={() => navigation.navigate('FlashCardsScreen')}>
@@ -200,14 +197,6 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 18,
         fontWeight: '600',
-    },
-    cardPressed: {
-        shadowOffset: {width: 0, height: 0},
-        transform: [{translateY: 4}],
-    },
-    bgGryPressed: {
-        backgroundColor: '#f9f9f9',
-        borderColor: '#d8d8d8',
     },
     cardLesson: {
         width: '33%',

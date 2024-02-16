@@ -111,8 +111,7 @@ const styles = StyleSheet.create({
     },
     bgGry: {
         backgroundColor: '#f9f9f9',
-        borderColor: '#d8d8d8',
-        shadowColor: '#d8d8d8',
+        borderColor: '#d8d8d8'
     },
     contentFlashCards: {
         flexDirection: 'row',

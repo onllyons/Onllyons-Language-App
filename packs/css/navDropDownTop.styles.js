@@ -64,15 +64,10 @@ export const stylesnav_dropdown = StyleSheet.create({
         borderRadius: 12,
         borderColor: '#d8d8d8',
         backgroundColor: "#f9f9f9",
-        shadowColor: '#d8d8d8',
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
-        borderRightWidth: 2,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        borderRightWidth: 2
     },
     iconContainer: {
         width: '47%',
@@ -144,15 +139,10 @@ export const stylesnav_dropdown = StyleSheet.create({
         borderRadius: 12,
         borderColor: '#d8d8d8',
         backgroundColor: "#f9f9f9",
-        shadowColor: '#d8d8d8',
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
-        borderRightWidth: 2,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        borderRightWidth: 2
     },
     sectionSheet: {
         padding: 20,

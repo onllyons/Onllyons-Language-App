@@ -1,57 +1,41 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, Alert} from 'react-native';
+import {View, Text, ScrollView, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faXmark} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from "../css/globalCss";
 import Toast from "react-native-toast-message";
+import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
-const SubscriptionOption = ({title, price, imageUrl, isSelected, onPress, isCardPressed}) => {
+const SubscriptionOption = ({title, price, imageUrl, isSelected, onPress}) => {
     return (
-        <TouchableOpacity
-            style={[styles.card, isCardPressed ? [globalCss.cardPressed, styles.bgGryPressed] : globalCss.bgGry]}
-            onPressIn={() => onPress(true)}
-            onPressOut={() => onPress(false)}
+        <AnimatedButtonShadow
+            styleButton={[styles.card, globalCss.bgGry]}
+            shadowColor={"gray"}
             onPress={() => onPress(true)}
-            activeOpacity={1}
+            permanentlyActive={isSelected}
+            permanentlyActiveOpacity={0.5}
+            size={"full"}
         >
             <Image source={imageUrl} style={styles.image}/>
             <View style={styles.details}>
                 <Text style={styles.title}>{title}</Text>
                 <Text style={styles.price}>{price}</Text>
             </View>
-            {isSelected && <View style={styles.checkmark}/>}
-        </TouchableOpacity>
+        </AnimatedButtonShadow>
     );
 };
 
 
 export default function SubscribeScreen({navigation}) {
     const [selectedSubscription, setSelectedSubscription] = useState(null);
-    const [isPressedContinue, setIsPressedContinue] = useState(false);
-    const [isCardPressed1, setIsCardPressed1] = useState(false);
-    const [isCardPressed2, setIsCardPressed2] = useState(false);
-    const [isCardPressed3, setIsCardPressed3] = useState(false);
-
-    const handleCardPress = (value, cardNumber) => {
-        if (cardNumber === 1) {
-            setIsCardPressed1(value);
-            setIsCardPressed2(false);
-            setIsCardPressed3(false);
-        } else if (cardNumber === 2) {
-            setIsCardPressed1(false);
-            setIsCardPressed2(value);
-            setIsCardPressed3(false);
-        } else if (cardNumber === 3) {
-            setIsCardPressed1(false);
-            setIsCardPressed2(false);
-            setIsCardPressed3(value);
-        }
-    };
 
     const handleContinuePress = () => {
         if (selectedSubscription) {
-            // Aici poți adăuga logica pentru procesarea plății pentru abonamentul selectat
+            Toast.show({
+                type: "info",
+                text1: "Подписки скоро появляться"
+            });
         } else {
             Toast.show({
                 type: "error",
@@ -61,7 +45,7 @@ export default function SubscribeScreen({navigation}) {
     };
 
     return (
-        <ScrollView>
+        <ScrollView contentContainerStyle={{minHeight: "100%"}}>
             <View style={styles.container}>
                 <TouchableOpacity style={styles.closeBtn} onPress={() => navigation.goBack()}>
                     <Text><FontAwesomeIcon icon={faXmark} size={30} style={styles.iconClose}/></Text>
@@ -74,8 +58,7 @@ export default function SubscribeScreen({navigation}) {
                     price="Try for free"
                     imageUrl={require('../images/other_images/free.png')}
                     isSelected={selectedSubscription === "Free"}
-                    onPress={(value) => handleCardPress(value, 1)}
-                    isCardPressed={isCardPressed1}
+                    onPress={() => setSelectedSubscription("Free")}
                 />
 
                 <SubscriptionOption
@@ -83,30 +66,24 @@ export default function SubscribeScreen({navigation}) {
                     price="€ 1.69 в месяц"
                     imageUrl={require('../images/other_images/free.png')}
                     isSelected={selectedSubscription === "Pro"}
-                    onPress={(value) => handleCardPress(value, 2)}
-                    isCardPressed={isCardPressed2}
+                    onPress={() => setSelectedSubscription("Pro")}
                 />
                 <SubscriptionOption
                     title="Lifetime card"
                     price="€ 1.00 в месяц"
                     imageUrl={require('../images/other_images/free.png')}
                     isSelected={selectedSubscription === "Standard"}
-                    onPress={(value) => handleCardPress(value, 3)}
-                    isCardPressed={isCardPressed3}
+                    onPress={() => setSelectedSubscription("Standard")}
                 />
 
-                <TouchableOpacity
-                    style={[
-                        globalCss.button,
-                        isPressedContinue ? [globalCss.buttonPressed, globalCss.buttonPressedBlue] : globalCss.buttonBlue
-                    ]}
-                    onPressIn={() => setIsPressedContinue(true)}
-                    onPressOut={() => setIsPressedContinue(false)}
-                    activeOpacity={1}
+                <AnimatedButtonShadow
+                    styleButton={[globalCss.button, globalCss.buttonBlue]}
+                    shadowColor={"blue"}
                     onPress={handleContinuePress}
+                    size={"full"}
                 >
                     <Text style={globalCss.buttonText}>CONTINUE</Text>
-                </TouchableOpacity>
+                </AnimatedButtonShadow>
             </View>
         </ScrollView>
     );
@@ -139,16 +116,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 2,
-        borderRightWidth: 2,
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
-
-    },
-    bgGryPressed: {
-        backgroundColor: '#f0f5ff',
-        borderColor: '#1cb0f6',
+        borderRightWidth: 2
     },
     optionSelected: {
         backgroundColor: 'red',
@@ -169,12 +137,6 @@ const styles = StyleSheet.create({
     price: {
         fontSize: 16,
         color: '#666',
-    },
-    checkmark: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        backgroundColor: '#000',
     },
 
     titlePageTxt: {

@@ -103,11 +103,7 @@ const globalCss = StyleSheet.create({
     borderTopWidth: 2,
     borderBottomWidth: 2,
     borderLeftWidth: 2,
-    borderRightWidth: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 0,
+    borderRightWidth: 2
   },
   bgGry: {
     backgroundColor: "#f9f9f9",
@@ -116,14 +112,6 @@ const globalCss = StyleSheet.create({
   bgGreen: {
     backgroundColor: "#57cc04",
     borderColor: "transparent",
-  },
-  bgGryPressed: {
-    backgroundColor: "#f9f9f9",
-    borderColor: "#d8d8d8",
-  },
-  cardPressed: {
-    shadowOffset: { width: 0, height: 0 },
-    transform: [{ translateY: 4 }],
   },
   buttonRow: {
     width: "100%",
@@ -143,7 +131,6 @@ const globalCss = StyleSheet.create({
     marginBottom: 20
   },
   buttonPressed: {
-    shadowOffset: { width: 0, height: 0 },
     transform: [{ translateY: 4 }],
   },
   buttonBlue: {
@@ -156,8 +143,7 @@ const globalCss = StyleSheet.create({
     backgroundColor: "#ffffff"
   },
   buttonGry: {
-    backgroundColor: "#f1f0f0",
-    shadowColor: "#cbcbcb",
+    backgroundColor: "#f1f0f0"
   },
   buttonGry1: {
     backgroundColor: "#f3f3f3"

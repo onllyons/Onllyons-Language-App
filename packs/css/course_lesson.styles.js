@@ -163,11 +163,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         // paddingVertical: 18,
         // paddingHorizontal: 32,
         alignItems: "center",
-        borderRadius: 14,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        borderRadius: 14
     },
     quizBtn: {
         width: "80%",
@@ -193,11 +189,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         alignItems: "center",
         borderRadius: 14,
         marginBottom: "4%",
-        marginRight: "4%",
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        marginRight: "4%"
     },
     bgGroupTitleCourse1: {
         borderWidth: 1,

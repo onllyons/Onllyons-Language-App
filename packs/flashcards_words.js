@@ -7,7 +7,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faTimes, faRotateLeft, faGear} from "@fortawesome/free-solid-svg-icons";
 import BottomSheet, {BottomSheetView, BottomSheetBackdrop,} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
-import Loader from "./components/Loader";
 
 import globalCss from "./css/globalCss";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
@@ -819,11 +818,7 @@ const styles = StyleSheet.create({
         borderColor: "#ccc",
         width: "48%",
         alignItems: "center",
-        borderRadius: 14,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        borderRadius: 14
     },
     contentBottomSheet: {
         height: "100%",

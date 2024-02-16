@@ -26,8 +26,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         zIndex: 1,
     },
     bgGry: {
-        backgroundColor: "#e5e5e5",
-        shadowColor: "#b7b7b7",
+        backgroundColor: "#e5e5e5"
     },
     contentFlashCards: {
         flexDirection: "column",

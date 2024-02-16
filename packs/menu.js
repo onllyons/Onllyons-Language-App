@@ -173,10 +173,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderColor: '#d8d8d8',
         borderWidth: 2,
-        borderRadius: 12,
-        shadowOffset: {width: 0, height: 2},
-        shadowRadius: 0,
-        shadowColor: '#d8d8d8',
+        borderRadius: 12
     },
     btnMenuProfile: {
         backgroundColor: 'white',
@@ -186,10 +183,7 @@ const styles = StyleSheet.create({
     },
     btnBB: {
         borderBottomWidth: 2,
-        borderColor: '#d8d8d8',
-        shadowColor: '#d8d8d8',
-        shadowRadius: 0,
-        shadowOffset: {width: 0, height: 2},
+        borderColor: '#d8d8d8'
     },
     buttonOut: {
         marginTop: '4%',
