@@ -72,7 +72,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         height: "100%" 
     },
     infoCourseTxtSubCat: {
-        color: "#d1ffb1",
+        color: "#ffffff",
         fontSize: 15,
         width: "80%",
         marginLeft: "5%",
