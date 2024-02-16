@@ -182,8 +182,8 @@ export default function CourseScreen({navigation}) {
                     styleContainer={styles.cardCategoryTitleContainer}
                     shadowBorderRadius={12}
                     shadowBottomRightBorderRadius={0}
-                    shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
-                    styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#57cc04")}]}
+                    shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["#2a398b"])}
+                    styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#3f51b5")}]}
                 >
                     {loading ? (<CurrentCategoryLoader/>) : (
                         <>
@@ -200,8 +200,8 @@ export default function CourseScreen({navigation}) {
                     styleContainer={styles.infoCourseBtnContainer}
                     shadowBorderRadius={12}
                     shadowBottomLeftBorderRadius={0}
-                    shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
-                    styleButton={[styles.infoCourseBtn, {backgroundColor: getCategoryData("background", "#57cc04")}]}
+                    shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["#2a398b"])}
+                    styleButton={[styles.infoCourseBtn, {backgroundColor: getCategoryData("background", "#3f51b5")}]}
                 >
                     <Image
                         source={require('./images/icon/list.png')}
