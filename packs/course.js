@@ -312,6 +312,21 @@ export default function CourseScreen({navigation}) {
                 }}
                 scrollEventThrottle={8}
                 onLayout={(e) => (startLayoutY.current = e.nativeEvent.layout.y)}
+                ListFooterComponent={
+                    !loading && categories.length > 0 ? (
+                        <View>
+                            <View style={styles.imgEndCourseView}>
+                                <Image style={styles.imgEndCourse} source={require("./images/El/course/end.png")} />
+                            </View>
+
+                            {/*<View style={styles.imgEndCourseView1}>
+                                <Text>
+                                    Поздравляем с завершением курса по английскому! Теперь у вас есть прочная основа для выражения и достижений. Успехов!
+                                </Text>
+                            </View>*/}
+                        </View>
+                    ) : null
+                }
             />
         </View>
     );
