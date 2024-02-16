@@ -13,6 +13,8 @@ import globalCss from "./css/globalCss";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {AudioComponent} from "./components/flashcards/AudioComponent";
+import {Welcome} from "./components/Welcome";
+import {SubscribeModal} from "./components/SubscribeModal";
 
 const {width} = Dimensions.get("window");
 
@@ -39,6 +41,10 @@ export default function FlashCardsLearning({route, navigation}) {
     const [quizIndex, setQuizIndex] = useState(0);
 
     const [randomOrders, setRandomOrders] = useState({})
+    const [subscribeModalVisible, setSubscribeModalVisible] = useState(false)
+    const [blocked, setBlocked] = useState(false)
+
+    const startTime = useRef(Date.now())
 
     const toggleSwitch = () => {
         setIsEnabled((previousState) => !previousState);
@@ -53,6 +59,11 @@ export default function FlashCardsLearning({route, navigation}) {
                 navigation,
                 {success: false}
             )
+
+            if (response.action === "openModalMembership") {
+                setBlocked(true)
+                setSubscribeModalVisible(true)
+            }
 
             let data = response.data;
             // data = data.filter((item) => item.url_display === url); // Filtrare după URL
@@ -82,7 +93,9 @@ export default function FlashCardsLearning({route, navigation}) {
             return response.data;
         } catch (err) {
             if (typeof err === "object") {
-                if (!err.tokensError) {
+                if (err.action === "openModalMembership") {
+                    setSubscribeModalVisible(true)
+                } else {
                     navigation.goBack()
                 }
             }
@@ -108,6 +121,7 @@ export default function FlashCardsLearning({route, navigation}) {
 
     const handleShowQuiz = async () => {
         setIsLoading(true);
+
         try {
             const data = await fetchQuizData();
             const random = {}
@@ -141,18 +155,17 @@ export default function FlashCardsLearning({route, navigation}) {
         setRandomOrders(random)
         setIsAnswerSelected(false)
         setSelectedAnswers({})
-        setAnswersCorrectness({})
         setQuizIndex(0)
         setIndex(0)
         swiperRef.current?.snapToItem(0);
 
         setTimeout(() => {
+            setAnswersCorrectness({})
             setShowCongratulationsModal(false);
             setShowQuiz(true);
             setShowModal(false);
         }, 200)
     };
-
 
     const toggleSwitchUsa = () => {
         setIsEnabledUsa((previousState) => !previousState);
@@ -236,6 +249,32 @@ export default function FlashCardsLearning({route, navigation}) {
         navigation.goBack();
     };
 
+    const handleFinish = () => {
+        sendDefaultRequest(`${SERVER_AJAX_URL}/flashcards/card_complete.php`,
+            {
+                url: url,
+                time: Math.floor((Date.now() - startTime.current) / 1000)
+            },
+            navigation,
+            {success: false}
+        )
+            .then(() => {
+                navigation.goBack();
+
+                setTimeout(() => {
+                    setShowCongratulationsModal(false)
+                    setShowModal(false)
+                })
+            })
+            .catch((err) => {
+                if (typeof err === "object") {
+                    if (!err.tokensError && err.action === "openModalMembership") {
+                        setSubscribeModalVisible(true)
+                    }
+                }
+            })
+    };
+
     const handleSlideChange = (newIndex) => {
 
         console.log("handleSlideChange - New Index: ", newIndex);
@@ -272,6 +311,11 @@ export default function FlashCardsLearning({route, navigation}) {
     };
 
     const handleRightButtonPress = () => {
+        if (blocked) {
+            setSubscribeModalVisible(true)
+            return
+        }
+
         if (isAtLastCarouselSlide && !showQuiz) {
             // Dacă este ultimul slide și quiz-ul nu este afișat, afișează modalul
             setShowModal(true);
@@ -304,7 +348,6 @@ export default function FlashCardsLearning({route, navigation}) {
         setIsAnswerSelected(true);
     };
 
-
     const handleFinishQuiz = () => {
         // Aici puteți seta state-ul pentru afișarea modalului de felicitări
         setShowCongratulationsModal(true);
@@ -330,7 +373,6 @@ export default function FlashCardsLearning({route, navigation}) {
         const {correctCount} = countQuizResults();
         return (correctCount / quizData.length) * 100;
     };
-
 
     const renderItem = ({item, index: currentIndex}) => {
         if (showQuiz) {
@@ -388,7 +430,7 @@ export default function FlashCardsLearning({route, navigation}) {
                         </Text>
                     </View>
 
-                    <AudioComponent name={item.word_audio} isFocused={!showQuiz && index === currentIndex}/>
+                    <AudioComponent name={item.word_audio} isFocused={!blocked && !showQuiz && index === currentIndex}/>
 
                     <Text style={styles.word_ru}>{item.word_ru}</Text>
                 </View>
@@ -396,14 +438,14 @@ export default function FlashCardsLearning({route, navigation}) {
         }
     };
 
-    return (
+    return isLoading ? (<Welcome/>) : (
         <GestureHandlerRootView>
+            <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
+
             <View style={[
                 styles.swiperContent,
                 {backgroundColor: showQuiz ? 'white' : 'transparent'}
             ]}>
-                <Loader visible={isLoading}/>
-
                 <View style={styles.row}>
                     <TouchableOpacity
                         style={styles.backBtn}
@@ -452,6 +494,7 @@ export default function FlashCardsLearning({route, navigation}) {
 
                 <SwiperButtonsContainer
                     onRightPress={handleRightButtonPress}
+                    isBlocked={blocked}
                     isAnswerSelected={isAnswerSelected}
                     showQuiz={showQuiz}
                     currentIndex={index}
@@ -561,7 +604,7 @@ export default function FlashCardsLearning({route, navigation}) {
                                             marginLeft: '3%'
                                         }}
                                         shadowColor={"green"}
-                                        onPress={handleBackButtonPress}
+                                        onPress={handleFinish}
                                     >
                                         <Text style={styles.modalText}>Закончить</Text>
                                     </AnimatedButtonShadow>
@@ -657,6 +700,7 @@ const SwiperButtonsContainer = ({
     onRightPress,
     isAnswerSelected,
     showQuiz,
+    isBlocked,
     currentIndex, // Indexul curent al slide-ului
     totalSlides, // Numărul total de slide-uri
     onFinishQuiz, // Funcția care va fi apelată când se finalizează quizul
@@ -672,6 +716,11 @@ const SwiperButtonsContainer = ({
                 globalCss.buttonBlue
             ]}
             onPress={() => {
+                if (isBlocked) {
+                    onRightPress()
+                    return
+                }
+
                 if (showQuiz && isAnswerSelected && currentIndex === totalSlides - 1) onFinishQuiz();
                 else if (!showQuiz || isAnswerSelected) onRightPress()
             }}
@@ -679,7 +728,7 @@ const SwiperButtonsContainer = ({
             <Text
                 style={[styles.buttonTextNext, globalCss.textUpercase]}
             >
-                {showQuiz && currentIndex === totalSlides - 1 ? "Завершить тест" : "Продолжить"}
+                {isBlocked ? "Подписаться" : (showQuiz && currentIndex === totalSlides - 1 ? "Завершить тест" : "Продолжить")}
             </Text>
         </AnimatedButtonShadow>
     </View>
@@ -837,11 +886,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         alignItems: "center",
         borderRadius: 14,
-        marginBottom: 20,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        marginBottom: 20
     },
     buttonText: {
         fontSize: 18,
@@ -1001,10 +1046,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         alignItems: "center",
         borderRadius: 14,
-        marginBottom: 20,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 1,
-        shadowRadius: 0,
-        elevation: 0,
+        marginBottom: 20
     },
 });

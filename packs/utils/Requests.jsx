@@ -20,7 +20,7 @@ export const sendDefaultRequest = async (url, dataObj, navigation = null, showOp
 
         if (data.success !== undefined) {
             if (data.success) {
-                if (showOptions.success) {
+                if (showOptions.success && data.message) {
                     Toast.show({
                         type: "success",
                         text1: data.message
@@ -37,7 +37,7 @@ export const sendDefaultRequest = async (url, dataObj, navigation = null, showOp
                     if (navigation) navigation.navigate("StartPageScreen")
                 }
 
-                if (showOptions.error) {
+                if (showOptions.error && data.message) {
                     Toast.show({
                         type: "error",
                         text1: data.message
