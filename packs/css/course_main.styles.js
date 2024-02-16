@@ -45,7 +45,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         fontWeight: "600",
     },
     cardCategoryTitle: {
-        width: "100%",
+        width: "100%", 
         height: "100%",
         borderTopLeftRadius: 12,
         borderBottomLeftRadius: 12,
@@ -205,18 +205,7 @@ export const stylesCourse_lesson = StyleSheet.create({
     iconFlash: {
         color: "#ababab",
     },
-    imgEndCourseView:{
-        width: '100%',
-        marginTop: -180,
-        alignItems: 'flex-end',
-    },
-
-    imgEndCourse:{
-        width: 120,
-        height: 120,
-        marginRight: '7%',
-        resizeMode: "contain",
-    },
+ 
     startImg: {
         width: 74,
         height: 55,
