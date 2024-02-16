@@ -45,9 +45,13 @@ export const stylesnav_dropdown = StyleSheet.create({
         fontSize: 24,
         fontWeight: '500',
         color: "#FF9600",
-        marginTop: 30,
-        textAlign: "center",
+        
+    },
+    groupStatusVis:{
         alignItems: "center",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 30,
     },
     containerCourseData: {
         flex: 1,

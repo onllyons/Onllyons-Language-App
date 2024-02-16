@@ -79,19 +79,34 @@ export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
         switch (seriesData["syllableGroup"]) {
             case 3:
                 return (
-                    <Text>Группа 3</Text>
+                <>
+                    <Text style={navDropdown.titleh7}>You're smashing it!</Text>
+                    <Text style={navDropdown.titleh7}>Outstanding performance!</Text>
+                    <Text style={navDropdown.titleh7}>You're killing it!</Text>
+                    <Text style={navDropdown.titleh7}>Keep it up!</Text>
+                </>
                 )
 
             case 2:
                 return (
-                    <Text>Группа 2</Text>
+                <>
+                    <Text style={navDropdown.titleh7}>Great job!</Text>
+                    <Text style={navDropdown.titleh7}>Keep on shining!</Text>
+                    <Text style={navDropdown.titleh7}>Fantastic!</Text>
+                    <Text style={navDropdown.titleh7}>Brilliant execution!</Text>
+                </>
                 )
 
             case 1:
-            default:
                 return (
-                    <Text>Группа 1</Text>
+                <>
+                    <Text style={navDropdown.titleh7}>You're smashing it!</Text>
+                    <Text style={navDropdown.titleh7}>Outstanding performance!</Text>
+                    <Text style={navDropdown.titleh7}>You're killing it!</Text>
+                    <Text style={navDropdown.titleh7}>Keep it up!</Text>
+                </>
                 )
+                
         }
     }
 
@@ -169,25 +184,10 @@ export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
                         />
                     </View>
                 </View>
-                <View style={globalCss.alignItemsCenter}>
-                    <Text style={navDropdown.titleh7}>
-                        <FontAwesomeIcon icon={faFire} size={20} style={{color: 'orange', marginRight: 7}}/>
-                        <SyllableGroup/>
-                    </Text>
+                <View style={navDropdown.groupStatusVis}>
+                    <FontAwesomeIcon  style={{color: 'orange', marginRight: 7}} icon={faFire} size={20}/>
+                    <SyllableGroup />
                 </View>
-
-
-                {/* way to go! */}
-                {/* Nice work! */}
-                {/* Great job! */}
-                {/* Keep it up! */}
-                {/* Well done! */}
-                {/* Fantastic! */}
-                {/* Keep on shining! */}
-                {/* Brilliant execution! */}
-                {/* You're smashing it! */}
-                {/* Outstanding performance! */}
-                {/* You're killing it! */}
 
             </View>
         </AnimatedNavTopMenu>
