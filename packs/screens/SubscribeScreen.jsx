@@ -75,7 +75,7 @@ export default function SubscribeScreen({navigation}) {
                 <SubscriptionOption
                     title="By Monthly"
                     price="Try for free"
-                    imageUrl={require('../images/other_images/diamond-green.png')}
+                    imageUrl={require('../images/other_images/diamond-yellow.png')}
                     isSelected={selectedSubscription === "Free"}
                     onPress={() => setSelectedSubscription("Free")}
                 />
