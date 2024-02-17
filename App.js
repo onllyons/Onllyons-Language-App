@@ -295,14 +295,6 @@ function AppStack() {
                 component={PasswordScreen}
                 options={{title: "Забыли пароль?"}}
             />
-            <Stack.Screen
-                name="ChangePasswordScreen"
-                component={ChangePasswordScreen}
-                options={{
-                    title: "Изменить пароли",
-                    headerStyle: {backgroundColor: "#ffffff"},
-                }}
-            />
 
             {/* Place screen here if you need to hide tab bar navigator */}
 
@@ -359,6 +351,14 @@ function AppStack() {
                 component={UserData}
                 options={{headerShown: false}}
             />
+
+            <Stack.Screen
+                name="ChangePasswordScreen"
+                component={ChangePasswordScreen}
+                options={{headerShown: false}}
+            />
+
+            
 
         </Stack.Navigator>
     );

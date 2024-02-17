@@ -135,7 +135,7 @@ const Profile = () => {
       <View style={globalCss.navTabUser}>
           <TouchableOpacity
             style={globalCss.itemNavTabUserBtnBack}
-            onPress={() => navigation.navigate("BooksScreen")}
+            onPress={() => navigation.navigate("MenuScreen")}
           >
             <FontAwesomeIcon
               icon={faArrowLeft}
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   containerScroll: {
-    padding: 20,
+    padding: '5%',
   },
   avatarContainer: {
     alignItems: "center",
