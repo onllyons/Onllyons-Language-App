@@ -14,15 +14,17 @@ import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {AudioComponent} from "./components/flashcards/AudioComponent";
 import {Welcome} from "./components/Welcome";
 import {SubscribeModal} from "./components/SubscribeModal";
+import {useStore} from "./providers/Store";
 
 const {width} = Dimensions.get("window");
 
 export default function FlashCardsLearning({route, navigation}) {
+    const {setStoredValue} = useStore()
     const [combinedData, setCombinedData] = useState([]);
     const [index, setIndex] = useState(0);
     const totalSlides = combinedData.length;
 
-    const {url} = route.params;
+    const {url, id, finishedInCategory, generalInfo, item} = route.params;
     const swiperRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -44,6 +46,7 @@ export default function FlashCardsLearning({route, navigation}) {
     const [blocked, setBlocked] = useState(false)
 
     const startTime = useRef(Date.now())
+    const allWords = useRef(0)
 
     const toggleSwitch = () => {
         setIsEnabled((previousState) => !previousState);
@@ -65,6 +68,7 @@ export default function FlashCardsLearning({route, navigation}) {
             }
 
             let data = response.data;
+            allWords.current = data.length
             // data = data.filter((item) => item.url_display === url); // Filtrare după URL
             setCarouselData(data);
 
@@ -250,6 +254,8 @@ export default function FlashCardsLearning({route, navigation}) {
     };
 
     const handleFinish = () => {
+        setIsLoading(true)
+
         sendDefaultRequest(`${SERVER_AJAX_URL}/flashcards/card_complete.php`,
             {
                 url: url,
@@ -259,20 +265,22 @@ export default function FlashCardsLearning({route, navigation}) {
             {success: false}
         )
             .then(() => {
+                if (finishedInCategory.indexOf(id) === -1) {
+                    item.finished = true
+                    finishedInCategory.push(id)
+                    generalInfo.finished++
+                    generalInfo.finishedWords += allWords.current
+
+                    setStoredValue("needToUpdateFlashcardsCategory", true)
+                    setStoredValue("needToUpdateFlashcards", true)
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
                 navigation.goBack();
 
-                setTimeout(() => {
-                    setShowCongratulationsModal(false)
-                    setShowModal(false)
-                })
-            })
-            .catch((err) => {
-                if (typeof err === "object") {
-                    if (!err.tokensError && err.action === "openModalMembership") {
-                        setSubscribeModalVisible(true)
-                        setBlocked(true)
-                    }
-                }
+                setShowCongratulationsModal(false)
+                setShowModal(false)
             })
     };
 

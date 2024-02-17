@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity, Image} from "react-native";
 import globalCss from './css/globalCss';
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -6,6 +6,8 @@ import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {Welcome} from "./components/Welcome";
+import {useFocusEffect} from "@react-navigation/native";
+import {useStore} from "./providers/Store";
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -16,10 +18,12 @@ const shuffleArray = (array) => {
 };
 
 export default function FlashCardsCategory({route, navigation}) {
-    const {codeName, codeTitle} = route.params;
+    const {deleteStoredValue, getStoredValue} = useStore()
+    const {codeName, codeTitle, finishedInCategory, generalInfo} = route.params;
     const [data, setData] = useState([]);
     // const [pressedCards, setPressedCards] = useState({});
     const [loading, setLoading] = useState(false);
+    const [updateState, setUpdateState] = useState(false)
     const colors = ['#FF9400', '#7BC70A', '#CE81FF', '#1AB1F6', '#ffcc01', '#FC4849'];
     // const colorsPressed = ['#ffb14c', '#92ea0e', '#deadff', '#59c7f7', '#f9d243', '#f97575'];
 
@@ -53,8 +57,19 @@ export default function FlashCardsCategory({route, navigation}) {
         setShuffledImages(shuffleArray([...images]));
     }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            const needToUpdateBooksCategory = getStoredValue("needToUpdateFlashcardsCategory")
+
+            if (needToUpdateBooksCategory !== null) {
+                deleteStoredValue("needToUpdateFlashcardsCategory")
+                setUpdateState(prev => !prev)
+            }
+        }, [])
+    );
 
     useEffect(() => {
+        console.log("asdasd")
         setLoading(true); // Activează loader-ul înainte de solicitarea fetch
 
         sendDefaultRequest(`${SERVER_AJAX_URL}/flashcards/flashcard_words_category.php`,
@@ -137,7 +152,7 @@ export default function FlashCardsCategory({route, navigation}) {
                                 ]}
                                 shadowColor={"gray"}
                                 shadowBorderRadius={10}
-                                onPress={() => navigation.navigate('FlashCardsWords', {url: item.url})}>
+                                onPress={() => navigation.navigate('FlashCardsWords', {url: item.url, id: item.id, item: item, finishedInCategory: finishedInCategory, generalInfo: generalInfo})}>
 
                                 <Image
                                     source={shuffledImages[index % shuffledImages.length]}
