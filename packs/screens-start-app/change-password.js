@@ -1,13 +1,17 @@
 import React, {useEffect, useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
+import {} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
 import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
+
+// fonts
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+// icons
+import { faCamera, faArrowLeft, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export default function ChangePasswordScreen({navigation}) {
     const [showPassword, setShowPassword] = useState(false);
@@ -44,72 +48,92 @@ export default function ChangePasswordScreen({navigation}) {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.container}>
-                <Loader visible={loader}/>
-                <View style={[styles.inputView, styles.inputContainer1]}>
-                    <TextInput
-                        placeholder="Старый пароль"
-                        placeholderTextColor="#a5a5a5"
-                        value={data.current_password}
-                        secureTextEntry={!showPassword}
-                        onChangeText={val => setData(prev => ({...prev, current_password: val}))}
-                        style={[globalCss.input, styles.inputPassword]}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={styles.container}>
+            <View style={styles.containerWhite}>
+
+                <View style={globalCss.navTabUser}>
+                  <TouchableOpacity
+                    style={globalCss.itemNavTabUserBtnBack}
+                    onPress={() => navigation.navigate("UserData")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faArrowLeft}
+                      size={30}
+                      style={globalCss.blue}
                     />
-                    <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={togglePasswordVisibility}>
-                        <Text style={styles.buttonText}>
-                            {showPassword
-                                ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
-                                : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
-                        </Text>
-                    </TouchableOpacity>
+                  </TouchableOpacity>
+                  <View style={globalCss.itemNavTabUserTitleCat}>
+                    <Text style={globalCss.dataCategoryTitle}>Профиль</Text>
+                  </View>
                 </View>
 
-                <View style={[styles.inputView, styles.inputContainer2]}>
-                    <TextInput
-                        placeholder="Новый пароль"
-                        placeholderTextColor="#a5a5a5"
-                        value={data.new_password}
-                        secureTextEntry={!showNewPassword}
-                        onChangeText={val => setData(prev => ({...prev, new_password: val}))}
-                        style={[globalCss.input, styles.inputPassword]}
-                    />
-                    <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={toggleNewPasswordVisibility}>
-                        <Text style={styles.buttonText}>
-                            {showNewPassword
-                                ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
-                                : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
-                        </Text>
-                    </TouchableOpacity>
+
+                <View style={styles.containerGeneral}>
+                    <Loader visible={loader}/>
+                    <View style={[styles.inputView, styles.inputContainer1]}>
+                        <TextInput
+                            placeholder="Старый пароль"
+                            placeholderTextColor="#a5a5a5"
+                            value={data.current_password}
+                            secureTextEntry={!showPassword}
+                            onChangeText={val => setData(prev => ({...prev, current_password: val}))}
+                            style={[globalCss.input, styles.inputPassword]}
+                        />
+                        <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={togglePasswordVisibility}>
+                            <Text style={styles.buttonText}>
+                                {showPassword
+                                    ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
+                                    : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={[styles.inputView, styles.inputContainer2]}>
+                        <TextInput
+                            placeholder="Новый пароль"
+                            placeholderTextColor="#a5a5a5"
+                            value={data.new_password}
+                            secureTextEntry={!showNewPassword}
+                            onChangeText={val => setData(prev => ({...prev, new_password: val}))}
+                            style={[globalCss.input, styles.inputPassword]}
+                        />
+                        <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={toggleNewPasswordVisibility}>
+                            <Text style={styles.buttonText}>
+                                {showNewPassword
+                                    ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
+                                    : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={[styles.inputView, styles.inputContainer3]}>
+                        <TextInput
+                            placeholder="Повторите пароль"
+                            placeholderTextColor="#a5a5a5"
+                            style={[globalCss.input, styles.inputPassword]}
+                            secureTextEntry={!showNewPassword}
+                            value={data.confirm_password}
+                            onChangeText={val => setData(prev => ({...prev, confirm_password: val}))}
+                        />
+                        <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={toggleNewPasswordVisibility}>
+                            <Text style={styles.buttonText}>
+                                {showNewPassword
+                                    ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
+                                    : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <AnimatedButtonShadow
+                        styleButton={[globalCss.button, globalCss.buttonGreen]}
+                        onPress={handleChangePassword}
+                        shadowColor={"green"}
+                        size={"full"}
+                    >
+                        <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Сохранить пароль</Text>
+                    </AnimatedButtonShadow>
+
                 </View>
-
-                <View style={[styles.inputView, styles.inputContainer3]}>
-                    <TextInput
-                        placeholder="Повторите пароль"
-                        placeholderTextColor="#a5a5a5"
-                        style={[globalCss.input, styles.inputPassword]}
-                        secureTextEntry={!showNewPassword}
-                        value={data.confirm_password}
-                        onChangeText={val => setData(prev => ({...prev, confirm_password: val}))}
-                    />
-                    <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={toggleNewPasswordVisibility}>
-                        <Text style={styles.buttonText}>
-                            {showNewPassword
-                                ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
-                                : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                <AnimatedButtonShadow
-                    styleButton={[globalCss.button, globalCss.buttonGreen]}
-                    onPress={handleChangePassword}
-                    shadowColor={"green"}
-                    size={"full"}
-                >
-                    <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Сохранить пароль</Text>
-                </AnimatedButtonShadow>
-
             </View>
         </TouchableWithoutFeedback>
     );
@@ -120,7 +144,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
         alignItems: 'center',
-        padding: 20,
+    },
+    containerWhite: {
+        backgroundColor: 'white',
+        flex: 1,
+    },
+    containerGeneral: {
+        padding: '5%',
     },
     faEyefaEyeSlash: {
         flexDirection: 'row',

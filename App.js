@@ -61,11 +61,7 @@ function UserProfileMenu() {
                 component={MenuScreen}
                 options={{headerShown: false}}
             />
-            <Stack.Screen
-                name="UserData"
-                component={UserData}
-                options={{title: "Профиль", headerBackTitle: "Назад"}}
-            />
+            
             <Stack.Screen
                 name="UserSettings"
                 component={UserSettings}
@@ -299,14 +295,6 @@ function AppStack() {
                 component={PasswordScreen}
                 options={{title: "Забыли пароль?"}}
             />
-            <Stack.Screen
-                name="ChangePasswordScreen"
-                component={ChangePasswordScreen}
-                options={{
-                    title: "Изменить пароли",
-                    headerStyle: {backgroundColor: "#ffffff"},
-                }}
-            />
 
             {/* Place screen here if you need to hide tab bar navigator */}
 
@@ -357,6 +345,21 @@ function AppStack() {
                 component={Test_font_size}
                 options={{headerShown: false}}
             />
+
+            <Stack.Screen
+                name="UserData"
+                component={UserData}
+                options={{headerShown: false}}
+            />
+
+            <Stack.Screen
+                name="ChangePasswordScreen"
+                component={ChangePasswordScreen}
+                options={{headerShown: false}}
+            />
+
+            
+
         </Stack.Navigator>
     );
 }
