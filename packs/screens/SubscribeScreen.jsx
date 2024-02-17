@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
 import {View, Text, ScrollView, Image, TouchableOpacity, StyleSheet} from 'react-native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faXmark} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from "../css/globalCss";
 import Toast from "react-native-toast-message";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
+
+// fonts
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+// icons
+import { faCamera, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const SubscriptionOption = ({title, price, imageUrl, isSelected, onPress}) => {
     return (
@@ -45,18 +48,34 @@ export default function SubscribeScreen({navigation}) {
     };
 
     return (
-        <ScrollView contentContainerStyle={{minHeight: "100%"}}>
-            <View style={styles.container}>
-                <TouchableOpacity style={styles.closeBtn} onPress={() => navigation.goBack()}>
-                    <Text><FontAwesomeIcon icon={faXmark} size={30} style={styles.iconClose}/></Text>
-                </TouchableOpacity>
+        <View  style={styles.container}>
+
+            <View style={globalCss.navTabUser}>
+              <TouchableOpacity
+                style={globalCss.itemNavTabUserBtnBack}
+                onPress={() => navigation.navigate("MenuScreen")}
+              >
+                <FontAwesomeIcon
+                  icon={faArrowLeft}
+                  size={30}
+                  style={globalCss.blue}
+                />
+              </TouchableOpacity>
+              <View style={globalCss.itemNavTabUserTitleCat}>
+                <Text style={globalCss.dataCategoryTitle}>Подписка</Text>
+              </View>
+            </View>
+
+
+            <ScrollView style={styles.containerScroll}>
+             
                 <Text style={styles.titlePageTxt}>Откройте для себя мир эксклюзивных преимуществ и уникальных
                     возможностей</Text>
 
                 <SubscriptionOption
                     title="By Monthly"
                     price="Try for free"
-                    imageUrl={require('../images/other_images/free.png')}
+                    imageUrl={require('../images/other_images/diamond-green.png')}
                     isSelected={selectedSubscription === "Free"}
                     onPress={() => setSelectedSubscription("Free")}
                 />
@@ -64,14 +83,14 @@ export default function SubscribeScreen({navigation}) {
                 <SubscriptionOption
                     title="By Year"
                     price="€ 1.69 в месяц"
-                    imageUrl={require('../images/other_images/free.png')}
+                    imageUrl={require('../images/other_images/diamond-green.png')}
                     isSelected={selectedSubscription === "Pro"}
                     onPress={() => setSelectedSubscription("Pro")}
                 />
                 <SubscriptionOption
                     title="Lifetime card"
                     price="€ 1.00 в месяц"
-                    imageUrl={require('../images/other_images/free.png')}
+                    imageUrl={require('../images/other_images/diamond-red.png')}
                     isSelected={selectedSubscription === "Standard"}
                     onPress={() => setSelectedSubscription("Standard")}
                 />
@@ -84,8 +103,8 @@ export default function SubscribeScreen({navigation}) {
                 >
                     <Text style={globalCss.buttonText}>CONTINUE</Text>
                 </AnimatedButtonShadow>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 }
 
@@ -93,10 +112,11 @@ export default function SubscribeScreen({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#fff',
+    },
+    containerScroll: {
+      padding: '5%',
+      backgroundColor: '#fff',
+      flex: 1,
     },
     header: {
         fontSize: 24,
@@ -144,17 +164,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '500',
         marginBottom: '5%',
-    },
-    closeBtn: {
-        justifyContent: 'flex-end',
-        alignItems: 'flex-end',
-        alignContent: 'flex-start',
-        marginBottom: '5%',
-        width: '100%',
-        height: 80,
-    },
-    iconClose: {
-        color: '#a7a7a7'
     },
 
 });

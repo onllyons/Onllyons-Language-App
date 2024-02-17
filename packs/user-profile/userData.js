@@ -132,7 +132,7 @@ const Profile = () => {
     <View style={styles.container}>
       <Loader visible={loader} />
 
-      <View style={globalCss.navTabUser}>
+        <View style={globalCss.navTabUser}>
           <TouchableOpacity
             style={globalCss.itemNavTabUserBtnBack}
             onPress={() => navigation.navigate("MenuScreen")}
