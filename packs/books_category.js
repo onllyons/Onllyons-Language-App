@@ -114,7 +114,7 @@ export default function BooksCategoryScreen({route}) {
                     <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue}/>
                 </TouchableOpacity>
                 <View style={globalCss.itemNavTabUserTitleCat}>
-                    <Text style={globalCss.dataCategoryTitle}>{transmittedType.text}</Text>
+                    <Text style={globalCss.dataCategoryTitle}>cc{transmittedType.text}</Text>
                 </View>
             </View>
 

@@ -1,13 +1,20 @@
+import React, {useCallback, useState} from "react";
 import {StyleSheet, ScrollView, Linking, View, Text, Image, TouchableOpacity, RefreshControl} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faStar} from '@fortawesome/free-solid-svg-icons';
 
-import {getUser, isAuthenticated, login, logout} from "./providers/AuthProvider";
+// fonts
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+// icons
+import {faStar, faGear} from '@fortawesome/free-solid-svg-icons';
+
+// styles
 import globalCss from './css/globalCss';
+import {menuStyle as styles} from "./css/menu.styles";
+
+// Toast
 import Toast from "react-native-toast-message";
+import {getUser, isAuthenticated, login, logout} from "./providers/AuthProvider";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
-import React, {useCallback, useState} from "react";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {useFocusEffect} from "@react-navigation/native";
 
@@ -44,70 +51,91 @@ export default function MenuScreen({navigation}) {
             }
         >
             {isAuthenticated() ? (
-                <LinearGradient
-                    colors={['#539cff', '#539cff', '#539cff']}
-                    useAngle
-                    angle={45}
-                    angleCenter={{x: 0.5, y: 0.5}}
-                    locations={[0, 0.5, 1]}
-                    style={styles.userInfoContainer}
-                >
-                    <View style={styles.userContainerImageBorder}>
-                        <View style={styles.userContainerImage}>
-                            <Image
-                                source={
-                                    user.image === 'default.png'
-                                        ? require('./images/other_images/userphoto.png')
-                                        : {uri: `https://www.language.onllyons.com/ru/ru-en/dist/images/user-images/${user.image}`}
-                                }
-                                style={styles.userImage}
-                            />
-                        </View>
-                    </View>
+                <View style={styles.userInfoContainer}>
 
-                    <LinearGradient
-                        colors={['#2adadd', '#1dd3e6', '#0ec3eb']}
-                        start={{x: 0, y: 0}}
-                        end={{x: 1, y: 0}}
-                        style={styles.gradientBackground}
-                    >
-                        <Text style={styles.levelUser}>
-                            {user.level === 0 ? 'Beginner' :
-                                user.level === 1 ? 'Intermediate' :
-                                    user.level === 2 ? 'Advanced' :
-                                        'Unknown Level'}
+                <View style={styles.navTabUser}>
+                    <View style={styles.navTabUserMain}>
+                        <Text  style={styles.navTabUserMainTxt}>Профиль</Text>
+                    </View>
+                    <TouchableOpacity style={styles.navTabUserSettings} onPress={() => navigation.navigate('UserData')}>
+                        <Text style={styles.navTabUserSettingsTxt}>
+                            <FontAwesomeIcon icon={faGear} size={30} style={globalCss.blue}/>
                         </Text>
-                    </LinearGradient>
+                    </TouchableOpacity>
+                </View>
 
-                    {/*<Text style={styles.username}>{user.username}</Text>*/}
-                    {/*<Text style={styles.email}>{user.email}</Text>*/}
-                    <View style={styles.gameRating}>
-                        <Text style={styles.gameRatingTxt}>1536</Text>
-                        <View style={styles.gameRatingIcon}><FontAwesomeIcon icon={faStar} size={19}
-                                                                             style={styles.icongameRating}/></View>
+
+
+
+
+
+
+
+
+                <View style={styles.cardProfile}>
+                    <View style={styles.cardProfileInfo}>
+                        <Text style={styles.nameSurname}>{user.name} {user.surname}</Text>
+                        <Text style={styles.username}>{user.username}</Text>
+
+                        <View style={styles.levelUserTag}>
+                            <Text style={styles.levelUser}>
+                                {user.level === 0 ? 'Beginner' :
+                                    user.level === 1 ? 'Intermediate' :
+                                        user.level === 2 ? 'Advanced' :
+                                            'Unknown Level'}
+                            </Text>
+                        </View>
+
+
+
                     </View>
+                    <View style={styles.cardProfilePhoto}>
+                        <Image
+                            source={
+                                user.image === 'default.png'
+                                    ? require('./images/other_images/userphoto.png')
+                                    : {uri: `https://www.language.onllyons.com/ru/ru-en/dist/images/user-images/${user.image}`}
+                            }
+                            style={styles.userImage}
+                        />
+                    </View>
+                </View>
+
+                 
+
+                
 
 
-                </LinearGradient>
+
+                <View style={styles.levelSubscription}>
+                    <TouchableOpacity style={styles.levelSubscriptionBtn}>
+                        <Image
+                            source={require('./images/other_images/diamond-red.png')}
+                            style={styles.diamondProfile}
+                        />
+                        <Text style={styles.levelSubscriptionName}>pro</Text>
+
+                        
+                        {/*
+
+                            Pro = diamond-red.png
+                            Standard = diamond-green.png
+                            Free = null
+                            
+                        */}
+
+
+                    </TouchableOpacity>
+                </View>
+                  
+
+
+                </View>
             ) : (
                 ""
             )}
 
             <View style={styles.sectionMenuUrl}>
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Мой профиль</Text>
-
-                    <View style={styles.sectionMenu}>
-                        <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}
-                                          onPress={() => navigation.navigate('UserData')}>
-                            <Text style={styles.btnText}>Профиль</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBBR]}
-                                          onPress={() => navigation.navigate('UserSettings')}>
-                            <Text style={styles.btnText}>Настройки</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Подписка</Text>
                     <View style={styles.sectionMenu}>
@@ -181,130 +209,3 @@ export default function MenuScreen({navigation}) {
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    sectionMenuUrl: {
-        padding: 20,
-    },
-    section: {
-        marginVertical: 10,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: 'grey',
-        marginBottom: 5,
-    },
-    sectionMenu: {
-        backgroundColor: '#ffffff',
-        borderColor: '#d8d8d8',
-        borderWidth: 2,
-        borderRadius: 12
-    },
-    btnMenuProfile: {
-        backgroundColor: 'white',
-        paddingVertical: '5%',
-        paddingHorizontal: '5%',
-        alignItems: 'flex-start',
-    },
-    btnBB: {
-        borderBottomWidth: 2,
-        borderColor: '#d8d8d8'
-    },
-    buttonOut: {
-        marginTop: '4%',
-        borderTopWidth: 2,
-        borderBottomWidth: 2,
-        borderLeftWidth: 2,
-        borderRightWidth: 2,
-    },
-    btnText: {
-        fontWeight: 'bold',
-        fontSize: 16,
-        color: 'black',
-    },
-    userInfoContainer: {
-        paddingTop: '15%',
-        paddingBottom: '10%',
-        backgroundColor: '#539cff'
-    },
-    username: {
-        fontSize: 16,
-    },
-    email: {
-        fontSize: 16,
-    },
-    gradientBackground: {
-        width: '40%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        borderRadius: 50,
-        marginTop: -80,
-        padding: 8,
-    },
-    levelUser: {
-        fontSize: 18,
-        color: 'white'
-    },
-    exitButtonText: {
-        color: 'white',
-        fontSize: 18,
-        textAlign: 'center',
-    },
-    gameRating: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: '4%'
-    },
-    gameRatingIcon: {
-        backgroundColor: '#fdb652',
-        borderRadius: 50,
-        padding: 5,
-        marginLeft: '2.5%'
-    },
-    gameRatingTxt: {
-        color: '#fdfe5b',
-        fontSize: 20,
-        fontWeight: '700',
-        alignSelf: 'center',
-    },
-    icongameRating: {
-        color: 'white',
-    },
-    userContainerImageBorder: {
-        width: 300,
-        height: 300,
-        backgroundColor: '#5ca1ff',
-        alignSelf: 'center',
-        borderRadius: 1000,
-        padding: 35,
-    },
-    userContainerImage: {
-        borderRadius: 1000,
-        padding: 18,
-        backgroundColor: '#63a5ff',
-    },
-    userImage: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 1000,
-    },
-    btnBTR: {
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
-    btnBBR: {
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-    },
-});
-
-
-
-
-
