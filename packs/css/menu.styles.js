@@ -103,51 +103,6 @@ export const menuStyle = StyleSheet.create({
         marginRight: '2%',
         resizeMode: 'contain'
     },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
-    template:{
-        
-    },
     sectionMenuUrl: {
         padding: '5%',
     },
