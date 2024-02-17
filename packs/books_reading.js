@@ -27,8 +27,10 @@ import BottomSheet, {
 import globalCss from "./css/globalCss";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Welcome} from "./components/Welcome";
+import {useStore} from "./providers/Store";
 
 export default function BooksScreen({navigation}) {
+    const {setStoredValue} = useStore()
     const [scrollY, setScrollY] = useState(0);
     const route = useRoute();
     const [sound, setSound] = useState(null);
@@ -40,7 +42,7 @@ export default function BooksScreen({navigation}) {
     const bottomSheetRef = useRef(null);
     const [data, setData] = useState([]);
     const [wordsArray, setWordsArray] = useState([]);
-    const bookId = route.params.id;
+    const {id: bookId, item, info} = route.params;
 
     const handleScroll = (event) => {
         const y = event.nativeEvent.contentOffset.y;
@@ -178,8 +180,25 @@ export default function BooksScreen({navigation}) {
             {id: bookId},
             navigation,
             {success: false}
-        ).catch(() => {
-        });
+        )
+            .then(() => {})
+            .catch(() => {});
+
+        if (item) item.saved = !saved
+
+        const indexSaved = info.saved.indexOf(bookId)
+
+        if (!saved) {
+            if (indexSaved === -1) {
+                setStoredValue("needToUpdateBooks", true)
+                info.saved.push(bookId)
+            }
+        } else {
+            if (indexSaved !== -1) {
+                setStoredValue("needToUpdateBooks", true)
+                info.saved.splice(indexSaved, 1);
+            }
+        }
 
         setSaved(!saved);
     };
@@ -190,8 +209,27 @@ export default function BooksScreen({navigation}) {
             {id: bookId},
             navigation,
             {success: false}
-        ).catch(() => {
-        });
+        )
+            .then(() => {})
+            .catch(() => {});
+
+        if (item) item.finished = !finished
+
+        const indexFinish = info.finished.indexOf(bookId)
+
+        if (!finished) {
+            if (indexFinish === -1) {
+                setStoredValue("needToUpdateBooks", true)
+                info.finished.push(bookId)
+            }
+        } else {
+            if (indexFinish !== -1) {
+                setStoredValue("needToUpdateBooks", true)
+                info.finished.splice(indexFinish, 1);
+            }
+        }
+
+        setStoredValue("needToUpdateBooksCategory", true)
 
         setFinished(!finished);
     };

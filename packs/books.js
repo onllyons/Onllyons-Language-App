@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useRef} from 'react';
+import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {
     View,
     Text,
@@ -6,7 +6,7 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
-    Dimensions
+    Dimensions, RefreshControl
 } from 'react-native';
 import Carousel from 'react-native-new-snap-carousel';
 import Loader from "./components/Loader";
@@ -22,13 +22,17 @@ import globalCss from './css/globalCss';
 // for nav top
 import {NavTop} from "./components/books/NavTop";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {formatBooksWord} from "./utils/Utls";
+import {useStore} from "./providers/Store";
 
 export default function BooksScreen({navigation}) {
+    const {deleteStoredValue, getStoredValue} = useStore()
     const [data, setData] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [updateState, setUpdateState] = useState(false)
+    const [refreshing, setRefreshing] = useState(false);
 
     const booksInfo = useRef({
         finished: [],
@@ -36,8 +40,21 @@ export default function BooksScreen({navigation}) {
         allBooks: 0
     })
 
+    useFocusEffect(
+        useCallback(() => {
+            const needToUpdateBooksCategory = getStoredValue("needToUpdateBooks")
+
+            if (needToUpdateBooksCategory !== null) {
+                deleteStoredValue("needToUpdateBooks")
+                setUpdateState(prev => !prev)
+            }
+        }, [])
+    );
+
     useMemo(() => {
-        setLoading(true);
+        if (!loading && !refreshing) return
+
+        console.log("asdasda")
 
         sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,
             {},
@@ -53,9 +70,12 @@ export default function BooksScreen({navigation}) {
                 setCategories(uniqueCategories);
             })
             .finally(() => {
-                setTimeout(() => setLoading(false), 1)
+                setTimeout(() => {
+                    setRefreshing(false)
+                    setLoading(false)
+                }, 1)
             }); // Dezactivează Loader-ul
-    }, []);
+    }, [refreshing]);
 
     const getCategoryBooks = (category) => {
         return data.filter(item => item.type_category === category);
@@ -74,19 +94,32 @@ export default function BooksScreen({navigation}) {
 
             <NavTop loading={loading} data={booksInfo.current}/>
 
-            <ScrollView contentContainerStyle={{paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20}}>
+            <ScrollView
+                contentContainerStyle={{
+                    paddingTop: 20,
+                    paddingBottom: 0,
+                    paddingRight: 20,
+                    paddingLeft: 20
+                }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={() => setRefreshing(true)}
+                    />
+                }
+            >
                 <Loader visible={loading}/>
-                <Category data={getBooksSaved()} type={{type: "saved", text: "Мои книги"}}/>
+                <Category data={getBooksSaved()} type={{type: "saved", text: "Мои книги"}} booksInfo={booksInfo.current}/>
                 {categories.map((category, index) => (
-                    <Category data={getCategoryBooks(category)} type={{type: "category", text: category}} key={index}/>
+                    <Category data={getCategoryBooks(category)} type={{type: "category", text: category}} key={index} booksInfo={booksInfo.current}/>
                 ))}
-                <Category data={getBooksFinished()} type={{type: "finished", text: "Прочитанные книги"}}/>
+                <Category data={getBooksFinished()} type={{type: "finished", text: "Прочитанные книги"}} booksInfo={booksInfo.current}/>
             </ScrollView>
         </View>
     );
 }
 
-const Category = React.memo(({data, type}) => {
+const Category = React.memo(({data, type, booksInfo}) => {
     if (data.length === 0) return null
 
     const navigation = useNavigation()
@@ -104,7 +137,7 @@ const Category = React.memo(({data, type}) => {
                 </View>
                 <TouchableOpacity
                     style={styles.openCategory}
-                    onPress={() => navigation.navigate('BooksCategory', {data: data, type: type})} // Trimite denumirea categoriei la pagina următoare
+                    onPress={() => navigation.navigate('BooksCategory', {data: data, type: type, info: booksInfo})} // Trimite denumirea categoriei la pagina următoare
                     activeOpacity={1}
                 >
                     <View style={styles.openCatTxt}>
@@ -124,7 +157,7 @@ const Category = React.memo(({data, type}) => {
                             <AnimatedButtonShadow
                                 shadowDisplayAnimate={"slide"}
                                 styleButton={[styles.card, styles.bgGry]}
-                                onPress={() => navigation.navigate('BooksReading', {id: item.id})}
+                                onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, info: booksInfo})}
                                 shadowColor={"gray"}
                                 shadowBorderRadius={12}
                             >
