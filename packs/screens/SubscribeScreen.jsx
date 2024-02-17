@@ -1,14 +1,18 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, Image, Dimensions, TouchableOpacity, StyleSheet} from 'react-native';
 
 import globalCss from "../css/globalCss";
 import Toast from "react-native-toast-message";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
+import Carousel from "react-native-new-snap-carousel";
+
 // fonts
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 // icons
 import { faCamera, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+
+const { width } = Dimensions.get('window');
 
 const SubscriptionOption = ({title, price, imageUrl, isSelected, onPress}) => {
     return (
@@ -47,6 +51,38 @@ export default function SubscribeScreen({navigation}) {
         }
     };
 
+    const renderItem = ({ item }) => {
+        switch (item) {
+            case 1:
+                return (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <SubscriptionOption
+                            title="Standard"
+                            price="€ 1.00 в месяц"
+                            imageUrl={require('../images/other_images/diamond-green.png')}
+                            isSelected={selectedSubscription === "Pro"}
+                            onPress={() => setSelectedSubscription("Pro")}
+                        />
+                    </View>
+                );
+            case 2:
+                return (
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <SubscriptionOption
+                            title="Pro"
+                            price="€ 1.69 в месяц"
+                            imageUrl={require('../images/other_images/diamond-red.png')}
+                            isSelected={selectedSubscription === "Standard"}
+                            onPress={() => setSelectedSubscription("Standard")}
+                        />
+                    </View>
+                );
+            default:
+                return null;
+        }
+    };
+
+
     return (
         <View  style={styles.container}>
 
@@ -67,33 +103,35 @@ export default function SubscribeScreen({navigation}) {
             </View>
 
 
-            <ScrollView style={styles.containerScroll}>
+            <View style={styles.containerScroll}>
              
                 <Text style={styles.titlePageTxt}>Откройте для себя мир эксклюзивных преимуществ и уникальных
                     возможностей</Text>
 
+
+                <Carousel
+                    data={[1, 2]}
+                    renderItem={renderItem}
+                    sliderWidth={width}
+                    itemWidth={width}
+                    loop={false}
+                />
+
+
+
+
+                {/*
                 <SubscriptionOption
-                    title="By Monthly"
+                    title="Free"
                     price="Try for free"
                     imageUrl={require('../images/other_images/diamond-yellow.png')}
                     isSelected={selectedSubscription === "Free"}
                     onPress={() => setSelectedSubscription("Free")}
                 />
+                */}
 
-                <SubscriptionOption
-                    title="By Year"
-                    price="€ 1.69 в месяц"
-                    imageUrl={require('../images/other_images/diamond-green.png')}
-                    isSelected={selectedSubscription === "Pro"}
-                    onPress={() => setSelectedSubscription("Pro")}
-                />
-                <SubscriptionOption
-                    title="Lifetime card"
-                    price="€ 1.00 в месяц"
-                    imageUrl={require('../images/other_images/diamond-red.png')}
-                    isSelected={selectedSubscription === "Standard"}
-                    onPress={() => setSelectedSubscription("Standard")}
-                />
+                
+                
 
                 <AnimatedButtonShadow
                     styleButton={[globalCss.button, globalCss.buttonBlue]}
@@ -101,9 +139,9 @@ export default function SubscribeScreen({navigation}) {
                     onPress={handleContinuePress}
                     size={"full"}
                 >
-                    <Text style={globalCss.buttonText}>CONTINUE</Text>
+                    <Text style={globalCss.buttonText}>ВЫБРАТЬ</Text>
                 </AnimatedButtonShadow>
-            </ScrollView>
+            </View>
         </View>
     );
 }
