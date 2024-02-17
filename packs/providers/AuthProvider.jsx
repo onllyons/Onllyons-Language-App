@@ -75,7 +75,7 @@ export const setTokens = (obj) => {
 };
 
 export const AuthProvider = ({children}) => {
-    const [loader, setLoader] = useState(false);
+    const [isReady, setIsReady] = useState(false);
     const navigation = useNavigation();
 
     // Loading user data from local storage
@@ -107,7 +107,7 @@ export const AuthProvider = ({children}) => {
     };
 
     useMemo(() => {
-        setLoader(true);
+        setIsReady(false);
 
         retrieveData()
             .then(() => {
@@ -142,8 +142,6 @@ export const AuthProvider = ({children}) => {
             })
             .then(async (data) => {
                 if (data.data.success) {
-                    setTimeout(() => setLoader(false), 1);
-
                     await AsyncStorage.setItem(
                         "tokens",
                         JSON.stringify({...tokens, ...data.data.tokens})
@@ -160,22 +158,26 @@ export const AuthProvider = ({children}) => {
                         try {
                             await logout();
                             navigation.navigate("StartPageScreen")
+                            setTimeout(() => setIsReady(true), 1);
                         } catch (err) {
                             return Promise.reject()
                         }
                     } else if (data.data.userAvailable && data.data.user) {
                         return login(data.data.user, data.data.tokens)
                     }
+
+                    setTimeout(() => setIsReady(true), 1);
                 }
             })
             .catch(async () => {
-                setTimeout(() => setLoader(false), 1);
+                setTimeout(() => setIsReady(true), 1);
 
                 Toast.show({
                     type: "error",
                     text1: "Ошибка при обращении к серверу",
                 });
             })
+            .finally(() => setTimeout(() => setIsReady(true), 1))
     }, []);
 
     useEffect(() => {
@@ -201,9 +203,10 @@ export const AuthProvider = ({children}) => {
                 login,
                 logout,
                 setTokens,
+                isReady
             }}
         >
-            {loader ? <Welcome/> : children}
+            {children}
         </AuthContext.Provider>
     );
 };

@@ -35,12 +35,14 @@ import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 import {SubscribeModal} from "../components/SubscribeModal";
 import {WordConstruct} from "../components/course/WordConstruct";
 import {Welcome} from "../components/Welcome";
+import {useStore} from "../providers/Store";
 
 const {width} = Dimensions.get("window");
 
 export const CourseLesson = ({navigation}) => {
+    const {setStoredValue} = useStore()
     const route = useRoute();
-    const url = route.params.url;
+    const {url, category, id} = route.params;
     const currentSeries = useRef(1);
     const [quizActive, setQuizActive] = useState(false);
     const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
@@ -56,7 +58,6 @@ export const CourseLesson = ({navigation}) => {
     const [loading, setLoading] = useState(true)
 
     // For update progress
-    const courseId = useRef(-1);
     const timeStart = useRef(Date.now())
     const indexRef = useRef(0);
     const quizActiveRef = useRef(false);
@@ -114,14 +115,12 @@ export const CourseLesson = ({navigation}) => {
     }, []);
 
     function saveProgress() {
-        if (courseId.current === -1) return
-
         const answersCalculate = calculateCorrectPercentage()
 
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/course/course_progress.php`,
             {
-                passesCourse: courseId.current,
+                passesCourse: id,
                 stage: {
                     series: currentSeries.current,
                     slideIndex: indexRef.current >= startQuizIndex.current ? startQuizIndex.current : indexRef.current,
@@ -164,7 +163,10 @@ export const CourseLesson = ({navigation}) => {
         currentCheck.current = {}
         setLoading(true)
         setQuizActive(false);
-        setTimeout(() => setShowCongratulationsModal(false))
+        setShowCongratulationsModal(false)
+        setCheck({})
+        setIndex(0)
+        swiperRef.current?.snapToItem(0, false);
 
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/course/get_carousel_and_test.php`,
@@ -209,14 +211,11 @@ export const CourseLesson = ({navigation}) => {
                     })
 
                     startQuizIndex.current = carousel.length
-                    courseId.current = data.courseId
                     sortedWords.current = {}
 
-                    setCheck({})
                     setDataFull([...carousel, ...questions]);
-                    swiperRef.current?.snapToItem(0, false);
 
-                    debouncedSaveProgress.current()
+                    saveProgress()
                 }
 
                 checkAllowCourse()
@@ -227,26 +226,34 @@ export const CourseLesson = ({navigation}) => {
     };
 
     const finish = () => {
+        currentCheck.current = {}
+        setLoading(true)
+        setShowCongratulationsModal(false)
+        setCheck({})
+
+        const timeLesson = Math.floor((Date.now() - timeStart.current) / 1000)
+
         // Finish
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/course/course_finish.php`,
             {
-                passesCourse: courseId.current,
-                time: Math.floor((Date.now() - timeStart.current) / 1000),
+                passesCourse: id,
+                time: timeLesson,
             },
             navigation,
             {success: false}
         )
             .then(() => {
-                setShowCongratulationsModal(false)
+                setStoredValue("lastFinishCourse", {category: category, id: id, timeLesson: timeLesson})
                 navigation.goBack();
             })
+            .catch(() => navigation.goBack())
     };
 
     const showQuizResult = () => {
         setShowCongratulationsModal(true)
         setCheck({})
-        debouncedSaveProgress.current()
+        saveProgress()
     }
 
     function restartQuiz() {
@@ -318,20 +325,34 @@ export const CourseLesson = ({navigation}) => {
         }
 
         setTimeout(() => {
-            setCheck((state) => ({
-                ...state,
-                [key]: {
-                    ...state[key],
-                    indexesPressed: {
-                        ...state[key].indexesPressed,
-                        [indexWord]: {
-                            show: !state[key].indexesPressed[indexWord].correct,
-                            correct: state[key].indexesPressed[indexWord].correct,
-                            changeBg: false
+            setCheck((state) => {
+                if (!state[key]) {
+                    state[key] = {};
+                }
+
+                if (!state[key].indexesPressed) {
+                    state[key].indexesPressed = {};
+                }
+
+                if (!state[key].indexesPressed[indexWord]) {
+                    state[key].indexesPressed[indexWord] = { show: false, correct: false, changeBg: false };
+                }
+
+                return {
+                    ...state,
+                    [key]: {
+                        ...state[key],
+                        indexesPressed: {
+                            ...state[key].indexesPressed,
+                            [indexWord]: {
+                                show: !state[key].indexesPressed[indexWord].correct,
+                                correct: state[key].indexesPressed[indexWord].correct,
+                                changeBg: false
+                            }
                         }
-                    }
-                },
-            }));
+                    },
+                };
+            });
         }, 1000)
     }, [check])
 

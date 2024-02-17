@@ -4,7 +4,7 @@ import {
     Text,
     Image,
     ScrollView,
-    Animated, Dimensions, FlatList, TouchableOpacity
+    Animated, Dimensions, FlatList, TouchableOpacity, RefreshControl
 } from "react-native";
 
 // fonts
@@ -17,11 +17,10 @@ import {faStar, faPlay} from "@fortawesome/free-solid-svg-icons";
 import globalCss from "./css/globalCss";
 import {stylesCourse_lesson as styles} from "./css/course_main.styles";
 
-import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import Modal from 'react-native-modal';
 import {SubscribeModal} from "./components/SubscribeModal";
 import {AnimatedButtonShadow, SHADOW_COLORS} from "./components/buttons/AnimatedButtonShadow";
-import {useNavigation} from "@react-navigation/native";
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import {
     formatAdventureWord, formatExcitingWord,
     formatHoursWord,
@@ -31,15 +30,18 @@ import {
 import {withAnchorPoint} from "react-native-anchor-point";
 import * as Haptics from "expo-haptics";
 import {NavTop} from "./components/course/NavTop";
+import {useStore} from "./providers/Store";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
+    const {getStoredValue, setStoredCourseData, deleteStoredValue} = useStore()
     const [currentCategory, setCurrentCategory] = useState({
         name: "",
         url: "",
         subject: 1
     });
     const currentCategoryRef = useRef({})
+
     const [scrollEnabled, setScrollEnabled] = useState(true)
     const flatListRef = useRef(null);
 
@@ -54,9 +56,18 @@ export default function CourseScreen({navigation}) {
     const seriesData = useRef({})
     const generalInfo = useRef({})
 
-    const [loading, setLoading] = useState(false)
+    const [refreshing, setRefreshing] = useState(false);
 
     const [categories, setCategories] = useState([])
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+
+        setStoredCourseData()
+            .then(() => {})
+            .catch(() => {})
+            .finally(() => setRefreshing(false))
+    }, [])
 
     const onViewableItemsChanged = ({viewableItems}) => {
         if (!viewableItems[0] || !categoriesData.current[viewableItems[0]["item"]]) return
@@ -78,40 +89,6 @@ export default function CourseScreen({navigation}) {
 
     const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}])
 
-    useMemo(() => {
-        setLoading(true)
-
-        sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories.php`,
-            {},
-            navigation,
-            {success: false}
-        )
-            .then(data => {
-                const groupedData = groupByCategory(data.data);
-                const firstCategory = Object.keys(groupedData)[0];
-                const categories = []
-
-                Object.keys(groupedData).forEach(cat => categories.push(cat))
-
-                categoriesData.current = data.categoriesData
-                seriesData.current = data.seriesData
-                generalInfo.current = data.generalInfo
-
-                currentCategoryRef.current = {
-                    name: groupedData[firstCategory].categoryTitle.trim(),
-                    url: firstCategory,
-                    subject: 1
-                }
-                setCurrentCategory(currentCategoryRef.current);
-                setCategories(categories)
-                setData(groupedData);
-            })
-            .catch(() => {})
-            .finally(() => {
-                setTimeout(() => setLoading(false), 1)
-            })
-    }, []);
-
     // Funcție pentru gruparea datelor pe categorii
     const groupByCategory = (data) => {
         return data.reduce((acc, item) => {
@@ -129,6 +106,76 @@ export default function CourseScreen({navigation}) {
             return acc;
         }, {});
     };
+
+    useFocusEffect(
+        useCallback(() => {
+           const lastFinishCourse = getStoredValue("lastFinishCourse")
+
+            if (lastFinishCourse === null || !data[lastFinishCourse.category]) {
+                deleteStoredValue("lastFinishCourse")
+                return
+            }
+
+            let changed = false
+            let phrasesToAdd = 0
+            let quizzesToAdd = 0
+            const items = data[lastFinishCourse.category].items
+
+            for (const [index, value] of items.entries()) {
+                if (value.id === lastFinishCourse.id && !value.finished) {
+                    phrasesToAdd = value.phrases
+                    quizzesToAdd = value.quizzes
+                    items[index].finished = true
+                    changed = true
+                    break
+                }
+            }
+
+            if (changed) {
+                categoriesData.current[lastFinishCourse.category].finished += 1
+                categoriesData.current[lastFinishCourse.category].phrasesCompleted += phrasesToAdd
+                generalInfo.current.coursesCompleted += 1
+                generalInfo.current.quizzesCompleted += quizzesToAdd
+                generalInfo.current.phrasesCompleted += phrasesToAdd
+                generalInfo.current.coursesCompletedHours += lastFinishCourse.timeLesson / 60 / 60
+                deleteStoredValue("lastFinishCourse")
+
+                setData(prev => ({
+                    ...prev,
+                    [lastFinishCourse.category]: {
+                        ...prev[lastFinishCourse.category],
+                        items: items
+                    }
+                }))
+            }
+        }, [data])
+    );
+
+
+    useMemo(() => {
+        if (refreshing) return
+
+        const data = getStoredValue("courseData")
+
+        const groupedData = groupByCategory(data.data);
+        const firstCategory = Object.keys(groupedData)[0];
+        const categories = []
+
+        Object.keys(groupedData).forEach(cat => categories.push(cat))
+
+        categoriesData.current = data.categoriesData
+        seriesData.current = data.seriesData
+        generalInfo.current = data.generalInfo
+
+        currentCategoryRef.current = {
+            name: groupedData[firstCategory].categoryTitle.trim(),
+            url: firstCategory,
+            subject: 1
+        }
+        setCurrentCategory(currentCategoryRef.current);
+        setCategories(categories)
+        setData(groupedData);
+    }, [refreshing]);
 
     const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
 
@@ -164,15 +211,13 @@ export default function CourseScreen({navigation}) {
     //     fetchCategories(); // Загружаем начальные данные при монтировании
     // }, [categories]);
 
-    const [heightNav, setHeightNav] = useState(100)
-
     return (
-        <View>
-            <NavTop loading={loading} getCategoryData={getCategoryData} seriesData={seriesData.current} generalInfo={generalInfo.current} onLayout={event => setHeightNav(event.nativeEvent.layout.height)}/>
+        <View style={{backgroundColor: "#fff"}}>
+            <NavTop getCategoryData={getCategoryData} seriesData={seriesData.current} generalInfo={generalInfo.current}/>
 
             <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
 
-            <CurrentCategory currentCategory={currentCategory} heightNav={heightNav} getCategoryData={getCategoryData} loading={loading}/>
+            <CurrentCategory currentCategory={currentCategory} getCategoryData={getCategoryData}/>
 
             <FlatList
                 // ListFooterComponent={loading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
@@ -180,14 +225,22 @@ export default function CourseScreen({navigation}) {
                 // onEndReachedThreshold={0.5}
                 // data={currentCategories}
 
+                refreshControl={
+                    <RefreshControl
+
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
+
                 ref={flatListRef}
-                data={loading ? ["loadingData"] : categories}
-                scrollEnabled={scrollEnabled && !loading}
+                data={categories}
+                scrollEnabled={scrollEnabled}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                 renderItem={({item, index}) => (
                     <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
                 )}
-                contentContainerStyle={{ paddingTop: 140, paddingBottom: 130, minHeight: "100%" }}
+                contentContainerStyle={{ paddingTop: 35, paddingBottom: 130, minHeight: "100%" }}
                 style={styles.bgCourse}
                 onScroll={(event) => {
                     currentScrollData.current = {
@@ -211,14 +264,14 @@ export default function CourseScreen({navigation}) {
     );
 }
 
-const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData, loading}) => {
+const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData}) => {
     const [isModalVisible, setModalVisible] = useState(false)
 
     return (
         <>
-            <View style={{...styles.infoCourseSubject, top: heightNav}}>
+            <View style={styles.infoCourseSubject}>
                 <AnimatedButtonShadow
-                    disable={loading}
+                    shadowDisplayAnimate={"slide"}
                     styleContainer={styles.cardCategoryTitleContainer}
                     shadowBorderRadius={12}
                     shadowBottomRightBorderRadius={0}
@@ -230,7 +283,7 @@ const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData
                 </AnimatedButtonShadow>
 
                 <AnimatedButtonShadow
-                    disable={loading}
+                    shadowDisplayAnimate={"slide"}
                     onPress={() => setModalVisible(true)}
 
                     styleContainer={styles.infoCourseBtnContainer}
@@ -611,7 +664,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                       size={index === 0 ? 30 : 30}
                       style={[
                         styles.iconFlash,
-                        item.finished ? styles.finishedCourseLessonIcon : null,
+                        item.finished || firstLessonColor.backgroundColor ? styles.finishedCourseLessonIcon : null,
                         { marginLeft: index === 0 ? 0 : 0 }
                       ]}
                     />
@@ -688,7 +741,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                                 setVisibleModal(false)
                                 setShowModal(false)
                                 setScrollEnable(true)
-                                navigation.navigate("CourseLesson", {url: item.url})
+                                navigation.navigate("CourseLesson", {url: item.url, category: item.category_url, id: item.id})
                             }}
                         >
                             <Text style={[globalCss.buttonText, globalCss.textUpercase]}>

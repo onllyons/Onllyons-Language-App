@@ -10,7 +10,7 @@ export const NavTopItem = ({
     text,
     image,
     id,
-    loading,
+    loading = false,
     imageArrow = require("../../images/icon/arrowTop.png")
 }) => {
     const {toggleNavTopMenu} = useAnimatedNavTop()
@@ -47,7 +47,7 @@ const NavTopTextLoader = () => {
     )
 }
 
-export const NavTopItemLanguage = ({loading}) => {
+export const NavTopItemLanguage = ({loading = false}) => {
     return (
         <NavTopItem
             text={"EN"}
@@ -58,7 +58,7 @@ export const NavTopItemLanguage = ({loading}) => {
     )
 }
 
-export const NavTopItemSeries = React.memo(({text, loading}) => {
+export const NavTopItemSeries = React.memo(({text, loading = false}) => {
     const [currentSeries, setCurrentSeries] = useState(0)
 
     useEffect(() => {

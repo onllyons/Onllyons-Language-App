@@ -20,7 +20,7 @@ export const sendDefaultRequest = async (url, dataObj, navigation = null, showOp
                 name: `image.${getFileTypeFromUri(dataObj[key].uri)}`
             });
         } else {
-            formData.append(key, dataObj[key]);
+            formData.append(key, typeof dataObj[key] === "object" ? JSON.stringify(dataObj[key]) : dataObj[key]);
         }
     });
 

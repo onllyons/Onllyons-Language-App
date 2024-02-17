@@ -20,34 +20,30 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({loading, getCategoryData, seriesData, generalInfo, onLayout}) => {
+const NavTopContent = ({getCategoryData, seriesData, generalInfo}) => {
     const {setStartPosition} = useAnimatedNavTop()
     const [phrasesPercent, setPhrasesPercent] = useState(0)
     const percentRef = useRef(0)
 
     useEffect(() => {
         percentRef.current = calculatePercentage(generalInfo.phrasesCompleted, generalInfo.phrases)
-    }, [generalInfo]);
+    }, [generalInfo.phrasesCompleted]);
 
     return (
         <>
             <View style={globalCss.navTabUser}
                   onLayout={event => {
                       setStartPosition(event.nativeEvent.layout.height)
-
-                      if (onLayout) onLayout(event)
                   }}>
 
-                <NavTopItemLanguage loading={loading}/>
+                <NavTopItemLanguage/>
                 <NavTopItem
-                    loading={loading}
                     text={getCategoryData("finished")}
                     id={"general"}
                     image={require("../../images/other_images/nav-top/mortarboard.png")}
                 />
-                <NavTopItemSeries loading={loading} text={seriesData.currentSeries ? seriesData.currentSeries : 0}/>
+                <NavTopItemSeries text={seriesData.currentSeries ? seriesData.currentSeries : 0}/>
                 <NavTopItem
-                    loading={loading}
                     text={getCategoryData("phrasesCompleted")}
                     id={"phrases"}
                     image={require("../../images/other_images/nav-top/feather.png")}

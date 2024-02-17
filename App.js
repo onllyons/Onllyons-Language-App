@@ -45,6 +45,7 @@ import React from "react";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
 import {Analytics} from "./packs/components/analytics/Analytics";
 import Test_font_size from "./packs/test_font_size";
+import {StoreProvider} from "./packs/providers/Store";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -400,9 +401,11 @@ export default function App() {
         <>
             <NavigationContainer>
                 <AuthProvider>
-                    <Analytics/>
-                    <AppStack/>
-                    <StatusBar style="auto"/>
+                    <StoreProvider>
+                        <Analytics/>
+                        <AppStack/>
+                        <StatusBar style="auto"/>
+                    </StoreProvider>
                 </AuthProvider>
             </NavigationContainer>
             <Toast

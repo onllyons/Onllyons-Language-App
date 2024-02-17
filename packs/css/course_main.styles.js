@@ -15,15 +15,11 @@ export const stylesCourse_lesson = StyleSheet.create({
     },
 
     infoCourseSubject: {
-        position: "absolute",
-        top: "12%",
-        left: "5%",
-        right: "5%",
-        width: "90%",
         height: 95,
-        marginTop: "2%",
+        paddingHorizontal: "5%",
         flexDirection: "row",
         zIndex: 1,
+        backgroundColor: 'transparent'
     },
     bgGry: {
         backgroundColor: "#e5e5e5"
