@@ -72,7 +72,7 @@ export default function BooksScreen({navigation}) {
     return (
         <View style={styles.container}>
 
-            <NavTop data={booksInfo.current}/>
+            <NavTop loading={loading} data={booksInfo.current}/>
 
             <ScrollView contentContainerStyle={{paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20}}>
                 <Loader visible={loading}/>
@@ -122,6 +122,7 @@ const Category = React.memo(({data, type}) => {
                     renderItem={({item}) => (
                         <View style={styles.cell}>
                             <AnimatedButtonShadow
+                                shadowDisplayAnimate={"slide"}
                                 styleButton={[styles.card, styles.bgGry]}
                                 onPress={() => navigation.navigate('BooksReading', {id: item.id})}
                                 shadowColor={"gray"}

@@ -18,7 +18,7 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({data}) => {
+const NavTopContent = ({data, loading}) => {
     const {setStartPosition} = useAnimatedNavTop()
 
     return (
@@ -27,14 +27,16 @@ const NavTopContent = ({data}) => {
                 style={globalCss.navTabUser}
                 onLayout={event => setStartPosition(event.nativeEvent.layout.height)}
             >
-                <NavTopItemLanguage/>
+                <NavTopItemLanguage loading={loading}/>
                 <NavTopItem
+                    loading={loading}
                     text={data.finished}
                     id={"lessons"}
                     image={require("../../images/other_images/nav-top/inkwell.png")}
                 />
-                <NavTopItemSeries/>
+                <NavTopItemSeries loading={loading}/>
                 <NavTopItem
+                    loading={loading}
                     text={data.finishedWords}
                     id={"knownWords"}
                     image={require("../../images/other_images/nav-top/flash-card.png")}

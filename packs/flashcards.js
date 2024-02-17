@@ -48,7 +48,7 @@ const FlashCardWords = ({navigation}) => {
         <View style={styles.container}>
             <Loader visible={isLoading}/>
 
-            <NavTop data={navTopData.current}/>
+            <NavTop loading={isLoading} data={navTopData.current}/>
 
             <ScrollView
                 contentContainerStyle={{paddingTop: 30, paddingBottom: 80, minHeight: "100%"}}
@@ -60,6 +60,7 @@ const FlashCardWords = ({navigation}) => {
                         <View key={item.id}
                               style={[{width: index % 3 === 0 ? '100%' : '50%'}, globalCss.alignItemsCenter]}>
                             <AnimatedButtonShadow
+                                shadowDisplayAnimate={"slide"}
                                 styleButton={[
                                     styles.card,
                                     styles.bgGry

@@ -126,6 +126,7 @@ export default function FlashCardsCategory({route, navigation}) {
                     {data.map((item, index) => (
                         <View style={styles.cardLesson} key={item.id}>
                             <AnimatedButtonShadow
+                                shadowDisplayAnimate={"slide"}
                                 styleButton={[
                                     styles.item,
                                     {
@@ -156,8 +157,10 @@ export default function FlashCardsCategory({route, navigation}) {
                 </View>
 
                 <AnimatedButtonShadow
+                    disable={true}
+                    shadowDisplayAnimate={"slide"}
                     styleButton={[styles.containerMessage,  globalCss.buttonGry1]}
-                    shadowColor={"gray1"}
+                    shadowColor={"grayWhite"}
                     shadowBorderRadius={14}
                 >
                     <Text style={styles.buttonText}>

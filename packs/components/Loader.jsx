@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {StyleSheet} from "react-native";
 import {View, Modal} from "react-native";
-import {SkypeIndicator} from "react-native-indicators";
+import {MaterialIndicator} from "react-native-indicators";
 
 interface SpinnerPropTypes {
     cancelable?: boolean;
@@ -18,16 +18,11 @@ interface SpinnerPropTypes {
 
 const Indicator = ({options}) => {
     return (
-        // <ActivityIndicator
-        //     color={color}
-        //     size={options.size}
-        //     style={[styles.activityIndicator, {...options.styles}]}
-        // />
-        <SkypeIndicator size={options.size} minScale={0.5} color="#57cc04" style={[styles.activityIndicator]}/>
+        <MaterialIndicator size={options.size} minScale={0.5} color="#57cc04" style={[styles.activityIndicator]}/>
     );
 }
 
-const Loader: React.FC<SpinnerPropTypes> = ({
+const Loader: React.FC<SpinnerPropTypes> = React.memo(({
         cancelable = false,
         animation = "fade",
         overlayColor = "rgba(0, 0, 0, 0.5)",
@@ -95,7 +90,7 @@ const Loader: React.FC<SpinnerPropTypes> = ({
     };
 
     return renderSpinner();
-};
+})
 
 export default Loader;
 

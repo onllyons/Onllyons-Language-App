@@ -8,7 +8,6 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
 } from "react-native";
-import Loader from "./components/Loader";
 import {useRoute} from "@react-navigation/native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {
@@ -27,6 +26,7 @@ import BottomSheet, {
 
 import globalCss from "./css/globalCss";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import {Welcome} from "./components/Welcome";
 
 export default function BooksScreen({navigation}) {
     const [scrollY, setScrollY] = useState(0);
@@ -205,10 +205,8 @@ export default function BooksScreen({navigation}) {
         }
     };
 
-    return (
+    return loading ? (<Welcome/>) : (
         <GestureHandlerRootView style={styles.container}>
-            <Loader visible={loading}/>
-
             <View style={styles.row}>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}

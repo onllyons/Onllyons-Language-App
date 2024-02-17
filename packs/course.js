@@ -31,7 +31,6 @@ import {
 import {withAnchorPoint} from "react-native-anchor-point";
 import * as Haptics from "expo-haptics";
 import {NavTop} from "./components/course/NavTop";
-import ContentLoader from "react-native-easy-content-loader";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
@@ -185,7 +184,7 @@ export default function CourseScreen({navigation}) {
                 data={loading ? ["loadingData"] : categories}
                 scrollEnabled={scrollEnabled && !loading}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-                renderItem={({item, index}) => loading ? (<CategoryLoader/>) : (
+                renderItem={({item, index}) => (
                     <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
                 )}
                 contentContainerStyle={{ paddingTop: 140, paddingBottom: 130, minHeight: "100%" }}
@@ -226,12 +225,8 @@ const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData
                     shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
                     styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
-                    {loading ? (<CurrentCategoryLoader/>) : (
-                        <>
-                            <Text style={{...styles.infoCourseTxtSubCat, fontSize: getFontSize(16)}}>Часть {currentCategory.subject}</Text>
-                            <Text style={{...styles.infoCourseTitle, fontSize: getFontSize(18)}}>{currentCategory.name}</Text>
-                        </>
-                    )}
+                    <Text style={{...styles.infoCourseTxtSubCat, fontSize: getFontSize(16)}}>Часть {currentCategory.subject}</Text>
+                    <Text style={{...styles.infoCourseTitle, fontSize: getFontSize(18)}}>{currentCategory.name}</Text>
                 </AnimatedButtonShadow>
 
                 <AnimatedButtonShadow
@@ -332,51 +327,6 @@ const getMarginLeftForCard = (index) => {
     const pattern = [40, 30, 20, 30, 40, 50]; // Modelul pentru marginLeft
     return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
 };
-
-const CurrentCategoryLoader = () => {
-    return (
-        <View>
-            <ContentLoader active pRows={1} tHeight={20} titleStyles={{width: "40%", marginBottom: 2}} pHeight={30} primaryColor={"#d1ffb1"} secondaryColor={"#a5f46d"} title={true}/>
-        </View>
-    )
-}
-
-const CategoryLoader = () => {
-    const {width: windowWidth} = Dimensions.get("window");
-
-    const lessons = new Array(15).fill("");
-
-    return (
-        <View style={{position: "relative", paddingTop: 57}}>
-            <View>
-                <Image
-                    source={require("./images/El/course/1.png")}
-                    style={[
-                        styles.elCourseImg,
-                        {top: 3 * (56 + 20) - 167, width: windowWidth / 3},
-                        {right: 25}
-                    ]}
-                />
-            </View>
-
-            {lessons.map((item, index) => (
-                <LessonLoader key={index} index={index}/>
-            ))}
-        </View>
-    )
-}
-
-const LessonLoader = ({index}) => {
-    return (
-        <ContentLoader active pRows={0} title={false} avatar={true} avatarStyles={{
-            marginLeft: `${getMarginLeftForCard(index)}%`,
-            marginBottom: 20,
-            width: 70,
-            height: 56,
-            borderRadius: 300,
-        }} />
-    )
-}
 
 const Category = React.memo(({data, category, categoryIndex, scrollRef, categoriesData, currentScrollData, setScrollEnable}) => {
     if (!data) return null
