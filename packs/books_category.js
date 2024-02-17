@@ -1,44 +1,37 @@
-import React, {useEffect, useState} from "react";
-import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useEffect, useState} from "react";
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {View, Text, StyleSheet, ScrollView, Image, TouchableOpacity} from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
-// import Loader from "./components/Loader";
 import globalCss from "./css/globalCss";
-// import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import {useStore} from "./providers/Store";
 
 export default function BooksCategoryScreen({route}) {
+    const {getStoredValue, deleteStoredValue} = useStore()
     const navigation = useNavigation();
     const [data, setData] = useState([]);
-    // const {category} = route.params;
-    const {data: transmittedData, type: transmittedType} = route.params;
-    // const [loading, setLoading] = useState(false);
+    const {data: transmittedData, type: transmittedType, info: transmittedInfo} = route.params;
     const [visibleItems, setVisibleItems] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
-
-    // useEffect(() => {
-        // setLoading(true);
-
-        // console.log("---------" + category + "---------")
-        // sendDefaultRequest(`${SERVER_AJAX_URL}/books/get_books.php`,
-        //     {category: category},
-        //     navigation,
-        //     {success: false}
-        // )
-        //     .then(({data}) => {
-        //         setData(data);
-        //         setTotalItems(data.length);
-        //     })
-        //     .finally(() => {
-        //         setTimeout(() => setLoading(false), 1)
-        //     });
-    // }, [category]);
+    const [updateState, setUpdateState] = useState(false)
 
     useEffect(() => {
         setData(transmittedData)
         setTotalItems(transmittedData.length);
     }, [transmittedData]);
+
+    useFocusEffect(
+        useCallback(() => {
+            const needToUpdateBooksCategory = getStoredValue("needToUpdateBooksCategory")
+
+            if (needToUpdateBooksCategory !== null) {
+                deleteStoredValue("needToUpdateBooksCategory")
+                setUpdateState(prev => !prev)
+            }
+        }, [])
+    );
+
 
     const loadMoreItems = () => {
         if (visibleItems < totalItems) {
@@ -75,7 +68,7 @@ export default function BooksCategoryScreen({route}) {
         const categoryInfo = getCategoryImageAndText(item.category);
 
         return (
-            <TouchableOpacity onPress={() => navigation.navigate('BooksReading', {id: item.id})}>
+            <TouchableOpacity onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, info: transmittedInfo})}>
                 <View style={[
                     styles.item,
                     // Finished books
