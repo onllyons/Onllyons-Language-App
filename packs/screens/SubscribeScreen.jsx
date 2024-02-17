@@ -34,7 +34,6 @@ const SubscriptionOption = ({
       shadowColor={"gray"}
       onPress={() => onPress(true)}
       permanentlyActive={isSelected}
-      permanentlyActiveOpacity={0.5}
       size={"full"}
     >
       <Image source={imageUrl} style={styles.image} />
@@ -219,9 +218,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderLeftWidth: 2,
     borderRightWidth: 2,
-  },
-  optionSelected: {
-    backgroundColor: "red",
   },
   image: {
     width: 50,
