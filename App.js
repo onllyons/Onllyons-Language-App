@@ -61,11 +61,7 @@ function UserProfileMenu() {
                 component={MenuScreen}
                 options={{headerShown: false}}
             />
-            <Stack.Screen
-                name="UserData"
-                component={UserData}
-                options={{title: "Профиль", headerBackTitle: "Назад"}}
-            />
+            
             <Stack.Screen
                 name="UserSettings"
                 component={UserSettings}
@@ -357,6 +353,13 @@ function AppStack() {
                 component={Test_font_size}
                 options={{headerShown: false}}
             />
+
+            <Stack.Screen
+                name="UserData"
+                component={UserData}
+                options={{headerShown: false}}
+            />
+
         </Stack.Navigator>
     );
 }
