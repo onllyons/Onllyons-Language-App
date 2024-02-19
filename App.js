@@ -45,11 +45,14 @@ import {
     isAuthenticated,
 } from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
-import React from "react";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
 import {Analytics} from "./packs/components/analytics/Analytics";
 import Test_font_size from "./packs/test_font_size";
 import {StoreProvider} from "./packs/providers/Store";
+
+import * as Linking from 'expo-linking';
+import {StripeProvider} from "@stripe/stripe-react-native";
+import {Congratulations} from "./packs/screens/Congragulations";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -372,6 +375,12 @@ function AppStack() {
                 options={{headerShown: false}}
             />
 
+            <Stack.Screen
+                name="Congratulations"
+                component={Congratulations}
+                options={{headerShown: false}}
+            />
+
             
 
         </Stack.Navigator>
@@ -414,17 +423,35 @@ const toastConfig = {
 };
 
 export default function App() {
+    // Deep linking
+    const prefix = Linking.createURL("/");
+
+    const linking = {
+        prefixes: [prefix],
+        config: {
+            screens: {
+                Congratulations: "congratulations",
+            },
+        },
+    };
+
     return (
         <>
-            <NavigationContainer>
-                <AuthProvider>
-                    <StoreProvider>
-                        <Analytics/>
-                        <AppStack/>
-                        <StatusBar style="auto"/>
-                    </StoreProvider>
-                </AuthProvider>
-            </NavigationContainer>
+            <StripeProvider
+                publishableKey="pk_test_51Ndx65Ey5CVgEBCPOroLQM6CwOZHzcnAeID3mPXbPAPn7iT1KpYIEuxI8BEHH1Fl0NojFoffkHHfvXrpIbSwh2Nm00DzR0cWKE"
+                urlScheme="language" // required for 3D Secure and bank redirects
+                merchantIdentifier="merchant.com.language" // required for Apple Pay
+            >
+                <NavigationContainer linking={linking}>
+                    <AuthProvider>
+                        <StoreProvider>
+                            <Analytics/>
+                            <AppStack/>
+                            <StatusBar style="auto"/>
+                        </StoreProvider>
+                    </AuthProvider>
+                </NavigationContainer>
+            </StripeProvider>
             <Toast
                 position="bottom"
                 config={toastConfig}

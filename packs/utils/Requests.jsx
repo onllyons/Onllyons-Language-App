@@ -1,6 +1,6 @@
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import {getTokens, logout, setTokens} from "../providers/AuthProvider";
+import {getTokens, login, logout, setTokens} from "../providers/AuthProvider";
 
 export const SERVER_URL = "https://www.language.onllyons.com"
 export const SERVER_AJAX_URL = `${SERVER_URL}/ru/ru-en/backend/mobile_app/ajax`
@@ -74,6 +74,22 @@ export const sendDefaultRequest = async (url, dataObj, navigation = null, showOp
 
     return Promise.reject({success: false, message: "Произошла ошибка, попробуйте позже"});
 };
+
+export const updateUser = async (navigation = null) => {
+    try {
+        const response = await sendDefaultRequest(`${SERVER_AJAX_URL}/user/get_user.php`,
+            {},
+            navigation,
+            {success: false, error: false}
+        )
+
+        await login(response.user, response.tokens)
+
+        return Promise.resolve(response.user)
+    } catch (err) {
+        return Promise.reject(err)
+    }
+}
 
 const getFileTypeFromUri = (uri) => {
     const match = /\.(\w+)$/.exec(uri);
