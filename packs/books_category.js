@@ -12,6 +12,7 @@ export default function BooksCategoryScreen({route}) {
     const navigation = useNavigation();
     const [data, setData] = useState([]);
     const {data: transmittedData, type: transmittedType, info: transmittedInfo} = route.params;
+    const { type_category } = route.params;
     const [visibleItems, setVisibleItems] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
     const [updateState, setUpdateState] = useState(false)

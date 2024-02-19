@@ -23,6 +23,10 @@ import BooksScreen from "./packs/books";
 import BooksCategory from "./packs/books_category";
 import BooksReading from "./packs/books_reading";
 
+import PoetryScreen from "./packs/poetry";
+
+import DialoguesScreen from "./packs/dialogues";
+
 import GamesScreen from "./packs/games";
 import GamesQuiz from "./packs/games_quiz";
 
@@ -94,6 +98,16 @@ function MenuBooksReading() {
             <Stack.Screen
                 name="BooksScreen"
                 component={BooksScreen}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="PoetryScreen"
+                component={PoetryScreen}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="DialoguesScreen"
+                component={DialoguesScreen}
                 options={{headerShown: false}}
             />
         </Stack.Navigator>

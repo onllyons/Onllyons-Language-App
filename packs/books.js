@@ -109,6 +109,7 @@ export default function BooksScreen({navigation}) {
                 }
             >
                 <Loader visible={loading}/>
+                <CarouselMenu navigation={navigation} />
                 <Category data={getBooksSaved()} type={{type: "saved", text: "Мои книги"}} booksInfo={booksInfo.current}/>
                 {categories.map((category, index) => (
                     <Category data={getCategoryBooks(category)} type={{type: "category", text: category}} key={index} booksInfo={booksInfo.current}/>
@@ -118,6 +119,35 @@ export default function BooksScreen({navigation}) {
         </View>
     );
 }
+
+const CarouselMenu = ({ navigation }) => {
+    const menuItems = [
+        { title: 'Книги', onPress: () => navigation.navigate('BooksScreen') },
+        { title: 'Стихи', onPress: () => navigation.navigate('PoetryScreen') },
+        { title: 'Диалоги', onPress: () => navigation.navigate('DialoguesScreen') },
+    ];
+
+
+    return (
+        <Carousel
+            data={menuItems}
+            renderItem={({ item }) => (
+                <View style={styles.carouselMenuView}>
+                    <TouchableOpacity onPress={item.onPress} style={styles.carouselMenuItem}>
+                        <Text style={styles.carouselMenuItemText}>{item.title}</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+            sliderWidth={Dimensions.get('window').width}
+            itemWidth={120}
+            loop={true}
+            autoplay={false}
+            inactiveSlideScale={1}
+            enableSnap={false}
+            contentContainerCustomStyle={{ paddingLeft: 0, paddingRight: 0, marginBottom: 40, }}
+        />
+    );
+};
 
 const Category = React.memo(({data, type, booksInfo}) => {
     if (data.length === 0) return null
@@ -207,6 +237,20 @@ const styles = StyleSheet.create({
     bgGry: {
         backgroundColor: '#f9f9f9',
         borderColor: '#d8d8d8'
+    },
+    carouselMenuView:{
+        width: "100%",
+        padding: "0%",
+        margin: "0%",
+    },
+    carouselMenuItemText:{
+        textAlign: 'center',
+    },
+    carouselMenuItem:{
+        backgroundColor: 'red',
+        width: "91%",
+        borderRadius: "11%",
+        paddingVertical: "15%",
     },
     contentBooks: {
         flexDirection: 'row',

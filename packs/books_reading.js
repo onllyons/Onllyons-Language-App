@@ -273,7 +273,7 @@ export default function BooksScreen({ navigation }) {
         <View style={styles.contentBooks}>
           <View key={data.id} style={styles.contentBooksRead}>
             <Text style={styles.titleBook}>{data.title}</Text>
-            <Text style={styles.titleAuthor}>as {data.author}</Text>
+            <Text style={styles.titleAuthor}>{data.author}</Text>
 
             <View style={styles.textContainer}>
               {wordsArray && wordsArray.length > 0 ? (
@@ -341,23 +341,23 @@ export default function BooksScreen({ navigation }) {
       </ScrollView>
 
       <View style={styles.audioPlyr}>
-        
-        <View style={styles.controlAudioBtn}>
+       
+        <TouchableOpacity style={styles.controlAudioBtn}>
           <Image
               source={require('./images/other_images/player/list.png')}
               style={styles.imgPlyrList}
             />
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.controlAudioBtn}>
+        <TouchableOpacity style={styles.controlAudioBtn}>
           <Image
               source={require('./images/other_images/player/back.png')}
               style={styles.imgPlyrNextBack}
             />
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.controlAudioBtn}>
-            <TouchableWithoutFeedback
+            <TouchableOpacity
                 
                 onPress={() =>
                   playSound(
@@ -372,23 +372,23 @@ export default function BooksScreen({ navigation }) {
                 />
 
 
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
         </View>
 
-        <View style={styles.controlAudioBtn}>
+        <TouchableOpacity style={styles.controlAudioBtn}>
           <Image
               source={require('./images/other_images/player/next.png')}
               style={styles.imgPlyrNextBack}
             />
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.controlAudioBtn}>
-            <TouchableWithoutFeedback onPress={toggleMute}>
+            <TouchableOpacity onPress={toggleMute}>
               <Image
                 source={isMuted ? require('./images/other_images/player/mute.png') : require('./images/other_images/player/volume.png')}
                 style={styles.imgPlyrVolume}
               />
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
         </View>
 
       </View>
@@ -553,19 +553,21 @@ const styles = StyleSheet.create({
   },
 
   highlightedText: {
-    color: "green",
+    color: "#ff3a3a",
+    fontWeight: '500',
+  },
+  highlightedTextBtn: {
+    borderRadius: 5,
   },
   readingContent: {
     fontSize: 19,
     color: "#999",
   },
   readText: {
-    color: "red",
+    color: "black",
+    fontWeight: '500',
   },
-  highlightedTextBtn: {
-    backgroundColor: "#E0E0E0",
-    borderRadius: 5,
-  },
+
 
   textTouchableDef: {
     marginBottom: 3,
