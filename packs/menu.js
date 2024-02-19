@@ -24,7 +24,7 @@ export default function MenuScreen({navigation}) {
     const onRefresh = useCallback(() => {
         setRefreshing(true);
 
-        updateUser()
+        updateUser(navigation)
             .then(user => setUser(user))
             .catch(() => {})
             .finally(() => setRefreshing(false))
@@ -32,7 +32,7 @@ export default function MenuScreen({navigation}) {
 
     useFocusEffect(
         useCallback(() => {
-            updateUser()
+            updateUser(navigation)
                 .then(user => setUser(user))
                 .catch(() => {})
         }, [])
