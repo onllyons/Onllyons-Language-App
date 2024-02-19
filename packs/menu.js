@@ -1,11 +1,10 @@
 import React, {useCallback, useState} from "react";
-import {StyleSheet, ScrollView, Linking, View, Text, Image, TouchableOpacity, RefreshControl} from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
+import {ScrollView, Linking, View, Text, Image, TouchableOpacity, RefreshControl} from 'react-native';
 
 // fonts
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 // icons
-import {faStar, faGear} from '@fortawesome/free-solid-svg-icons';
+import {faGear} from '@fortawesome/free-solid-svg-icons';
 
 // styles
 import globalCss from './css/globalCss';
@@ -13,9 +12,9 @@ import {menuStyle as styles} from "./css/menu.styles";
 
 // Toast
 import Toast from "react-native-toast-message";
-import {getUser, isAuthenticated, login, logout} from "./providers/AuthProvider";
+import {getUser, logout} from "./providers/AuthProvider";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
-import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
+import {updateUser} from "./utils/Requests";
 import {useFocusEffect} from "@react-navigation/native";
 
 export default function MenuScreen({navigation}) {
@@ -25,20 +24,41 @@ export default function MenuScreen({navigation}) {
     const onRefresh = useCallback(() => {
         setRefreshing(true);
 
-        sendDefaultRequest(`${SERVER_AJAX_URL}/user/get_user.php`,
-            {},
-            navigation
-        )
-            .then((data) => login(data.user, data.tokens))
+        updateUser()
+            .then(user => setUser(user))
             .catch(() => {})
             .finally(() => setRefreshing(false))
     }, [])
 
     useFocusEffect(
         useCallback(() => {
-            setUser(getUser())
+            updateUser()
+                .then(user => setUser(user))
+                .catch(() => {})
         }, [])
     );
+
+    const getSubscriptionName = useCallback(() => {
+        switch (user.subscribe) {
+            case 0:
+                return "Free"
+            case 1:
+                return "Standard"
+            case 2:
+                return "Pro"
+        }
+    }, [user])
+
+    const getSubscriptionImage = useCallback(() => {
+        switch (user.subscribe) {
+            case 0:
+                return null
+            case 1:
+                return require("./images/other_images/diamond-green.png")
+            case 2:
+                return require("./images/other_images/diamond-red.png")
+        }
+    }, [user])
 
     return (
         <ScrollView
@@ -50,12 +70,10 @@ export default function MenuScreen({navigation}) {
                 />
             }
         >
-            {isAuthenticated() ? (
-                <View style={styles.userInfoContainer}>
-
+            <View style={styles.userInfoContainer}>
                 <View style={styles.navTabUser}>
                     <View style={styles.navTabUserMain}>
-                        <Text  style={styles.navTabUserMainTxt}>Профиль</Text>
+                        <Text style={styles.navTabUserMainTxt}>Профиль</Text>
                     </View>
                     <TouchableOpacity style={styles.navTabUserSettings} onPress={() => navigation.navigate('UserData')}>
                         <Text style={styles.navTabUserSettingsTxt}>
@@ -63,14 +81,6 @@ export default function MenuScreen({navigation}) {
                         </Text>
                     </TouchableOpacity>
                 </View>
-
-
-
-
-
-
-
-
 
                 <View style={styles.cardProfile}>
                     <View style={styles.cardProfileInfo}>
@@ -85,9 +95,6 @@ export default function MenuScreen({navigation}) {
                                             'Unknown Level'}
                             </Text>
                         </View>
-
-
-
                     </View>
                     <View style={styles.cardProfilePhoto}>
                         <Image
@@ -101,39 +108,18 @@ export default function MenuScreen({navigation}) {
                     </View>
                 </View>
 
-                 
-
-                
-
-
-
                 <View style={styles.levelSubscription}>
                     <TouchableOpacity style={styles.levelSubscriptionBtn}>
-                        <Image
-                            source={require('./images/other_images/diamond-red.png')}
-                            style={styles.diamondProfile}
-                        />
-                        <Text style={styles.levelSubscriptionName}>pro</Text>
-
-                        
-                        {/*
-
-                            Pro = diamond-red.png
-                            Standard = diamond-green.png
-                            Free = null
-                            
-                        */}
-
-
+                        {getSubscriptionImage() && (
+                            <Image
+                                source={getSubscriptionImage()}
+                                style={styles.diamondProfile}
+                            />
+                        )}
+                        <Text style={styles.levelSubscriptionName}>{getSubscriptionName()}</Text>
                     </TouchableOpacity>
                 </View>
-                  
-
-
-                </View>
-            ) : (
-                ""
-            )}
+            </View>
 
             <View style={styles.sectionMenuUrl}>
                 <View style={styles.section}>
