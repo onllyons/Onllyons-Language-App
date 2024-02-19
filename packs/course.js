@@ -690,7 +690,6 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                     <Animated.View style={{
                         position: "absolute",
                         top: positions.current.modalY,
-                        height: 200,
                         left: "5%",
                         width: "90%",
                         padding: 20,
@@ -699,7 +698,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                         backgroundColor: "#f9f9f9",
                         // green bg
                         // backgroundColor: "#57cc04",
-                        borderRadius: 25,
+                        borderRadius: 20,
                         borderColor: "#d8d8d8",
                         borderWidth: 2,
 
@@ -722,10 +721,10 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                                 } : {top: -18}
                             ]}
                         />
-
-                        <Text style={styles.bold}>Lesson name: {item.title}</Text>
-                        <Text style={styles.bold}>Tile Lesson: {item.time_lesson}</Text>
-                        <Text style={styles.bold}>Lessons: {index + 1} / {coursesInCategory}</Text>
+                        {/* aici */}
+                        <Text style={styles.titleDropDownLesson}>{item.title}</Text>
+                        {/*<Text>{item.time_lesson}</Text>*/}
+                        <Text style={styles.nrDropDownLesson}>Урок {index + 1} из {coursesInCategory}</Text>
                         <AnimatedButtonShadow
                             styleButton={[
                                 globalCss.button,

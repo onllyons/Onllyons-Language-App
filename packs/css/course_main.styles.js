@@ -12,7 +12,7 @@ export const stylesCourse_lesson = StyleSheet.create({
         borderRadius: 300,
         alignItems: "center",
         justifyContent: "center"
-    },
+    }, 
 
     infoCourseSubject: {
         height: 95,
@@ -52,6 +52,8 @@ export const stylesCourse_lesson = StyleSheet.create({
     cardCategoryTitleContainer: {
         width: "73%",
         height: "100%",
+        borderRightColor: 'white',
+        borderRightWidth: 1,
     },
     infoCourseBtn: {
         width: "100%",
@@ -201,7 +203,18 @@ export const stylesCourse_lesson = StyleSheet.create({
     iconFlash: {
         color: "#ababab",
     },
- 
+    titleDropDownLesson:{
+        fontSize: 17,
+        fontWeight: '600',
+        color: '#494949',
+    },
+    nrDropDownLesson:{
+        fontSize: 16,
+        fontWeight: '500',
+        marginTop: "1%",
+        marginBottom: "5%",
+        color: '#6b6b6b',
+    },
     startImg: {
         width: 74,
         height: 55,
