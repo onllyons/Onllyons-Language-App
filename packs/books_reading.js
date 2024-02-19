@@ -345,10 +345,17 @@ export default function BooksScreen({ navigation }) {
         <View style={styles.controlAudioBtn}>
           <Image
               source={require('./images/other_images/player/list.png')}
-              style={styles.imgVolume}
+              style={styles.imgPlyrList}
             />
         </View>
-        
+
+        <View style={styles.controlAudioBtn}>
+          <Image
+              source={require('./images/other_images/player/back.png')}
+              style={styles.imgPlyrNextBack}
+            />
+        </View>
+
         <View style={styles.controlAudioBtn}>
             <TouchableWithoutFeedback
                 
@@ -358,19 +365,28 @@ export default function BooksScreen({ navigation }) {
                   )
                 }
             >
-                <FontAwesomeIcon
-                  icon={isPlaying ? faCirclePause : faCirclePlay}
-                  size={43}
-                  style={styles.audioBtnPlayColor}
+               
+                <Image
+                  source={isPlaying ? require('./images/other_images/player/pause.png') : require('./images/other_images/player/play.png')}
+                  style={styles.imgPlyrSettings}
                 />
+
+
             </TouchableWithoutFeedback>
+        </View>
+
+        <View style={styles.controlAudioBtn}>
+          <Image
+              source={require('./images/other_images/player/next.png')}
+              style={styles.imgPlyrNextBack}
+            />
         </View>
 
         <View style={styles.controlAudioBtn}>
             <TouchableWithoutFeedback onPress={toggleMute}>
               <Image
                 source={isMuted ? require('./images/other_images/player/mute.png') : require('./images/other_images/player/volume.png')}
-                style={styles.imgVolume}
+                style={styles.imgPlyrVolume}
               />
             </TouchableWithoutFeedback>
         </View>
@@ -448,32 +464,44 @@ const styles = StyleSheet.create({
     marginTop: "8%",
     borderRadius: "10%",
   },
-  imgVolume:{
+  imgPlyrSettings:{
     width: 50,
     height: 50,
     resizeMode: "container",
   },
+  imgPlyrNextBack:{
+    width: 30,
+    height: 30,
+    resizeMode: "container",
+  },
+  imgPlyrVolume:{
+    width: 35,
+    height: 35,
+    resizeMode: "container",
+  },
+  imgPlyrList:{
+    width: 30,
+    height: 30,
+    resizeMode: "container",
+  },
+  
   audioPlyr: {
     position: "absolute",
     flexDirection: "row",
-    justifyContent: "center",
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: "white",
     paddingVertical: "8%",
+    paddingHorizontal: "8%",
     alignItems: "center",
   },
   contentBottomSheet: {
     height: "100%",
     flex: 1,
   },
-  audioBtnPlayColor: {
-    color: "#343541",
-  },
   controlAudioBtn: {
-    Width: "20%",
-    backgroundColor: 'red',
+    flex: 1,
     alignItems: "center",
   },
   row: {
