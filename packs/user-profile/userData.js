@@ -167,12 +167,13 @@ const Profile = () => {
                 <FontAwesomeIcon icon={faCamera} size={50} color={"#fff"} />
               </TouchableOpacity>
             </Pressable>
+
             <Image
               source={
                 image.uri
                   ? { uri: image.uri }
                   : user.image === "default.png"
-                  ? require("../images/other_images/userphoto.png")
+                  ? {uri: `https://www.language.onllyons.com/ru/ru-en/dist/images/user-images/default.png`}
                   : {
                       uri: `https://www.language.onllyons.com/ru/ru-en/dist/images/user-images/${user.image}`,
                     }

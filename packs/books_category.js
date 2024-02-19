@@ -112,7 +112,7 @@ export default function BooksCategoryScreen({route}) {
             </View>
 
             <ScrollView
-                contentContainerStyle={{paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20}}
+                contentContainerStyle={{paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20, minHeight: "100%", backgroundColor: 'white',}}
                 onScroll={({nativeEvent}) => {
                     if (isCloseToBottom(nativeEvent)) {
                         loadMoreItems();
@@ -142,6 +142,7 @@ const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'white',
     },
     item: {
         marginBottom: '10%',

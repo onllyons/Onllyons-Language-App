@@ -640,6 +640,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
     return (
         <>
+            {/* carduri buttoane curs */}
             <AnimatedButtonShadow
                 refButton={buttonRef}
                 shadowColor={firstLessonColor.shadowColor ? firstLessonColor.shadowColor : (item.finished ? "yellow" : "gray2")}
@@ -721,7 +722,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                                 } : {top: -18}
                             ]}
                         />
-                        {/* aici */}
+                        {/* dropdown modal */}
                         <Text style={styles.titleDropDownLesson}>{item.title}</Text>
                         {/*<Text>{item.time_lesson}</Text>*/}
                         <Text style={styles.nrDropDownLesson}>Урок {index + 1} из {coursesInCategory}</Text>

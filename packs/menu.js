@@ -93,7 +93,7 @@ export default function MenuScreen({navigation}) {
                         <Image
                             source={
                                 user.image === 'default.png'
-                                    ? require('./images/other_images/userphoto.png')
+                                    ? {uri: `https://www.language.onllyons.com/ru/ru-en/dist/images/user-images/default.png`}
                                     : {uri: `https://www.language.onllyons.com/ru/ru-en/dist/images/user-images/${user.image}`}
                             }
                             style={styles.userImage}
