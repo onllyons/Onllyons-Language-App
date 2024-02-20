@@ -187,7 +187,7 @@ const Category = React.memo(({data, type, booksInfo}) => {
                             <AnimatedButtonShadow
                                 shadowDisplayAnimate={"slide"}
                                 styleButton={[styles.card, styles.bgGry]}
-                                onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, info: booksInfo})}
+                                onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, data: data, info: booksInfo, type: type})}
                                 shadowColor={"gray"}
                                 shadowBorderRadius={12}
                             >
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     carouselMenuItem:{
         backgroundColor: 'red',
         width: "91%",
-        borderRadius: "11%",
+        borderRadius: 7,
         paddingVertical: "15%",
     },
     contentBooks: {

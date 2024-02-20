@@ -55,6 +55,10 @@ export const CustomSound: FunctionComponent<SoundCustomProps> = React.memo(({
             setSound(sound);
             setIsPlaying(true);
         } else {
+            const status = await sound.getStatusAsync()
+
+            if (!status.isLoaded) return
+
             if (isPlaying) {
                 await sound.pauseAsync();
                 setIsPlaying(false);
@@ -69,6 +73,7 @@ export const CustomSound: FunctionComponent<SoundCustomProps> = React.memo(({
         return sound
             ? () => {
                 sound.unloadAsync();
+                setSound(null)
             }
             : undefined;
     }, [sound]);

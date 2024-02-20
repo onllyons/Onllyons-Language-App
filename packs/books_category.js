@@ -12,7 +12,6 @@ export default function BooksCategoryScreen({route}) {
     const navigation = useNavigation();
     const [data, setData] = useState([]);
     const {data: transmittedData, type: transmittedType, info: transmittedInfo} = route.params;
-    const { type_category } = route.params;
     const [visibleItems, setVisibleItems] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
     const [updateState, setUpdateState] = useState(false)
@@ -32,7 +31,6 @@ export default function BooksCategoryScreen({route}) {
             }
         }, [])
     );
-
 
     const loadMoreItems = () => {
         if (visibleItems < totalItems) {
@@ -69,7 +67,7 @@ export default function BooksCategoryScreen({route}) {
         const categoryInfo = getCategoryImageAndText(item.category);
 
         return (
-            <TouchableOpacity onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, info: transmittedInfo})}>
+            <TouchableOpacity onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, data: transmittedData, info: transmittedInfo, type: transmittedType})}>
                 <View style={[
                     styles.item,
                     // Finished books
@@ -104,7 +102,7 @@ export default function BooksCategoryScreen({route}) {
 
             <View style={globalCss.navTabUser}>
                 <TouchableOpacity style={globalCss.itemNavTabUserBtnBack}
-                                  onPress={() => navigation.navigate('BooksScreen')}>
+                                  onPress={() => navigation.goBack()}>
                     <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue}/>
                 </TouchableOpacity>
                 <View style={globalCss.itemNavTabUserTitleCat}>
