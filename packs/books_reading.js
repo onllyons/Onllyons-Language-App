@@ -569,6 +569,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingBottom: 20,
         paddingTop: "12%",
+        backgroundColor: '#f7f7f7',
     },
 
     settingsGroup: {
@@ -695,6 +696,7 @@ const styles = StyleSheet.create({
     readingContent: {
         fontSize: 19,
         color: "#999",
+        fontWeight: '500',
     },
     readText: {
         color: "black",

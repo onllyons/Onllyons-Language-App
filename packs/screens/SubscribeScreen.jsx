@@ -139,6 +139,73 @@ export default function SubscribeScreen({navigation}) {
         }
     }, [])
 
+    const descriptionsMap = {
+        1: [
+            "Уроки английского",
+            "Флэш карта: Слова",
+            "Игра: Задачи",
+            "Кники (аудио + субтитры)",
+        ],
+        2: [
+            "Уроки английского",
+            "Флэш карта: Слова",
+            "Игра: Задачи",
+            "Кники (аудио + субтитры)",
+        ],
+        // Default list for other ids
+        default: [
+            "Уроки английского",
+            "Флэш карта: Слова",
+            "Игра: Задачи",
+            "Кники (аудио + субтитры)",
+
+        ]
+    };
+
+    const descriptionsPunct = {
+        1: [
+            "Неограниченный доступ",
+            "Неограниченный доступ",
+            "16 задачь в день",
+            "Отсутствует",
+        ],
+        2: [
+            "Неограниченный доступ",
+            "Неограниченный доступ",
+            "Неограниченный доступ",
+            "Неограниченный доступ",
+        ],
+        // Default list for other ids
+        default: [
+            "1 урок из категории",
+            "1 урок из категории",
+            "5 задачи в день",
+            "Отсутствует",
+        ]
+    };
+
+    const renderPoints = (id) => {
+        let points = [];
+        // Selectează lista corectă de descrieri și descrieri suplimentare pe baza id-ului
+        let descriptions = descriptionsMap[id] || descriptionsMap.default;
+        let supplementaryDescriptions = descriptionsPunct[id] || descriptionsPunct.default;
+
+        // Asigură-te că ambele liste au același număr de elemente
+        let maxLength = Math.max(descriptions.length, supplementaryDescriptions.length);
+
+        for (let i = 0; i < maxLength; i++) {
+            points.push(
+                <View key={i} style={[styles.btnMenuProfile, styles.btnBTR, i === maxLength - 1 ? styles.btnBBR : styles.btnBB]}>
+                    <Text style={styles.btnText}>{descriptions[i]}</Text>
+                    {/* Accesează descrierea suplimentară folosind index */}
+                    <Text style={styles.btnDescription}>{supplementaryDescriptions[i]}</Text>
+                </View>
+            );
+        }
+
+        return points;
+    };
+
     const renderItem = ({item}) => {
         return (
             <View style={[styles.slide, item.id === user.subscribe && {opacity: 0.75, pointerEvents: "none"}]}>
@@ -159,23 +226,15 @@ export default function SubscribeScreen({navigation}) {
                     setPeriod={setPeriod}
                 />
 
+                <Text style={styles.descriptionText}>{item.description}</Text>
+
                 <View style={styles.sectionMenu}>
-                    <View style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
-                        <Text style={styles.btnText}>Справка и поддержка</Text>
-                    </View>
-
-                    <View style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}>
-                        <Text style={styles.btnText}>Пол. соглашение</Text>
-                    </View>
-                    <View style={[styles.btnMenuProfile, styles.btnBBR]}>
-                        <Text style={styles.btnText}>Пол. конфиденциаль.</Text>
-                    </View>
+                    {renderPoints(item.id)}
                 </View>
-
-
             </View>
         )
     };
+
 
     return (
         <View style={styles.container}>

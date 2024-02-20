@@ -88,9 +88,10 @@ const FlashCardWords = ({navigation}) => {
                                 shadowDisplayAnimate={"slide"}
                                 styleButton={[
                                     styles.card,
-                                    styles.bgGry
+                                    styles.bgGry,
+                                    item.finished.length === item.cards && styles.finishedCourseLesson
                                 ]}
-                                shadowColor={"gray"}
+                                shadowColor={(item.finished.length === item.cards ? "yellow" : "#adadad")}
                                 shadowBorderRadius={60}
                                 onPress={() => navigation.navigate('FlashCardsWordsCategory', {
                                     codeName: item.code_name,
@@ -100,10 +101,17 @@ const FlashCardWords = ({navigation}) => {
                                 })}
                             >
                                 <Text>
-                                    <FontAwesomeIcon icon={faStar} size={30} style={styles.iconFlash}/>
+                                  <FontAwesomeIcon
+                                    icon={faStar}
+                                    size={30}
+                                    style={[
+                                      styles.iconFlash,
+                                      item.finished.length === item.cards && styles.finishedCourseLessonIcon
+                                    ]}
+                                  />
                                 </Text>
+
                             </AnimatedButtonShadow>
-                            <Text>{item.finished.length === item.cards ? "Эта карточка завершена" : ""}</Text>
                             <Text style={styles.titleFlashCards}>{item.title_category}</Text>
                         </View>
                     ))}
@@ -125,21 +133,15 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     card: {
-        // 110
         width: 100,
         height: 100,
         marginBottom: '6%',
         borderRadius: 60,
         alignItems: 'center',
         justifyContent: 'center',
-        borderTopWidth: 2,
-        borderBottomWidth: 2,
-        borderLeftWidth: 2,
-        borderRightWidth: 2
     },
     bgGry: {
-        backgroundColor: '#f9f9f9',
-        borderColor: '#d8d8d8'
+        backgroundColor: '#e5e5e5',
     },
     contentFlashCards: {
         flexDirection: 'row',
@@ -148,7 +150,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         zIndex: 2,
-    }
+    },
+    finishedCourseLesson: {
+        backgroundColor: '#ffd700'
+    },
+    finishedCourseLessonIcon: {
+        color: 'white'
+    },
+    iconFlash:{
+        color: "#ababab",
+    },
 });
 
 export default FlashCardWords;

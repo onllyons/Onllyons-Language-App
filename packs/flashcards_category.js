@@ -69,8 +69,7 @@ export default function FlashCardsCategory({route, navigation}) {
     );
 
     useEffect(() => {
-        console.log("asdasd")
-        setLoading(true); // Activează loader-ul înainte de solicitarea fetch
+        setLoading(true);
 
         sendDefaultRequest(`${SERVER_AJAX_URL}/flashcards/flashcard_words_category.php`,
             {category: codeName},
@@ -145,22 +144,33 @@ export default function FlashCardsCategory({route, navigation}) {
                                 styleButton={[
                                     styles.item,
                                     {
-                                        // backgroundColor: pressedCards[item.id] ? colorsPressed[index % colorsPressed.length] : colors[index % colors.length],
-                                        backgroundColor: colors[index % colors.length],
-                                        borderColor: '#d8d8d8',
+                                        backgroundColor: item.finished ? '#30a5ff' : colors[index % colors.length]
                                     },
                                 ]}
+
                                 shadowColor={"gray"}
                                 shadowBorderRadius={10}
                                 onPress={() => navigation.navigate('FlashCardsWords', {url: item.url, id: item.id, item: item, finishedInCategory: finishedInCategory, generalInfo: generalInfo})}>
 
-                                <Image
-                                    source={shuffledImages[index % shuffledImages.length]}
-                                    style={styles.randomImg}
-                                />
+                                
+
+
+
+                                {item.finished ? 
+                                    <Image
+                                        source={require('./images/other_images/flash-cards-leeson/check.png')}
+                                        style={styles.checkIcon}
+                                    />
+                                    :
+                                    <Image
+                                        source={shuffledImages[index % shuffledImages.length]}
+                                        style={styles.randomImg}
+                                    />
+                                }
+
+
 
                                 <View style={styles.levelStars}>
-                                    <Text>{item.finished ? "Эта карточка пройдена" : ""}</Text>
                                     <Image
                                         source={getCategoryImageAndText(item.category).imageSource}
                                         style={styles.levelIcon}
@@ -231,12 +241,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 140,
         paddingTop: 10,
-        borderTopWidth: 2,
-        borderBottomWidth: 2,
-        borderLeftWidth: 2,
-        borderRightWidth: 2,
         borderRadius: 10,
-        borderColor: '#d8d8d8'
     },
     title: {
         fontSize: 17,
@@ -264,6 +269,12 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: 'contain',
         width: '100%',
+        alignSelf: 'center',
+    },
+    checkIcon: {
+        flex: 1,
+        resizeMode: 'contain',
+        width: '45%',
         alignSelf: 'center',
     },
     randomImg: {

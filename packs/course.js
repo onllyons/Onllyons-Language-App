@@ -253,9 +253,14 @@ export default function CourseScreen({navigation}) {
                     currentScrollData.current.contentHeight = contentHeight
                 }}
                 ListHeaderComponent={(
+                    <View>
                     <TouchableOpacity onPress={() => navigation.navigate("Test_font_size")}>
                         <Text>Test font responsive sizes</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Congratulations")}>
+                        <Text>Congragulations</Text>
+                    </TouchableOpacity>
+                    </View>
                 )}
                 scrollEventThrottle={8}
                 onLayout={(e) => (startLayoutY.current = e.nativeEvent.layout.y)}

@@ -53,7 +53,7 @@ import {StoreProvider} from "./packs/providers/Store";
 import * as Linking from 'expo-linking';
 import {StripeProvider} from "@stripe/stripe-react-native";
 import {Congratulations} from "./packs/screens/Congragulations";
-
+                                               
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const handleTabPress = () => {
@@ -74,11 +74,7 @@ function UserProfileMenu() {
                 component={UserSettings}
                 options={{title: "Настройки", headerBackTitle: "Назад"}}
             />
-            <Stack.Screen
-                name="UserSubscriptionManage"
-                component={UserSubscriptionManage}
-                options={{title: "Управление подпиской", headerBackTitle: "Назад"}}
-            />
+            
         </Stack.Navigator>
     );
 }
@@ -381,7 +377,18 @@ function AppStack() {
                 options={{headerShown: false}}
             />
 
+            <Stack.Screen
+                name="UserSubscriptionManage"
+                component={UserSubscriptionManage}
+                options={{
+                    headerShown: false,
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+                }}
+            />
             
+
+
+             
 
         </Stack.Navigator>
     );
