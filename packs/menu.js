@@ -141,16 +141,16 @@ export default function MenuScreen({navigation}) {
                     {/*Общая информация*/}
                     <View style={styles.sectionMenu}>
 
-                    <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('alphabetScreen')}>
+                    <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('AlphabetScreen')}>
                         <Text style={styles.btnText}>Флэш-карты: Алфавит</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('aboutTheWordScreen')}>
+                    <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('AboutTheWordScreen')}>
                         <Text style={styles.btnText}>Все о слове</Text>
                     </TouchableOpacity>
 
 
-                        <TouchableOpacity
+                        <TouchableOpacity 
                             style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]}
                             onPress={() => {
                                 const url = 'https://www.language.onllyons.com/contact-us/';
