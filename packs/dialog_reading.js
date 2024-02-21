@@ -4,7 +4,7 @@ import {
     Text,
     ScrollView,
     StyleSheet,
-    Animated
+    Animated, SafeAreaView
 } from "react-native";
 
 // Importuri pentru navigare
@@ -239,23 +239,25 @@ export default function DialogReading({navigation}) {
         <GestureHandlerRootView style={styles.container}>
             <Header handleOpenBottomSheetPress={handleOpenBottomSheetPress} scrollAnim={scrollAnim}/>
 
-            <ScrollView
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                contentContainerStyle={{
-                    paddingTop: 30,
-                    paddingBottom: 160,
-                    paddingHorizontal: 20,
-                }}
-            >
-                <Text style={styles.titleBook}>{data.title}</Text>
+            <SafeAreaView>
+                <ScrollView
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                    contentContainerStyle={{
+                        paddingTop: 30,
+                        paddingBottom: 160,
+                        paddingHorizontal: 20,
+                    }}
+                >
+                    <Text style={styles.titleBook}>{data.title}</Text>
 
-                {data.content && data.content.length !== 0 ? data.content.map((item, index) => (
-                    <Text key={`word-${index}`} style={[styles.readingContent, index > 0 && {marginTop: 5}]}>
-                        {item}
-                    </Text>
-                )) : null}
-            </ScrollView>
+                    {data.content && data.content.length !== 0 ? data.content.map((item, index) => (
+                        <Text key={`word-${index}`} style={[styles.readingContent, index > 0 && {marginTop: 5}]}>
+                            {item}
+                        </Text>
+                    )) : null}
+                </ScrollView>
+            </SafeAreaView>
 
             <ControlButtons
                 playSound={playSound}

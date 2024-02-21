@@ -7,7 +7,7 @@ import {
     ScrollView,
     StyleSheet,
     TouchableOpacity,
-    Animated
+    Animated, SafeAreaView
 } from "react-native";
 
 // Importuri pentru navigare
@@ -298,30 +298,32 @@ export default function BooksScreen({navigation}) {
         <GestureHandlerRootView style={styles.container}>
             <Header handleOpenBottomSheetPress={handleOpenBottomSheetPress} scrollAnim={scrollAnim}/>
 
-            <ScrollView
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                contentContainerStyle={{
-                    paddingTop: 30,
-                    paddingBottom: 160,
-                    paddingHorizontal: 20,
-                }}
-            >
-                <Text style={styles.titleBook}>{data.title}</Text>
-                <Text style={styles.titleAuthor}>{data.author}</Text>
+            <SafeAreaView>
+                <ScrollView
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                    contentContainerStyle={{
+                        paddingTop: 30,
+                        paddingBottom: 160,
+                        paddingHorizontal: 20
+                    }}
+                >
+                    <Text style={styles.titleBook}>{data.title}</Text>
+                    <Text style={styles.titleAuthor}>{data.author}</Text>
 
-                <View style={styles.textContainer}>
-                    {wordsArray.length > 0 && wordsArray.map((word, index) => (
-                        <Word
-                            key={index}
-                            word={word}
-                            isFocused={index === currentWordIndex}
-                            isAfterFocused={index < currentWordIndex}
-                            playFromWord={playFromWord}
-                        />
-                    ))}
-                </View>
-            </ScrollView>
+                    <View style={styles.textContainer}>
+                        {wordsArray.length > 0 && wordsArray.map((word, index) => (
+                            <Word
+                                key={index}
+                                word={word}
+                                isFocused={index === currentWordIndex}
+                                isAfterFocused={index < currentWordIndex}
+                                playFromWord={playFromWord}
+                            />
+                        ))}
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
 
             <ControlButtons
                 playSound={playSound}
@@ -431,6 +433,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         flex: 1,
+        width: "100%"
     },
 
     highlightedText: {
@@ -450,6 +453,6 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     textTouchableDef: {
-        marginBottom: 3,
+        // marginBottom: 3,
     },
 });

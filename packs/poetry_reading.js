@@ -5,7 +5,7 @@ import {
     Text,
     ScrollView,
     StyleSheet,
-    Animated
+    Animated, SafeAreaView
 } from "react-native";
 
 // Importuri pentru navigare
@@ -240,28 +240,30 @@ export default function PoetryReading({navigation}) {
         <GestureHandlerRootView style={styles.container}>
             <Header handleOpenBottomSheetPress={handleOpenBottomSheetPress} scrollAnim={scrollAnim}/>
 
-            <ScrollView
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                contentContainerStyle={{
-                    paddingTop: 30,
-                    paddingBottom: 160,
-                    paddingHorizontal: 20,
-                }}
-            >
-                <Text style={styles.titleBook}>{data.title}</Text>
-                <Text style={styles.titleAuthor}>{data.author}</Text>
+            <SafeAreaView>
+                <ScrollView
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                    contentContainerStyle={{
+                        paddingTop: 30,
+                        paddingBottom: 160,
+                        paddingHorizontal: 20,
+                    }}
+                >
+                    <Text style={styles.titleBook}>{data.title}</Text>
+                    <Text style={styles.titleAuthor}>{data.author}</Text>
 
-                {data.content && data.content.length !== 0 ? data.content.map((arr, indexArr) => (
-                    <View key={`word-container-${indexArr}`} style={[indexArr > 0 && {marginTop: 20}]}>
-                        {arr.map((item, index) => (
-                            <Text key={`word-${index}`} style={styles.readingContent}>
-                                {item}
-                            </Text>
-                        ))}
-                    </View>
-                )) : null}
-            </ScrollView>
+                    {data.content && data.content.length !== 0 ? data.content.map((arr, indexArr) => (
+                        <View key={`word-container-${indexArr}`} style={[indexArr > 0 && {marginTop: 20}]}>
+                            {arr.map((item, index) => (
+                                <Text key={`word-${index}`} style={styles.readingContent}>
+                                    {item}
+                                </Text>
+                            ))}
+                        </View>
+                    )) : null}
+                </ScrollView>
+            </SafeAreaView>
 
             <ControlButtons
                 playSound={playSound}
