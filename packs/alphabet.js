@@ -42,7 +42,7 @@ export default function AlphabetScreen({ navigation }) {
                             shadowColor={"gray"}
                             shadowBorderRadius={6}
                             onPress={() => {
-                                navigation.navigate("alphabetPagesScreen", { url: item.url });
+                                navigation.navigate("AlphabetPagesScreen", { url: item.url });
                             }}
                         >
                             <Image
