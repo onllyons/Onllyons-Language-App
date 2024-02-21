@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useMemo, useCallback} from "react";
+import React, {useState, useRef, useEffect, useCallback} from "react";
 import {
     View,
     Text,
@@ -152,10 +152,15 @@ export default function CourseScreen({navigation}) {
     );
 
 
-    useMemo(() => {
+    useEffect(() => {
         if (refreshing) return
 
         const data = getStoredValue("courseData")
+
+        if (!data) {
+            setStoredCourseData(true)
+            return;
+        }
 
         const groupedData = groupByCategory(data.data);
         const firstCategory = Object.keys(groupedData)[0];
@@ -269,7 +274,7 @@ export default function CourseScreen({navigation}) {
     );
 }
 
-const CurrentCategory = React.memo(({heightNav, currentCategory, getCategoryData}) => {
+const CurrentCategory = React.memo(({currentCategory, getCategoryData}) => {
     const [isModalVisible, setModalVisible] = useState(false)
 
     return (

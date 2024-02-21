@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
@@ -10,11 +10,44 @@ import Toast from "react-native-toast-message";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
+import * as AuthSession from 'expo-auth-session';
+
+const CLIENT_ID = '975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu.apps.googleusercontent.com';
+
+const useGoogleAuth = () => {
+    const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
+
+    const [request, response, promptAsync] = AuthSession.useAuthRequest({
+        clientId: CLIENT_ID,
+        redirectUri: "https://www.language.onllyons.com/ru/ru-en/packs/assest/user-signup/google_login.php", // REDIRECT_URI,
+        responseType: AuthSession.ResponseType.Code,
+        scopes: [
+            "email",
+            "profile"
+        ],
+    }, discovery);
+
+    console.log(request)
+
+    return { response, promptAsync };
+};
+
 export default function LoginScreen({navigation}) {
     const [showPassword, setShowPassword] = useState(false);
     const [userData, setUserData] = useState({username: "", password: ""})
 
     const [loader, setLoader] = useState(false)
+
+    const { response, promptAsync } = useGoogleAuth();
+
+    useEffect(() => {
+        console.log(response?.type)
+        if (response?.type === 'success') {
+            const { token } = response.params;
+
+            console.log(response)
+        }
+    }, [response]);
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
@@ -95,7 +128,7 @@ export default function LoginScreen({navigation}) {
                     globalCss.button,
                     globalCss.buttonBlue,
                 ]}
-                onPress={() => navigation.navigate("LoginGoogleScreen")}
+                onPress={() => promptAsync()}
                 size={"full"}
                 shadowColor={"blue"}
             >

@@ -14,7 +14,9 @@ export const StoreProvider = ({children}) => {
     const {isReady} = useAuth()
     const [loading, setLoading] = useState(true)
 
-    const setStoredCourseData = useCallback(async () => {
+    const setStoredCourseData = useCallback(async (withLoading = false) => {
+        if (withLoading) setLoading(true)
+
         try {
             const data = await sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories.php`,
                 {},
@@ -28,13 +30,17 @@ export const StoreProvider = ({children}) => {
         } catch (err) {
             return Promise.reject()
         } finally {
-            if (loading) setTimeout(() => setLoading(false), 1)
+            setTimeout(() => {
+                if (withLoading) setLoading(false)
+            }, 1)
         }
     }, [])
 
     useEffect(() => {
         if (isAuthenticated() && isReady) {
-            setStoredCourseData()
+            setStoredCourseData(true)
+        } else if (!isAuthenticated() && isReady) {
+            setLoading(false)
         }
     }, [isReady]);
 
