@@ -27,9 +27,7 @@ const useGoogleAuth = () => {
         ],
     }, discovery);
 
-    console.log(request)
-
-    return { response, promptAsync };
+    return { request, response, promptAsync };
 };
 
 export default function LoginScreen({navigation}) {
@@ -38,16 +36,16 @@ export default function LoginScreen({navigation}) {
 
     const [loader, setLoader] = useState(false)
 
-    const { response, promptAsync } = useGoogleAuth();
+    const { request, response, promptAsync } = useGoogleAuth();
 
-    useEffect(() => {
-        console.log(response?.type)
-        if (response?.type === 'success') {
-            const { token } = response.params;
-
-            console.log(response)
-        }
-    }, [response]);
+    // useEffect(() => {
+    //     console.log(response?.type)
+    //     if (response?.type === 'success') {
+    //         const { token } = response.params;
+    //
+    //         console.log(response)
+    //     }
+    // }, [response]);
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})

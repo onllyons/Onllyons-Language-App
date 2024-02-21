@@ -16,8 +16,13 @@
             "**/*"
         ],
         "ios": {
-            "bundleIdentifier": "language",
+            "bundleIdentifier": "com.onllyons.language",
             "supportsTablet": true,
+            "config": {
+                "googleSignIn": {
+                    "reservedClientId": "com.googleusercontent.apps.975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu"
+                }
+            },
             "infoPlist": {
                 "UIBackgroundModes": [
                     "audio"
@@ -34,6 +39,7 @@
             }
         },
         "android": {
+            "package": "com.onllyons.language",
             "adaptiveIcon": {
                 "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#ffffff"

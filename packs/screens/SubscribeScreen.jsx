@@ -208,9 +208,10 @@ export default function SubscribeScreen({navigation}) {
 
     const renderItem = ({item}) => {
         return (
-            <View style={[styles.slide, item.id === user.subscribe && {opacity: 0.75, pointerEvents: "none"}]}>
+            <View style={styles.slide}>
                 <ButtonSubscription
                     subscriptionId={item.id}
+                    disable={item.id === user.subscribe}
                     period={period}
                     name={item.title}
                     image={getImageById(item.id)}
@@ -221,6 +222,7 @@ export default function SubscribeScreen({navigation}) {
                 />
 
                 <ButtonsPeriod
+                    disable={item.id === user.subscribe}
                     subscriptionId={item.id}
                     period={period}
                     setPeriod={setPeriod}
@@ -242,7 +244,7 @@ export default function SubscribeScreen({navigation}) {
             <View style={globalCss.navTabUser}>
                 <TouchableOpacity
                     style={globalCss.itemNavTabUserBtnBack}
-                    onPress={() => navigation.navigate("MenuScreen")}
+                    onPress={() => navigation.goBack()}
                 >
                     <FontAwesomeIcon
                         icon={faArrowLeft}
@@ -290,12 +292,15 @@ const ButtonSubscription = ({
     image,
     period,
     subscriptionId,
-    costs
+    costs,
+    disable,
 }) => {
     return (
         <AnimatedButtonShadow
             styleButton={[styles.card, globalCss.bgGry]}
-            shadowColor={"grayWhite"}
+            shadowColor={"gray"}
+            permanentlyActive={disable}
+            permanentlyActiveOpacity={.5}
             size={"full"}
         >
             {subscriptionId !== 0 && (
@@ -318,14 +323,15 @@ const ButtonSubscription = ({
     )
 }
 
-const ButtonsPeriod = ({subscriptionId, period, setPeriod}) => {
+const ButtonsPeriod = ({disable, subscriptionId, period, setPeriod}) => {
     return subscriptionId !== 0 && (
         <View style={styles.buttonsPeriodContainer}>
             <AnimatedButtonShadow
                 styleContainer={[styles.buttonPeriodContainer, {paddingRight: 5}]}
                 styleButton={[globalCss.button, globalCss.buttonBlue, styles.buttonPeriod]}
                 shadowColor={"blue"}
-                permanentlyActive={period[subscriptionId] === "month"}
+                permanentlyActive={disable || period[subscriptionId] === "month"}
+                disable={disable}
                 permanentlyActiveOpacity={.5}
                 onPress={() => setPeriod(prev => ({...prev, [subscriptionId]: "month"}))}
             >
@@ -335,7 +341,8 @@ const ButtonsPeriod = ({subscriptionId, period, setPeriod}) => {
                 styleContainer={[styles.buttonPeriodContainer, {paddingLeft: 5}]}
                 styleButton={[globalCss.button, globalCss.buttonBlue, styles.buttonPeriod]}
                 shadowColor={"blue"}
-                permanentlyActive={period[subscriptionId] === "year"}
+                permanentlyActive={disable || period[subscriptionId] === "year"}
+                disable={disable}
                 permanentlyActiveOpacity={.5}
                 onPress={() => setPeriod(prev => ({...prev, [subscriptionId]: "year"}))}
             >

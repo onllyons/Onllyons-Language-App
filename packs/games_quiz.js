@@ -87,6 +87,8 @@ export default function GameQuiz({navigation}) {
                     ...item,
                     answers: shuffleAnswers(item),
                 }));
+                stats.current.time = 0
+                stats.current.additionalRating = 0
                 setData(shuffledData);
                 setSelectedAnswer(null);
                 setIsAnswerCorrect(null);
@@ -94,8 +96,6 @@ export default function GameQuiz({navigation}) {
                 setIsHelpUsed(false);
                 setPreHelpAnswers([])
                 setRestartCount(0)
-                stats.current.time = 0
-                stats.current.additionalRating = 0
             })
             .catch((err) => {
                 if (typeof err === "object") {
