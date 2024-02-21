@@ -16,6 +16,10 @@ import ChangePasswordScreen from "./packs/screens-start-app/change-password";
 import PasswordScreen from "./packs/screens-start-app/password-request";
 import IntroductionScreen from "./packs/screens-start-app/introduction-start";
 
+import AlphabetScreen from "./packs/alphabet";
+import AlphabetPagesScreen from "./packs/alphabetPages";
+import AboutTheWordScreen from "./packs/about-the-word";
+
 import CourseScreen from "./packs/course";
 import {CourseLesson} from "./packs/CourseLesson/CourseLesson";
 
@@ -33,7 +37,7 @@ import GamesQuiz from "./packs/games_quiz";
 import FlashCardsScreen from "./packs/flashcards";
 import FlashCardsWordsCategory from "./packs/flashcards_category";
 import FlashCardsWords from "./packs/flashcards_words";
-
+ 
 import MenuScreen from "./packs/menu";
 import UserData from "./packs/user-profile/userData";
 import UserSettings from "./packs/user-profile/userSettings";
@@ -380,6 +384,30 @@ function AppStack() {
             <Stack.Screen
                 name="UserSubscriptionManage"
                 component={UserSubscriptionManage}
+                options={{
+                    headerShown: false,
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+                }}
+            />
+
+            <Stack.Screen
+                name="AlphabetScreen"
+                component={AlphabetScreen}
+                options={{
+                    headerShown: false,
+                    cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+                }}
+            />
+
+            <Stack.Screen
+                name="AlphabetPagesScreen"
+                component={AlphabetPagesScreen}
+                options={{headerShown: false}}
+            />
+
+            <Stack.Screen
+                name="AboutTheWordScreen"
+                component={AboutTheWordScreen}
                 options={{
                     headerShown: false,
                     cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,

@@ -29,7 +29,7 @@ export default function UserProfile({navigation}) {
             <Loader visible={loading}/>
 
             <View style={globalCss.navTabUser}>
-                <TouchableOpacity style={globalCss.itemNavTabUserBtnBack} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={globalCss.itemNavTabUserBtnBack} onPress={() => navigation.navigate("MenuScreen")}>
                     <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue}/>
                 </TouchableOpacity>
                 <View style={globalCss.itemNavTabUserTitleCat}>

@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function PoetryScreen({ navigation }) {
+    const fileName = 'PoetryScreen'; // Numele fișierului
+
     return (
         <View style={styles.container}>
-            <Text style={styles.fs}>Poetry amus</Text>
+            <Text style={styles.fs}>{fileName}</Text>
         </View>
     );
 }
