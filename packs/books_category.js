@@ -71,7 +71,7 @@ export default function BooksCategoryScreen({route}) {
                 <View style={[
                     styles.item,
                     // Finished books
-                    transmittedType.type === "category" && item.finished && {backgroundColor: "#57cc04"}
+                    transmittedType.type === "category" && item.finished && {backgroundColor: "#e0fcff"}
                 ]}>
                     <Image
                         source={{
@@ -111,7 +111,7 @@ export default function BooksCategoryScreen({route}) {
             </View>
 
             <ScrollView
-                contentContainerStyle={{paddingTop: 20, paddingBottom: 0, paddingRight: 20, paddingLeft: 20, minHeight: "100%", backgroundColor: 'white',}}
+                contentContainerStyle={{paddingTop: 20, paddingBottom: 80, paddingRight: 0, paddingLeft: 0, minHeight: "100%", backgroundColor: 'white',}}
                 onScroll={({nativeEvent}) => {
                     if (isCloseToBottom(nativeEvent)) {
                         loadMoreItems();
@@ -144,9 +144,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     item: {
-        marginBottom: '10%',
         flexDirection: "row",
         alignItems: "center",
+        borderRadius: "12%",
+        marginLeft: "4%",
+        marginRight: "4%",
+        marginBottom: "5%",
+        paddingLeft: "2%",
+        paddingTop: "2%",
+        paddingBottom: "2%",
     },
     image: {
         width: '26%',
