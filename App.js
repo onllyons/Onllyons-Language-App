@@ -27,10 +27,6 @@ import BooksScreen from "./packs/books";
 import BooksCategory from "./packs/books_category";
 import BooksReading from "./packs/books_reading";
 
-import PoetryScreen from "./packs/poetry";
-
-import DialoguesScreen from "./packs/dialogues";
-
 import GamesScreen from "./packs/games";
 import GamesQuiz from "./packs/games_quiz";
 
@@ -57,6 +53,8 @@ import {StoreProvider} from "./packs/providers/Store";
 import * as Linking from 'expo-linking';
 import {StripeProvider} from "@stripe/stripe-react-native";
 import {Congratulations} from "./packs/screens/Congragulations";
+import PoetryReading from "./packs/poetry_reading";
+import DialogReading from "./packs/dialog_reading";
                                                
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -101,16 +99,6 @@ function MenuBooksReading() {
             <Stack.Screen
                 name="BooksScreen"
                 component={BooksScreen}
-                options={{headerShown: false}}
-            />
-            <Stack.Screen
-                name="PoetryScreen"
-                component={PoetryScreen}
-                options={{headerShown: false}}
-            />
-            <Stack.Screen
-                name="DialoguesScreen"
-                component={DialoguesScreen}
                 options={{headerShown: false}}
             />
         </Stack.Navigator>
@@ -353,6 +341,16 @@ function AppStack() {
             <Stack.Screen
                 name="BooksReading"
                 component={BooksReading}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="PoetryReading"
+                component={PoetryReading}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="DialogReading"
+                component={DialogReading}
                 options={{headerShown: false}}
             />
 

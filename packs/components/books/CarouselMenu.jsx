@@ -3,15 +3,12 @@ import Carousel from "react-native-new-snap-carousel";
 import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
 import globalCss from "../../css/globalCss";
 import {Dimensions, StyleSheet, Text} from "react-native";
-import {useNavigation} from "@react-navigation/native";
 
-export const CarouselMenu = React.memo(() => {
-    const navigation = useNavigation()
-
+export const CarouselMenu = React.memo(({currentActive, handlePressMenu}) => {
     const menuItems = [
-        {title: 'Книги', onPress: () => navigation.navigate('BooksScreen')},
-        {title: 'Стихи', onPress: () => navigation.navigate('PoetryScreen')},
-        {title: 'Диалоги', onPress: () => navigation.navigate('DialoguesScreen')},
+        {title: 'Книги', type: "books"},
+        {title: 'Стихи', type: "poetry"},
+        {title: 'Диалоги', type: "dialogues"},
     ];
 
     return (
@@ -19,8 +16,11 @@ export const CarouselMenu = React.memo(() => {
             data={menuItems}
             renderItem={({item}) => (
                 <AnimatedButtonShadow
-                    onPress={item.onPress}
+                    onPress={() => handlePressMenu(item.type)}
                     styleButton={[globalCss.buttonGry, styles.carouselMenuItem]}
+                    permanentlyActiveOpacity={.5}
+                    permanentlyActive={currentActive === item.type}
+                    disable={currentActive === item.type}
                     shadowColor={"gray"}
                     shadowBorderRadius={7}
                 >
@@ -31,9 +31,11 @@ export const CarouselMenu = React.memo(() => {
             itemWidth={120}
             loop={true}
             autoplay={false}
-            inactiveSlideScale={1}
             enableSnap={false}
-            contentContainerCustomStyle={{paddingLeft: 0, paddingRight: 20, marginBottom: 40}}
+            inactiveSlideOpacity={1}
+            inactiveSlideScale={1}
+            inactiveSlideShift={0}
+            contentContainerCustomStyle={{paddingLeft: 0, paddingRight: 20, marginBottom: 30}}
         />
     );
 })
@@ -45,6 +47,7 @@ const styles = StyleSheet.create({
     carouselMenuItem:{
         width: "91%",
         borderRadius: 7,
+        marginBottom: 10,
         paddingVertical: "15%",
     }
 })

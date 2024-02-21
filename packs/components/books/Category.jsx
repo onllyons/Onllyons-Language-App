@@ -7,11 +7,23 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faChevronRight} from "@fortawesome/free-solid-svg-icons";
 import Carousel from "react-native-new-snap-carousel";
 import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
+import {SERVER_URL} from "../../utils/Requests";
 
 export const Category = React.memo(({data, type, navTopInfo}) => {
     if (data.length === 0) return null
 
     const navigation = useNavigation()
+
+    let urlImage = "ru/ru-en/packs/assest/books/read-books/img"
+    let screenReading = "BooksReading"
+
+    if (type.currentActive === "poetry") {
+        urlImage = "ru/ru-en/packs/assest/books/read-poetry/img"
+        screenReading = "PoetryReading"
+    } else if (type.currentActive === "dialogues") {
+        urlImage = "ru/ru-en/packs/assest/books/read-dialog/img"
+        screenReading = "DialogReading"
+    }
 
     return (
         <View>
@@ -46,19 +58,21 @@ export const Category = React.memo(({data, type, navTopInfo}) => {
                             <AnimatedButtonShadow
                                 shadowDisplayAnimate={"slide"}
                                 styleButton={[styles.card, styles.bgGry]}
-                                onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, data: data, info: navTopInfo, type: type})}
+                                onPress={() => navigation.navigate(screenReading, {id: item.id, item: item, data: data, info: navTopInfo, type: type})}
                                 shadowColor={"gray"}
                                 shadowBorderRadius={12}
                             >
                                 <Image
                                     source={{
-                                        uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/img/${item.image}`,
+                                        uri: `${SERVER_URL}/${urlImage}/${item.image}`,
                                     }}
                                     style={styles.image}
                                 />
                             </AnimatedButtonShadow>
                             <Text style={styles.title}>{item.title}</Text>
-                            <Text style={styles.author}>{item.author}</Text>
+                            {item.author && (
+                                <Text style={styles.author}>{item.author}</Text>
+                            )}
                         </View>
                     )}
                     sliderWidth={Dimensions.get('window').width}

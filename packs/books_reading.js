@@ -6,17 +6,12 @@ import {
     Image,
     ScrollView,
     StyleSheet,
-    Switch,
     TouchableOpacity,
     Animated
 } from "react-native";
 
 // Importuri pentru navigare
-import {useNavigation, useRoute} from "@react-navigation/native";
-
-// Iconițe FontAwesome
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faTimes, faGear} from "@fortawesome/free-solid-svg-icons";
+import {useRoute} from "@react-navigation/native";
 
 // Importuri pentru gestionarea audio
 import {Audio} from "expo-av";
@@ -24,20 +19,14 @@ import {Audio} from "expo-av";
 // Import pentru gestionarea gesturilor
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 
-// Bottom Sheet
-import BottomSheet, {
-    BottomSheetView,
-    BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
-
-// Importuri locale și de utilitare
-import globalCss from "./css/globalCss";
 import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 
 // Componente personalizate
 import {Welcome} from "./components/Welcome";
 import {useStore} from "./providers/Store";
-
+import {BottomSheetComponent} from "./components/books/reading/BottomSheetComponent";
+import {ControlButtons} from "./components/books/reading/ControlButtons";
+import {Header} from "./components/books/reading/Header";
 
 export default function BooksScreen({navigation}) {
     const {setStoredValue} = useStore();
@@ -120,21 +109,23 @@ export default function BooksScreen({navigation}) {
         }
     }, [])
 
-    const playSound = useCallback(async (startMillis = 0, stop = false) => {
+    const playSound = useCallback(async (options = {}) => {
+        options = {stop: false, startMillis: 0, ...options}
+
         if (sound) {
             const status = await sound.getStatusAsync()
 
             if (!status.isLoaded) return
 
-            if (startMillis > 0) {
-                await sound.setPositionAsync(startMillis);
+            if (options.startMillis > 0) {
+                await sound.setPositionAsync(options.startMillis);
 
                 if (!status.isPlaying) {
                     await sound.playAsync();
                     setIsPlaying(true);
                 }
             } else {
-                if (stop) {
+                if (options.stop) {
                     await sound.pauseAsync();
                     setIsPlaying(false);
                     return
@@ -236,7 +227,7 @@ export default function BooksScreen({navigation}) {
         return () => intervalCheckWord.current && clearInterval(intervalCheckWord.current);
     }, [isPlaying, sound]);
 
-    const handleOpenPress = useCallback(() => {
+    const handleOpenBottomSheetPress = useCallback(() => {
         bottomSheetRef.current?.snapToIndex(1);
     }, []);
 
@@ -293,52 +284,19 @@ export default function BooksScreen({navigation}) {
                 info.finished.push(bookId);
             }
         }
-        // else {
-        //     if (indexFinish !== -1) {
-        //         setStoredValue("needToUpdateBooks", true);
-        //         info.finished.splice(indexFinish, 1);
-        //     }
-        // }
 
         setStoredValue("needToUpdateBooksCategory", true);
 
         setFinished(!finished);
     }, [finished])
 
-    const playFromWord = useCallback(async (startMillis) => playSound(startMillis), [sound])
+    const playFromWord = useCallback(async (startMillis) => playSound({startMillis: startMillis}), [sound])
 
     return loading ? (
         <Welcome/>
     ) : (
         <GestureHandlerRootView style={styles.container}>
-            <View style={styles.row}>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={styles.closeButton}
-                >
-                    <FontAwesomeIcon icon={faTimes} size={30} style={globalCss.blue}/>
-                </TouchableOpacity>
-
-                <View style={styles.progressBarContainer}>
-                    <Animated.View
-                        style={[
-                            styles.progressBar,
-                            {
-                                width: scrollAnim.interpolate({
-                                    inputRange: [0, 100],
-                                    outputRange: ['0%', '100%'],
-                                })
-                            }
-                        ]}
-                    />
-                </View>
-
-                <TouchableOpacity style={styles.settingsBtn} onPress={handleOpenPress}>
-                    <Text>
-                        <FontAwesomeIcon icon={faGear} size={30} style={globalCss.blue}/>
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            <Header handleOpenBottomSheetPress={handleOpenBottomSheetPress} scrollAnim={scrollAnim}/>
 
             <ScrollView
                 onScroll={handleScroll}
@@ -349,23 +307,19 @@ export default function BooksScreen({navigation}) {
                     paddingHorizontal: 20,
                 }}
             >
-                <View style={styles.contentBooks}>
-                    <View key={data.id} style={styles.contentBooksRead}>
-                        <Text style={styles.titleBook}>{data.title}</Text>
-                        <Text style={styles.titleAuthor}>{data.author}</Text>
+                <Text style={styles.titleBook}>{data.title}</Text>
+                <Text style={styles.titleAuthor}>{data.author}</Text>
 
-                        <View style={styles.textContainer}>
-                            {wordsArray.length > 0 && wordsArray.map((word, index) => (
-                                <Word
-                                    key={index}
-                                    word={word}
-                                    isFocused={index === currentWordIndex}
-                                    isAfterFocused={index < currentWordIndex}
-                                    playFromWord={playFromWord}
-                                />
-                            ))}
-                        </View>
-                    </View>
+                <View style={styles.textContainer}>
+                    {wordsArray.length > 0 && wordsArray.map((word, index) => (
+                        <Word
+                            key={index}
+                            word={word}
+                            isFocused={index === currentWordIndex}
+                            isAfterFocused={index < currentWordIndex}
+                            playFromWord={playFromWord}
+                        />
+                    ))}
                 </View>
             </ScrollView>
 
@@ -375,8 +329,6 @@ export default function BooksScreen({navigation}) {
                 isPlaying={isPlaying}
                 isMuted={isMuted}
                 rewindSound={rewindSound}
-
-
             />
 
             <BottomSheetComponent
@@ -424,7 +376,7 @@ const Word = React.memo(({
                 <Text
                     style={[
                         styles.readingContent,
-                        isFocused ? styles.highlightedText : (isAfterFocused ? styles.readText : styles.normalText)
+                        isFocused ? styles.highlightedText : (isAfterFocused && styles.readText)
                     ]}
                 >
                     {word.text + " "}
@@ -436,132 +388,11 @@ const Word = React.memo(({
     // Pentru text simplu, fără timp asociat
     return (
         <Text
-            style={[
-                styles.readingContent,
-                styles.normalText, // Stil pentru textul simplu
-            ]}
+            style={styles.readingContent}
         >
             {word.text + " "}
         </Text>
     );
-})
-
-const ControlButtons = React.memo(({
-    isPlaying,
-    isMuted,
-    playSound,
-    toggleMute,
-    rewindSound
-}) => {
-    const navigation = useNavigation()
-    const {info, data, type} = useRoute().params
-
-    return (
-        <View style={styles.audioPlyr}>
-
-            <TouchableOpacity
-                style={styles.controlAudioBtn}
-                onPress={() => {
-                    playSound(0, true)
-                    navigation.navigate("BooksCategory", {type: type, info: info, data: data})
-                }}
-            >
-                <Image
-                    source={require('./images/other_images/player/list.png')}
-                    style={styles.imgPlyrList}
-                />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                style={styles.controlAudioBtn}
-                onPress={() => rewindSound(-10)}
-            >
-                <Image
-                    source={require('./images/other_images/player/back.png')}
-                    style={styles.imgPlyrNextBack}
-                />
-            </TouchableOpacity>
-
-            <View style={styles.controlAudioBtn}>
-                <TouchableOpacity onPress={() => playSound()}>
-                    <Image
-                        source={isPlaying ? require('./images/other_images/player/pause.png') : require('./images/other_images/player/play.png')}
-                        style={styles.imgPlyrSettings}
-                    />
-                </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-                style={styles.controlAudioBtn}
-                onPress={() => rewindSound(10)}
-            >
-                <Image
-                    source={require('./images/other_images/player/next.png')}
-                    style={styles.imgPlyrNextBack}
-                />
-            </TouchableOpacity>
-
-            <View style={styles.controlAudioBtn}>
-                <TouchableOpacity onPress={toggleMute}>
-                    <Image
-                        source={isMuted ? require('./images/other_images/player/mute.png') : require('./images/other_images/player/volume.png')}
-                        style={styles.imgPlyrVolume}
-                    />
-                </TouchableOpacity>
-            </View>
-
-        </View>
-    )
-})
-
-const BottomSheetComponent = React.memo(({bottomSheetRef, finished, saved, handleFinish, handleBookmark}) => {
-    const renderBackdrop = useCallback(
-        (props) => (
-            <BottomSheetBackdrop
-                {...props}
-                disappearsOnIndex={-1}
-                appearsOnIndex={1}
-            />
-        ),
-        []
-    );
-
-    return (
-        <BottomSheet
-            ref={bottomSheetRef}
-            snapPoints={["25%", "50%", "90%"]}
-            backdropComponent={renderBackdrop}
-            enablePanDownToClose={true}
-            index={-1}
-        >
-            <BottomSheetView style={styles.contentBottomSheet}>
-                <View style={styles.settingsGroup}>
-                    <Text style={styles.settingsIPA}>Пометить как прочитанное</Text>
-
-                    <Switch
-                        trackColor={{false: "#d1d1d1", true: "#4ADE80"}}
-                        thumbColor={finished ? "#ffffff" : "#f4f3f4"}
-                        disabled={finished}
-                        ios_backgroundColor="#d1d1d1"
-                        onValueChange={handleFinish}
-                        value={finished}
-                    />
-                </View>
-
-                <View style={styles.settingsGroup}>
-                    <Text style={styles.settingsIPA}>Добавить в закладки</Text>
-
-                    <Switch
-                        trackColor={{false: "#d1d1d1", true: "#4ADE80"}}
-                        thumbColor={saved ? "#ffffff" : "#f4f3f4"}
-                        ios_backgroundColor="#d1d1d1"
-                        onValueChange={handleBookmark}
-                        value={saved}
-                    />
-                </View>
-            </BottomSheetView>
-        </BottomSheet>
-    )
 })
 
 const styles = StyleSheet.create({
@@ -570,21 +401,6 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
         paddingTop: "12%",
         backgroundColor: '#f7f7f7',
-    },
-
-    settingsGroup: {
-        paddingHorizontal: 20,
-        marginBottom: "2%",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        alignContent: "center",
-    },
-    settingsIPA: {
-        fontSize: 18,
-        fontWeight: "500",
-        color: "#343541",
-        flex: 1,
     },
     imageContainer: {
         width: "100%",
@@ -598,57 +414,6 @@ const styles = StyleSheet.create({
         marginTop: "8%",
         borderRadius: 10,
     },
-    imgPlyrSettings: {
-        width: 50,
-        height: 50,
-        resizeMode: "contain",
-    },
-    imgPlyrNextBack: {
-        width: 30,
-        height: 30,
-        resizeMode: "contain",
-    },
-    imgPlyrVolume: {
-        width: 35,
-        height: 35,
-        resizeMode: "contain",
-    },
-    imgPlyrList: {
-        width: 30,
-        height: 30,
-        resizeMode: "contain",
-    },
-
-    audioPlyr: {
-        position: "absolute",
-        flexDirection: "row",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: "white",
-        paddingVertical: "8%",
-        paddingHorizontal: "8%",
-        alignItems: "center",
-    },
-    contentBottomSheet: {
-        height: "100%",
-        flex: 1,
-    },
-    controlAudioBtn: {
-        flex: 1,
-        alignItems: "center",
-    },
-    row: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    closeButton: {
-        minWidth: "14%",
-        paddingVertical: "3%",
-        justifyContent: "center",
-        alignItems: "center",
-        alignContent: "center",
-    },
     titleBook: {
         fontSize: 21,
         fontWeight: "600",
@@ -661,24 +426,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         alignSelf: "center",
         marginBottom: 30,
-    },
-
-    progressBarContainer: {
-        height: 25,
-        flex: 1,
-        backgroundColor: "#3a464e",
-        borderRadius: 10,
-    },
-    progressBar: {
-        height: "100%",
-        backgroundColor: "#ffeb3b",
-        borderRadius: 10,
-    },
-    settingsBtn: {
-        width: "14%",
-        paddingVertical: "3%",
-        alignItems: "center",
-        alignContent: "center",
     },
     textContainer: {
         flexDirection: "row",
@@ -702,8 +449,6 @@ const styles = StyleSheet.create({
         color: "black",
         fontWeight: '500',
     },
-
-
     textTouchableDef: {
         marginBottom: 3,
     },

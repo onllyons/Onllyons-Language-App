@@ -6,6 +6,7 @@ import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 import globalCss from "./css/globalCss";
 import {useStore} from "./providers/Store";
+import {SERVER_URL} from "./utils/Requests";
 
 export default function BooksCategoryScreen({route}) {
     const {getStoredValue, deleteStoredValue} = useStore()
@@ -63,11 +64,22 @@ export default function BooksCategoryScreen({route}) {
         }
     };
 
+    let urlImage = "ru/ru-en/packs/assest/books/read-books/img"
+    let screenReading = "BooksReading"
+
+    if (transmittedType.currentActive === "poetry") {
+        urlImage = "ru/ru-en/packs/assest/books/read-poetry/img"
+        screenReading = "PoetryReading"
+    } else if (transmittedType.currentActive === "dialogues") {
+        urlImage = "ru/ru-en/packs/assest/books/read-dialog/img"
+        screenReading = "DialogReading"
+    }
+
     const renderItem = ({item}) => {
         const categoryInfo = getCategoryImageAndText(item.category);
 
         return (
-            <TouchableOpacity onPress={() => navigation.navigate('BooksReading', {id: item.id, item: item, data: transmittedData, info: transmittedInfo, type: transmittedType})}>
+            <TouchableOpacity onPress={() => navigation.navigate(screenReading, {id: item.id, item: item, data: transmittedData, info: transmittedInfo, type: transmittedType})}>
                 <View style={[
                     styles.item,
                     // Finished books
@@ -75,7 +87,7 @@ export default function BooksCategoryScreen({route}) {
                 ]}>
                     <Image
                         source={{
-                            uri: `https://www.language.onllyons.com/ru/ru-en/packs/assest/books/read-books/img/${item.image}`,
+                            uri: `${SERVER_URL}/${urlImage}/${item.image}`,
                         }}
                         style={styles.image}
                     />

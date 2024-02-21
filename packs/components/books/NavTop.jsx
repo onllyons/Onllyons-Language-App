@@ -18,8 +18,38 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({data, loading}) => {
+const NavTopContent = ({data, currentActive, loading}) => {
     const {setStartPosition} = useAnimatedNavTop()
+
+    const navTopMenuText = {
+        books: {
+            finished: {
+                title: "Прочитанные книги",
+                subtitle: "Сколько книг я уже прочитал?"
+            },
+            saved: {
+                title: "Сохранённые книги"
+            }
+        },
+        poetry: {
+            finished: {
+                title: "Прочитанные стихи",
+                subtitle: "Сколько стихов я уже прочитал?"
+            },
+            saved: {
+                title: "Сохранённые стихи"
+            }
+        },
+        dialogues: {
+            finished: {
+                title: "Прочитанные диалоги",
+                subtitle: "Сколько диалогов я уже прочитал?"
+            },
+            saved: {
+                title: "Сохранённые диалоги"
+            }
+        }
+    }
 
     return (
         <>
@@ -49,8 +79,8 @@ const NavTopContent = ({data, loading}) => {
             <AnimatedNavTopMenu id={"booksReadedAnalytics"}>
                 <View style={navDropdown.containerSentences}>
 
-                    <Text style={navDropdown.titleh5}>Прочитанные книги</Text>
-                    <Text style={navDropdown.titleh6}>Сколько книг я уже прочитал?</Text>
+                    <Text style={navDropdown.titleh5}>{navTopMenuText[currentActive].finished.title}</Text>
+                    <Text style={navDropdown.titleh6}>{navTopMenuText[currentActive].finished.subtitle}</Text>
 
                     <View style={navDropdown.containerCourseData}>
                         <View style={navDropdown.cardCourseData}>
@@ -63,7 +93,7 @@ const NavTopContent = ({data, loading}) => {
                             <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.finished.length} / {data.allBooks}</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.finished.length} / {data.all}</Text>
                             </View>
                         </View>
                     </View>
@@ -74,7 +104,7 @@ const NavTopContent = ({data, loading}) => {
             <AnimatedNavTopMenu id={"booksSavedAnalytics"}>
                 <View style={navDropdown.containerSentences}>
 
-                    <Text style={navDropdown.titleh5}>Сохранённые книги</Text>
+                    <Text style={navDropdown.titleh5}>{navTopMenuText[currentActive].saved.title}</Text>
                     <Text style={navDropdown.titleh6}>Общее количество закладок</Text>
 
                     <View style={navDropdown.containerCourseData}>
@@ -88,7 +118,7 @@ const NavTopContent = ({data, loading}) => {
                             <View style={navDropdown.dividerCourseData}/>
                             <View style={navDropdown.fluencyContainer}>
                                 <Text style={navDropdown.iconSubText}>ПРОГРЕСС</Text>
-                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.saved.length} / {data.allBooks}</Text>
+                                <Text style={[navDropdown.fluencyText, globalCss.green]}>{data.saved.length} / {data.all}</Text>
                             </View>
                         </View>
                     </View>
