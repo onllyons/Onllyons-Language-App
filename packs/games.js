@@ -30,11 +30,13 @@ const cardData = [
         text: 'Верно - Не верно'
     },
 ];
-
+ 
 export default function GamesScreen({navigation}) {
     const handlePress = (id) => {
         if (id === 1) {
             navigation.navigate('GamesQuiz');
+        } else if (id === 5) {
+            navigation.navigate('GamesQuizTrueFalse');
         } else {
             Toast.show({
                 type: "error",

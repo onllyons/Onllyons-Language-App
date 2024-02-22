@@ -30,6 +30,8 @@ import BooksReading from "./packs/books_reading";
 import GamesScreen from "./packs/games";
 import GamesQuiz from "./packs/games_quiz";
 
+import GamesQuizTrueFalse from "./packs/games_quiz_true_false";
+
 import FlashCardsScreen from "./packs/flashcards";
 import FlashCardsWordsCategory from "./packs/flashcards_category";
 import FlashCardsWords from "./packs/flashcards_words";
@@ -332,6 +334,13 @@ function AppStack() {
                 component={GamesQuiz}
                 options={{headerShown: false}}
             />
+
+            <Stack.Screen
+                name="GamesQuizTrueFalse"
+                component={GamesQuizTrueFalse}
+                options={{headerShown: false}}
+            />
+            
 
             <Stack.Screen
                 name="BooksCategory"
