@@ -23,10 +23,12 @@ import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL, updateUser} from "../utils/Requests";
 import {getUser} from "../providers/AuthProvider";
 import {useFocusEffect} from "@react-navigation/native";
+import {useStore} from "../providers/Store";
 
 const {width} = Dimensions.get("window");
 
 export default function SubscribeScreen({navigation}) {
+    const {deleteStoredValue} = useStore()
     const {initPaymentSheet, presentPaymentSheet} = useStripe();
     const [data, setData] = useState([])
     const [disableSwiper, setDisableSwiper] = useState(false)
@@ -71,6 +73,8 @@ export default function SubscribeScreen({navigation}) {
                     type: "error",
                     text1: "Ошибка инициализации оплаты, попробуйте позже"
                 });
+            } else {
+                deleteStoredValue("cancelledSubscribe")
             }
         } finally {
             setTimeout(() => setLoading(false), 1)
@@ -275,8 +279,8 @@ export default function SubscribeScreen({navigation}) {
                     styleButton={[globalCss.button, globalCss.buttonBlue]}
                     shadowColor={"blue"}
                     onPress={openPaymentSheet}
-                    disable={selectedSubscription === user.subscribe || disableSwiper}
-                    permanentlyActive={selectedSubscription === user.subscribe || disableSwiper}
+                    disable={selectedSubscription === user.subscribe || selectedSubscription === 0 || disableSwiper}
+                    permanentlyActive={selectedSubscription === user.subscribe || selectedSubscription === 0 || disableSwiper}
                     permanentlyActiveOpacity={.5}
                     size={"full"}
                 >

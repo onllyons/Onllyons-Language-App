@@ -1,14 +1,33 @@
-import React, {useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import globalCss from '../css/globalCss';
-import {View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl} from 'react-native';
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import Loader from "../components/Loader";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
-import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faCircleCheck, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
+import {useStore} from "../providers/Store";
 
 export default function UserProfile({navigation}) {
-    const [loading, setLoading] = useState(false)
+    const {setStoredValue, getStoredValue} = useStore()
+    const [loading, setLoading] = useState(true)
+    const [data, setData] = useState([])
+    const [refreshing, setRefreshing] = useState(false);
+
+    const getSubscriptionData = useCallback(() => {
+        sendDefaultRequest(`${SERVER_AJAX_URL}/checkout/get_subscribe_info.php`,
+            {cancelledSubscribe: getStoredValue("cancelledSubscribe") !== null},
+            navigation
+        )
+            .then(data => setData(data.data))
+            .catch(() => {})
+            .finally(() => {
+                setTimeout(() => {
+                    setRefreshing(false)
+                    setLoading(false)
+                }, 1)
+            })
+    }, [])
 
     const handleCancelSubscribe = () => {
         setLoading(true)
@@ -17,19 +36,28 @@ export default function UserProfile({navigation}) {
             {},
             navigation
         )
-            .then(() => {})
+            .then(() => {
+                setStoredValue("cancelledSubscribe", true)
+            })
             .catch(() => {})
             .finally(() => {
-                setTimeout(() => setLoading(false), 1)
+                getSubscriptionData()
             })
     }
- 
+
+    useMemo(() => {
+        if (!refreshing && !loading) return
+
+        getSubscriptionData()
+    }, [refreshing])
+
     return (
         <View style={styles.container}>
             <Loader visible={loading}/>
 
             <View style={globalCss.navTabUser}>
-                <TouchableOpacity style={globalCss.itemNavTabUserBtnBack} onPress={() => navigation.navigate("MenuScreen")}>
+                <TouchableOpacity style={globalCss.itemNavTabUserBtnBack}
+                                  onPress={() => navigation.navigate("MenuScreen")}>
                     <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue}/>
                 </TouchableOpacity>
                 <View style={globalCss.itemNavTabUserTitleCat}>
@@ -37,183 +65,151 @@ export default function UserProfile({navigation}) {
                 </View>
             </View>
 
-
-            <ScrollView 
-                contentContainerStyle={{paddingBottom: 100,}}
+            <ScrollView
+                contentContainerStyle={{paddingBottom: 100}}
                 style={styles.containerContent}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={() => setRefreshing(true)}
+                    />
+                }
             >
-                <View style={styles.containerTable}>
-                  <Text style={styles.header}>История</Text>
-                  <View style={styles.table}>
+                <SubscriptionInfo handleCancelSubscribe={handleCancelSubscribe} info={data.activeSubscribe ? data.activeSubscribe : {}}/>
 
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCellBold}>Type</Text>
-                      <Text style={styles.tableCellBold}>Start</Text>
-                      <Text style={styles.tableCellBold}>End</Text>
-                      <Text style={styles.tableCellBold}>Status</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Basic</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>False</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Basic</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>False</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Basic</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>False</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Basic</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>False</Text>
-                    </View>
-
-                    <View style={styles.tableRow}>
-                      <Text style={styles.tableCell}>Pro</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-
-                    <View style={styles.bbr}>
-                      <Text style={styles.tableCell}>Basic</Text>
-                      <Text style={styles.tableCell}>12.04.2024</Text>
-                      <Text style={styles.tableCell}>25.05.2024</Text>
-                      <Text style={styles.tableCell}>Succes</Text>
-                    </View>
-                  </View>
-                </View>
-
-
-
-
-
-                <AnimatedButtonShadow
-                    styleButton={[globalCss.button, globalCss.buttonGreen]}
-                    shadowColor={"green"}
-                    onPress={handleCancelSubscribe}>
-                    <Text style={globalCss.buttonText}>Отменить подписку</Text>
-                </AnimatedButtonShadow>
-
+                <SubscriptionHistory history={data.subscribeHistory ? data.subscribeHistory : []}/>
             </ScrollView>
+
         </View>
     );
 }
 
+const SubscriptionInfo = ({info, handleCancelSubscribe}) => {
+    let content = []
+
+    switch (info.type) {
+        case "activePayments":
+            content.push((
+                <>
+                    <Text>Стоимость: {info.price} EUR</Text>
+                    <Text>Период: {info.period === "month" ? "ежемесячно" : "ежегодно"}</Text>
+                    <Text>Начало подписки: {info.start}</Text>
+                    <Text>Конец подписки: {info.end}</Text>
+                    <Text>При отмене подписки ваш текущий план остаеться до конца периода. Отмена подписки может занять несколько минут</Text>
+
+                    <AnimatedButtonShadow
+                        styleButton={[globalCss.button, globalCss.buttonGreen, styles.cancelSubscribeBtn]}
+                        shadowColor={"green"}
+                        onPress={handleCancelSubscribe}>
+                        <Text style={globalCss.buttonText}>Отменить подписку</Text>
+                    </AnimatedButtonShadow>
+                </>
+            ))
+            break
+
+        case "activeSubscribe":
+            content.push((
+                <>
+                    <Text>Начало подписки: {info.start}</Text>
+                    <Text>Конец подписки: {info.end}</Text>
+                </>
+            ))
+            break
+
+        default:
+            content.push((
+                <Text>У вас нет активной подписки</Text>
+            ))
+    }
+
+    return (
+        <View style={styles.subscribeInfoContainer}>
+            <Text style={styles.header}>Иформация о подписке</Text>
+
+            {content}
+        </View>
+    )
+}
+
+const SubscriptionHistory = ({history}) => {
+    return (
+        <View>
+            <Text style={styles.header}>История транзакций</Text>
+
+            {history && history.length > 0 ? (
+                <View style={styles.table}>
+                    <View style={styles.tableRow}>
+                        <Text style={[styles.tableCell, styles.tableCellBold]}>Subscription</Text>
+                        <Text style={[styles.tableCell, styles.tableCellBold]}>Date</Text>
+                        <Text style={[styles.tableCell, styles.tableCellBold]}>Status</Text>
+                    </View>
+
+                    {history.map((item, index) => (
+                        <View key={index} style={[styles.tableRow, index + 1 === history.length && styles.bbr]}>
+                            <Text style={[styles.tableCell]}>{item.subscriptionType}</Text>
+                            <Text style={[styles.tableCell]}>{item.date}</Text>
+                            <FontAwesomeIcon
+                                icon={item.success ? faCircleCheck : faCircleXmark}
+                                size={20}
+                                color={item.success ? "#57cc04" : "#ca3431"}
+                                style={[styles.tableCell]}
+                            />
+                        </View>
+                    ))}
+                </View>
+            ) : (
+                <Text>Вы не совершали никаких транзакций</Text>
+            )}
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffff',
-  },
-  containerContent: {
-    padding: "5%",
-  },
-  containerTable: {
-    marginBottom: "8%",
-  },
-  header: {
-    fontSize: 20,
-    color: '#494949',
-    fontWeight: '500',
-    marginBottom: 10,
-  },
-  table: {
-    borderWidth: 1,
-    borderRadius: "11%",
-    borderColor: '#ddd',
-  },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-  },
-  tableCell: {
-    flex: 1,
-    paddingLeft: "2%",
-    paddingRight: "0%",
-    paddingTop: "4%",
-    paddingBottom: "4%",
-  },
-  tableCellBold: {
-    flex: 1,
-    paddingLeft: "2%",
-    paddingRight: "0%",
-    paddingTop: "4%",
-    paddingBottom: "4%",
-  },
-  bbr: {
-    borderBottomLeftRadius: "11%",
-    borderBottomRightRadius: "11%",
-    flexDirection: 'row',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#ffff',
+    },
+    subscribeInfoContainer: {
+        marginBottom: 20,
+    },
+    cancelSubscribeBtn: {
+        marginTop: 10,
+        marginBottom: 0
+    },
+    containerContent: {
+        padding: "5%",
+    },
+    header: {
+        fontSize: 20,
+        color: '#494949',
+        fontWeight: '500',
+        marginBottom: 10,
+    },
+    table: {
+        borderWidth: 1,
+        borderRadius: 12,
+        borderColor: '#ddd',
+    },
+    tableRow: {
+        flexDirection: 'row',
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderBottomWidth: 1,
+        borderColor: '#ddd',
+        padding: "5%"
+    },
+    tableCell: {
+        flex: 1,
+    },
+    tableCellBold: {
+        flex: 0,
+        fontWeight: "600",
+        textAlign: "center"
+    },
+    bbr: {
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12,
+        flexDirection: 'row',
+    },
 
 });
