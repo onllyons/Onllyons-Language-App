@@ -67,6 +67,29 @@ export const Header = ({timerRun, stats}) => {
     )
 }
 
+export const calculateAddRating = (isCorrect, stats, data) => {
+    if (isCorrect) {
+        const timePercent = stats.time / data.time * 100;
+        let bonusRating = 0
+
+        if (timePercent <= 33) bonusRating = 3;
+        else if (timePercent <= 66) bonusRating = 2;
+        else if (timePercent <= 100) bonusRating = 1;
+
+        stats.additionalRating = data.rating_add + bonusRating
+        stats.rating += data.rating_add + bonusRating
+        stats.series++
+    } else {
+        const lastRating = stats.rating
+        stats.rating -= data.rating_minus
+        stats.series = 0
+
+        if (stats.rating < 300) stats.rating = 300
+
+        stats.additionalRating = -(lastRating - stats.rating)
+    }
+}
+
 const styles = StyleSheet.create({
     sectionTop: {
         width: "100%",

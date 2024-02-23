@@ -5,7 +5,7 @@ import Buttons from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";
-import {Header} from "./components/games/Header";
+import {calculateAddRating, Header} from "./components/games/Header";
 
 export default function GameQuiz({navigation}) {
     const [data, setData] = useState([]);
@@ -114,28 +114,7 @@ export default function GameQuiz({navigation}) {
             setIsHelpUsed(false);
             setIsAnswerSubmitted(true);
 
-            if (restartCount <= 0 && preHelpAnswers.length <= 0 && !isHelpUsed) {
-                if (isCorrect) {
-                    const timePercent = stats.current.time / data[0].time * 100;
-                    let bonusRating = 0
-
-                    if (timePercent <= 33) bonusRating = 3;
-                    else if (timePercent <= 66) bonusRating = 2;
-                    else if (timePercent <= 100) bonusRating = 1;
-
-                    stats.current.additionalRating = data[0].rating_add + bonusRating
-                    stats.current.rating += data[0].rating_add + bonusRating
-                    stats.current.series++
-                } else {
-                    const lastRating = stats.current.rating
-                    stats.current.rating -= data[0].rating_minus
-                    stats.current.series = 0
-
-                    if (stats.current.rating < 300) stats.current.rating = 300
-
-                    stats.current.additionalRating = -(lastRating - stats.current.rating)
-                }
-            }
+            if (restartCount <= 0 && preHelpAnswers.length <= 0 && !isHelpUsed) calculateAddRating(isCorrect, stats.current, data[0])
 
             sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
                 {

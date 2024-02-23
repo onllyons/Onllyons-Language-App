@@ -4,7 +4,7 @@ import Buttons from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";
-import {Header} from "./components/games/Header";
+import {calculateAddRating, Header} from "./components/games/Header";
 import {TextAnswer} from "./components/games/translate/TextAnswer";
 import {CustomSound} from "./components/games/translate/CustomSound";
 
@@ -38,7 +38,7 @@ export default function GamesDecodeAudio({navigation}) {
             {success: false}
         )
             .then(data => {
-                stats.current.rating = data.question.rating
+                stats.current.rating = data.rating
                 blocked.current = data.action === "openModalMembership"
                 
                 stats.current.time = 0
@@ -46,6 +46,7 @@ export default function GamesDecodeAudio({navigation}) {
                 setData(data.question);
                 setSelectedAnswer(null);
                 setIsAnswerCorrect(null);
+                setShowIncorrectStyle(false)
                 setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
                 setIsHelpUsed(false);
                 setRestartCount(0)
@@ -85,33 +86,13 @@ export default function GamesDecodeAudio({navigation}) {
             setIsHelpUsed(false);
             setIsAnswerSubmitted(true);
 
-            if (restartCount <= 0) {
-                if (isCorrect) {
-                    const timePercent = stats.current.time / data.time * 100;
-                    let bonusRating = 0
-
-                    if (timePercent <= 33) bonusRating = 3;
-                    else if (timePercent <= 66) bonusRating = 2;
-                    else if (timePercent <= 100) bonusRating = 1;
-
-                    stats.current.additionalRating = data.rating_add + bonusRating
-                    stats.current.rating += data.rating_add + bonusRating
-                    stats.current.series++
-                } else {
-                    const lastRating = stats.current.rating
-                    stats.current.rating -= data.rating_minus
-                    stats.current.series = 0
-
-                    if (stats.current.rating < 300) stats.current.rating = 300
-
-                    stats.current.additionalRating = -(lastRating - stats.current.rating)
-                }
-            }
+            if (restartCount <= 0 && !isHelpUsed) calculateAddRating(isCorrect, stats.current, data)
 
             sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
                 {
                     method: "info",
                     answer: selected,
+                    correct: isCorrect,
                     id: data.id,
                     timer: stats.current.time,
                     tester: restartCount <= 0 ? 1 : 2,
