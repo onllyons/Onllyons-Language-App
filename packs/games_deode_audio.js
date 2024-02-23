@@ -32,7 +32,7 @@ export default function GamesDecodeAudio({navigation}) {
     }
 
     const getQuestions = () => {
-        sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
+        sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
             {method: "start"},
             navigation,
             {success: false}
@@ -108,7 +108,7 @@ export default function GamesDecodeAudio({navigation}) {
                 }
             }
 
-            sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
+            sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
                 {
                     method: "info",
                     answer: selected,
@@ -145,7 +145,7 @@ export default function GamesDecodeAudio({navigation}) {
 
                 stats.current.additionalRating = -(lastRating - stats.current.rating)
 
-                sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
+                sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
                     {
                         method: "help",
                         id: data.id,
