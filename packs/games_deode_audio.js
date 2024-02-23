@@ -1,21 +1,21 @@
 import React, {useState, useEffect, useRef} from "react";
 import {View, Text, StyleSheet} from "react-native";
-import Answer from "./components/games/quiz/Answer";
 import Buttons from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";
 import {Header} from "./components/games/Header";
+import {TextAnswer} from "./components/games/translate/TextAnswer";
+import {CustomSound} from "./components/games/translate/CustomSound";
 
-export default function GameQuiz({navigation}) {
-    const [data, setData] = useState([]);
+export default function GamesDecodeAudio({navigation}) {
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true); // Inițial, loader-ul este activat
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
     const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
     const [isHelpUsed, setIsHelpUsed] = useState(false);
     const [showIncorrectStyle, setShowIncorrectStyle] = useState(false);
-    const [preHelpAnswers, setPreHelpAnswers] = useState([])
     const [subscribeModalVisible, setSubscribeModalVisible] = useState(false)
     const stats = useRef({
         time: 0,
@@ -32,30 +32,22 @@ export default function GameQuiz({navigation}) {
     }
 
     const getQuestions = () => {
-        sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
-            {
-                method: "start",
-                excludedIds: data.map(obj => obj.id)
-            },
+        sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
+            {method: "start"},
             navigation,
             {success: false}
         )
             .then(data => {
-                stats.current.rating = data.rating
+                stats.current.rating = data.question.rating
                 blocked.current = data.action === "openModalMembership"
-
-                const shuffledData = data.votes.map((item) => ({
-                    ...item,
-                    answers: shuffleAnswers(item),
-                }));
+                
                 stats.current.time = 0
                 stats.current.additionalRating = 0
-                setData(shuffledData);
+                setData(data.question);
                 setSelectedAnswer(null);
                 setIsAnswerCorrect(null);
                 setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
                 setIsHelpUsed(false);
-                setPreHelpAnswers([])
                 setRestartCount(0)
             })
             .catch((err) => {
@@ -78,57 +70,36 @@ export default function GameQuiz({navigation}) {
         getQuestions()
     }, []);
 
-    const shuffleAnswers = (item) => {
-        const correct = Number(item.test.correct)
-
-        let initialAnswers = [
-            {text: item.test["1"], correct: correct === 1, id: 1},
-            {text: item.test["2"], correct: correct === 2, id: 2},
-            {text: item.test["3"], correct: correct === 3, id: 3},
-            {text: item.test["4"], correct: correct === 4, id: 4},
-        ];
-
-        // Amestecă răspunsurile inițiale
-        for (let i = initialAnswers.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [initialAnswers[i], initialAnswers[j]] = [initialAnswers[j], initialAnswers[i]];
-        }
-
-        return initialAnswers;
-    };
-
-    const handleAnswerSelect = (selected) => {
+    const handleAnswerSelect = (selected, isCorrect) => {
         if (blocked.current) {
             checkBlocked()
             return
         }
 
-        if (preHelpAnswers.indexOf(selected) !== -1 || isHelpUsed) return
+        if (isHelpUsed) return
 
         if (!isAnswerSubmitted) {
-            const correctAnswer = data[0].answers.find((answer) => answer.correct).id;
-            setSelectedAnswer(selected);
-            const isCorrect = selected === correctAnswer;
+            setSelectedAnswer(selected)
             setIsAnswerCorrect(isCorrect);
             setShowIncorrectStyle(!isCorrect); // Setează stilul "incorrect" dacă răspunsul este greșit
             setIsHelpUsed(false);
             setIsAnswerSubmitted(true);
 
-            if (restartCount <= 0 && preHelpAnswers.length <= 0 && !isHelpUsed) {
+            if (restartCount <= 0) {
                 if (isCorrect) {
-                    const timePercent = stats.current.time / data[0].time * 100;
+                    const timePercent = stats.current.time / data.time * 100;
                     let bonusRating = 0
 
                     if (timePercent <= 33) bonusRating = 3;
                     else if (timePercent <= 66) bonusRating = 2;
                     else if (timePercent <= 100) bonusRating = 1;
 
-                    stats.current.additionalRating = data[0].rating_add + bonusRating
-                    stats.current.rating += data[0].rating_add + bonusRating
+                    stats.current.additionalRating = data.rating_add + bonusRating
+                    stats.current.rating += data.rating_add + bonusRating
                     stats.current.series++
                 } else {
                     const lastRating = stats.current.rating
-                    stats.current.rating -= data[0].rating_minus
+                    stats.current.rating -= data.rating_minus
                     stats.current.series = 0
 
                     if (stats.current.rating < 300) stats.current.rating = 300
@@ -137,13 +108,13 @@ export default function GameQuiz({navigation}) {
                 }
             }
 
-            sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
+            sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
                 {
                     method: "info",
                     answer: selected,
-                    id: data[0].id,
+                    id: data.id,
                     timer: stats.current.time,
-                    tester: restartCount <= 0 && preHelpAnswers.length <= 0 ? 1 : 2,
+                    tester: restartCount <= 0 ? 1 : 2,
                     restart: restartCount
                 },
                 navigation,
@@ -160,32 +131,24 @@ export default function GameQuiz({navigation}) {
             return
         }
 
-        if (preHelpAnswers.length > 0) {
+        if (!isHelpUsed) {
+            setSelectedAnswer(data.answers[0])
             setIsHelpUsed(true);
             setShowIncorrectStyle(false); // Resetează stilul "incorrect"
-        } else {
-            for (let i = 0; i < data[0].answers.length; i++) {
-                if (preHelpAnswers.length >= 2) break
-                if (data[0].answers[i].id === selectedAnswer) continue
-
-                if (!data[0].answers[i].correct) preHelpAnswers.push(data[0].answers[i].id)
-            }
-
-            setPreHelpAnswers(prev => [...prev, preHelpAnswers])
 
             if (restartCount <= 0) {
                 const lastRating = stats.current.rating
-                stats.current.rating -= data[0].rating_minus
+                stats.current.rating -= data.rating_minus
                 stats.current.series = 0
 
                 if (stats.current.rating < 300) stats.current.rating = 300
 
                 stats.current.additionalRating = -(lastRating - stats.current.rating)
 
-                sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
+                sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
                     {
                         method: "help",
-                        id: data[0].id,
+                        id: data.id,
                         timer: stats.current.time
                     },
                     navigation,
@@ -211,10 +174,11 @@ export default function GameQuiz({navigation}) {
         setIsAnswerCorrect(null);
         setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru a permite repetarea întrebării
         setIsHelpUsed(false);
-        setPreHelpAnswers([])
         setRestartCount(restartCount + 1)
         stats.current.time = 0
     };
+
+    console.log(data)
 
     return loading ? (<Loader/>) : (
         <View style={styles.container}>
@@ -222,27 +186,24 @@ export default function GameQuiz({navigation}) {
 
             <Header
                 stats={stats.current}
-                timerRun={selectedAnswer === null && preHelpAnswers.length === 0}
+                timerRun={selectedAnswer === null}
             />
 
-            {data.length > 0 && (
-                <View style={styles.buttonGroup} key={data[0].id}>
+            {data && (
+                <View style={styles.buttonGroup} key={data.id}>
                     <View style={styles.buttonGroup}>
                         <Text style={styles.headerText}>
-                            {data[0].text}
+                            {data.text}
                         </Text>
 
-                        {data[0].answers.map((answer, index) => (
-                            <Answer
-                                key={index}
-                                answer={answer}
-                                isHelpUsed={isHelpUsed}
-                                isAnswerCorrect={isAnswerCorrect}
-                                preHelpAnswers={preHelpAnswers}
-                                selectedAnswer={selectedAnswer}
-                                handleAnswerSelect={handleAnswerSelect}
-                            />
-                        ))}
+                        <CustomSound name={data.audio}/>
+
+                        <TextAnswer
+                            showIncorrectStyle={showIncorrectStyle}
+                            selectedAnswer={selectedAnswer}
+                            handleAnswerSelect={handleAnswerSelect}
+                            answers={data.answers}
+                        />
                     </View>
                 </View>
             )}

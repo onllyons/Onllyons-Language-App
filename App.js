@@ -57,6 +57,7 @@ import {StripeProvider} from "@stripe/stripe-react-native";
 import {Congratulations} from "./packs/screens/Congragulations";
 import PoetryReading from "./packs/poetry_reading";
 import DialogReading from "./packs/dialog_reading";
+import GamesDecodeAudio from "./packs/games_deode_audio";
                                                
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -332,6 +333,11 @@ function AppStack() {
             <Stack.Screen
                 name="GamesQuiz"
                 component={GamesQuiz}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="GamesDecodeAudio"
+                component={GamesDecodeAudio}
                 options={{headerShown: false}}
             />
 

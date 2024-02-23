@@ -90,7 +90,7 @@ const SubscriptionInfo = ({info, handleCancelSubscribe}) => {
     switch (info.type) {
         case "activePayments":
             content.push((
-                <>
+                <View key={"activePayments"}>
                     <Text>Стоимость: {info.price} EUR</Text>
                     <Text>Период: {info.period === "month" ? "ежемесячно" : "ежегодно"}</Text>
                     <Text>Начало подписки: {info.start}</Text>
@@ -103,22 +103,24 @@ const SubscriptionInfo = ({info, handleCancelSubscribe}) => {
                         onPress={handleCancelSubscribe}>
                         <Text style={globalCss.buttonText}>Отменить подписку</Text>
                     </AnimatedButtonShadow>
-                </>
+                </View>
             ))
             break
 
         case "activeSubscribe":
             content.push((
-                <>
+                <View key={"activeSubscribe"}>
                     <Text>Начало подписки: {info.start}</Text>
                     <Text>Конец подписки: {info.end}</Text>
-                </>
+                </View>
             ))
             break
 
         default:
             content.push((
-                <Text>У вас нет активной подписки</Text>
+                <View key={"inactive"}>
+                    <Text>У вас нет активной подписки</Text>
+                </View>
             ))
     }
 

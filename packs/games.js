@@ -7,7 +7,8 @@ const cardData = [
     {
         id: 1,
         uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game.webp',
-        text: 'Задачи'
+        text: 'Задачи',
+        screen: "GamesQuiz"
     },
     {
         id: 2,
@@ -17,7 +18,8 @@ const cardData = [
     {
         id: 3,
         uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-write-translate.webp',
-        text: 'Расшифруйте аудио'
+        text: 'Расшифруйте аудио',
+        screen: "GamesDecodeAudio"
     },
     {
         id: 4,
@@ -27,24 +29,12 @@ const cardData = [
     {
         id: 5,
         uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-true-false.webp',
-        text: 'Верно - Не верно'
+        text: 'Верно - Не верно',
+        screen: "GamesQuizTrueFalse"
     },
 ];
- 
-export default function GamesScreen({navigation}) {
-    const handlePress = (id) => {
-        if (id === 1) {
-            navigation.navigate('GamesQuiz');
-        } else if (id === 5) {
-            navigation.navigate('GamesQuizTrueFalse');
-        } else {
-            Toast.show({
-                type: "error",
-                text1: "Игра будет доступна в системе в ближайшее время. Благодарим за ваше терпение и понимание"
-            });
-        }
-    };
 
+export default function GamesScreen({navigation}) {
     return (
         <View style={styles.container}>
             <Text style={styles.titlePage}>
@@ -56,7 +46,16 @@ export default function GamesScreen({navigation}) {
                     <Card
                         key={card.id}
                         card={card}
-                        onPress={() => handlePress(card.id)}
+                        onPress={() => {
+                            if (card.screen) {
+                                navigation.navigate(card.screen)
+                            } else {
+                                Toast.show({
+                                    type: "error",
+                                    text1: "Игра будет доступна в системе в ближайшее время. Благодарим за ваше терпение и понимание"
+                                });
+                            }
+                        }}
                     />
                 ))}
             </View>

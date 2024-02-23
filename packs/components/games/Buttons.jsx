@@ -16,6 +16,7 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                 <AnimatedButtonShadow
                     {...(renewButtons ? {key: 0} : {})}
                     styleContainer={styles.quizBtnCtrContainer}
+                    shadowDisplayAnimate={"slide"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,
@@ -39,6 +40,7 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                 <AnimatedButtonShadow
                     {...(renewButtons ? {key: 1} : {})}
                     styleContainer={styles.quizBtnCtrContainer}
+                    shadowDisplayAnimate={"slide"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,
@@ -60,6 +62,7 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
                 <AnimatedButtonShadow
                     {...(renewButtons ? {key: 2} : {})}
                     styleContainer={styles.quizBtnCtrContainer}
+                    shadowDisplayAnimate={"slide"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,
