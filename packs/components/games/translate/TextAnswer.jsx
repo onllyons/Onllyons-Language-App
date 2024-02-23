@@ -21,6 +21,12 @@ export const TextAnswer = ({
             return
         }
 
+        if (text === answers[0]) {
+            handleAnswerSelect(text, true)
+            setText("")
+            return;
+        }
+
         let answer = text.replace(/ё/g, "е");
         answer = answer.replace(/["!?.,]/g, "");
         answer = answer.trim().toLowerCase().replace(/\s+/g, " ");

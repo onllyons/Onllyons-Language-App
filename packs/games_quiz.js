@@ -153,13 +153,7 @@ export default function GameQuiz({navigation}) {
             setPreHelpAnswers(prev => [...prev, preHelpAnswers])
 
             if (restartCount <= 0) {
-                const lastRating = stats.current.rating
-                stats.current.rating -= data[0].rating_minus
-                stats.current.series = 0
-
-                if (stats.current.rating < 300) stats.current.rating = 300
-
-                stats.current.additionalRating = -(lastRating - stats.current.rating)
+                calculateAddRating(false, stats.current, data[0])
 
                 sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
                     {

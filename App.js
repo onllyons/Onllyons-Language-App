@@ -58,6 +58,7 @@ import {Congratulations} from "./packs/screens/Congragulations";
 import PoetryReading from "./packs/poetry_reading";
 import DialogReading from "./packs/dialog_reading";
 import GamesDecodeAudio from "./packs/games_deode_audio";
+import GamesTranslate from "./packs/games_translate";
                                                
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -338,6 +339,11 @@ function AppStack() {
             <Stack.Screen
                 name="GamesDecodeAudio"
                 component={GamesDecodeAudio}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="GamesTranslate"
+                component={GamesTranslate}
                 options={{headerShown: false}}
             />
 

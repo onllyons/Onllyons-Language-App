@@ -13,7 +13,8 @@ const cardData = [
     {
         id: 2,
         uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-write-with-keyboard.webp',
-        text: 'Написать перевод'
+        text: 'Написать перевод',
+        screen: "GamesTranslate"
     },
     {
         id: 3,

@@ -6,9 +6,8 @@ import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";
 import {calculateAddRating, Header} from "./components/games/Header";
 import {TextAnswer} from "./components/games/translate/TextAnswer";
-import {CustomSound} from "./components/games/translate/CustomSound";
 
-export default function GamesDecodeAudio({navigation}) {
+export default function GamesTranslate({navigation}) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true); // Inițial, loader-ul este activat
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -32,7 +31,7 @@ export default function GamesDecodeAudio({navigation}) {
     }
 
     const getQuestions = () => {
-        sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
+        sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
             {method: "start"},
             navigation,
             {success: false}
@@ -40,7 +39,7 @@ export default function GamesDecodeAudio({navigation}) {
             .then(data => {
                 stats.current.rating = data.rating
                 blocked.current = data.action === "openModalMembership"
-                
+
                 stats.current.time = 0
                 stats.current.additionalRating = 0
                 setData(data.question);
@@ -88,7 +87,7 @@ export default function GamesDecodeAudio({navigation}) {
 
             if (restartCount <= 0 && !isHelpUsed) calculateAddRating(isCorrect, stats.current, data)
 
-            sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
+            sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
                 {
                     method: "info",
                     answer: selected,
@@ -120,7 +119,7 @@ export default function GamesDecodeAudio({navigation}) {
             if (restartCount <= 0) {
                 calculateAddRating(false, stats.current, data)
 
-                sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
+                sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
                     {
                         method: "help",
                         id: data.id,
@@ -168,8 +167,6 @@ export default function GamesDecodeAudio({navigation}) {
                         <Text style={styles.headerText}>
                             {data.text}
                         </Text>
-
-                        <CustomSound name={data.audio}/>
 
                         <TextAnswer
                             showIncorrectStyle={showIncorrectStyle}
