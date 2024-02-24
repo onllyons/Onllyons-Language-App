@@ -82,7 +82,7 @@ export const CustomSound = React.memo(({uri}) => {
 const styles = StyleSheet.create({
     audioTouchable: {
         width: "100%",
-        height: 100,
+        height: 120,
         borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",

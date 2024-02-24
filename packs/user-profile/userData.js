@@ -189,7 +189,6 @@ const Profile = () => {
                             style={globalCss.input}
                             value={data.name}
                             placeholder="Имя"
-                            editable={false}
                             onChangeText={(text) =>
                                 setData((prev) => ({...prev, name: text}))
                             }

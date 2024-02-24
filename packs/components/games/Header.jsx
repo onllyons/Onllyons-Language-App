@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     sectionTop: {
         width: "100%",
         paddingTop: "10%",
-        backgroundColor: "#eeeff0",
+        backgroundColor: "white",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
