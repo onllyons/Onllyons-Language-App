@@ -9,7 +9,7 @@ const globalCss = StyleSheet.create({
     },
     navImage: {
         alignSelf: "center",
-        marginBottom: '10%',
+        marginBottom: '10%', 
     },
     alignItemsCenter: {
         alignItems: "center",
@@ -294,6 +294,20 @@ const globalCss = StyleSheet.create({
     },
     incorrectTxt: {color: "white"},
     correctTxt: {color: "white"},
+
+    boxInputView: {
+        borderColor: "#e0e0e0",
+        borderWidth: 2.1,
+        borderRadius: 14,
+    },
+    inputBoxView:{
+        color: "#636363",
+        fontSize: 17,
+        paddingVertical: 17,
+        paddingHorizontal: 12,
+        borderRadius: 14,
+    },
+
 });
 
 export default globalCss;

@@ -199,7 +199,7 @@ export default function GamesTranslateAudio({navigation}) {
                 <View style={styles.buttonGroup} key={data.id}>
                     <View style={styles.buttonGroup}>
                         <Text style={styles.headerText}>
-                            {data.text}
+                            asdf {data.text}
                         </Text>
 
                         <CustomSound

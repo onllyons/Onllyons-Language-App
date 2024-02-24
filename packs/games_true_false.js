@@ -15,7 +15,7 @@ export default function GamesTrueFalse({navigation}) {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CUBE_SIZE = 100;
+const CUBE_SIZE = 360;
 
 function CubeGesture() {
     // Величина перетаскивания в вертикальном направлении
@@ -46,7 +46,7 @@ function CubeGesture() {
                 <Animated.View style={[styles.cube, animatedStyle]} />
             </PanGestureHandler>
         </View>
-    );
+    ); 
 }
 
 const styles = StyleSheet.create({
@@ -58,7 +58,10 @@ const styles = StyleSheet.create({
     cube: {
         width: CUBE_SIZE,
         height: CUBE_SIZE,
-        backgroundColor: 'tomato',
+        backgroundColor: 'white',
         transform: [{ perspective: 2000 }], // Добавьте перспективу для вращения, если нужно
+        borderColor: "#e0e0e0",
+        borderWidth: 2.1,
+        borderRadius: 14,
     },
 });

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
-import {View, Text, StyleSheet} from "react-native";
+import {View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard} from "react-native";
 import Buttons from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
@@ -154,35 +154,38 @@ export default function GamesDecodeAudio({navigation}) {
     };
 
     return loading ? (<Loader/>) : (
-        <View style={styles.container}>
-            <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={styles.container}>
+                <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
 
-            <Header
-                stats={stats.current}
-                timerRun={selectedAnswer === null}
-            />
+                <Header
+                    stats={stats.current}
+                    timerRun={selectedAnswer === null}
+                />
 
-            {data && (
-                <View style={styles.buttonGroup} key={data.id}>
-                    <View style={styles.buttonGroup}>
-                        <Text style={styles.headerText}>
-                            {data.text}
-                        </Text>
+                {data && (
+                    <View style={styles.buttonGroup} key={data.id}>
+                        <View style={styles.buttonGroup}>
+                        
+                            <Text style={styles.headerText}>
+                                {data.text}
+                            </Text>
 
-                        <CustomSound uri={`${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${data.audio}`}/>
+                            <CustomSound uri={`${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${data.audio}`}/>
 
-                        <TextAnswer
-                            showIncorrectStyle={showIncorrectStyle}
-                            selectedAnswer={selectedAnswer}
-                            handleAnswerSelect={handleAnswerSelect}
-                            answers={data.answers}
-                        />
+                            <TextAnswer
+                                showIncorrectStyle={showIncorrectStyle}
+                                selectedAnswer={selectedAnswer}
+                                handleAnswerSelect={handleAnswerSelect}
+                                answers={data.answers}
+                            />
+                        </View>
                     </View>
-                </View>
-            )}
+                )}
 
-            <Buttons selectedAnswer={selectedAnswer} isAnswerCorrect={isAnswerCorrect} showIncorrectStyle={showIncorrectStyle} isHelpUsed={isHelpUsed} handleHelp={handleHelp} handleRepeat={handleRepeat} handleNext={handleNext}/>
-        </View>
+                <Buttons selectedAnswer={selectedAnswer} isAnswerCorrect={isAnswerCorrect} showIncorrectStyle={showIncorrectStyle} isHelpUsed={isHelpUsed} handleHelp={handleHelp} handleRepeat={handleRepeat} handleNext={handleNext}/>
+            </View>
+        </TouchableWithoutFeedback>
     );
 }
 

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {TextInput as Input, Text} from "react-native";
+import {TextInput as Input, Text, View, Keyboard} from "react-native"; // Importă Keyboard
 import {AnimatedButtonShadow} from "../../buttons/AnimatedButtonShadow";
 import globalCss from "../../../css/globalCss";
 import Toast from "react-native-toast-message";
@@ -10,20 +10,22 @@ export const TextAnswer = ({
     answers,
     handleAnswerSelect
 }) => {
-    const [text, setText] = useState("")
+    const [text, setText] = useState("");
 
     const handleCheckAnswer = () => {
+        Keyboard.dismiss(); // Ascunde tastatura
+
         if (!text) {
             Toast.show({
                 type: "error",
                 text1: "Заполните поле"
             });
-            return
+            return;
         }
 
         if (text === answers[0]) {
-            handleAnswerSelect(text, true)
-            setText("")
+            handleAnswerSelect(text, true);
+            setText("");
             return;
         }
 
@@ -40,22 +42,25 @@ export const TextAnswer = ({
 
             if (answer === answerToCheck) {
                 correct = true;
-                break
+                break;
             }
         }
 
-        handleAnswerSelect(text, correct)
-        setText("")
-    }
+        handleAnswerSelect(text, correct);
+        setText("");
+    };
 
     return (
         <>
-            <Input
-                value={selectedAnswer === null ? text : selectedAnswer}
-                editable={selectedAnswer === null}
-                placeholder={"Введите ответ"}
-                onChangeText={value => setText(value)}
-            />
+            <View style={[globalCss.boxInputView, globalCss.mb3]}>
+                <Input
+                    value={selectedAnswer === null ? text : selectedAnswer}
+                    editable={selectedAnswer === null}
+                    placeholder={"Введите ответ"}
+                    onChangeText={value => setText(value)}
+                    style={globalCss.inputBoxView}
+                />
+            </View>
 
             <AnimatedButtonShadow
                 styleButton={[globalCss.button, globalCss.buttonGreen, showIncorrectStyle &&  globalCss.incorrect]}
@@ -68,5 +73,5 @@ export const TextAnswer = ({
                 <Text style={globalCss.buttonText}>Проверить</Text>
             </AnimatedButtonShadow>
         </>
-    )
-}
+    );
+};
