@@ -8,10 +8,9 @@ import {faCirclePlay} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 
 import globalCss from "../../../css/globalCss";
-import {SERVER_URL} from "../../../utils/Requests";
 import {AnimatedButtonShadow} from "../../buttons/AnimatedButtonShadow";
 
-export const CustomSound = React.memo(({name}) => {
+export const CustomSound = React.memo(({uri}) => {
     const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -30,7 +29,7 @@ export const CustomSound = React.memo(({name}) => {
 
         if (!sound) {
             const {sound} = await Audio.Sound.createAsync(
-                {uri: `${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${name}`,},
+                {uri: uri},
                 {shouldPlay: true}
             );
             await sound.setVolumeAsync(1);
@@ -64,7 +63,7 @@ export const CustomSound = React.memo(({name}) => {
 
     return (
         <AnimatedButtonShadow
-            onPress={() => playSound(name)}
+            onPress={() => playSound()}
             styleButton={[styles.audioTouchable, globalCss.bgGry]}
             shadowColor={"gray"}
             moveByY={3}

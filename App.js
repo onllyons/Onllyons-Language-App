@@ -30,8 +30,6 @@ import BooksReading from "./packs/books_reading";
 import GamesScreen from "./packs/games";
 import GamesQuiz from "./packs/games_quiz";
 
-import GamesQuizTrueFalse from "./packs/games_quiz_true_false";
-
 import FlashCardsScreen from "./packs/flashcards";
 import FlashCardsWordsCategory from "./packs/flashcards_category";
 import FlashCardsWords from "./packs/flashcards_words";
@@ -59,6 +57,8 @@ import PoetryReading from "./packs/poetry_reading";
 import DialogReading from "./packs/dialog_reading";
 import GamesDecodeAudio from "./packs/games_deode_audio";
 import GamesTranslate from "./packs/games_translate";
+import GamesTranslateAudio from "./packs/game_translate_audio";
+import GamesTrueFalse from "./packs/games_true_false";
                                                
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -346,10 +346,15 @@ function AppStack() {
                 component={GamesTranslate}
                 options={{headerShown: false}}
             />
+            <Stack.Screen
+                name="GamesTranslateAudio"
+                component={GamesTranslateAudio}
+                options={{headerShown: false}}
+            />
 
             <Stack.Screen
-                name="GamesQuizTrueFalse"
-                component={GamesQuizTrueFalse}
+                name="GamesTrueFalse"
+                component={GamesTrueFalse}
                 options={{headerShown: false}}
             />
             

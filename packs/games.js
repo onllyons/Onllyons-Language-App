@@ -1,6 +1,5 @@
 import {View, Text, Image, StyleSheet} from 'react-native';
 import globalCss from './css/globalCss';
-import Toast from "react-native-toast-message";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 
 const cardData = [
@@ -25,13 +24,14 @@ const cardData = [
     {
         id: 4,
         uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-change-eyes.webp',
-        text: 'Переведите аудио'
+        text: 'Переведите аудио',
+        screen: "GamesTranslateAudio"
     },
     {
         id: 5,
         uri: 'https://www.language.onllyons.com/ru/ru-en/dist/images/other/cards-icon/quiz-game-true-false.webp',
         text: 'Верно - Не верно',
-        screen: "GamesQuizTrueFalse"
+        screen: "GamesTrueFalse"
     },
 ];
 
@@ -47,16 +47,7 @@ export default function GamesScreen({navigation}) {
                     <Card
                         key={card.id}
                         card={card}
-                        onPress={() => {
-                            if (card.screen) {
-                                navigation.navigate(card.screen)
-                            } else {
-                                Toast.show({
-                                    type: "error",
-                                    text1: "Игра будет доступна в системе в ближайшее время. Благодарим за ваше терпение и понимание"
-                                });
-                            }
-                        }}
+                        onPress={() => navigation.navigate(card.screen)}
                     />
                 ))}
             </View>

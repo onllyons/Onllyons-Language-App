@@ -126,7 +126,7 @@ export default function GameQuiz({navigation}) {
                     restart: restartCount
                 },
                 navigation,
-                {success: false}
+                {success: false, error: false}
             )
                 .then(() => {})
                 .catch(() => {})
@@ -152,7 +152,7 @@ export default function GameQuiz({navigation}) {
 
             setPreHelpAnswers(prev => [...prev, preHelpAnswers])
 
-            if (restartCount <= 0) {
+            if (restartCount <= 0 && selectedAnswer === null) {
                 calculateAddRating(false, stats.current, data[0])
 
                 sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_default/game.php`,
@@ -162,7 +162,7 @@ export default function GameQuiz({navigation}) {
                         timer: stats.current.time
                     },
                     navigation,
-                    {success: false}
+                    {success: false, error: false}
                 )
                     .then(() => {})
                     .catch(() => {})

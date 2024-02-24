@@ -98,7 +98,7 @@ export default function GamesTranslate({navigation}) {
                     restart: restartCount
                 },
                 navigation,
-                {success: false}
+                {success: false, error: false}
             )
                 .then(() => {})
                 .catch(() => {})
@@ -116,7 +116,7 @@ export default function GamesTranslate({navigation}) {
             setIsHelpUsed(true);
             setShowIncorrectStyle(false); // Resetează stilul "incorrect"
 
-            if (restartCount <= 0) {
+            if (restartCount <= 0 && selectedAnswer === null) {
                 calculateAddRating(false, stats.current, data)
 
                 sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
@@ -126,7 +126,7 @@ export default function GamesTranslate({navigation}) {
                         timer: stats.current.time
                     },
                     navigation,
-                    {success: false}
+                    {success: false, error: false}
                 )
                     .then(() => {})
                     .catch(() => {})

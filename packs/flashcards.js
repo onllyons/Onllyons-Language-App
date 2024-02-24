@@ -20,7 +20,6 @@ const FlashCardWords = ({navigation}) => {
     const {deleteStoredValue, getStoredValue} = useStore()
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const scrollViewRef = useRef(null);
     const [refreshing, setRefreshing] = useState(false);
     const [updateState, setUpdateState] = useState(false)
 
@@ -77,8 +76,6 @@ const FlashCardWords = ({navigation}) => {
                     />
                 }
                 contentContainerStyle={{paddingTop: 30, paddingBottom: 80, minHeight: "100%"}}
-                scrollEventThrottle={400}
-                ref={scrollViewRef}
             >
                 <View style={styles.contentFlashCards}>
                     {data.map((item, index) => (
