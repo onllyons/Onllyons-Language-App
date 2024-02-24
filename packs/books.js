@@ -108,6 +108,17 @@ export default function BooksScreen({navigation}) {
         return data[currentActive].filter(item => item.finished);
     };
 
+    let textSaved = "Мои книги"
+    let textFinished = "Прочитанные книги"
+
+    if (currentActive === "poetry") {
+        textSaved = "Мои стихи"
+        textFinished = "Прочитанные стихи"
+    } else if (currentActive === "dialogues") {
+        textSaved = "Мои диалоги"
+        textFinished = "Прочитанные диалоги"
+    }
+
     return (
         <View style={styles.container}>
             <NavTop loading={loading} currentActive={currentActive} data={navTopData.current[currentActive]}/>
@@ -128,11 +139,11 @@ export default function BooksScreen({navigation}) {
             >
                 <Loader visible={loading}/>
                 <CarouselMenu currentActive={currentActive} handlePressMenu={handlePressMenu}/>
-                <Category key={`${currentActive}-saved`} data={getBooksSaved()} type={{type: "saved", currentActive: currentActive, text: "Мои книги"}} navTopInfo={navTopData.current[currentActive]}/>
+                <Category key={`${currentActive}-saved`} data={getBooksSaved()} type={{type: "saved", currentActive: currentActive, text: textSaved}} navTopInfo={navTopData.current[currentActive]}/>
                 {categories[currentActive].map((category, index) => (
                     <Category key={`${currentActive}-category-${index}`} data={getCategoryBooks(category)} type={{type: "category", currentActive: currentActive, text: category}} navTopInfo={navTopData.current[currentActive]}/>
                 ))}
-                <Category key={`${currentActive}-finished`} data={getBooksFinished()} type={{type: "finished", currentActive: currentActive, text: "Прочитанные книги"}} navTopInfo={navTopData.current[currentActive]}/>
+                <Category key={`${currentActive}-finished`} data={getBooksFinished()} type={{type: "finished", currentActive: currentActive, text: textFinished}} navTopInfo={navTopData.current[currentActive]}/>
             </ScrollView>
         </View>
     );
