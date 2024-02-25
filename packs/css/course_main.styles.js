@@ -85,7 +85,8 @@ export const stylesCourse_lesson = StyleSheet.create({
     modal: {
         height: "73%",
         backgroundColor: "#efefef",
-        borderRadius: 10,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
     },
     modalCourseContent: {
         paddingLeft: "4%",
