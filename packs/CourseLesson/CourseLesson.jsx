@@ -34,8 +34,8 @@ import {debounce, levenshtein} from "../utils/Utls";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 import {SubscribeModal} from "../components/SubscribeModal";
 import {WordConstruct} from "../components/course/WordConstruct";
-import {Welcome} from "../components/Welcome";
 import {useStore} from "../providers/Store";
+import Loader from "../components/Loader";
 
 const {width} = Dimensions.get("window");
 
@@ -160,11 +160,7 @@ export const CourseLesson = ({navigation}) => {
 
     const updateSlider = (series) => {
         currentSeries.current = series;
-        currentCheck.current = {}
         setLoading(true)
-        setQuizActive(false);
-        setShowCongratulationsModal(false)
-        setCheck({})
         setIndex(0)
         swiperRef.current?.snapToItem(0, false);
 
@@ -187,6 +183,7 @@ export const CourseLesson = ({navigation}) => {
                     });
                 } else {
                     issetSeriesNext.current = data.issetSeriesNext;
+                    currentCheck.current = {}
 
                     setTotalSlides(
                         Object.keys(data.carousel).length +
@@ -213,6 +210,10 @@ export const CourseLesson = ({navigation}) => {
                     startQuizIndex.current = carousel.length
                     sortedWords.current = {}
 
+                    setQuizActive(false);
+                    setShowCongratulationsModal(false)
+                    setCheck({})
+
                     setDataFull([...carousel, ...questions]);
 
                     saveProgress()
@@ -226,10 +227,7 @@ export const CourseLesson = ({navigation}) => {
     };
 
     const finish = () => {
-        currentCheck.current = {}
         setLoading(true)
-        setShowCongratulationsModal(false)
-        setCheck({})
 
         const timeLesson = Math.floor((Date.now() - timeStart.current) / 1000)
 
@@ -248,6 +246,10 @@ export const CourseLesson = ({navigation}) => {
                 navigation.goBack();
             })
             .catch(() => navigation.goBack())
+            .finally(() => {
+                setLoading(false)
+                setShowCongratulationsModal(false)
+            })
     };
 
     const showQuizResult = () => {
@@ -397,12 +399,12 @@ export const CourseLesson = ({navigation}) => {
                         <CustomSound
                             name={dataItem.file_path}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/audio-lessons/${dataItem.file_path}`}
-                            isFocused={allowCourse.current && indexItem === index}
+                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
                         />
                     ) : (
                         <CustomVideo
                             isQuiz={false}
-                            isFocused={allowCourse.current && indexItem === index}
+                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
                         />
                     )}
@@ -433,7 +435,7 @@ export const CourseLesson = ({navigation}) => {
                         <CustomVideo
                             isQuiz={true}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/content/videos/${dataItem.file_path}`}
-                            isFocused={allowCourse.current && indexItem === index}
+                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
                         />
 
                         <ContainerButtons
@@ -482,7 +484,7 @@ export const CourseLesson = ({navigation}) => {
                         </View>
                         <CustomSound
                             name={dataItem.file_path}
-                            isFocused={allowCourse.current && indexItem === index}
+                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
                         />
                         <ContainerButtons
                             disabled={Boolean(check[key])}
@@ -507,7 +509,7 @@ export const CourseLesson = ({navigation}) => {
                         </View>
                         <CustomSound
                             name={dataItem.file_path}
-                            isFocused={allowCourse.current && indexItem === index}
+                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
                         />
                         <View style={[styles.inputView, styles.inputContainer1]}>
                             <TextInput
@@ -664,8 +666,10 @@ export const CourseLesson = ({navigation}) => {
         updateSlider(currentSeries.current);
     }, []);
 
-    return loading ? (<Welcome/>) : (
+    return (
         <>
+            {/*<Loader visible={loading} overlayColor={"white"}/> fully white */}
+            <Loader visible={loading}/>
             <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
             <View style={styles.swiperContent}>
                 <View style={styles.row}>
