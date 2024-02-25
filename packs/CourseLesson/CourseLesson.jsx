@@ -670,7 +670,9 @@ export const CourseLesson = ({navigation}) => {
         <>
             {/*<Loader visible={loading} overlayColor={"white"}/> fully white */}
             <Loader visible={loading}/>
+
             <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
+
             <View style={styles.swiperContent}>
                 <View style={styles.row}>
                     <TouchableOpacity

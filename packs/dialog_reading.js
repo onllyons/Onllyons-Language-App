@@ -20,11 +20,11 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 
 // Componente personalizate
-import {Welcome} from "./components/Welcome";
 import {useStore} from "./providers/Store";
 import {BottomSheetComponent} from "./components/books/reading/BottomSheetComponent";
 import {ControlButtons} from "./components/books/reading/ControlButtons";
 import {Header} from "./components/books/reading/Header";
+import Loader from "./components/Loader";
 
 export default function DialogReading({navigation}) {
     const {setStoredValue} = useStore();
@@ -233,10 +233,10 @@ export default function DialogReading({navigation}) {
             });
     }, [id, navigation]);
 
-    return loading ? (
-        <Welcome/>
-    ) : (
+    return (
         <GestureHandlerRootView style={styles.container}>
+            <Loader visible={loading}/>
+
             <Header handleOpenBottomSheetPress={handleOpenBottomSheetPress} scrollAnim={scrollAnim}/>
 
             <SafeAreaView>

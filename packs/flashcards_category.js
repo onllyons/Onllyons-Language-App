@@ -5,9 +5,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
-import {Welcome} from "./components/Welcome";
 import {useFocusEffect} from "@react-navigation/native";
 import {useStore} from "./providers/Store";
+import Loader from "./components/Loader";
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -21,11 +21,9 @@ export default function FlashCardsCategory({route, navigation}) {
     const {deleteStoredValue, getStoredValue} = useStore()
     const {codeName, codeTitle, finishedInCategory, generalInfo} = route.params;
     const [data, setData] = useState([]);
-    // const [pressedCards, setPressedCards] = useState({});
     const [loading, setLoading] = useState(false);
     const [updateState, setUpdateState] = useState(false)
     const colors = ['#FF9400', '#7BC70A', '#CE81FF', '#1AB1F6', '#ffcc01', '#FC4849'];
-    // const colorsPressed = ['#ffb14c', '#92ea0e', '#deadff', '#59c7f7', '#f9d243', '#f97575'];
 
     const images = [
         require('./images/other_images/flash-cards-leeson/kitty.png'),
@@ -115,16 +113,10 @@ export default function FlashCardsCategory({route, navigation}) {
         }
     };
 
-    // const onPressIn = (id) => {
-    //     setPressedCards(prevState => ({...prevState, [id]: true}));
-    // };
-    //
-    // const onPressOut = (id) => {
-    //     setPressedCards(prevState => ({...prevState, [id]: false}));
-    // };
-
-    return loading ? (<Welcome/>) : (
+    return (
         <View style={styles.containerMain}>
+            <Loader visible={loading}/>
+
             <View style={globalCss.navTabUser}>
                 <TouchableOpacity style={globalCss.itemNavTabUserBtnBack}
                                   onPress={() => navigation.navigate('FlashCardsScreen')}>
@@ -152,10 +144,6 @@ export default function FlashCardsCategory({route, navigation}) {
                                 shadowBorderRadius={10}
                                 onPress={() => navigation.navigate('FlashCardsWords', {url: item.url, id: item.id, item: item, finishedInCategory: finishedInCategory, generalInfo: generalInfo})}>
 
-                                
-
-
-
                                 {item.finished ? 
                                     <Image
                                         source={require('./images/other_images/flash-cards-leeson/check.png')}
@@ -167,8 +155,6 @@ export default function FlashCardsCategory({route, navigation}) {
                                         style={styles.randomImg}
                                     />
                                 }
-
-
 
                                 <View style={styles.levelStars}>
                                     <Image
