@@ -199,7 +199,7 @@ export default function GameQuiz({navigation}) {
             />
 
             {data.length > 0 && (
-                <View style={styles.buttonGroup} key={data[0].id}>
+                <View style={styles.buttonGroup}>
                     <View style={styles.buttonGroup}>
                         <Text style={styles.headerText}>
                             {data[0].text}

@@ -3,20 +3,22 @@ import globalCss from "../../css/globalCss";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowRightLong, faLightbulb, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
+import {useRef} from "react";
 
 const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyle, handleHelp, handleNext, handleRepeat}) => {
     const visibleNextOrReload = !!(selectedAnswer || isHelpUsed)
     const visibleHelp = !!((!selectedAnswer || (selectedAnswer && !isAnswerCorrect)) && !isHelpUsed)
 
-    const renewButtons = visibleNextOrReload && visibleHelp
+    const first = useRef(true)
+
+    setTimeout(() => first.current = false, 1)
 
     return (
         <View style={styles.groupBtnQuiz}>
             {visibleNextOrReload && (
                 <AnimatedButtonShadow
-                    {...(renewButtons ? {key: 0} : {})}
+                    key={visibleHelp ? 0 : 1}
                     styleContainer={styles.quizBtnCtrContainer}
-                    shadowDisplayAnimate={"slide"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,
@@ -38,9 +40,9 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
 
             {visibleHelp && (
                 <AnimatedButtonShadow
-                    {...(renewButtons ? {key: 1} : {})}
+                    key={visibleNextOrReload ? 2 : 3}
                     styleContainer={styles.quizBtnCtrContainer}
-                    shadowDisplayAnimate={"slide"}
+                    shadowDisplayAnimate={first.current ? "slide" : "none"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,
@@ -60,9 +62,8 @@ const Buttons = ({selectedAnswer, isAnswerCorrect, isHelpUsed, showIncorrectStyl
 
             {visibleNextOrReload && (
                 <AnimatedButtonShadow
-                    {...(renewButtons ? {key: 2} : {})}
+                    key={visibleHelp ? 4 : 5}
                     styleContainer={styles.quizBtnCtrContainer}
-                    shadowDisplayAnimate={"slide"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,
