@@ -196,6 +196,9 @@ export default function PoetryReading({navigation}) {
 
     useEffect(() => {
         setLoading(true);
+        setFinished(false);
+        setSaved(false);
+        setData([]);
 
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/poetry/get_poetry.php`,
@@ -203,10 +206,15 @@ export default function PoetryReading({navigation}) {
             navigation,
             {success: false}
         )
-            .then((data) => {
+            .then(async (data) => {
                 setFinished(!!data.data.finished);
                 setSaved(!!data.data.saved);
                 setData(data.data);
+
+                if (sound) {
+                    await sound.unloadAsync()
+                    setSound(null)
+                }
 
                 Audio.Sound.createAsync(
                     {uri: `${SERVER_URL}/ru/ru-en/packs/assest/books/read-poetry/audio/${data.data.audio_file}`}

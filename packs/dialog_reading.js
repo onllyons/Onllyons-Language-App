@@ -195,6 +195,9 @@ export default function DialogReading({navigation}) {
 
     useEffect(() => {
         setLoading(true);
+        setFinished(false);
+        setSaved(false);
+        setData([])
 
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/dialogues/get_dialog.php`,
@@ -202,10 +205,15 @@ export default function DialogReading({navigation}) {
             navigation,
             {success: false}
         )
-            .then((data) => {
+            .then(async (data) => {
                 setFinished(!!data.data.finished);
                 setSaved(!!data.data.saved);
                 setData(data.data);
+
+                if (sound) {
+                    await sound.unloadAsync()
+                    setSound(null)
+                }
 
                 Audio.Sound.createAsync(
                     {uri: `${SERVER_URL}/ru/ru-en/packs/assest/books/read-dialog/audio/${data.data.audio_file}`}

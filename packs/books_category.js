@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     item: {
         flexDirection: "row",
         alignItems: "center",
-        borderRadius: "12%",
+        borderRadius: 12,
         marginLeft: "4%",
         marginRight: "4%",
         marginBottom: "5%",
@@ -196,5 +196,4 @@ const styles = StyleSheet.create({
     levelHardTxt: {
         marginLeft: '3%'
     },
-
 });

@@ -46,7 +46,7 @@ export default function BooksScreen({navigation}) {
     const intervalCheckWord = useRef(null);
     const lastActuallyWordIndex = useRef(0)
     const wordsArrayLength = useRef(0)
-    const allowSubtitles = useRef(false)
+    const allowSubtitles = useRef(true)
 
     // butoane pentru mute si volum
     const [isMuted, setIsMuted] = useState(false);
@@ -104,6 +104,7 @@ export default function BooksScreen({navigation}) {
     };
 
     const onPlaybackStatusUpdate = useCallback(status => {
+        console.log(status)
         if (status.didJustFinish) {
             lastActuallyWordIndex.current = wordsArrayLength.current
             setIsPlaying(false)
@@ -162,6 +163,12 @@ export default function BooksScreen({navigation}) {
 
     useEffect(() => {
         setLoading(true);
+        allowSubtitles.current = true
+        setFinished(false);
+        setSaved(false);
+        setData([]);
+        wordsArrayLength.current = 0
+        setWordsArray([]);
 
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/books/test_book.php`,
@@ -169,7 +176,7 @@ export default function BooksScreen({navigation}) {
             navigation,
             {success: false}
         )
-            .then((data) => {
+            .then(async (data) => {
                 allowSubtitles.current = data.allowSubtitles
                 setFinished(!!data.data.finished);
                 setSaved(!!data.data.saved);
@@ -178,6 +185,11 @@ export default function BooksScreen({navigation}) {
                 wordsArrayLength.current = data.data.wordsArray.length
                 setWordsArray(staticWordsArray);
 
+                if (sound) {
+                    await sound.unloadAsync()
+                    setSound(null)
+                }
+
                 Audio.Sound.createAsync(
                     {uri: `${SERVER_URL}/ru/ru-en/packs/assest/books/read-books/audio/${data.data.audio_file}`}
                 )
@@ -185,8 +197,11 @@ export default function BooksScreen({navigation}) {
                         await sound.setVolumeAsync(1);
                         sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)
                         setSound(sound);
+                        console.log("sound loaded")
                     })
-                    .catch(() => {})
+                    .catch((err) => {
+                        console.log(err)
+                    })
                     .finally(() => setLoading(false))
             })
             .catch((err) => {
@@ -196,7 +211,7 @@ export default function BooksScreen({navigation}) {
                     navigation.goBack();
                 }
             })
-    }, [bookId, navigation]);
+    }, [bookId]);
 
     useEffect(() => {
         if (intervalCheckWord.current) {
@@ -229,6 +244,15 @@ export default function BooksScreen({navigation}) {
 
         return () => intervalCheckWord.current && clearInterval(intervalCheckWord.current);
     }, [isPlaying, sound]);
+
+    const unloadSound = useCallback(() => {
+        return sound
+            ? () => {
+                sound.unloadAsync();
+                setSound(null)
+            }
+            : undefined;
+    }, [sound])
 
     const handleOpenBottomSheetPress = useCallback(() => {
         bottomSheetRef.current?.snapToIndex(1);
@@ -338,6 +362,7 @@ export default function BooksScreen({navigation}) {
                 isPlaying={isPlaying}
                 isMuted={isMuted}
                 rewindSound={rewindSound}
+                unloadSound={unloadSound}
             />
 
             <BottomSheetComponent
