@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import {View, Text, StyleSheet} from "react-native";
 import Answer from "./components/games/quiz/Answer";
-import Buttons from "./components/games/Buttons";
+import {Buttons} from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";

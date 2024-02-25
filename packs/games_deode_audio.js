@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useRef} from "react";
 import {View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard} from "react-native";
-import Buttons from "./components/games/Buttons";
+import {ButtonsForInput, isTextAnswerCorrect} from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";
 import {calculateAddRating, Header} from "./components/games/Header";
 import {TextAnswer} from "./components/games/translate/TextAnswer";
 import {CustomSound} from "./components/games/translate/CustomSound";
+import Toast from "react-native-toast-message";
 
 export default function GamesDecodeAudio({navigation}) {
     const [data, setData] = useState(null);
@@ -24,6 +25,7 @@ export default function GamesDecodeAudio({navigation}) {
         additionalRating: 0
     })
     const blocked = useRef(false)
+    const textRef = useRef("")
 
     const [restartCount, setRestartCount] = useState(0)
 
@@ -71,7 +73,7 @@ export default function GamesDecodeAudio({navigation}) {
         getQuestions()
     }, []);
 
-    const handleAnswerSelect = (selected, isCorrect) => {
+    const handleAnswerSelect = () => {
         if (blocked.current) {
             checkBlocked()
             return
@@ -80,7 +82,20 @@ export default function GamesDecodeAudio({navigation}) {
         if (isHelpUsed) return
 
         if (!isAnswerSubmitted) {
-            setSelectedAnswer(selected)
+            Keyboard.dismiss()
+
+            if (!textRef.current) {
+                Toast.show({
+                    type: "error",
+                    text1: "Заполните поле"
+                });
+
+                return
+            }
+
+            const isCorrect = isTextAnswerCorrect(data.answers, textRef.current)
+
+            setSelectedAnswer(textRef.current)
             setIsAnswerCorrect(isCorrect);
             setShowIncorrectStyle(!isCorrect); // Setează stilul "incorrect" dacă răspunsul este greșit
             setIsHelpUsed(false);
@@ -91,7 +106,7 @@ export default function GamesDecodeAudio({navigation}) {
             sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_decode_audio/game.php`,
                 {
                     method: "info",
-                    answer: selected,
+                    answer: textRef.current,
                     correct: isCorrect,
                     id: data.id,
                     timer: stats.current.time,
@@ -174,16 +189,25 @@ export default function GamesDecodeAudio({navigation}) {
                             <CustomSound uri={`${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${data.audio}`}/>
 
                             <TextAnswer
-                                showIncorrectStyle={showIncorrectStyle}
+                                isAnswerSubmitted={isAnswerSubmitted}
                                 selectedAnswer={selectedAnswer}
                                 handleAnswerSelect={handleAnswerSelect}
-                                answers={data.answers}
+                                textRef={textRef}
                             />
                         </View>
                     </View>
                 )}
 
-                <Buttons selectedAnswer={selectedAnswer} isAnswerCorrect={isAnswerCorrect} showIncorrectStyle={showIncorrectStyle} isHelpUsed={isHelpUsed} handleHelp={handleHelp} handleRepeat={handleRepeat} handleNext={handleNext}/>
+                <ButtonsForInput
+                    selectedAnswer={selectedAnswer}
+                    isAnswerCorrect={isAnswerCorrect}
+                    showIncorrectStyle={showIncorrectStyle}
+                    isHelpUsed={isHelpUsed}
+                    handleHelp={handleHelp}
+                    handleRepeat={handleRepeat}
+                    handleNext={handleNext}
+                    handleAnswerSelect={handleAnswerSelect}
+                />
             </View>
         </TouchableWithoutFeedback>
     );

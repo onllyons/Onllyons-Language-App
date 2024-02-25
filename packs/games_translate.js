@@ -1,12 +1,12 @@
 import React, {useState, useEffect, useRef} from "react";
 import {View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard} from "react-native";
-import Buttons from "./components/games/Buttons";
+import {ButtonsForInput, isTextAnswerCorrect} from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";
 import {calculateAddRating, Header} from "./components/games/Header";
 import {TextAnswer} from "./components/games/translate/TextAnswer";
-import globalCss from "./css/globalCss";
+import Toast from "react-native-toast-message";
 
 export default function GamesTranslate({navigation}) {
     const [data, setData] = useState(null);
@@ -24,6 +24,7 @@ export default function GamesTranslate({navigation}) {
         additionalRating: 0
     })
     const blocked = useRef(false)
+    const textRef = useRef("")
 
     const [restartCount, setRestartCount] = useState(0)
 
@@ -36,33 +37,30 @@ export default function GamesTranslate({navigation}) {
             {method: "start"},
             navigation,
             {success: false}
-        )
-            .then(data => {
-                stats.current.rating = data.rating
-                blocked.current = data.action === "openModalMembership"
+        ).then(data => {
+            stats.current.rating = data.rating
+            blocked.current = data.action === "openModalMembership"
 
-                stats.current.time = 0
-                stats.current.additionalRating = 0
-                setData(data.question);
-                setSelectedAnswer(null);
-                setIsAnswerCorrect(null);
-                setShowIncorrectStyle(false)
-                setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
-                setIsHelpUsed(false);
-                setRestartCount(0)
-            })
-            .catch((err) => {
-                if (typeof err === "object") {
-                    if (!err.tokensError) {
-                        navigation.goBack()
-                    }
+            stats.current.time = 0
+            stats.current.additionalRating = 0
+            setData(data.question);
+            setSelectedAnswer(null);
+            setIsAnswerCorrect(null);
+            setShowIncorrectStyle(false)
+            setIsAnswerSubmitted(false); // Resetarea isAnswerSubmitted la false pentru următoarea întrebare
+            setIsHelpUsed(false);
+            setRestartCount(0)
+        }).catch((err) => {
+            if (typeof err === "object") {
+                if (!err.tokensError) {
+                    navigation.goBack()
                 }
-            })
-            .finally(() => {
-                setTimeout(() => {
-                    setLoading(false);
-                }, 0);
-            })
+            }
+        }).finally(() => {
+            setTimeout(() => {
+                setLoading(false);
+            }, 0);
+        })
     }
 
     useEffect(() => {
@@ -71,7 +69,7 @@ export default function GamesTranslate({navigation}) {
         getQuestions()
     }, []);
 
-    const handleAnswerSelect = (selected, isCorrect) => {
+    const handleAnswerSelect = () => {
         if (blocked.current) {
             checkBlocked()
             return
@@ -80,7 +78,20 @@ export default function GamesTranslate({navigation}) {
         if (isHelpUsed) return
 
         if (!isAnswerSubmitted) {
-            setSelectedAnswer(selected)
+            Keyboard.dismiss()
+
+            if (!textRef.current) {
+                Toast.show({
+                    type: "error",
+                    text1: "Заполните поле"
+                });
+
+                return
+            }
+
+            const isCorrect = isTextAnswerCorrect(data.answers, textRef.current)
+
+            setSelectedAnswer(textRef.current)
             setIsAnswerCorrect(isCorrect);
             setShowIncorrectStyle(!isCorrect); // Setează stilul "incorrect" dacă răspunsul este greșit
             setIsHelpUsed(false);
@@ -91,7 +102,7 @@ export default function GamesTranslate({navigation}) {
             sendDefaultRequest(`${SERVER_AJAX_URL}/games/game_translate/game.php`,
                 {
                     method: "info",
-                    answer: selected,
+                    answer: textRef.current,
                     correct: isCorrect,
                     id: data.id,
                     timer: stats.current.time,
@@ -100,9 +111,9 @@ export default function GamesTranslate({navigation}) {
                 },
                 navigation,
                 {success: false, error: false}
-            )
-                .then(() => {})
-                .catch(() => {})
+            ).then(() => {
+            }).catch(() => {
+            })
         }
     };
 
@@ -128,9 +139,9 @@ export default function GamesTranslate({navigation}) {
                     },
                     navigation,
                     {success: false, error: false}
-                )
-                    .then(() => {})
-                    .catch(() => {})
+                ).then(() => {
+                }).catch(() => {
+                })
             }
         }
     };
@@ -161,7 +172,7 @@ export default function GamesTranslate({navigation}) {
                 <Header
                     stats={stats.current}
                     timerRun={selectedAnswer === null}
-                /> 
+                />
 
                 {data && (
                     <View style={styles.buttonGroup} key={data.id}>
@@ -171,17 +182,25 @@ export default function GamesTranslate({navigation}) {
                             </Text>
 
                             <TextAnswer
-                                showIncorrectStyle={showIncorrectStyle}
+                                isAnswerSubmitted={isAnswerSubmitted}
                                 selectedAnswer={selectedAnswer}
                                 handleAnswerSelect={handleAnswerSelect}
-                                answers={data.answers}
+                                textRef={textRef}
                             />
-
                         </View>
                     </View>
                 )}
 
-                <Buttons selectedAnswer={selectedAnswer} isAnswerCorrect={isAnswerCorrect} showIncorrectStyle={showIncorrectStyle} isHelpUsed={isHelpUsed} handleHelp={handleHelp} handleRepeat={handleRepeat} handleNext={handleNext}/>
+                <ButtonsForInput
+                    selectedAnswer={selectedAnswer}
+                    isAnswerCorrect={isAnswerCorrect}
+                    showIncorrectStyle={showIncorrectStyle}
+                    isHelpUsed={isHelpUsed}
+                    handleHelp={handleHelp}
+                    handleRepeat={handleRepeat}
+                    handleNext={handleNext}
+                    handleAnswerSelect={handleAnswerSelect}
+                />
             </View>
         </TouchableWithoutFeedback>
     );
