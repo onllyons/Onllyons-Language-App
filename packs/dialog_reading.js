@@ -219,18 +219,16 @@ export default function DialogReading({navigation}) {
                         })
                         setSound(sound);
                     })
-                    .catch((err) => {
-                        console.log(err)
-                    })
+                    .catch(() => {})
+                    .finally(() => setLoading(false))
             })
             .catch((err) => {
+                setLoading(false)
+
                 if (typeof err === "object" && !err.tokensError) {
                     navigation.goBack();
                 }
             })
-            .finally(() => {
-                setLoading(false);
-            });
     }, [id, navigation]);
 
     return (

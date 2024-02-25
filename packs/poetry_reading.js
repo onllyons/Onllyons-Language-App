@@ -219,19 +219,17 @@ export default function PoetryReading({navigation}) {
                             }
                         })
                         setSound(sound);
+                        setLoading(false)
                     })
-                    .catch((err) => {
-                        console.log(err)
-                    })
+                    .catch(() => {})
             })
             .catch((err) => {
+                setLoading(false)
+
                 if (typeof err === "object" && !err.tokensError) {
                     navigation.goBack();
                 }
             })
-            .finally(() => {
-                setLoading(false);
-            });
     }, [id, navigation]);
 
     return (

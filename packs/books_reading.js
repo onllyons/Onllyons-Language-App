@@ -27,6 +27,7 @@ import {BottomSheetComponent} from "./components/books/reading/BottomSheetCompon
 import {ControlButtons} from "./components/books/reading/ControlButtons";
 import {Header} from "./components/books/reading/Header";
 import Loader from "./components/Loader";
+import globalCss from "./css/globalCss";
 
 export default function BooksScreen({navigation}) {
     const {setStoredValue} = useStore();
@@ -45,6 +46,7 @@ export default function BooksScreen({navigation}) {
     const intervalCheckWord = useRef(null);
     const lastActuallyWordIndex = useRef(0)
     const wordsArrayLength = useRef(0)
+    const allowSubtitles = useRef(false)
 
     // butoane pentru mute si volum
     const [isMuted, setIsMuted] = useState(false);
@@ -168,6 +170,7 @@ export default function BooksScreen({navigation}) {
             {success: false}
         )
             .then((data) => {
+                allowSubtitles.current = data.allowSubtitles
                 setFinished(!!data.data.finished);
                 setSaved(!!data.data.saved);
                 setData(data.data);
@@ -184,15 +187,15 @@ export default function BooksScreen({navigation}) {
                         setSound(sound);
                     })
                     .catch(() => {})
+                    .finally(() => setLoading(false))
             })
             .catch((err) => {
+                setLoading(false);
+
                 if (typeof err === "object" && !err.tokensError) {
                     navigation.goBack();
                 }
             })
-            .finally(() => {
-                setLoading(false);
-            });
     }, [bookId, navigation]);
 
     useEffect(() => {
@@ -201,7 +204,7 @@ export default function BooksScreen({navigation}) {
             intervalCheckWord.current = null
         }
 
-        if (isPlaying && sound) {
+        if (isPlaying && sound && allowSubtitles.current) {
             intervalCheckWord.current = setInterval(async () => {
                 const status = await sound.getStatusAsync();
 
@@ -308,6 +311,10 @@ export default function BooksScreen({navigation}) {
                         paddingHorizontal: 20
                     }}
                 >
+                    {!allowSubtitles.current && (
+                        <Text style={globalCss.incorrect}>Функция субтитров доступна только пользователям PRO подписки</Text>
+                    )}
+
                     <Text style={styles.titleBook}>{data.title}</Text>
                     <Text style={styles.titleAuthor}>{data.author}</Text>
 
@@ -363,7 +370,7 @@ const Word = React.memo(({
     }
 
     // Pentru elementele cu timp asociat, afișăm ca butoane
-    const hasTiming = word.start !== 0 || word.duration !== 0;
+    const hasTiming = word.start || word.duration;
 
     if (hasTiming) {
         return (
