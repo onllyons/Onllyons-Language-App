@@ -9,7 +9,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import {Welcome} from "../components/Welcome";
 import {Audio, InterruptionModeAndroid, InterruptionModeIOS} from "expo-av";
 import {useNavigation} from "@react-navigation/native";
 
