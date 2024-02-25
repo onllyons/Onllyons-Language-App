@@ -130,11 +130,11 @@ const globalCss = StyleSheet.create({
     },
     button: {
         width: "100%",
-        paddingVertical: 18,
-        paddingHorizontal: 32,
+        paddingVertical: "5%",
+        paddingHorizontal: "10%",
         alignItems: "center",
         borderRadius: 14,
-        marginBottom: 20
+        marginBottom: "6%"
     },
     buttonPressed: {
         transform: [{translateY: 4}],

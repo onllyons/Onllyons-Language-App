@@ -1,5 +1,13 @@
 import React, {useState, useEffect, useRef} from "react";
-import {View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    Keyboard,
+    KeyboardAvoidingView,
+    Dimensions
+} from "react-native";
 import {ButtonsForInput, isTextAnswerCorrect} from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
@@ -179,23 +187,29 @@ export default function GamesDecodeAudio({navigation}) {
                 />
 
                 {data && (
-                    <View style={styles.buttonGroup} key={data.id}>
+                    <KeyboardAvoidingView
+                        behavior={"padding"}
+                        style={{ flex: 1, width: "100%" }}
+                    >
                         <View style={styles.buttonGroup}>
-                        
-                            <Text style={styles.headerText}>
-                                {data.text}
-                            </Text>
+                            <View style={styles.buttonGroup}>
+                                <View>
+                                    <Text style={styles.headerText}>
+                                        {data.text}
+                                    </Text>
+                                </View>
 
-                            <CustomSound uri={`${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${data.audio}`}/>
+                                <CustomSound uri={`${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${data.audio}`}/>
 
-                            <TextAnswer
-                                isAnswerSubmitted={isAnswerSubmitted}
-                                selectedAnswer={selectedAnswer}
-                                handleAnswerSelect={handleAnswerSelect}
-                                textRef={textRef}
-                            />
+                                <TextAnswer
+                                    isAnswerSubmitted={isAnswerSubmitted}
+                                    selectedAnswer={selectedAnswer}
+                                    handleAnswerSelect={handleAnswerSelect}
+                                    textRef={textRef}
+                                />
+                            </View>
                         </View>
-                    </View>
+                    </KeyboardAvoidingView>
                 )}
 
                 <ButtonsForInput
@@ -215,7 +229,7 @@ export default function GamesDecodeAudio({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height: Dimensions.get("screen").height,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white",

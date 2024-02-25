@@ -1,5 +1,13 @@
 import React, {useState, useEffect, useRef} from "react";
-import {View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Dimensions,
+    KeyboardAvoidingView
+} from "react-native";
 import {ButtonsForInput, isTextAnswerCorrect} from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
@@ -166,49 +174,56 @@ export default function GamesTranslate({navigation}) {
 
     return loading ? (<Loader/>) : (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.container}>
-                <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
+                <View style={styles.container}>
+                    <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
 
-                <Header
-                    stats={stats.current}
-                    timerRun={selectedAnswer === null}
-                />
+                    <Header
+                        stats={stats.current}
+                        timerRun={selectedAnswer === null}
+                    />
 
-                {data && (
-                    <View style={styles.buttonGroup} key={data.id}>
-                        <View style={styles.buttonGroup}>
-                            <Text style={styles.headerText}>
-                                {data.text}
-                            </Text>
+                    {data && (
+                        <KeyboardAvoidingView
+                            behavior={"padding"}
+                            style={{ flex: 1, width: "100%" }}
+                        >
+                            <View style={styles.buttonGroup}>
+                                <View style={styles.buttonGroup}>
+                                    <View>
+                                        <Text style={styles.headerText}>
+                                            {data.text}
+                                        </Text>
+                                    </View>
 
-                            <TextAnswer
-                                isAnswerSubmitted={isAnswerSubmitted}
-                                selectedAnswer={selectedAnswer}
-                                handleAnswerSelect={handleAnswerSelect}
-                                textRef={textRef}
-                            />
-                        </View>
-                    </View>
-                )}
+                                    <TextAnswer
+                                        isAnswerSubmitted={isAnswerSubmitted}
+                                        selectedAnswer={selectedAnswer}
+                                        handleAnswerSelect={handleAnswerSelect}
+                                        textRef={textRef}
+                                    />
+                                </View>
+                            </View>
+                        </KeyboardAvoidingView>
+                    )}
 
-                <ButtonsForInput
-                    selectedAnswer={selectedAnswer}
-                    isAnswerCorrect={isAnswerCorrect}
-                    showIncorrectStyle={showIncorrectStyle}
-                    isHelpUsed={isHelpUsed}
-                    handleHelp={handleHelp}
-                    handleRepeat={handleRepeat}
-                    handleNext={handleNext}
-                    handleAnswerSelect={handleAnswerSelect}
-                />
-            </View>
+                    <ButtonsForInput
+                        selectedAnswer={selectedAnswer}
+                        isAnswerCorrect={isAnswerCorrect}
+                        showIncorrectStyle={showIncorrectStyle}
+                        isHelpUsed={isHelpUsed}
+                        handleHelp={handleHelp}
+                        handleRepeat={handleRepeat}
+                        handleNext={handleNext}
+                        handleAnswerSelect={handleAnswerSelect}
+                    />
+                </View>
         </TouchableWithoutFeedback>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height: Dimensions.get("screen").height,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white",

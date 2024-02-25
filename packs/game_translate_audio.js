@@ -196,7 +196,7 @@ export default function GamesTranslateAudio({navigation}) {
             />
 
             {data && (
-                <View style={styles.buttonGroup} key={data.id}>
+                <View style={styles.buttonGroup}>
                     <View style={styles.buttonGroup}>
                         <Text style={styles.headerText}>
                             {data.text}
