@@ -1,5 +1,5 @@
 import {StatusBar} from "expo-status-bar";
-import {Image} from "react-native";
+import {Dimensions, Image} from "react-native";
 import {NavigationContainer, useNavigation} from "@react-navigation/native";
 import {
     createStackNavigator,
@@ -176,8 +176,8 @@ function MainTabNavigator() {
                 tabBarInactiveTintColor: "#7b7b7b",
                 tabBarStyle: {
                     backgroundColor: "#ffffff",
-                    height: '11%',
-                    minHeight: 90,
+                    height: Math.max(Dimensions.get("screen").height * .11, 90),
+                    borderTopWidth: .3,
                     paddingTop: 20
                 }
             })}

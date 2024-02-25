@@ -104,7 +104,6 @@ export default function BooksScreen({navigation}) {
     };
 
     const onPlaybackStatusUpdate = useCallback(status => {
-        console.log(status)
         if (status.didJustFinish) {
             lastActuallyWordIndex.current = wordsArrayLength.current
             setIsPlaying(false)
@@ -197,11 +196,8 @@ export default function BooksScreen({navigation}) {
                         await sound.setVolumeAsync(1);
                         sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)
                         setSound(sound);
-                        console.log("sound loaded")
                     })
-                    .catch((err) => {
-                        console.log(err)
-                    })
+                    .catch(() => {})
                     .finally(() => setLoading(false))
             })
             .catch((err) => {

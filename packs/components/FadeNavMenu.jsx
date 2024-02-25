@@ -1,4 +1,4 @@
-import {Animated, Pressable} from "react-native";
+import {Animated, Dimensions, Pressable} from "react-native";
 import {useEffect} from "react";
 
 const opacity = new Animated.Value(0);
@@ -53,15 +53,17 @@ export const FadeNavMenu = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            height: "11.02%",
-            minHeight: 90,
+            height: Math.max(Dimensions.get("screen").height * .11, 90) + .3,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             transform: [{translateY: translateY}],
             opacity: opacity
         }}>
-            <Pressable style={{width: "100%", height: "100%"}} onPress={() => {
-                if (callbackOnTap) callbackOnTap()
-            }}></Pressable>
+            <Pressable
+                style={{width: "100%", height: "100%"}}
+                onPress={() => {
+                    if (callbackOnTap) callbackOnTap()
+                }}
+            />
         </Animated.View>
     )
 }
