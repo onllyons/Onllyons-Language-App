@@ -2,9 +2,6 @@ import {StyleSheet} from "react-native";
 
 export const stylesCourse_lesson = StyleSheet.create({
     container: {},
-    bgCourse: {
-        backgroundColor: "#ffffff",
-    },
     card: {
         width: 70,
         height: 56,

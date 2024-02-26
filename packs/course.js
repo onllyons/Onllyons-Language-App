@@ -63,10 +63,9 @@ export default function CourseScreen({navigation}) {
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
 
-        setStoredCourseData()
-            .then(() => {})
-            .catch(() => {})
-            .finally(() => setRefreshing(false))
+        setStoredCourseData().then(() => {
+        }).catch(() => {
+        }).finally(() => setRefreshing(false))
     }, [])
 
     const onViewableItemsChanged = ({viewableItems}) => {
@@ -109,7 +108,7 @@ export default function CourseScreen({navigation}) {
 
     useFocusEffect(
         useCallback(() => {
-           const lastFinishCourse = getStoredValue("lastFinishCourse")
+            const lastFinishCourse = getStoredValue("lastFinishCourse")
 
             if (lastFinishCourse === null || !data[lastFinishCourse.category]) {
                 deleteStoredValue("lastFinishCourse")
@@ -218,7 +217,8 @@ export default function CourseScreen({navigation}) {
 
     return (
         <View style={{backgroundColor: "#fff"}}>
-            <NavTop getCategoryData={getCategoryData} seriesData={seriesData.current} generalInfo={generalInfo.current}/>
+            <NavTop getCategoryData={getCategoryData} seriesData={seriesData.current}
+                    generalInfo={generalInfo.current}/>
 
             <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
 
@@ -243,10 +243,11 @@ export default function CourseScreen({navigation}) {
                 scrollEnabled={scrollEnabled}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                 renderItem={({item, index}) => (
-                    <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index} scrollRef={flatListRef} categoriesData={categoriesData} currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
+                    <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index}
+                              scrollRef={flatListRef} categoriesData={categoriesData}
+                              currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
                 )}
-                contentContainerStyle={{ paddingTop: 35, paddingBottom: 130, minHeight: "100%" }}
-                style={styles.bgCourse}
+                contentContainerStyle={{paddingTop: 35, paddingBottom: 200}}
                 onScroll={(event) => {
                     currentScrollData.current = {
                         ...currentScrollData.current,
@@ -259,12 +260,12 @@ export default function CourseScreen({navigation}) {
                 }}
                 ListHeaderComponent={(
                     <View>
-                    <TouchableOpacity onPress={() => navigation.navigate("Test_font_size")}>
-                        <Text>Test font responsive sizes</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Congratulations")}>
-                        <Text>Congragulations</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Test_font_size")}>
+                            <Text>Test font responsive sizes</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Congratulations")}>
+                            <Text>Congragulations</Text>
+                        </TouchableOpacity>
                     </View>
                 )}
                 scrollEventThrottle={8}
@@ -288,7 +289,10 @@ const CurrentCategory = React.memo(({currentCategory, getCategoryData}) => {
                     shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
                     styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
-                    <Text style={{...styles.infoCourseTxtSubCat, fontSize: getFontSize(16)}}>Часть {currentCategory.subject}</Text>
+                    <Text style={{
+                        ...styles.infoCourseTxtSubCat,
+                        fontSize: getFontSize(16)
+                    }}>Часть {currentCategory.subject}</Text>
                     <Text style={{...styles.infoCourseTitle, fontSize: getFontSize(18)}}>{currentCategory.name}</Text>
                 </AnimatedButtonShadow>
 
@@ -343,7 +347,8 @@ const CurrentCategory = React.memo(({currentCategory, getCategoryData}) => {
                                 <View style={styles.titleDetLessonCat}>
                                     <Text
                                         style={styles.titleDetLessonCatSubject}>{formatLessonWord(getCategoryData("courses"))}</Text>
-                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд навстречу {getCategoryData("courses")} {formatExcitingWord(getCategoryData("courses"))} {formatAdventureWord(getCategoryData("courses"))}!</Text>
+                                    <Text style={styles.titleDetLessonCatTxt}>Вперёд
+                                        навстречу {getCategoryData("courses")} {formatExcitingWord(getCategoryData("courses"))} {formatAdventureWord(getCategoryData("courses"))}!</Text>
                                 </View>
                             </View>
 
@@ -391,7 +396,15 @@ const getMarginLeftForCard = (index) => {
     return pattern[index % 6]; // Repetă modelul la fiecare 6 carduri
 };
 
-const Category = React.memo(({data, category, categoryIndex, scrollRef, categoriesData, currentScrollData, setScrollEnable}) => {
+const Category = React.memo(({
+    data,
+    category,
+    categoryIndex,
+    scrollRef,
+    categoriesData,
+    currentScrollData,
+    setScrollEnable
+}) => {
     if (!data) return null
 
     const {width: windowWidth} = Dimensions.get("window");
@@ -463,7 +476,7 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
                 if (pos === "first") return require("./images/El/course/16.png")
                 else if (pos === "second") return require("./images/El/course/17.png")
                 break
-            
+
         }
     }, [])
 
@@ -493,11 +506,11 @@ const Category = React.memo(({data, category, categoryIndex, scrollRef, categori
         <View style={{position: "relative"}}>
             {categoryIndex > 0 && (
                 <View style={styles.categoryTitleBg}>
-                    <View style={styles.hrLine}></View>
+                    <View style={styles.hrLine}/>
                     <Text style={styles.categoryTitle}>
                         {data.categoryTitle}
                     </Text>
-                    <View style={styles.hrLine}></View>
+                    <View style={styles.hrLine}/>
                 </View>
             )}
 
@@ -602,7 +615,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
                 // If scrolling is too low, display on top
                 if (scrollTo + windowHeight > currentScrollData.current.contentHeight) {
-                    modalY -= 70 + 200 + 40 // 200 - modal height, 70 + additional posY, 40 - additional value
+                    modalY -= 70 + 200 // 200 - modal height, 70 + additional posY, 40 - additional value
                     arrowBottom = true
                     delay = 0
                 } else {
@@ -640,11 +653,14 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
 
     const getTransform = () => {
         let transform = {
-            transform: [{ scale: scale.current }],
+            transform: [{scale: scale.current}],
         };
 
         const x = (positions.current.arrowX + 10) / (windowWidth * .8)
-        return withAnchorPoint(transform, { x: x, y: positions.current.arrowBottom ? 1 : 0 }, { width: windowWidth * .9, height: 200 });
+        return withAnchorPoint(transform, {x: x, y: positions.current.arrowBottom ? 1 : 0}, {
+            width: windowWidth * .9,
+            height: 200
+        });
     };
 
 
@@ -668,16 +684,16 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                 ]}
                 onPress={handlePressButton}
             >
-                <Text style={[{ marginLeft: index === 0 ? 5 : 0 }]}>
+                <Text style={[{marginLeft: index === 0 ? 5 : 0}]}>
 
                     <FontAwesomeIcon
-                      icon={index === 0 ? faPlay : faStar}
-                      size={index === 0 ? 30 : 30}
-                      style={[
-                        styles.iconFlash,
-                        item.finished || firstLessonColor.backgroundColor ? styles.finishedCourseLessonIcon : null,
-                        { marginLeft: index === 0 ? 0 : 0 }
-                      ]}
+                        icon={index === 0 ? faPlay : faStar}
+                        size={index === 0 ? 30 : 30}
+                        style={[
+                            styles.iconFlash,
+                            item.finished || firstLessonColor.backgroundColor ? styles.finishedCourseLessonIcon : null,
+                            {marginLeft: index === 0 ? 0 : 0}
+                        ]}
                     />
                 </Text>
             </AnimatedButtonShadow>
@@ -707,8 +723,6 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                         display: "flex",
                         justifyContent: "space-between",
                         backgroundColor: "#f9f9f9",
-                        // green bg
-                        // backgroundColor: "#57cc04",
                         borderRadius: 20,
                         borderColor: "#d8d8d8",
                         borderWidth: 2,
@@ -751,7 +765,11 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                                 setVisibleModal(false)
                                 setShowModal(false)
                                 setScrollEnable(true)
-                                navigation.navigate("CourseLesson", {url: item.url, category: item.category_url, id: item.id})
+                                navigation.navigate("CourseLesson", {
+                                    url: item.url,
+                                    category: item.category_url,
+                                    id: item.id
+                                })
                             }}
                         >
                             <Text style={[globalCss.buttonText, globalCss.textUpercase]}>

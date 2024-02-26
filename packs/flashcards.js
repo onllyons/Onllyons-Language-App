@@ -75,7 +75,7 @@ const FlashCardWords = ({navigation}) => {
                         onRefresh={() => setRefreshing(true)}
                     />
                 }
-                contentContainerStyle={{paddingTop: 30, paddingBottom: 80, minHeight: "100%"}}
+                contentContainerStyle={{paddingTop: 30}}
             >
                 <View style={styles.contentFlashCards}>
                     {data.map((item, index) => (
@@ -120,7 +120,8 @@ const FlashCardWords = ({navigation}) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
+        backgroundColor: '#fff',
+        flex: 1
     },
     titleFlashCards: {
         marginBottom: '15%',
