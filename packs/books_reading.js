@@ -331,13 +331,13 @@ export default function BooksScreen({navigation}) {
                         paddingHorizontal: 20
                     }}
                 >
-                    {!allowSubtitles.current && (
-                        <Text style={globalCss.incorrect}>Функция субтитров доступна только пользователям PRO подписки</Text>
-                    )}
+                    
 
                     <Text style={styles.titleBook}>{data.title}</Text>
                     <Text style={styles.titleAuthor}>{data.author}</Text>
-
+                    {!allowSubtitles.current && (
+                        <Text style={styles.notAllowedAubtitles}>Функция субтитров доступна только пользователям PRO подписки</Text>
+                    )}
                     <View style={styles.textContainer}>
                         {wordsArray.length > 0 && wordsArray.map((word, index) => (
                             <Word
@@ -482,5 +482,12 @@ const styles = StyleSheet.create({
     },
     textTouchableDef: {
         // marginBottom: 3,
+    },
+    notAllowedAubtitles:{
+        backgroundColor: '#ffdbdb',
+        color: '#ff1e1e',
+        padding: '2%',
+        marginBottom: '5%',
+        fontSize: 17,
     },
 });
