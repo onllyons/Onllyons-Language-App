@@ -1,5 +1,5 @@
 import {Animated, Pressable, TouchableOpacity, View, ViewStyle} from "react-native";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 
 // Ready-made shadow colors
 export const SHADOW_COLORS = {
@@ -100,12 +100,13 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = React.m
     const transitionShadowX = useRef(new Animated.Value(shadowDisplayAnimate === "slide" ? 0 : moveByX));
     const opacityShadow = useRef(new Animated.Value(1));
     const opacityContainer = useRef(new Animated.Value(1));
-    const [buttonData, setButtonData] = useState({
+    const buttonData = useRef({
         height: 0,
         width: 0,
-        x: 0,
-        y: 0
+        left: 0,
+        top: 0
     })
+    const shadowRef = useRef<View>(null);
     const permanentlyActiveRef = useRef(permanentlyActive)
     permanentlyActiveRef.current = permanentlyActive
 
@@ -187,19 +188,8 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = React.m
         ]).start()
     }
 
-    useEffect(() => {
-        return () => {
-            transitionContainerY.current.stopAnimation();
-            transitionContainerX.current.stopAnimation();
-            transitionShadowY.current.stopAnimation();
-            transitionShadowX.current.stopAnimation();
-            opacityShadow.current.stopAnimation();
-            opacityContainer.current.stopAnimation();
-        };
-    }, []);
-
-    useEffect(() => {
-        if (buttonData.width !== 0 && shadowDisplayAnimate === "slide") {
+    const checkButtonData = () => {
+        if (buttonData.current.width !== 0 && shadowDisplayAnimate === "slide") {
             Animated.parallel([
                 moveByY !== 0 && Animated.timing(transitionShadowY.current, {
                     toValue: moveByY,
@@ -213,7 +203,18 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = React.m
                 })
             ]).start()
         }
-    }, [buttonData])
+    }
+
+    useEffect(() => {
+        return () => {
+            transitionContainerY.current.stopAnimation();
+            transitionContainerX.current.stopAnimation();
+            transitionShadowY.current.stopAnimation();
+            transitionShadowX.current.stopAnimation();
+            opacityShadow.current.stopAnimation();
+            opacityContainer.current.stopAnimation();
+        };
+    }, []);
 
     useEffect(() => {
         if (permanentlyActive === null) return
@@ -242,26 +243,28 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = React.m
             ]}
         >
             <View style={[{position: "relative"}, styleContainerIn]}>
-                <Animated.View
-                    style={{
-                        position: "absolute",
-                        top: buttonData.y + shadowPositionYAdditional,
-                        left: buttonData.x + shadowPositionXAdditional,
-                        width: buttonData.width + shadowWidthAdditional,
-                        height: buttonData.height + shadowHeightAdditional,
-                        backgroundColor: SHADOW_COLORS[shadowColor] ? SHADOW_COLORS[shadowColor] : shadowColor,
-                        borderTopLeftRadius: typeof shadowTopLeftBorderRadius !== "undefined" ? shadowTopLeftBorderRadius : shadowBorderRadius,
-                        borderTopRightRadius: typeof shadowTopRightBorderRadius !== "undefined" ? shadowTopRightBorderRadius : shadowBorderRadius,
-                        borderBottomLeftRadius: typeof shadowBottomLeftBorderRadius !== "undefined" ? shadowBottomLeftBorderRadius : shadowBorderRadius,
-                        borderBottomRightRadius: typeof shadowBottomRightBorderRadius !== "undefined" ? shadowBottomRightBorderRadius : shadowBorderRadius,
-                        opacity: opacityShadow.current,
+                <View ref={shadowRef}>
+                    <Animated.View
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: SHADOW_COLORS[shadowColor] ? SHADOW_COLORS[shadowColor] : shadowColor,
+                            borderTopLeftRadius: typeof shadowTopLeftBorderRadius !== "undefined" ? shadowTopLeftBorderRadius : shadowBorderRadius,
+                            borderTopRightRadius: typeof shadowTopRightBorderRadius !== "undefined" ? shadowTopRightBorderRadius : shadowBorderRadius,
+                            borderBottomLeftRadius: typeof shadowBottomLeftBorderRadius !== "undefined" ? shadowBottomLeftBorderRadius : shadowBorderRadius,
+                            borderBottomRightRadius: typeof shadowBottomRightBorderRadius !== "undefined" ? shadowBottomRightBorderRadius : shadowBorderRadius,
+                            opacity: opacityShadow.current,
 
-                        transform: [
-                            {translateY: transitionShadowY.current},
-                            {translateX: transitionShadowX.current},
-                        ]
-                    }}
-                />
+                            transform: [
+                                {translateY: transitionShadowY.current},
+                                {translateX: transitionShadowX.current},
+                            ]
+                        }}
+                    />
+                </View>
 
                 <ButtonComponent
                     ref={refButton}
@@ -270,13 +273,22 @@ export const AnimatedButtonShadow: React.FC<AnimatedButtonShadowProps> = React.m
                     onLayout={(e) => {
                         if (onLayout) onLayout(e)
 
-                        if (buttonData.height !== e.nativeEvent.layout.height || buttonData.width !== e.nativeEvent.layout.width) {
-                            setButtonData({
-                                height: e.nativeEvent.layout.height,
-                                width: e.nativeEvent.layout.width,
-                                x: e.nativeEvent.layout.x,
-                                y: e.nativeEvent.layout.y
-                            })
+                        if (buttonData.current.height !== e.nativeEvent.layout.height || buttonData.current.width !== e.nativeEvent.layout.width) {
+                            buttonData.current = {
+                                height: e.nativeEvent.layout.height + shadowHeightAdditional,
+                                width: e.nativeEvent.layout.width + shadowWidthAdditional,
+                                left: e.nativeEvent.layout.x + shadowPositionXAdditional,
+                                top: e.nativeEvent.layout.y + shadowPositionYAdditional
+                            }
+
+                            shadowRef.current?.setNativeProps({
+                                style: {
+                                    position: "absolute",
+                                    ...buttonData.current
+                                },
+                            });
+
+                            checkButtonData()
                         }
                     }}
                     onPressIn={(event) => {
