@@ -687,7 +687,10 @@ export const CourseLesson = ({navigation}) => {
                 </View>
 
                 <View style={styles.carousel}>
-                    <Carousel
+                    <Carousel 
+                        decelerationRate={'fast'} // Ajustează această valoare pentru a controla viteza de decelerare
+                        enableMomentum={false}
+                        activeSlideAlignment="center" // Asigură-te că slide-ul activ este mereu centrat
                         scrollEnabled={!quizActive}
                         ref={swiperRef}
                         data={dataFull || []}

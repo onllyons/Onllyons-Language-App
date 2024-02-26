@@ -488,6 +488,9 @@ export default function FlashCardsLearning({route, navigation}) {
 
                 <View style={styles.carousel}>
                     <Carousel
+                        decelerationRate={'fast'} // Ajustează această valoare pentru a controla viteza de decelerare
+                        enableMomentum={false}
+                        activeSlideAlignment="center" // Asigură-te că slide-ul activ este mereu centrat
                         key={showQuiz ? "quizCarousel" : "learningCarousel"}
                         data={showQuiz ? quizData : carouselData}
                         ref={swiperRef}
@@ -501,7 +504,7 @@ export default function FlashCardsLearning({route, navigation}) {
                         renderItem={renderItem}
                         firstItem={showQuiz ? quizIndex : carouselIndex}
                         scrollEnabled={!showQuiz} // Dezactivează scroll-ul când showQuiz este adevărat
-                    />
+                    /> 
                 </View>
 
                 <SwiperButtonsContainer
