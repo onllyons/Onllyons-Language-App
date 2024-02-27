@@ -1,47 +1,71 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Animated, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faCirclePause, faCirclePlay, faVolumeHigh, faVolumeXmark} from "@fortawesome/free-solid-svg-icons";
 import {Video} from "expo-av";
 
 export const CustomVideo = React.memo(({url, isFocused, isQuiz}) => {
-    const [status, setStatus] = useState({})
     const video = useRef({})
+    const [isPlaying, setIsPlaying] = useState(false)
+    const [isMuted, setIsMuted] = useState(false)
+    const [didJustFinish, setDidJustFinish] = useState(false)
+    const [isLoaded, setIsLoaded] = useState(false)
 
     useEffect(() => {
-        if (!video.current) return
+        if (!video.current || !isLoaded) return
 
-        if (!isFocused && status.isPlaying) video.current.pauseAsync()
-        else if (isFocused && !status.isPlaying) video.current.replayAsync({shouldPlay: true})
-    }, [isFocused])
+        checkFocus()
+            .then(() => {})
+            .catch(() => {})
+    }, [isFocused, isLoaded])
 
-    const handlePlaybackStatusUpdate = status => {
-        setStatus(status)
+    const checkFocus = useCallback(async () => {
+        if (!isFocused) {
+            await video.current.replayAsync()
+            await video.current.pauseAsync()
+        } else if (isFocused && !isPlaying) {
+            await video.current.playAsync()
+        }
+    }, [isFocused, isPlaying])
+
+    const handlePlaybackStatusUpdate = async status => {
+        setIsMuted(status.isMuted)
+        setIsPlaying(status.isPlaying)
+        setDidJustFinish(status.didJustFinish)
     }
 
     return (
         <View style={[styles.videoContainer, isQuiz && {height: "50%"}]}>
             <Video
+                rate={1}
                 ref={video}
                 style={styles.video}
                 source={{uri: url}}
                 useNativeControls={false}
                 onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+                onLoad={() => setIsLoaded(true)}
                 resizeMode="cover"
             />
-            {status.isLoaded && <VideoControls video={video.current} status={status}/>}
+            {isLoaded && (
+                <VideoControls
+                    video={video.current}
+                    isPlaying={isPlaying}
+                    isMuted={isMuted}
+                    didJustFinish={didJustFinish}
+                />
+            )}
         </View>
     )
 })
 
-const VideoControls = ({video, status}) => {
-    const opacity = useRef(new Animated.Value(1));
-    const hidden = useRef(false)
+const VideoControls = ({video, isMuted, isPlaying, didJustFinish}) => {
+    const opacity = useRef(new Animated.Value(0));
+    const hidden = useRef(true)
 
     useEffect(() => {
-        if (status.didJustFinish) showControls()
-        if (status.isPlaying && hidden.current) hideControls()
-    }, [status]);
+        if (didJustFinish) showControls()
+        if (isPlaying && hidden.current) hideControls()
+    }, [isPlaying, didJustFinish]);
 
     const playPauseVideo = async () => {
         if (video.error) return
@@ -56,7 +80,6 @@ const VideoControls = ({video, status}) => {
         } else {
             if (status.durationMillis <= status.positionMillis) {
                 await video.replayAsync()
-                console.log("asdasd")
             } else {
                 await video.playAsync();
             }
@@ -101,7 +124,7 @@ const VideoControls = ({video, status}) => {
             <TouchableOpacity onPress={() => playPauseVideo()}>
                 <Text>
                     <FontAwesomeIcon
-                        icon={status.isPlaying ? faCirclePause : faCirclePlay}
+                        icon={isPlaying ? faCirclePause : faCirclePlay}
                         size={40}
                         style={{color: "#1f80ff"}}
                     />
@@ -110,7 +133,7 @@ const VideoControls = ({video, status}) => {
             <TouchableOpacity onPress={() => muteOnMuteVideo()}>
                 <Text>
                     <FontAwesomeIcon
-                        icon={status.isMuted ? faVolumeXmark : faVolumeHigh}
+                        icon={isMuted ? faVolumeXmark : faVolumeHigh}
                         size={40}
                         style={{color: "#1f80ff"}}
                     />
@@ -139,20 +162,22 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: "rgba(0,0,0,.25)"
+        backgroundColor: "rgba(0,0,0,.25)",
+        borderRadius: 12
     },
 
     videoContainer: {
+        position: "relative",
         width: "100%",
         height: "37%",
         borderRadius: 12,
+        backgroundColor: "#fff"
     },
-
     video: {
         width: "100%",
         height: "100%",
         borderRadius: 12,
         resizeMode: "cover",
-        backgroundColor: "#fff"
+        backgroundColor: "transparent"
     }
 })
