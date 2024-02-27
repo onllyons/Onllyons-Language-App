@@ -434,7 +434,6 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         width: "100%",
-        height: "100%",
     },
     sourceImgBook: {
         width: 300,
@@ -442,6 +441,7 @@ const styles = StyleSheet.create({
         resizeMode: "cover",
         alignSelf: "center",
         marginTop: "8%",
+        marginBottom: "8%",
         borderRadius: 10,
     },
     titleBook: {
