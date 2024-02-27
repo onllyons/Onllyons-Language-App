@@ -162,6 +162,7 @@ export const AuthProvider = ({children}) => {
                             return Promise.reject()
                         }
                     } else if (data.data.userAvailable && data.data.user) {
+                        navigation.navigate("MainTabNavigator")
                         return login(data.data.user, data.data.tokens)
                     }
 

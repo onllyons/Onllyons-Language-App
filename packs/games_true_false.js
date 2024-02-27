@@ -100,9 +100,11 @@ export default function GamesTrueFalse({navigation}) {
         }
     };
 
-    return loading ? (<Loader/>) : (
+    return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container}>
+                <Loader visible={loading}/>
+
                 <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
 
                 <Header

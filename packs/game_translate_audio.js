@@ -186,8 +186,10 @@ export default function GamesTranslateAudio({navigation}) {
         stats.current.time = 0
     };
 
-    return loading ? (<Loader/>) : (
+    return (
         <View style={styles.container}>
+            <Loader visible={loading}/>
+
             <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
 
             <Header

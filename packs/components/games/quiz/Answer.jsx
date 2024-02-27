@@ -5,7 +5,6 @@ import {AnimatedButtonShadow} from "../../buttons/AnimatedButtonShadow";
 const Answer = ({answer, isHelpUsed, isAnswerCorrect, preHelpAnswers, selectedAnswer, handleAnswerSelect}) => {
     return (
         <AnimatedButtonShadow
-            shadowDisplayAnimate={"slide"}
             disable={isHelpUsed || selectedAnswer !== null}
             shadowColor={isHelpUsed && answer.correct ? "green" : (selectedAnswer === answer.id ? (isAnswerCorrect ? "green" : "red") : (preHelpAnswers.indexOf(answer.id) !== -1 ? "hint" : "gray"))}
             permanentlyActive={selectedAnswer === answer.id || preHelpAnswers.indexOf(answer.id) !== -1 || (isHelpUsed && answer.correct)}

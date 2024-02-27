@@ -172,51 +172,53 @@ export default function GamesTranslate({navigation}) {
         stats.current.time = 0
     };
 
-    return loading ? (<Loader/>) : (
+    return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={styles.container}>
-                    <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
+            <View style={styles.container}>
+                <Loader visible={loading}/>
 
-                    <Header
-                        stats={stats.current}
-                        timerRun={selectedAnswer === null}
-                    />
+                <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
 
-                    {data && (
-                        <KeyboardAvoidingView
-                            behavior={"padding"}
-                            style={{ flex: 1, width: "100%" }}
-                        >
+                <Header
+                    stats={stats.current}
+                    timerRun={selectedAnswer === null}
+                />
+
+                {data && (
+                    <KeyboardAvoidingView
+                        behavior={"padding"}
+                        style={{flex: 1, width: "100%"}}
+                    >
+                        <View style={styles.buttonGroup}>
                             <View style={styles.buttonGroup}>
-                                <View style={styles.buttonGroup}>
-                                    <View>
-                                        <Text style={styles.headerText}>
-                                            {data.text}
-                                        </Text>
-                                    </View>
-
-                                    <TextAnswer
-                                        isAnswerSubmitted={isAnswerSubmitted}
-                                        selectedAnswer={selectedAnswer}
-                                        handleAnswerSelect={handleAnswerSelect}
-                                        textRef={textRef}
-                                    />
+                                <View>
+                                    <Text style={styles.headerText}>
+                                        {data.text}
+                                    </Text>
                                 </View>
-                            </View>
-                        </KeyboardAvoidingView>
-                    )}
 
-                    <ButtonsForInput
-                        selectedAnswer={selectedAnswer}
-                        isAnswerCorrect={isAnswerCorrect}
-                        showIncorrectStyle={showIncorrectStyle}
-                        isHelpUsed={isHelpUsed}
-                        handleHelp={handleHelp}
-                        handleRepeat={handleRepeat}
-                        handleNext={handleNext}
-                        handleAnswerSelect={handleAnswerSelect}
-                    />
-                </View>
+                                <TextAnswer
+                                    isAnswerSubmitted={isAnswerSubmitted}
+                                    selectedAnswer={selectedAnswer}
+                                    handleAnswerSelect={handleAnswerSelect}
+                                    textRef={textRef}
+                                />
+                            </View>
+                        </View>
+                    </KeyboardAvoidingView>
+                )}
+
+                <ButtonsForInput
+                    selectedAnswer={selectedAnswer}
+                    isAnswerCorrect={isAnswerCorrect}
+                    showIncorrectStyle={showIncorrectStyle}
+                    isHelpUsed={isHelpUsed}
+                    handleHelp={handleHelp}
+                    handleRepeat={handleRepeat}
+                    handleNext={handleNext}
+                    handleAnswerSelect={handleAnswerSelect}
+                />
+            </View>
         </TouchableWithoutFeedback>
     );
 }

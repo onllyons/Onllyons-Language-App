@@ -14,7 +14,7 @@ export const StoreProvider = ({children}) => {
     const {isReady} = useAuth()
     const [loading, setLoading] = useState(true)
 
-    const setStoredCourseData = useCallback(async (withLoading = false) => {
+    const setStoredCourseData = useCallback(async (withLoading, callback) => {
         if (withLoading) setLoading(true)
 
         try {
@@ -26,20 +26,20 @@ export const StoreProvider = ({children}) => {
 
             setStoredValue("courseData", data)
 
+            if (callback) callback()
+
             return Promise.resolve()
         } catch (err) {
             return Promise.reject()
         } finally {
             setTimeout(() => {
-                if (withLoading) setLoading(false)
+                if (withLoading) setTimeout(() => setLoading(false), 300)
             }, 1)
         }
     }, [])
 
     useEffect(() => {
-        if (isAuthenticated() && isReady) {
-            setStoredCourseData(true)
-        } else if (!isAuthenticated() && isReady) {
+        if (!isAuthenticated() && isReady) {
             setLoading(false)
         }
     }, [isReady]);
@@ -63,7 +63,10 @@ export const StoreProvider = ({children}) => {
                 setStoredCourseData
             }}
         >
-            {loading ? <Welcome/> : children}
+            <>
+                <Welcome visible={loading}/>
+                {children}
+            </>
         </StoreContext.Provider>
     );
 };

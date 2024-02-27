@@ -17,10 +17,6 @@ export const Buttons = ({
     const visibleNextOrReload = !!(selectedAnswer || isHelpUsed)
     const visibleHelp = !!((!selectedAnswer || (selectedAnswer && !isAnswerCorrect)) && !isHelpUsed)
 
-    const first = useRef(true)
-
-    setTimeout(() => first.current = false, 1)
-
     return (
         <View style={styles.groupBtnQuiz}>
             {visibleNextOrReload && (
@@ -50,7 +46,6 @@ export const Buttons = ({
                 <AnimatedButtonShadow
                     key={visibleNextOrReload ? 2 : 3}
                     styleContainer={styles.quizBtnCtrContainer}
-                    shadowDisplayAnimate={first.current ? "slide" : "none"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,
@@ -106,10 +101,6 @@ export const ButtonsForInput = ({
     const visibleNextOrReload = !!(selectedAnswer || isHelpUsed)
     const visibleHelp = !!((!selectedAnswer || (selectedAnswer && !isAnswerCorrect)) && !isHelpUsed)
 
-    const first = useRef(true)
-
-    setTimeout(() => first.current = false, 1)
-
     return (
         <View style={styles.groupBtnQuiz}>
             {visibleNextOrReload && (
@@ -138,7 +129,6 @@ export const ButtonsForInput = ({
                 <AnimatedButtonShadow
                     key={visibleNextOrReload ? 2 : 3}
                     styleContainer={styles.quizBtnCtrContainer}
-                    shadowDisplayAnimate={first.current ? "slide" : "none"}
                     styleButton={[
                         styles.quizBtnCtr,
                         globalCss.buttonGry,

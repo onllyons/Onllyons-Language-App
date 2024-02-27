@@ -34,6 +34,7 @@ import {useStore} from "./providers/Store";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
+    const [updateState, setUpdateState] = useState(false)
     const {getStoredValue, setStoredCourseData, deleteStoredValue} = useStore()
     const [currentCategory, setCurrentCategory] = useState({
         name: "",
@@ -157,7 +158,7 @@ export default function CourseScreen({navigation}) {
         const data = getStoredValue("courseData")
 
         if (!data) {
-            setStoredCourseData(true)
+            setStoredCourseData(true, () => setUpdateState(prev => !prev))
             return;
         }
 
@@ -179,7 +180,7 @@ export default function CourseScreen({navigation}) {
         setCurrentCategory(currentCategoryRef.current);
         setCategories(categories)
         setData(groupedData);
-    }, [refreshing]);
+    }, [refreshing, updateState]);
 
     const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
 

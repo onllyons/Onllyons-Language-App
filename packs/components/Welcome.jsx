@@ -1,17 +1,30 @@
 import {Image, StyleSheet, View} from "react-native";
 import {DotIndicator} from "react-native-indicators";
+import Modal from "react-native-modal";
 
-export const Welcome = () => {
+export const Welcome = ({visible}) => {
     return (
-        <View style={styles.container}>
-            <Image
-                source={require("../../packs/images/El/logoStart.png")}
-                style={styles.logoEl}
-            />
-            <View style={styles.loaderContainer}>
-                <DotIndicator color="#6949FF" size={20} count={3}/>
+        <Modal
+            isVisible={visible}
+            animationInTiming={1}
+            animationOutTiming={150}
+            animationIn={"fadeIn"}
+            animationOut={"fadeOut"}
+            statusBarTranslucent
+            useNativeDriver={true}
+            hasBackdrop={false}
+            style={{margin: 0}}
+        >
+            <View style={styles.container}>
+                <Image
+                    source={require("../../packs/images/El/logoStart.png")}
+                    style={styles.logoEl}
+                />
+                <View style={styles.loaderContainer}>
+                    <DotIndicator color="#6949FF" size={20} count={3}/>
+                </View>
             </View>
-        </View>
+        </Modal>
     );
 };
 

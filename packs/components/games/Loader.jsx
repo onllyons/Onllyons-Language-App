@@ -1,30 +1,43 @@
-import {Image, StyleSheet, Text, View} from "react-native";
+import {Dimensions, Image, StyleSheet, Text, View} from "react-native";
 import {DotIndicator} from "react-native-indicators";
 import {LinearGradient} from "expo-linear-gradient";
 import React from "react";
+import Modal from "react-native-modal";
 
-export const Loader = () => {
+export const Loader = ({visible}) => {
     return (
-        <LinearGradient
-            colors={["#8f69cc", "#8f69cc"]}
-            style={styles.startContent}
+        <Modal
+            isVisible={visible}
+            animationInTiming={1}
+            animationOutTiming={150}
+            animationIn={"fadeIn"}
+            animationOut={"fadeOut"}
+            statusBarTranslucent
+            useNativeDriver={true}
+            hasBackdrop={false}
+            style={{margin: 0}}
         >
-            <Image
-                source={require("../../images/other_images/quiz-logo.png")}
-                style={styles.logoQuiz}
-            />
-            <Text style={styles.textContainerMess}>Quiz Time</Text>
+            <LinearGradient
+                colors={["#8f69cc", "#8f69cc"]}
+                style={styles.startContent}
+            >
+                <Image
+                    source={require("../../images/other_images/quiz-logo.png")}
+                    style={styles.logoQuiz}
+                />
+                <Text style={styles.textContainerMess}>Quiz Time</Text>
 
-            <View style={styles.loaderContainer}>
-                <DotIndicator color="white" size={30} count={3}/>
-            </View>
-        </LinearGradient>
+                <View style={styles.loaderContainer}>
+                    <DotIndicator color="white" size={30} count={3}/>
+                </View>
+            </LinearGradient>
+        </Modal>
     )
 }
 
 const styles = StyleSheet.create({
     startContent: {
-        flex: 1,
+        height: Dimensions.get("screen").height,
         justifyContent: "center",
     },
     logoQuiz: {

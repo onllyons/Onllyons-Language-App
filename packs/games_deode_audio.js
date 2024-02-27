@@ -176,9 +176,11 @@ export default function GamesDecodeAudio({navigation}) {
         stats.current.time = 0
     };
 
-    return loading ? (<Loader/>) : (
+    return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container}>
+                <Loader visible={loading}/>
+
                 <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
 
                 <Header

@@ -40,10 +40,7 @@ import UserSettings from "./packs/user-profile/userSettings";
 import SubscribeScreen from "./packs/screens/SubscribeScreen";
 import UserSubscriptionManage from "./packs/user-profile/userSubscriptionManage";
 
-import {
-    AuthProvider,
-    isAuthenticated,
-} from "./packs/providers/AuthProvider";
+import {AuthProvider} from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
 import {Analytics} from "./packs/components/analytics/Analytics";
@@ -258,33 +255,16 @@ function AppStack() {
                 headerStyle: globalCss.NavTopStartApp,
             }}
         >
-            {!isAuthenticated() ? (
-                <>
-                    <Stack.Screen
-                        name="StartPageScreen"
-                        component={StartPageScreen}
-                        options={{headerShown: false}}
-                    />
-                    <Stack.Screen
-                        name="MainTabNavigator"
-                        component={MainTabNavigator}
-                        options={{headerShown: false}}
-                    />
-                </>
-            ) : (
-                <>
-                    <Stack.Screen
-                        name="MainTabNavigator"
-                        component={MainTabNavigator}
-                        options={{headerShown: false}}
-                    />
-                    <Stack.Screen
-                        name="StartPageScreen"
-                        component={StartPageScreen}
-                        options={{headerShown: false}}
-                    />
-                </>
-            )}
+            <Stack.Screen
+                name="StartPageScreen"
+                component={StartPageScreen}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="MainTabNavigator"
+                component={MainTabNavigator}
+                options={{headerShown: false}}
+            />
 
             <Stack.Screen
                 name="LoginScreen"
