@@ -435,7 +435,7 @@ const Category = React.memo(({
     const getImageByCategory = useCallback((pos) => {
         switch (categoryIndex) {
             case 0:
-                if (pos === "first") return require("./images/El/course/1.png")
+                if (pos === "first") return require("./images/El/course/5.png")
                 else if (pos === "second") return require("./images/El/course/2.png")
                 break
 
@@ -445,8 +445,8 @@ const Category = React.memo(({
                 break
 
             case 2:
-                if (pos === "first") return require("./images/El/course/5.png")
-                else if (pos === "second") return require("./images/El/course/9.png")
+                if (pos === "first") return require("./images/El/course/1.png")
+                else if (pos === "second") return require("./images/El/course/10.png")
                 break
 
             case 3:
@@ -456,7 +456,7 @@ const Category = React.memo(({
 
             case 4:
                 if (pos === "first") return require("./images/El/course/6.png")
-                else if (pos === "second") return require("./images/El/course/10.png")
+                else if (pos === "second") return require("./images/El/course/9.png")
                 break
 
             case 5:

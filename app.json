@@ -1,61 +1,66 @@
 {
-    "expo": {
-        "name": "Onllyons Language",
-        "slug": "onllyons-language",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "userInterfaceStyle": "light",
-        "jsEngine": "hermes",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-        },
-        "scheme": "language",
-        "assetBundlePatterns": [
-            "**/*"
-        ],
-        "ios": {
-            "bundleIdentifier": "com.onllyons.language",
-            "supportsTablet": true,
-            "config": {
-                "googleSignIn": {
-                    "reservedClientId": "com.googleusercontent.apps.975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu"
-                }
-            },
-            "infoPlist": {
-                "UIBackgroundModes": [
-                    "audio"
-                ],
-                "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
-                "UIApplicationShortcutItemTitle": "ADD_ITEM_SHORTCUT_TITLE",
-                "NSCameraUsageDescription": "Доступ до камери для фото профілю",
-                "NSPhotoLibraryUsageDescription": "Доступ до фотогалереї для фото профілю",
-                "NSMicrophoneUsageDescription": "We need microphone access for recording audio",
-                "NSCalendarsUsageDescription": "Доступ до календаря для планування подій",
-                "NSContactsUsageDescription": "Доступ до контактів для імпорту інформації",
-                "NSAppleMusicUsageDescription": "Доступ до Apple Music для імпорту музики",
-                "NSSpeechRecognitionUsageDescription": "Allow recognition to access your speech recognition"
-            }
-        },
-        "android": {
-            "package": "com.onllyons.language",
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            }
-        },
-        "web": {
-            "favicon": "./assets/favicon.png"
-        }
+  "expo": {
+    "name": "Onllyons Language",
+    "slug": "onllyons-language",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "jsEngine": "hermes",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
-    "plugins": [
-        [
-            "expo-av",
-            {
-                "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
-            }
-        ]
+    "scheme": "language",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.onllyons.language",
+      "supportsTablet": true,
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu"
+        }
+      },
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
+        "UIApplicationShortcutItemTitle": "ADD_ITEM_SHORTCUT_TITLE",
+        "NSCameraUsageDescription": "Доступ до камери для фото профілю",
+        "NSPhotoLibraryUsageDescription": "Доступ до фотогалереї для фото профілю",
+        "NSMicrophoneUsageDescription": "We need microphone access for recording audio",
+        "NSCalendarsUsageDescription": "Доступ до календаря для планування подій",
+        "NSContactsUsageDescription": "Доступ до контактів для імпорту інформації",
+        "NSAppleMusicUsageDescription": "Доступ до Apple Music для імпорту музики",
+        "NSSpeechRecognitionUsageDescription": "Allow recognition to access your speech recognition"
+      }
+    },
+    "android": {
+      "package": "com.onllyons.language",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d95fdb97-68b8-49ca-b7c6-99732887ab6f"
+      }
+    }
+  },
+  "plugins": [
+    [
+      "expo-av",
+      {
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+      }
     ]
+  ]
 }
