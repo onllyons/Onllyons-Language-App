@@ -132,8 +132,6 @@ export default function CourseScreen({navigation}) {
             }
 
             if (changed) {
-                categoriesData.current[lastFinishCourse.category].finished += 1
-                categoriesData.current[lastFinishCourse.category].phrasesCompleted += phrasesToAdd
                 generalInfo.current.coursesCompleted += 1
                 generalInfo.current.quizzesCompleted += quizzesToAdd
                 generalInfo.current.phrasesCompleted += phrasesToAdd
@@ -218,8 +216,7 @@ export default function CourseScreen({navigation}) {
 
     return (
         <View style={{backgroundColor: "#fff"}}>
-            <NavTop getCategoryData={getCategoryData} seriesData={seriesData.current}
-                    generalInfo={generalInfo.current}/>
+            <NavTop seriesData={seriesData.current} generalInfo={generalInfo.current}/>
 
             <SubscribeModal visible={subscriptionModalVisible} setVisible={setSubscriptionVisible}/>
 
@@ -319,6 +316,7 @@ const CurrentCategory = React.memo(({currentCategory, getCategoryData}) => {
                 isVisible={isModalVisible}
                 animationIn="slideInUp"
                 animationOut="slideOutDown"
+                useNativeDriverForBackdrop={true}
                 onBackdropPress={() => setModalVisible(false)}
                 style={{justifyContent: 'flex-end', margin: 0}}
             >

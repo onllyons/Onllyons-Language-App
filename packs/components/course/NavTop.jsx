@@ -20,7 +20,7 @@ export const NavTop = (props) => {
     )
 }
 
-const NavTopContent = ({getCategoryData, seriesData, generalInfo}) => {
+const NavTopContent = ({seriesData, generalInfo}) => {
     const {setStartPosition} = useAnimatedNavTop()
     const [phrasesPercent, setPhrasesPercent] = useState(0)
     const percentRef = useRef(0)
@@ -38,13 +38,13 @@ const NavTopContent = ({getCategoryData, seriesData, generalInfo}) => {
 
                 <NavTopItemLanguage/>
                 <NavTopItem
-                    text={getCategoryData("finished")}
+                    text={generalInfo.coursesCompleted}
                     id={"general"}
                     image={require("../../images/other_images/nav-top/mortarboard.png")}
                 />
                 <NavTopItemSeries text={seriesData.currentSeries ? seriesData.currentSeries : 0}/>
                 <NavTopItem
-                    text={getCategoryData("phrasesCompleted")}
+                    text={generalInfo.phrasesCompleted}
                     id={"phrases"}
                     image={require("../../images/other_images/nav-top/feather.png")}
                 />

@@ -27,7 +27,6 @@ import {BottomSheetComponent} from "./components/books/reading/BottomSheetCompon
 import {ControlButtons} from "./components/books/reading/ControlButtons";
 import {Header} from "./components/books/reading/Header";
 import Loader from "./components/Loader";
-import globalCss from "./css/globalCss";
 
 export default function BooksScreen({navigation}) {
     const {setStoredValue} = useStore();
@@ -409,7 +408,7 @@ const Word = React.memo(({
                         isFocused ? styles.highlightedText : (isAfterFocused && styles.readText)
                     ]}
                 >
-                    {word.text + " "}
+                    {word.text}
                 </Text>
             </TouchableOpacity>
         );
@@ -420,7 +419,7 @@ const Word = React.memo(({
         <Text
             style={styles.readingContent}
         >
-            {word.text + " "}
+            {word.text}
         </Text>
     );
 })
@@ -449,6 +448,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#343541",
         alignSelf: "center",
+        textAlign: "center",
         marginBottom: 10,
     },
     titleAuthor: {
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     highlightedTextBtn: {
-        borderRadius: 5,
+        borderRadius: 5
     },
     readingContent: {
         fontSize: 19,
