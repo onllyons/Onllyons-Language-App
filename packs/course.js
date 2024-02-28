@@ -107,6 +107,7 @@ export default function CourseScreen({navigation}) {
         }, {});
     };
 
+    // Update finished info
     useFocusEffect(
         useCallback(() => {
             const lastFinishCourse = getStoredValue("lastFinishCourse")

@@ -1,4 +1,4 @@
-import {Animated, Dimensions, Pressable} from "react-native";
+import {Animated, Pressable} from "react-native";
 import {useEffect} from "react";
 
 const opacity = new Animated.Value(0);
@@ -53,7 +53,7 @@ export const FadeNavMenu = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            height: Math.max(Dimensions.get("screen").height * .11, 90) + .3,
+            height: 90.3,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             transform: [{translateY: translateY}],
             opacity: opacity
