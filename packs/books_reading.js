@@ -408,7 +408,7 @@ const Word = React.memo(({
                         isFocused ? styles.highlightedText : (isAfterFocused && styles.readText)
                     ]}
                 >
-                    {word.text}
+                    {word.text + " "}
                 </Text>
             </TouchableOpacity>
         );
@@ -419,7 +419,7 @@ const Word = React.memo(({
         <Text
             style={styles.readingContent}
         >
-            {word.text}
+            {word.text + " "}
         </Text>
     );
 })
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
     readingContent: {
         fontSize: 19,
         color: "#999",
-        fontWeight: '500',
+        fontWeight: '500'
     },
     readText: {
         color: "black",
