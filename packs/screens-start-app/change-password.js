@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard} from 'react-native';
-import {} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
 import {isAuthenticated} from "../providers/AuthProvider";
@@ -9,9 +8,9 @@ import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 // fonts
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 // icons
-import { faCamera, faArrowLeft, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faEye, faEyeSlash} from "@fortawesome/free-solid-svg-icons";
 
 export default function ChangePasswordScreen({navigation}) {
     const [showPassword, setShowPassword] = useState(false);
@@ -38,12 +37,13 @@ export default function ChangePasswordScreen({navigation}) {
     const handleChangePassword = () => {
         setLoader(true)
 
-        sendDefaultRequest(`${SERVER_AJAX_URL}/change_password.php`,
+        sendDefaultRequest(`${SERVER_AJAX_URL}/user/change_password.php`,
             {...data},
             navigation
         )
             .then(() => navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"}))
-            .catch(() => {})
+            .catch(() => {
+            })
             .finally(() => setTimeout(() => setLoader(false), 1))
     }
 
@@ -52,19 +52,19 @@ export default function ChangePasswordScreen({navigation}) {
             <View style={styles.containerWhite}>
 
                 <View style={globalCss.navTabUser}>
-                  <TouchableOpacity
-                    style={globalCss.itemNavTabUserBtnBack}
-                    onPress={() => navigation.navigate("UserData")}
-                  >
-                    <FontAwesomeIcon
-                      icon={faArrowLeft}
-                      size={30}
-                      style={globalCss.blue}
-                    />
-                  </TouchableOpacity>
-                  <View style={globalCss.itemNavTabUserTitleCat}>
-                    <Text style={globalCss.dataCategoryTitle}>Профиль</Text>
-                  </View>
+                    <TouchableOpacity
+                        style={globalCss.itemNavTabUserBtnBack}
+                        onPress={() => navigation.navigate("UserData")}
+                    >
+                        <FontAwesomeIcon
+                            icon={faArrowLeft}
+                            size={30}
+                            style={globalCss.blue}
+                        />
+                    </TouchableOpacity>
+                    <View style={globalCss.itemNavTabUserTitleCat}>
+                        <Text style={globalCss.dataCategoryTitle}>Профиль</Text>
+                    </View>
                 </View>
 
 
@@ -130,7 +130,8 @@ export default function ChangePasswordScreen({navigation}) {
                         shadowColor={"green"}
                         size={"full"}
                     >
-                        <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Сохранить пароль</Text>
+                        <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Сохранить
+                            пароль</Text>
                     </AnimatedButtonShadow>
 
                 </View>

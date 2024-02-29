@@ -26,7 +26,7 @@ export default function PasswordScreen({navigation}) {
     const handleRequestPassword = () => {
         setLoader(true)
 
-        sendDefaultRequest(`${SERVER_AJAX_URL}/send_reset_mail.php`,
+        sendDefaultRequest(`${SERVER_AJAX_URL}/user/send_reset_mail.php`,
             {email: email},
             navigation
         )

@@ -17,14 +17,10 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.onllyons.language",
+      "bundleIdentifier": "language",
       "supportsTablet": true,
-      "config": {
-        "googleSignIn": {
-          "reservedClientId": "com.googleusercontent.apps.975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu"
-        }
-      },
       "infoPlist": {
+        "bundleIdentifier": "language",
         "UIBackgroundModes": [
           "audio"
         ],
@@ -48,14 +44,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
-  },
-  "plugins": [
-    [
-      "expo-av",
-      {
-        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0e0b518b-38fe-4e27-9efb-8ed22f173d5a"
       }
-    ]
-  ]
+    }
+  }
 }

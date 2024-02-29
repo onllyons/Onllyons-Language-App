@@ -15,7 +15,7 @@ export const StoreProvider = ({children}) => {
     const [loading, setLoading] = useState(true)
 
     const setStoredCourseData = useCallback(async (withLoading, callback) => {
-        if (withLoading) setLoading(true)
+        if (withLoading) setTimeout(() => setLoading(true), 1)
 
         try {
             const data = await sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories.php`,
@@ -33,7 +33,9 @@ export const StoreProvider = ({children}) => {
             return Promise.reject()
         } finally {
             setTimeout(() => {
-                if (withLoading) setTimeout(() => setLoading(false), 300)
+                if (withLoading) {
+                    setTimeout(() => setLoading(false), 300)
+                }
             }, 1)
         }
     }, [])

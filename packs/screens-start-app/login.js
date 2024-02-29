@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform} from 'react-native';
+import React, {useEffect, useRef, useState} from "react";
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Keyboard} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
@@ -11,41 +11,55 @@ import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 import * as AuthSession from 'expo-auth-session';
+import {useStore} from "../providers/Store";
+import * as Linking from "expo-linking";
 
 const CLIENT_ID = '975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu.apps.googleusercontent.com';
+const REDIRECT_URI = "https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user/google_login.php"
 
 const useGoogleAuth = () => {
     const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
 
     const [request, response, promptAsync] = AuthSession.useAuthRequest({
         clientId: CLIENT_ID,
-        redirectUri: "https://www.language.onllyons.com/ru/ru-en/packs/assest/user-signup/google_login.php", // REDIRECT_URI,
+        redirectUri: REDIRECT_URI,
         responseType: AuthSession.ResponseType.Code,
+        prompt: AuthSession.Prompt.Login,
         scopes: [
             "email",
             "profile"
         ],
     }, discovery);
 
-    return { request, response, promptAsync };
+    return {request, response, promptAsync};
 };
 
 export default function LoginScreen({navigation}) {
+    const {setStoredCourseData} = useStore()
     const [showPassword, setShowPassword] = useState(false);
     const [userData, setUserData] = useState({username: "", password: ""})
-
     const [loader, setLoader] = useState(false)
+    const {promptAsync, request} = useGoogleAuth();
+    const codeVerifier = useRef(0)
+    const googleAuthProcess = useRef(false)
 
-    const { request, response, promptAsync } = useGoogleAuth();
+    if (request && request.codeVerifier) codeVerifier.current = request.codeVerifier
 
-    // useEffect(() => {
-    //     console.log(response?.type)
-    //     if (response?.type === 'success') {
-    //         const { token } = response.params;
-    //
-    //         console.log(response)
-    //     }
-    // }, [response]);
+    // Deep linking
+    useEffect(() => {
+        const subscription = Linking.addEventListener("url", ({url}) => handleUrl(url))
+
+        const handleUrl = url => {
+            const parsed = Linking.parse(url)
+
+            if (parsed.path === "google-login" || parsed.hostname === "google-login") {
+                googleAuth(parsed.queryParams.code)
+            }
+        }
+
+        // Отписка от событий
+        return () => subscription.remove();
+    }, []);
 
     useEffect(() => {
         if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
@@ -54,6 +68,64 @@ export default function LoginScreen({navigation}) {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
+
+    const googleAuth = (code) => {
+        if (googleAuthProcess.current) return
+
+        setLoader(true)
+        googleAuthProcess.current = true
+
+        sendDefaultRequest(`${SERVER_AJAX_URL}/user/google_auth_user.php`,
+            {
+                code: code,
+                codeVerifier: codeVerifier.current
+            },
+            navigation,
+            {success: false}
+        )
+            .then(async data => {
+                await login(data.userData, data.tokens)
+
+                setLoader(false)
+
+                await new Promise(resolve => setTimeout(resolve, 350))
+
+                setStoredCourseData(true, () => {
+                    googleAuthProcess.current = false
+                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+                })
+            })
+            .catch(() => {
+                setTimeout(() => setLoader(false), 1)
+                googleAuthProcess.current = false
+
+                Toast.show({
+                    type: "error",
+                    text1: "Ошибка авторизации"
+                })
+            })
+    }
+
+    const handleGoogleLogin = () => {
+        promptAsync()
+            .then(data => {
+                if (!data.params.code) {
+                    if (Platform.OS === "ios") throw new Error()
+                    return
+                }
+
+                googleAuth(data.params.code)
+            })
+            .catch(() => {
+
+                if (Platform.OS !== "ios") return
+
+                Toast.show({
+                    type: "error",
+                    text1: "Ошибка авторизации"
+                })
+            })
+    }
 
     const handleLogin = () => {
         if (isAuthenticated()) {
@@ -64,19 +136,27 @@ export default function LoginScreen({navigation}) {
 
             navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
         } else {
+            Keyboard.dismiss()
+
             setLoader(true)
 
-            sendDefaultRequest(`${SERVER_AJAX_URL}/user_login.php`,
+            sendDefaultRequest(`${SERVER_AJAX_URL}/user/user_login.php`,
                 {...userData},
                 navigation,
                 {success: false}
             )
                 .then(async data => {
                     await login(data.userData, data.tokens)
-                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+                    setLoader(false)
+                    await new Promise(resolve => setTimeout(resolve, 350))
+
+                    setStoredCourseData(true, () => {
+                        navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+                    })
                 })
-                .catch(() => {})
-                .finally(() => setTimeout(() => setLoader(false), 1))
+                .catch(() => {
+                    setTimeout(() => setLoader(false), 1)
+                })
         }
     }
 
@@ -88,6 +168,9 @@ export default function LoginScreen({navigation}) {
                 <TextInput
                     placeholder="login"
                     placeholderTextColor="#a5a5a5"
+                    autoComplete={"username"}
+                    textContentType={"username"}
+                    autoCapitalize="none"
                     style={globalCss.input}
                     onChangeText={val => setUserData(prev => ({...prev, username: val}))}
                     value={userData.username}
@@ -96,6 +179,8 @@ export default function LoginScreen({navigation}) {
             <View style={[styles.inputView, styles.inputContainer2]}>
                 <TextInput
                     placeholder="password"
+                    autoComplete={"password"}
+                    textContentType={"password"}
                     placeholderTextColor="#a5a5a5"
                     style={[globalCss.input, styles.inputPassword]}
                     secureTextEntry={!showPassword}
@@ -126,7 +211,7 @@ export default function LoginScreen({navigation}) {
                     globalCss.button,
                     globalCss.buttonBlue,
                 ]}
-                onPress={() => promptAsync()}
+                onPress={handleGoogleLogin}
                 size={"full"}
                 shadowColor={"blue"}
             >

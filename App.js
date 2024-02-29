@@ -33,7 +33,7 @@ import GamesQuiz from "./packs/games_quiz";
 import FlashCardsScreen from "./packs/flashcards";
 import FlashCardsWordsCategory from "./packs/flashcards_category";
 import FlashCardsWords from "./packs/flashcards_words";
- 
+
 import MenuScreen from "./packs/menu";
 import UserData from "./packs/user-profile/userData";
 import UserSettings from "./packs/user-profile/userSettings";
@@ -56,7 +56,7 @@ import GamesDecodeAudio from "./packs/games_deode_audio";
 import GamesTranslate from "./packs/games_translate";
 import GamesTranslateAudio from "./packs/game_translate_audio";
 import GamesTrueFalse from "./packs/games_true_false";
-                                               
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const handleTabPress = () => {
@@ -71,13 +71,13 @@ function UserProfileMenu() {
                 component={MenuScreen}
                 options={{headerShown: false}}
             />
-            
+
             <Stack.Screen
                 name="UserSettings"
                 component={UserSettings}
                 options={{title: "Настройки", headerBackTitle: "Назад"}}
             />
-            
+
         </Stack.Navigator>
     );
 }
@@ -263,7 +263,7 @@ function AppStack() {
             <Stack.Screen
                 name="MainTabNavigator"
                 component={MainTabNavigator}
-                options={{headerShown: false}}
+                options={{animationEnabled: false, headerShown: false}}
             />
 
             <Stack.Screen
@@ -337,7 +337,7 @@ function AppStack() {
                 component={GamesTrueFalse}
                 options={{headerShown: false}}
             />
-            
+
 
             <Stack.Screen
                 name="BooksCategory"
@@ -417,10 +417,7 @@ function AppStack() {
                     cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
                 }}
             />
-            
 
-
-             
 
         </Stack.Navigator>
     );
@@ -462,7 +459,6 @@ const toastConfig = {
 };
 
 export default function App() {
-    // Deep linking
     const prefix = Linking.createURL("/");
 
     const linking = {

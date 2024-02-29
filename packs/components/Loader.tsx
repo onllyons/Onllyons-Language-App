@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from "react";
 import {StyleSheet} from "react-native";
-import {View, Modal} from "react-native";
+import {View} from "react-native";
 import {MaterialIndicator} from "react-native-indicators";
+import Modal from "react-native-modal"
 
 interface SpinnerPropTypes {
     cancelable?: boolean;
-    animation?: "none" | "slide" | "fade";
+    animationIn?: string;
+    animationOut?: string;
     overlayColor?: string;
     size?: number;
     visible?: boolean;
@@ -22,13 +24,13 @@ const Indicator = ({options}) => {
 
 const Loader: React.FC<SpinnerPropTypes> = React.memo(({
         cancelable = false,
-        animation = "fade",
+        animationIn = "fadeIn",
+        animationOut = "fadeOut",
         overlayColor = "rgba(0, 0, 0, 0.5)",
         size = 50,
         visible = false,
         customIndicator,
         children,
-        spinnerKey,
     }: SpinnerPropTypes) => {
     const [spinnerVisible, setSpinnerVisibility] = useState(visible);
 
@@ -60,7 +62,7 @@ const Loader: React.FC<SpinnerPropTypes> = React.memo(({
         const spinner = (
             <View
                 style={[styles.container, {backgroundColor: overlayColor}]}
-                key={spinnerKey || `spinner_${Date.now()}`}
+                key={`spinner_${Date.now()}`}
             >
                 {children || renderDefaultContent()}
             </View>
@@ -68,12 +70,16 @@ const Loader: React.FC<SpinnerPropTypes> = React.memo(({
 
         return (
             <Modal
-                animationType={animation}
-                onRequestClose={handleOnRequestClose}
+                animationIn={animationIn}
+                animationOut={animationOut}
+                animationInTiming={300}
+                animationOutTiming={300}
+                statusBarTranslucent
+                onModalHide={handleOnRequestClose}
                 supportedOrientations={["landscape", "portrait"]}
-                transparent
-                visible={spinnerVisible}
-                statusBarTranslucent={true}
+                isVisible={spinnerVisible}
+                style={{margin: 0}}
+                hasBackdrop={false}
             >
                 {spinner}
             </Modal>

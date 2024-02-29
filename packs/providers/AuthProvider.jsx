@@ -156,28 +156,30 @@ export const AuthProvider = ({children}) => {
 
                         try {
                             await logout();
+                            setIsReady(true);
                             navigation.navigate("StartPageScreen")
-                            setTimeout(() => setIsReady(true), 1);
+
                         } catch (err) {
                             return Promise.reject()
                         }
                     } else if (data.data.userAvailable && data.data.user) {
-                        navigation.navigate("MainTabNavigator")
+                        setIsReady(true);
+                        navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
                         return login(data.data.user, data.data.tokens)
+                    } else {
+                        setIsReady(true);
                     }
-
-                    setTimeout(() => setIsReady(true), 1);
                 }
             })
             .catch(async () => {
-                setTimeout(() => setIsReady(true), 1);
+                setIsReady(true)
 
                 Toast.show({
                     type: "error",
                     text1: "Ошибка при обращении к серверу",
                 });
             })
-            .finally(() => setTimeout(() => setIsReady(true), 1))
+            .finally(() => setIsReady(true))
     }, []);
 
     useEffect(() => {

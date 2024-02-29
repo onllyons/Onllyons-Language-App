@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
-import {isAuthenticated, login} from "../providers/AuthProvider";
+import {isAuthenticated, login, useAuth} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
@@ -21,6 +21,7 @@ const ProgressBar = ({currentIndex, totalCount}) => {
 };
 
 export default function IntroductionScreen({navigation}) {
+    const {setStoredCourseData} = useAuth()
     const swiperRef = useRef(null);
     const [index, setIndex] = useState(0);
     const [isLastSlide, setIsLastSlide] = useState(false);
@@ -67,18 +68,24 @@ export default function IntroductionScreen({navigation}) {
         } else {
             setLoader(true)
 
-            sendDefaultRequest(`${SERVER_AJAX_URL}/user_signup.php`,
+            sendDefaultRequest(`${SERVER_AJAX_URL}/user/user_signup.php`,
                 {...userData},
                 navigation,
                 {success: false}
             )
                 .then(async data => {
                     await login(data.userData, data.tokens)
-                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+
+                    setLoader(false)
+                    await new Promise(resolve => setTimeout(resolve, 350))
+
+                    setStoredCourseData(true, () => {
+                        navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+                    })
                 })
                 .catch(() => {
+                    setTimeout(() => setLoader(false), 1)
                 })
-                .finally(() => setTimeout(() => setLoader(false), 1))
         }
     }
 
