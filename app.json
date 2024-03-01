@@ -44,6 +44,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+<<<<<<< HEAD
     },
+=======
+    }
+>>>>>>> ae57f6ab820a1300792f51e20d2a71346ea402f6
   }
 }
