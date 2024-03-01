@@ -44,7 +44,6 @@ import {AuthProvider} from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
 import {Analytics} from "./packs/components/analytics/Analytics";
-import Test_font_size from "./packs/test_font_size";
 import {StoreProvider} from "./packs/providers/Store";
 
 import * as Linking from 'expo-linking';
@@ -357,13 +356,6 @@ function AppStack() {
             <Stack.Screen
                 name="DialogReading"
                 component={DialogReading}
-                options={{headerShown: false}}
-            />
-
-
-            <Stack.Screen
-                name="Test_font_size"
-                component={Test_font_size}
                 options={{headerShown: false}}
             />
 

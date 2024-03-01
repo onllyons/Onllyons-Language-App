@@ -259,9 +259,6 @@ export default function CourseScreen({navigation}) {
                 }}
                 ListHeaderComponent={(
                     <View>
-                        <TouchableOpacity onPress={() => navigation.navigate("Test_font_size")}>
-                            <Text>Test font responsive sizes</Text>
-                        </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate("Congratulations")}>
                             <Text>Congragulations</Text>
                         </TouchableOpacity>
