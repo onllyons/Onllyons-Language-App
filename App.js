@@ -473,7 +473,7 @@ export default function App() {
     return (
         <>
             <StripeProvider
-                publishableKey="pk_test_51Ndx65Ey5CVgEBCPOroLQM6CwOZHzcnAeID3mPXbPAPn7iT1KpYIEuxI8BEHH1Fl0NojFoffkHHfvXrpIbSwh2Nm00DzR0cWKE"
+                publishableKey="pk_live_51Ndx65Ey5CVgEBCPwAZSDMrjWb1LXVLaF5qL39Uhdy2iy3eJF0Az3qbQfXLD6cJuETjPyjxltHHD1MAYCr53Zrcy00Quf711dA"
                 urlScheme="language" // required for 3D Secure and bank redirects
                 merchantIdentifier="merchant.com.language" // required for Apple Pay
             >

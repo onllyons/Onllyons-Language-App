@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleSheet} from "react-native";
+import {Dimensions, StyleSheet} from "react-native";
 import {View} from "react-native";
 import {MaterialIndicator} from "react-native-indicators";
 import Modal from "react-native-modal"
@@ -14,7 +14,7 @@ interface SpinnerPropTypes {
 
 const Indicator = ({options}) => {
     return (
-        <MaterialIndicator size={options.size} color="#57cc04" style={[styles.activityIndicator]}/>
+        <MaterialIndicator size={options.size}  color="#57cc04" style={[styles.activityIndicator]}/>
     );
 }
 
@@ -30,7 +30,7 @@ const Loader: React.FC<SpinnerPropTypes> = React.memo(({
         const spinner = (
             <View
                 style={[styles.container]}
-                // key={`spinner_${Date.now()}`}
+                key={`spinner_${Date.now()}`}
             >
                 <Indicator options={{size: size}}/>
             </View>
@@ -45,6 +45,7 @@ const Loader: React.FC<SpinnerPropTypes> = React.memo(({
                 statusBarTranslucent
                 supportedOrientations={["landscape", "portrait"]}
                 isVisible={visible}
+                deviceHeight={Dimensions.get("screen").height}
                 style={{margin: 0}}
                 useNativeDriver={true}
                 useNativeDriverForBackdrop={true}
