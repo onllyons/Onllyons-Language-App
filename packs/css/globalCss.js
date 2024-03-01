@@ -64,6 +64,9 @@ const globalCss = StyleSheet.create({
     orange: {
         color: "#FF9600",
     },
+    red: {
+        color: "#ca3431",
+    },
     gry: {
         color: "#636363",
     },

@@ -4,6 +4,7 @@ import {
     Text,
     Image,
     Dimensions,
+    ScrollView,
     TouchableOpacity,
     StyleSheet,
 } from "react-native";
@@ -148,20 +149,29 @@ export default function SubscribeScreen({navigation}) {
             "Уроки английского",
             "Флэш карта: Слова",
             "Игра: Задачи",
-            "Кники (аудио + субтитры)",
+            "Игра: Задачи",
+            "Игра: Задачи",
+            "Игра: Задачи",
+            "Кники (субтитры)",
         ],
         2: [
             "Уроки английского",
             "Флэш карта: Слова",
             "Игра: Задачи",
-            "Кники (аудио + субтитры)",
+            "Игра: Задачи",
+            "Игра: Задачи",
+            "Игра: Задачи",
+            "Кники (субтитры)",
         ],
         // Default list for other ids
         default: [
             "Уроки английского",
             "Флэш карта: Слова",
             "Игра: Задачи",
-            "Кники (аудио + субтитры)",
+            "Игра: Задачи",
+            "Игра: Задачи",
+            "Игра: Задачи",
+            "Кники (субтитры)",
 
         ]
     };
@@ -171,9 +181,15 @@ export default function SubscribeScreen({navigation}) {
             "Неограниченный доступ",
             "Неограниченный доступ",
             "16 задачь в день",
+            "16 задачь в день",
+            "16 задачь в день",
+            "16 задачь в день",
             "Отсутствует",
         ],
         2: [
+            "Неограниченный доступ",
+            "Неограниченный доступ",
+            "Неограниченный доступ",
             "Неограниченный доступ",
             "Неограниченный доступ",
             "Неограниченный доступ",
@@ -184,31 +200,68 @@ export default function SubscribeScreen({navigation}) {
             "1 урок из категории",
             "1 урок из категории",
             "5 задачи в день",
+            "5 задачи в день",
+            "5 задачи в день",
+            "5 задачи в день",
             "Отсутствует",
         ]
     };
 
-    const renderPoints = (id) => {
-        let points = [];
-        // Selectează lista corectă de descrieri și descrieri suplimentare pe baza id-ului
-        let descriptions = descriptionsMap[id] || descriptionsMap.default;
-        let supplementaryDescriptions = descriptionsPunct[id] || descriptionsPunct.default;
-
-        // Asigură-te că ambele liste au același număr de elemente
-        let maxLength = Math.max(descriptions.length, supplementaryDescriptions.length);
-
-        for (let i = 0; i < maxLength; i++) {
-            points.push(
-                <View key={i} style={[styles.btnMenuProfile, styles.btnBTR, i === maxLength - 1 ? styles.btnBBR : styles.btnBB]}>
-                    <Text style={styles.btnText}>{descriptions[i]}</Text>
-                    {/* Accesează descrierea suplimentară folosind index */}
-                    <Text style={styles.btnDescription}>{supplementaryDescriptions[i]}</Text>
-                </View>
-            );
-        }
-
-        return points;
+    const descriptionsPunctColor = {
+        1: [
+            "#636363",
+            "#636363",
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+        ],
+        2: [
+            "#636363",
+            "#636363",
+            "#636363",
+            "#636363",
+            "#636363",
+            "#636363",
+            "#636363",
+        ],
+        // Default list for other ids
+        default: [
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+            "#ca3431",
+        ]
     };
+
+const renderPoints = (id) => {
+  let points = [];
+  let descriptions = descriptionsMap[id] || descriptionsMap.default;
+  let supplementaryDescriptions = descriptionsPunct[id] || descriptionsPunct.default;
+  let colors = descriptionsPunctColor[id] || descriptionsPunctColor.default;
+  let maxLength = Math.max(descriptions.length, supplementaryDescriptions.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    // Creează un obiect de stil pentru text care include culoarea din descriptionsPunctColor
+    const textStyleWithColor = { color: colors[i], ...styles.supplementaryDescriptionsText };
+
+    points.push(
+      <View key={i} style={[styles.btnMenuProfile, styles.btnBTR, i === maxLength - 1 ? styles.btnBBR : styles.btnBB]}>
+        <Text style={styles.btnText}>{descriptions[i]}</Text>
+        {/* Aplică stilul cu culoarea specifică pentru descrierea suplimentară */}
+        <Text style={textStyleWithColor}>{supplementaryDescriptions[i]}</Text>
+      </View>
+    );
+  }
+
+  return points;
+};
+
+
 
     const renderItem = ({item}) => {
         return (
@@ -232,10 +285,15 @@ export default function SubscribeScreen({navigation}) {
                     setPeriod={setPeriod}
                 />
 
-                <Text style={styles.descriptionText}>{item.description}</Text>
+                <View style={styles.sectionScroll}>
+                    <ScrollView contentContainerStyle={{paddingTop: 0, paddingLeft: 0, paddingRight: 0, paddingBottom: 20}}>
 
-                <View style={styles.sectionMenu}>
-                    {renderPoints(item.id)}
+                        <Text>{item.description}</Text>
+
+                        <View style={styles.sectionMenu}>
+                            {renderPoints(item.id)}
+                        </View>
+                    </ScrollView>
                 </View>
             </View>
         )
@@ -361,6 +419,10 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "white",
     },
+    sectionScroll:{
+        marginTop: "5%",
+        flex: 1,
+    },
     buttonBuy: {
         width: "85%",
         alignSelf: "center",
@@ -372,7 +434,6 @@ const styles = StyleSheet.create({
         height: "70%",
     },
     slide: {
-        alignItems: "center",
         backgroundColor: "#f4f4f4",
         height: "100%",
         borderRadius: 12,
@@ -438,7 +499,7 @@ const styles = StyleSheet.create({
     section: {
         marginVertical: 10,
     },
-    sectionTitle: {
+    sectionTitle: { 
         fontSize: 18,
         fontWeight: "600",
         color: "grey",
@@ -449,12 +510,11 @@ const styles = StyleSheet.create({
         borderColor: "#d8d8d8",
         borderWidth: 2,
         borderRadius: 12,
-        marginTop: '8%',
         width: '100%',
     },
     btnMenuProfile: {
         backgroundColor: "white",
-        paddingVertical: "6%",
+        paddingVertical: "3%",
         paddingHorizontal: "5%",
         alignItems: "flex-start",
     },
@@ -473,7 +533,10 @@ const styles = StyleSheet.create({
     },
     btnText: {
         fontWeight: "bold",
-        fontSize: 16,
+        fontSize: 15,
         color: "black",
+    },
+    supplementaryDescriptionsText: {
+        fontSize: 13,
     },
 });
