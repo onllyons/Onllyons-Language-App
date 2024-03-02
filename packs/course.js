@@ -285,10 +285,7 @@ const CurrentCategory = React.memo(({currentCategory, getCategoryData}) => {
                     shadowColor={getCategoryData("backgroundShadow", SHADOW_COLORS["green"])}
                     styleButton={[styles.cardCategoryTitle, {backgroundColor: getCategoryData("background", "#57cc04")}]}
                 >
-                    <Text style={{
-                        ...styles.infoCourseTxtSubCat,
-                        fontSize: getFontSize(16)
-                    }}>Часть {currentCategory.subject}</Text>
+                    <Text style={styles.infoCourseTxtSubCat}>Часть {currentCategory.subject}</Text>
                     <Text style={{...styles.infoCourseTitle}}>{currentCategory.name}</Text>
                 </AnimatedButtonShadow>
 
