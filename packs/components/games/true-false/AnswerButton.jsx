@@ -81,8 +81,6 @@ export const AnswerButton = ({
             <PanGestureHandler enabled={!isAnswerSubmitted} onGestureEvent={panGestureEvent}>
                 <Animated.View style={[styles.cube, animatedStyle, isAnswerSubmitted && (isAnswerCorrect ? styles.correct : styles.incorrect)]}>
                     <Text style={styles.headerText}>{text}</Text>
-                    <Text>Потяните вверх - True</Text>
-                    <Text>Потяните ввниз - False</Text>
                 </Animated.View>
             </PanGestureHandler>
         </View>
@@ -104,6 +102,9 @@ const styles = StyleSheet.create({
         height: CUBE_SIZE,
         backgroundColor: 'white',
         borderColor: "#e0e0e0",
+        alignSelf: 'center',
+        alignItem: 'center',
+        justifyContent: 'center',
         borderWidth: 2.1,
         borderRadius: 14,
     },

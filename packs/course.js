@@ -257,13 +257,6 @@ export default function CourseScreen({navigation}) {
                 onContentSizeChange={(contentWidth, contentHeight) => {
                     currentScrollData.current.contentHeight = contentHeight
                 }}
-                ListHeaderComponent={(
-                    <View>
-                        <TouchableOpacity onPress={() => navigation.navigate("Congratulations")}>
-                            <Text>Congragulations</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
                 scrollEventThrottle={8}
                 onLayout={(e) => (startLayoutY.current = e.nativeEvent.layout.y)}
             />

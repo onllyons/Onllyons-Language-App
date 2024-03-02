@@ -137,17 +137,19 @@ export default function MenuScreen({navigation}) {
                     </View>
                 </View>
                 <View style={[styles.section, {marginVertical: 0, marginTop: 10}]}>
-                    <Text style={styles.sectionTitle}>Ещё страницы</Text> 
-                    {/*Общая информация*/}
+                    <Text style={styles.sectionTitle}>Общая информация</Text>
+                    {/* Ещё страницы */}
+                    
                     <View style={styles.sectionMenu}>
-
+                    
+                    {/* 
                     <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('AlphabetScreen')}>
                         <Text style={styles.btnText}>Флэш-карты: Алфавит</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={[styles.btnMenuProfile, styles.btnBTR, styles.btnBB]} onPress={() => navigation.navigate('AboutTheWordScreen')}>
                         <Text style={styles.btnText}>Все о слове</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity>*/}
 
 
                         <TouchableOpacity 
