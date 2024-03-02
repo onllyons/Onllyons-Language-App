@@ -450,12 +450,12 @@ const Category = React.memo(({
 
             case 4:
                 if (pos === "first") return require("./images/El/course/6.png")
-                else if (pos === "second") return require("./images/El/course/9.png")
+                else if (pos === "second") return require("./images/El/course/11.png")
                 break
 
             case 5:
-                if (pos === "first") return require("./images/El/course/11.png")
-                else if (pos === "second") return require("./images/El/course/9.png")
+                if (pos === "first") return require("./images/El/course/9.png")
+                else if (pos === "second") return require("./images/El/course/14.png")
                 break
             // asd
             case 6:
@@ -463,12 +463,12 @@ const Category = React.memo(({
                 else if (pos === "second") return require("./images/El/course/12.png")
                 break
             case 7:
-                if (pos === "first") return require("./images/El/course/14.png")
-                else if (pos === "second") return require("./images/El/course/15.png")
+                if (pos === "first") return require("./images/El/course/15.png")
+                else if (pos === "second") return require("./images/El/course/16.png")
                 break
             case 8:
-                if (pos === "first") return require("./images/El/course/16.png")
-                else if (pos === "second") return require("./images/El/course/17.png")
+                if (pos === "first") return require("./images/El/course/17.png")
+                else if (pos === "second") return require("./images/El/course/8.png")
                 break
 
         }
