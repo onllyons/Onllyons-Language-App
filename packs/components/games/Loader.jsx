@@ -9,7 +9,7 @@ export const Loader = ({visible}) => {
         <Modal
             isVisible={visible}
             animationInTiming={1}
-            animationOutTiming={150}
+            animationOutTiming={1}
             animationIn={"fadeIn"}
             animationOut={"fadeOut"}
             statusBarTranslucent

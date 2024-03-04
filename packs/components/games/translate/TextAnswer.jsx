@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {TextInput as Input, View} from "react-native"; // Importă Keyboard
+import {Platform, TextInput as Input, View} from "react-native"; // Importă Keyboard
 import globalCss from "../../../css/globalCss";
+import Toast from "react-native-toast-message";
 
 export const TextAnswer = ({
     isAnswerSubmitted,
@@ -28,7 +29,12 @@ export const TextAnswer = ({
                         textRef.current = value
                         setText(value)
                     }}
-                    onSubmitEditing={handleAnswerSelect}
+                    onSubmitEditing={() => {
+                        setTimeout(() => handleAnswerSelect(), Platform.OS === "ios" ? 500 : 1)
+                    }}
+                    onFocus={() => {
+                        if (Platform.OS === "ios") Toast.hide()
+                    }}
                     style={globalCss.inputBoxView}
                 />
             </View>

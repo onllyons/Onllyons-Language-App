@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
-import {View, StyleSheet, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {View, StyleSheet, TouchableWithoutFeedback, Keyboard, Dimensions} from "react-native";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {Loader} from "./components/games/Loader";
 import {SubscribeModal} from "./components/SubscribeModal";
@@ -56,7 +56,7 @@ export default function GamesTrueFalse({navigation}) {
             .finally(() => {
                 setTimeout(() => {
                     setLoading(false);
-                }, 0);
+                }, 300);
             })
     }
 
@@ -129,7 +129,7 @@ export default function GamesTrueFalse({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height: Dimensions.get("screen").height,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white",

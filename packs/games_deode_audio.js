@@ -68,11 +68,6 @@ export default function GamesDecodeAudio({navigation}) {
                     }
                 }
             })
-            .finally(() => {
-                setTimeout(() => {
-                    setLoading(false);
-                }, 0);
-            })
     }
 
     useEffect(() => {
@@ -201,7 +196,12 @@ export default function GamesDecodeAudio({navigation}) {
                                     </Text>
                                 </View>
 
-                                <CustomSound uri={`${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${data.audio}`}/>
+                                <CustomSound
+                                    uri={`${SERVER_URL}/ru/ru-en/packs/assest/audio-general/${data.audio}`}
+                                    onLoad={() => {
+                                        if (loading) setLoading(false)
+                                    }}
+                                />
 
                                 <TextAnswer
                                     isAnswerSubmitted={isAnswerSubmitted}

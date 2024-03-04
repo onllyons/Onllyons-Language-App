@@ -3,7 +3,6 @@ import globalCss from "../../css/globalCss";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowRightLong, faLightbulb, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
-import React, {useRef} from "react";
 
 export const Buttons = ({
     selectedAnswer,
@@ -148,21 +147,25 @@ export const ButtonsForInput = ({
 
             {visibleHelp && !visibleNextOrReload && (
                 <AnimatedButtonShadow
+                    key={4}
                     styleContainer={styles.quizBtnCtrContainer}
                     styleButton={[
                         styles.quizBtnCtr,
+                        styles.quizBtnCtrCheck,
                         globalCss.buttonGreen,
                     ]}
                     shadowColor={"green"}
                     onPress={handleAnswerSelect}
                 >
-                    <Text style={globalCss.buttonText}>Проверить</Text>
+                    <View>
+                        <Text style={[globalCss.buttonText]}>Проверить</Text>
+                    </View>
                 </AnimatedButtonShadow>
             )}
 
             {visibleNextOrReload && (
                 <AnimatedButtonShadow
-                    key={visibleHelp ? 4 : 5}
+                    key={visibleHelp ? 5 : 6}
                     styleContainer={styles.quizBtnCtrContainer}
                     styleButton={[
                         styles.quizBtnCtr,
@@ -213,22 +216,25 @@ export const isTextAnswerCorrect = (answers, text) => {
 const styles = StyleSheet.create({
     groupBtnQuiz: {
         maxWidth: "80%",
-        marginBottom: "13%",
+        paddingBottom: "12%",
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
         alignContent: "center",
     },
     quizBtnCtr: {
-        paddingTop: 20,
-        paddingBottom: 15,
-        //paddingVertical: 18,
+        height: 50,
+        paddingTop: 5,
         alignItems: "center",
+        justifyContent: "center",
         borderRadius: 14
+    },
+    quizBtnCtrCheck: {
+        paddingTop: 0
     },
     quizBtnCtrContainer: {
         flex: 1,
-        marginHorizontal: "1%",
+        paddingHorizontal: "1%"
     },
     buttonText: {
         fontSize: 18,

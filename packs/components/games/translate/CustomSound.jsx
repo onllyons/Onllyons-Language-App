@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {StyleSheet, Text} from "react-native";
 import {Audio} from "expo-av";
 
@@ -10,34 +10,60 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import globalCss from "../../../css/globalCss";
 import {AnimatedButtonShadow} from "../../buttons/AnimatedButtonShadow";
 
-export const CustomSound = React.memo(({uri}) => {
+export const CustomSound = React.memo(({uri, onLoad}) => {
+    const lastUri = useRef(null)
     const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const audioIsLoaded = useRef(false);
+
+    useEffect(() => {
+        initSound()
+    }, [uri])
+
+    const initSound = async () => {
+        if (lastUri.current !== uri && sound) {
+            const status = await sound.getStatusAsync()
+
+            if (status.uri === uri) return
+
+            await sound.unloadAsync()
+            setSound(null)
+            setIsPlaying(false)
+
+            audioIsLoaded.current = false
+
+            console.log("destroy")
+
+            setTimeout(() => {
+                if (audioIsLoaded.current) return
+
+                setIsLoading(false)
+            }, 200)
+        }
+
+        console.log("new")
+
+        const {sound: newSound} = await Audio.Sound.createAsync({uri: uri});
+        await newSound.setVolumeAsync(1);
+        newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+
+        lastUri.current = uri
+        audioIsLoaded.current = true
+        setSound(newSound);
+        setIsLoading(true)
+
+        if (onLoad) setTimeout(() => onLoad(), 300)
+    }
 
     const onPlaybackStatusUpdate = (status) => {
-        if (status.isLoaded && status.didJustFinish) {
+        if (status.didJustFinish) {
             setIsPlaying(false);
-            setSound(null);
         }
     };
 
-    const playSound = async () => {
-        await Audio.setAudioModeAsync({
-            allowsRecordingIOS: false,
-            playsInSilentModeIOS: true,
-        });
-
-        if (!sound) {
-            const {sound} = await Audio.Sound.createAsync(
-                {uri: uri},
-                {shouldPlay: true}
-            );
-            await sound.setVolumeAsync(1);
-            sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-
-            setSound(sound);
-            setIsPlaying(true);
-        } else {
+    const playSound = useCallback(async () => {
+        if (sound) {
             const status = await sound.getStatusAsync()
 
             if (!status.isLoaded) return
@@ -46,11 +72,16 @@ export const CustomSound = React.memo(({uri}) => {
                 await sound.pauseAsync();
                 setIsPlaying(false);
             } else {
-                await sound.playAsync();
+                if (status.positionMillis >= status.durationMillis) {
+                    await sound.replayAsync();
+                } else {
+                    await sound.playAsync();
+                }
+
                 setIsPlaying(true);
             }
         }
-    };
+    }, [sound])
 
     useEffect(() => {
         return sound
@@ -66,6 +97,9 @@ export const CustomSound = React.memo(({uri}) => {
             onPress={() => playSound()}
             styleButton={[styles.audioTouchable, globalCss.bgGry]}
             shadowColor={"gray"}
+            permanentlyActiveOpacity={.5}
+            disable={!isLoading}
+            permanentlyActive={!isLoading}
             moveByY={3}
         >
             <Text>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
-import {View, Text, StyleSheet} from "react-native";
+import {View, Text, StyleSheet, Dimensions} from "react-native";
 import Answer from "./components/games/quiz/Answer";
 import {Buttons} from "./components/games/Buttons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
@@ -68,7 +68,7 @@ export default function GameQuiz({navigation}) {
             .finally(() => {
                 setTimeout(() => {
                     setLoading(false);
-                }, 0);
+                }, 300);
             })
     }
 
@@ -228,7 +228,7 @@ export default function GameQuiz({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height: Dimensions.get("screen").height,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white",

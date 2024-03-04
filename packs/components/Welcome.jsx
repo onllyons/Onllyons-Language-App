@@ -8,7 +8,7 @@ export const Welcome = ({visible}) => {
             <Modal
                 isVisible={visible}
                 animationInTiming={0.1}
-                animationOutTiming={150}
+                animationOutTiming={0.1}
                 animationIn={"fadeIn"}
                 animationOut={"fadeOut"}
                 statusBarTranslucent

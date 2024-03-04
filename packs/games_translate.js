@@ -67,7 +67,7 @@ export default function GamesTranslate({navigation}) {
         }).finally(() => {
             setTimeout(() => {
                 setLoading(false);
-            }, 0);
+            }, 300);
         })
     }
 
