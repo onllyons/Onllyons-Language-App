@@ -67,7 +67,7 @@ export const AnswerButton = ({
             [-POSITION_TRIGGER, -(POSITION_TRIGGER / 3), POSITION_TRIGGER / 3, POSITION_TRIGGER],
             ['#81b344', 'white', 'white', '#ca3431']
         );
-    });
+    }, [text, isAnswerSubmitted]);
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
