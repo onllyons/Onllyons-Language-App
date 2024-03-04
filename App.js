@@ -154,11 +154,13 @@ function MainTabNavigator() {
                         ? {
                             width: size + 10,
                             height: size + 10,
+                            marginBottom: 0,
                             // color: '#8ac0e6'
                         }
                         : {
                             width: size + 10,
                             height: size + 10,
+                            marginBottom: 0,
                             // color: '#8ac0e6'
                         };
                     return (
@@ -171,11 +173,10 @@ function MainTabNavigator() {
                 tabBarActiveTintColor: "#000000",
                 tabBarInactiveTintColor: "#7b7b7b",
                 tabBarStyle: {
-                    backgroundColor: "#ffffff",
-                    height: 90,
-                    borderTopWidth: .3,
-                    paddingTop: 20
-                }
+                    height: 60,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                },
             })}
         >
             <Tab.Screen

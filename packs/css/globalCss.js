@@ -8,8 +8,8 @@ const globalCss = StyleSheet.create({
         backgroundColor: "red",
     },
     navImage: {
-        alignSelf: "center",
-        marginBottom: '10%', 
+        marginTop: '1%', 
+        marginBottom: '1%'
     },
     alignItemsCenter: {
         alignItems: "center",

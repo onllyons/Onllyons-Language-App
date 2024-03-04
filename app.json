@@ -1,44 +1,49 @@
 {
-   "expo":{
-      "name":"Onllyons Language",
-      "slug":"onllyons-language",
-      "version":"1.0.0",
-      "orientation":"portrait",
-      "icon":"./assets/icon.png",
-      "userInterfaceStyle":"light",
-      "jsEngine":"hermes",
-      "splash":{
-         "resizeMode":"contain",
-         "backgroundColor":"#ffffff"
-      },
-      "scheme":"language",
-      "assetBundlePatterns":[
-         "**/*"
-      ],
-      "ios":{
-         "bundleIdentifier":"language",
-         "supportsTablet":true,
-         "infoPlist":{
-            "bundleIdentifier":"language",
-            "UIBackgroundModes":[
-               "audio"
-            ],
-            "NSFaceIDUsageDescription":"Allow $(PRODUCT_NAME) to use Face ID.",
-            "UIApplicationShortcutItemTitle":"ADD_ITEM_SHORTCUT_TITLE",
-            "NSCameraUsageDescription":"Доступ до камери для фото профілю",
-            "NSPhotoLibraryUsageDescription":"Доступ до фотогалереї для фото профілю",
-            "NSMicrophoneUsageDescription":"We need microphone access for recording audio",
-            "NSCalendarsUsageDescription":"Доступ до календаря для планування подій",
-            "NSContactsUsageDescription":"Доступ до контактів для імпорту інформації",
-            "NSAppleMusicUsageDescription":"Доступ до Apple Music для імпорту музики",
-            "NSSpeechRecognitionUsageDescription":"Allow recognition to access your speech recognition"
-         }
-      },
-      "android":{
-         "package":"com.onllyons.language",
-         "adaptiveIcon":{
-            "backgroundColor":"#ffffff"
-         }
+  "expo": {
+    "name": "Onllyons Language",
+    "slug": "onllyons-language",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "jsEngine": "hermes",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "scheme": "language",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "language",
+      "supportsTablet": true,
+      "infoPlist": {
+        "bundleIdentifier": "language",
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
+        "UIApplicationShortcutItemTitle": "ADD_ITEM_SHORTCUT_TITLE",
+        "NSCameraUsageDescription": "Доступ до камери для фото профілю",
+        "NSPhotoLibraryUsageDescription": "Доступ до фотогалереї для фото профілю",
+        "NSMicrophoneUsageDescription": "We need microphone access for recording audio",
+        "NSCalendarsUsageDescription": "Доступ до календаря для планування подій",
+        "NSContactsUsageDescription": "Доступ до контактів для імпорту інформації",
+        "NSAppleMusicUsageDescription": "Доступ до Apple Music для імпорту музики",
+        "NSSpeechRecognitionUsageDescription": "Allow recognition to access your speech recognition"
       }
-   }
+    },
+    "android": {
+      "package": "com.onllyons.language",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d95fdb97-68b8-49ca-b7c6-99732887ab6f"
+      }
+    }
+  }
 }
