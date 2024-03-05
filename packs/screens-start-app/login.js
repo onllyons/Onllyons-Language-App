@@ -11,7 +11,7 @@ import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
 import * as AuthSession from 'expo-auth-session';
-import {useStore} from "../providers/Store";
+import {useStore} from "../providers/StoreProvider";
 import * as Linking from "expo-linking";
 
 const CLIENT_ID = '975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu.apps.googleusercontent.com';

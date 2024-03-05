@@ -1,5 +1,5 @@
 import {StatusBar} from "expo-status-bar";
-import {Image} from "react-native";
+import {Image, LogBox} from "react-native";
 import {NavigationContainer, useNavigation} from "@react-navigation/native";
 import {
     createStackNavigator,
@@ -44,7 +44,7 @@ import {AuthProvider} from "./packs/providers/AuthProvider";
 import Toast, {BaseToast, ErrorToast} from "react-native-toast-message";
 import {FadeNavMenu} from "./packs/components/FadeNavMenu";
 import {Analytics} from "./packs/components/analytics/Analytics";
-import {StoreProvider} from "./packs/providers/Store";
+import {StoreProvider} from "./packs/providers/StoreProvider";
 
 import * as Linking from 'expo-linking';
 import {StripeProvider} from "@stripe/stripe-react-native";
@@ -55,12 +55,15 @@ import GamesDecodeAudio from "./packs/games_deode_audio";
 import GamesTranslate from "./packs/games_translate";
 import GamesTranslateAudio from "./packs/game_translate_audio";
 import GamesTrueFalse from "./packs/games_true_false";
+import {SafeAreaProvider, useSafeAreaInsets} from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const handleTabPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 };
+
+export const NAV_HEIGHT = 65
 
 function UserProfileMenu() {
     return (
@@ -131,6 +134,7 @@ function MenuFlasCards() {
 
 function MainTabNavigator() {
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
 
     return (
         <Tab.Navigator
@@ -173,10 +177,21 @@ function MainTabNavigator() {
                 tabBarActiveTintColor: "#000000",
                 tabBarInactiveTintColor: "#7b7b7b",
                 tabBarStyle: {
-                    height: 60,
-                    paddingTop: 5,
-                    paddingBottom: 5,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+
+                    borderTopWidth: 0,
+                    height: NAV_HEIGHT + insets.bottom
                 },
+                tabBarItemStyle: {
+                    paddingVertical: 5
+                },
+                tabBarIconStyle: {
+                    paddingTop: 0
+                }
             })}
         >
             <Tab.Screen
@@ -452,6 +467,8 @@ const toastConfig = {
 };
 
 export default function App() {
+    LogBox.ignoreLogs(["Require cycle"]);
+
     const prefix = Linking.createURL("/");
 
     const linking = {
@@ -464,7 +481,7 @@ export default function App() {
     };
 
     return (
-        <>
+        <SafeAreaProvider>
             <StripeProvider
                 publishableKey="pk_live_51Ndx65Ey5CVgEBCPwAZSDMrjWb1LXVLaF5qL39Uhdy2iy3eJF0Az3qbQfXLD6cJuETjPyjxltHHD1MAYCr53Zrcy00Quf711dA"
                 urlScheme="language" // required for 3D Secure and bank redirects
@@ -485,7 +502,7 @@ export default function App() {
                 config={toastConfig}
                 onPress={() => Toast.hide()}
             />
-            <FadeNavMenu/>
-        </>
+                <FadeNavMenu/>
+        </SafeAreaProvider>
     );
 }

@@ -6,7 +6,7 @@ import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import Loader from "../components/Loader";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowLeft, faCircleCheck, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
-import {useStore} from "../providers/Store";
+import {useStore} from "../providers/StoreProvider";
 
 export default function UserProfile({navigation}) {
     const {setStoredValue, getStoredValue} = useStore()

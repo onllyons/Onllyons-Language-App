@@ -1,5 +1,7 @@
 import {Animated, Pressable} from "react-native";
 import {useEffect} from "react";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {NAV_HEIGHT} from "../../App";
 
 const opacity = new Animated.Value(0);
 const translateY = new Animated.Value(100);
@@ -40,6 +42,8 @@ export const fadeInNav = (callback = null) => {
 }
 
 export const FadeNavMenu = () => {
+    const insets = useSafeAreaInsets();
+
     useEffect(() => {
         return () => {
             opacity.stopAnimation()
@@ -53,7 +57,7 @@ export const FadeNavMenu = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            height: 90.3,
+            height: NAV_HEIGHT + insets.bottom,
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             transform: [{translateY: translateY}],
             opacity: opacity

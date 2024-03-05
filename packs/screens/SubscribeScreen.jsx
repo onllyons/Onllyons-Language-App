@@ -24,7 +24,7 @@ import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL, updateUser} from "../utils/Requests";
 import {getUser} from "../providers/AuthProvider";
 import {useFocusEffect} from "@react-navigation/native";
-import {useStore} from "../providers/Store";
+import {useStore} from "../providers/StoreProvider";
 
 const {width} = Dimensions.get("window");
 

@@ -286,8 +286,8 @@ export const stylesnav_dropdown = StyleSheet.create({
     },
     boxDay: {
         marginTop: '8%',
-        marginLeft: '2.7%',
-        marginRight: '2.7%',
+        marginLeft: '2.2%',
+        marginRight: '2.2%',
     },
     rowBlockSentences: {
         alignSelf: "center",

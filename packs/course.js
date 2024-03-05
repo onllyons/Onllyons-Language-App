@@ -30,12 +30,12 @@ import {
 import {withAnchorPoint} from "react-native-anchor-point";
 import * as Haptics from "expo-haptics";
 import {NavTop} from "./components/course/NavTop";
-import {useStore} from "./providers/Store";
+import {useStore} from "./providers/StoreProvider";
 
 export default function CourseScreen({navigation}) {
     const [data, setData] = useState({});
     const [updateState, setUpdateState] = useState(false)
-    const {getStoredValue, setStoredCourseData, deleteStoredValue} = useStore()
+    const {getStoredValue, getStoredValueAsync, setStoredCourseData, deleteStoredValue} = useStore()
     const [currentCategory, setCurrentCategory] = useState({
         name: "",
         url: "",
@@ -64,9 +64,12 @@ export default function CourseScreen({navigation}) {
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
 
-        setStoredCourseData().then(() => {
-        }).catch(() => {
-        }).finally(() => setRefreshing(false))
+        setStoredCourseData()
+            .then(() => {
+            })
+            .catch(() => {
+            })
+            .finally(() => setRefreshing(false))
     }, [])
 
     const onViewableItemsChanged = ({viewableItems}) => {
@@ -122,30 +125,28 @@ export default function CourseScreen({navigation}) {
             let quizzesToAdd = 0
             const items = data[lastFinishCourse.category].items
 
-            for (const [index, value] of items.entries()) {
-                if (value.id === lastFinishCourse.id && !value.finished) {
+            for (const value of items) {
+                if (value.id === lastFinishCourse.id) {
+                    if (generalInfo.current.coursesCompleted.indexOf(value.id) !== -1) {
+                        deleteStoredValue("lastFinishCourse")
+                        break
+                    }
+
                     phrasesToAdd = value.phrases
                     quizzesToAdd = value.quizzes
-                    items[index].finished = true
                     changed = true
                     break
                 }
             }
 
             if (changed) {
-                generalInfo.current.coursesCompleted += 1
+                generalInfo.current.coursesCompleted.push(lastFinishCourse.id)
                 generalInfo.current.quizzesCompleted += quizzesToAdd
                 generalInfo.current.phrasesCompleted += phrasesToAdd
                 generalInfo.current.coursesCompletedHours += lastFinishCourse.timeLesson / 60 / 60
                 deleteStoredValue("lastFinishCourse")
 
-                setData(prev => ({
-                    ...prev,
-                    [lastFinishCourse.category]: {
-                        ...prev[lastFinishCourse.category],
-                        items: items
-                    }
-                }))
+                setUpdateState(prev => !prev)
             }
         }, [data])
     );
@@ -154,7 +155,11 @@ export default function CourseScreen({navigation}) {
     useEffect(() => {
         if (refreshing) return
 
-        const data = getStoredValue("courseData")
+        getCourseData()
+    }, [refreshing, updateState]);
+
+    const getCourseData = useCallback(async () => {
+        const data = await getStoredValueAsync("courseData")
 
         if (!data) {
             setStoredCourseData(true, () => setUpdateState(prev => !prev))
@@ -179,7 +184,7 @@ export default function CourseScreen({navigation}) {
         setCurrentCategory(currentCategoryRef.current);
         setCategories(categories)
         setData(groupedData);
-    }, [refreshing, updateState]);
+    }, [updateState])
 
     const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
 
@@ -242,7 +247,8 @@ export default function CourseScreen({navigation}) {
                 scrollEnabled={scrollEnabled}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                 renderItem={({item, index}) => (
-                    <Category data={data[item] ? data[item] : null} category={item} categoryIndex={index}
+                    <Category data={data[item] ? data[item] : null} category={item}
+                              coursesCompleted={generalInfo.current.coursesCompleted} categoryIndex={index}
                               scrollRef={flatListRef} categoriesData={categoriesData}
                               currentScrollData={currentScrollData} setScrollEnable={setScrollEnable}/>
                 )}
@@ -390,7 +396,8 @@ const Category = React.memo(({
     scrollRef,
     categoriesData,
     currentScrollData,
-    setScrollEnable
+    setScrollEnable,
+    coursesCompleted
 }) => {
     if (!data) return null
 
@@ -544,6 +551,7 @@ const Category = React.memo(({
                         backgroundColor: categoriesData.current[category].background,
                         shadowColor: categoriesData.current[category].backgroundShadow
                     } : {}}
+                    isFinished={coursesCompleted.indexOf(item.id) !== -1}
                     coursesInCategory={categoriesData.current[category].courses}
                 />
             ))}
@@ -552,7 +560,16 @@ const Category = React.memo(({
     )
 })
 
-const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, setScrollEnable, firstLessonColor}) => {
+const Lesson = ({
+    item,
+    index,
+    coursesInCategory,
+    scrollRef,
+    currentScrollData,
+    setScrollEnable,
+    firstLessonColor,
+    isFinished
+}) => {
     const navigation = useNavigation()
 
     const [showModal, setShowModal] = useState(false)
@@ -656,7 +673,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
             {/* carduri buttoane curs */}
             <AnimatedButtonShadow
                 refButton={buttonRef}
-                shadowColor={firstLessonColor.shadowColor ? firstLessonColor.shadowColor : (item.finished ? "yellow" : "gray2")}
+                shadowColor={firstLessonColor.shadowColor ? firstLessonColor.shadowColor : (isFinished ? "yellow" : "gray2")}
                 shadowBorderRadius={300}
                 shadowDisplayAnimate={"slide"}
                 moveByY={10}
@@ -666,7 +683,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                     },
                     styles.card,
                     styles.bgGry,
-                    item.finished ? styles.finishedCourseLesson : null,
+                    isFinished ? styles.finishedCourseLesson : null,
                     firstLessonColor.backgroundColor && {backgroundColor: firstLessonColor.backgroundColor}
                 ]}
                 onPress={handlePressButton}
@@ -678,7 +695,7 @@ const Lesson = ({item, index, coursesInCategory, scrollRef, currentScrollData, s
                         size={index === 0 ? 30 : 30}
                         style={[
                             styles.iconFlash,
-                            item.finished || firstLessonColor.backgroundColor ? styles.finishedCourseLessonIcon : null,
+                            isFinished || firstLessonColor.backgroundColor ? styles.finishedCourseLessonIcon : null,
                             {marginLeft: index === 0 ? 0 : 0}
                         ]}
                     />

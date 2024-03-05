@@ -6,7 +6,7 @@ import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {useFocusEffect} from "@react-navigation/native";
-import {useStore} from "./providers/Store";
+import {useStore} from "./providers/StoreProvider";
 import Loader from "./components/Loader";
 
 const shuffleArray = (array) => {

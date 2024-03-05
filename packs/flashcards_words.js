@@ -13,7 +13,7 @@ import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {AudioComponent} from "./components/flashcards/AudioComponent";
 import {SubscribeModal} from "./components/SubscribeModal";
-import {useStore} from "./providers/Store";
+import {useStore} from "./providers/StoreProvider";
 import Loader from "./components/Loader";
 
 const {width} = Dimensions.get("window");

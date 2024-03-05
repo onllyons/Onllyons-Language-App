@@ -215,7 +215,7 @@ const globalCss = StyleSheet.create({
         backgroundColor: "#ffffff",
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     itemNavTabUser: {
         flexDirection: "row",

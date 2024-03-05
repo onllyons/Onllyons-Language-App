@@ -21,7 +21,7 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {sendDefaultRequest, SERVER_AJAX_URL, SERVER_URL} from "./utils/Requests";
 
 // Componente personalizate
-import {useStore} from "./providers/Store";
+import {useStore} from "./providers/StoreProvider";
 import {BottomSheetComponent} from "./components/books/reading/BottomSheetComponent";
 import {ControlButtons} from "./components/books/reading/ControlButtons";
 import {Header} from "./components/books/reading/Header";

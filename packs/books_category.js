@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 import globalCss from "./css/globalCss";
-import {useStore} from "./providers/Store";
+import {useStore} from "./providers/StoreProvider";
 import {SERVER_URL} from "./utils/Requests";
 
 export default function BooksCategoryScreen({route}) {

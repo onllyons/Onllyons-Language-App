@@ -11,12 +11,12 @@ import {sendDefaultRequest, SERVER_AJAX_URL} from "./utils/Requests";
 // for nav top
 import {NavTop} from "./components/books/NavTop";
 import {useFocusEffect} from "@react-navigation/native";
-import {useStore} from "./providers/Store";
+import {useStore} from "./providers/StoreProvider";
 import {CarouselMenu} from "./components/books/CarouselMenu";
 import {Category} from "./components/books/Category";
 
 export default function BooksScreen({navigation}) {
-    const {deleteStoredValue, getStoredValue} = useStore()
+    const {deleteStoredValue, getStoredValue, getStoredValueAsync, setStoredValueAsync} = useStore()
     const [data, setData] = useState({
         books: [],
         poetry: [],
@@ -61,10 +61,19 @@ export default function BooksScreen({navigation}) {
         }, [])
     );
 
-    useMemo(() => {
-        if (!refreshing && data[currentActive].length !== 0) return;
+    const getBooksData = useCallback(async () => {
+        const savedData = await getStoredValueAsync(`books_${currentActive}`)
 
-        if (data[currentActive].length === 0) setLoading(true)
+        if (savedData && !refreshing) {
+            navTopData.current[currentActive] = savedData.navTopData
+            setData(prev => ({...prev, [currentActive]: savedData.data}));
+
+            const uniqueCategories = [...new Set(savedData.data.map(item => item.type_category))];
+            setCategories(prev => ({...prev, [currentActive]: uniqueCategories}));
+
+            setLoading(false)
+            return
+        }
 
         let url = "books/get_books.php"
 
@@ -81,15 +90,31 @@ export default function BooksScreen({navigation}) {
 
                 setData(prev => ({...prev, [currentActive]: data.data}));
 
+                setStoredValueAsync(`books_${currentActive}`, {
+                    data: data.data,
+                    navTopData: data.navTopData
+                })
+                    .then(() => {})
+                    .catch(() => {})
+
                 const uniqueCategories = [...new Set(data.data.map(item => item.type_category))];
                 setCategories(prev => ({...prev, [currentActive]: uniqueCategories}));
             })
+            .catch(() => {})
             .finally(() => {
                 setTimeout(() => {
                     setRefreshing(false)
                     setLoading(false)
-                }, 1)
+                }, 300)
             }); // Dezactivează Loader-ul
+    }, [refreshing, currentActive])
+
+    useMemo(() => {
+        if (!refreshing && data[currentActive].length !== 0) return;
+
+        getBooksData()
+            .then(() => {})
+            .catch(() => {})
     }, [refreshing, currentActive]);
 
     const handlePressMenu = useCallback(value => {
@@ -121,6 +146,8 @@ export default function BooksScreen({navigation}) {
 
     return (
         <View style={styles.container}>
+            <Loader notFull={true} visible={loading}/>
+
             <NavTop loading={loading} currentActive={currentActive} data={navTopData.current[currentActive]}/>
 
             <ScrollView
@@ -137,7 +164,6 @@ export default function BooksScreen({navigation}) {
                     />
                 }
             >
-                <Loader visible={loading}/>
                 <CarouselMenu currentActive={currentActive} handlePressMenu={handlePressMenu}/>
                 <Category key={`${currentActive}-saved`} data={getBooksSaved()} type={{type: "saved", currentActive: currentActive, text: textSaved}} navTopInfo={navTopData.current[currentActive]}/>
                 {categories[currentActive].map((category, index) => (

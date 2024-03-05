@@ -42,7 +42,7 @@ export const Welcome = ({visible}) => {
 
 const WelcomeContent = () => {
     return (
-        <View style={styles.container} key={"welcome-2"}>
+        <View style={styles.container}>
             <Image
                 source={require("../../packs/images/El/logoStart.png")}
                 style={styles.logoEl}

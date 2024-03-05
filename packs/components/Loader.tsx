@@ -3,33 +3,42 @@ import {Dimensions, StyleSheet} from "react-native";
 import {View} from "react-native";
 import {MaterialIndicator} from "react-native-indicators";
 import Modal from "react-native-modal"
+import {useStore} from "../providers/StoreProvider";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {NAV_HEIGHT} from "../../App";
 
 interface SpinnerPropTypes {
     animationIn?: string;
     animationOut?: string;
     overlayColor?: string;
     size?: number;
-    visible?: boolean
+    visible?: boolean;
+    notFull?: boolean
 }
 
 const Indicator = ({options}) => {
     return (
-        <MaterialIndicator size={options.size}  color="#57cc04" style={[styles.activityIndicator]}/>
+        <MaterialIndicator size={options.size} color="#57cc04" style={[styles.activityIndicator]}/>
     );
 }
 
 const Loader: React.FC<SpinnerPropTypes> = React.memo(({
-        animationIn = "fadeIn",
-        animationOut = "fadeOut",
-        overlayColor = "rgba(0, 0, 0, 0.5)",
-        size = 50,
-        visible = false
-    }: SpinnerPropTypes) => {
+    animationIn = "fadeIn",
+    animationOut = "fadeOut",
+    overlayColor = "#fff",
+    size = 50,
+    visible = false,
+    notFull = false
+}: SpinnerPropTypes) => {
+    const {getStoredValue} = useStore()
+    const insets = useSafeAreaInsets();
+
+    const navHeight = getStoredValue("heightNav") ? getStoredValue("heightNav") : 90
 
     const renderSpinner = () => {
         const spinner = (
             <View
-                style={[styles.container]}
+                style={[styles.container, {backgroundColor: overlayColor}]}
                 key={`spinner_${Date.now()}`}
             >
                 <Indicator options={{size: size}}/>
@@ -46,10 +55,13 @@ const Loader: React.FC<SpinnerPropTypes> = React.memo(({
                 supportedOrientations={["landscape", "portrait"]}
                 isVisible={visible}
                 deviceHeight={Dimensions.get("screen").height}
-                style={{margin: 0}}
+                style={{
+                    margin: 0,
+                    marginTop: notFull ? navHeight : 0,
+                    marginBottom: notFull ? NAV_HEIGHT + insets.bottom : 0
+                }}
                 useNativeDriver={true}
-                useNativeDriverForBackdrop={true}
-                backdropColor={overlayColor}
+                hasBackdrop={false}
             >
                 {spinner}
             </Modal>
@@ -69,13 +81,8 @@ const styles = StyleSheet.create({
         borderRadius: 12
     },
     container: {
-        backgroundColor: "transparent",
-        bottom: 0,
-        flex: 1,
-        left: 0,
         justifyContent: "center",
         alignItems: "center",
-        right: 0,
-        top: 0
+        flex: 1
     }
 });

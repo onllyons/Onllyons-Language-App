@@ -14,7 +14,7 @@ import Loader from "./components/Loader";
 import {NavTop} from "./components/flashcards/NavTop";
 import {AnimatedButtonShadow} from "./components/buttons/AnimatedButtonShadow";
 import {useFocusEffect} from "@react-navigation/native";
-import {useStore} from "./providers/Store";
+import {useStore} from "./providers/StoreProvider";
 
 const FlashCardWords = ({navigation}) => {
     const {deleteStoredValue, getStoredValue} = useStore()
@@ -64,7 +64,7 @@ const FlashCardWords = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <Loader visible={isLoading}/>
+            <Loader notFull={true} visible={isLoading}/>
 
             <NavTop loading={isLoading} data={navTopData.current}/>
 

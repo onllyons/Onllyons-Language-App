@@ -34,7 +34,7 @@ import {debounce, levenshtein} from "../utils/Utls";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 import {SubscribeModal} from "../components/SubscribeModal";
 import {WordConstruct} from "../components/course/WordConstruct";
-import {useStore} from "../providers/Store";
+import {useStore} from "../providers/StoreProvider";
 import Loader from "../components/Loader";
 
 const {width} = Dimensions.get("window");

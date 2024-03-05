@@ -11,6 +11,7 @@ import {AnimatedCircularProgress} from "react-native-circular-progress";
 import React, {useEffect, useRef, useState} from "react";
 import {NavTopItem, NavTopItemLanguage, NavTopItemSeries} from "../navTop/NavTopItem";
 import {NavTopItemLanguageMenu, NavTopItemSeriesMenu} from "../navTop/NavTopMenu";
+import {useStore} from "../../providers/StoreProvider";
 
 export const NavTop = (props) => {
     return (
@@ -22,6 +23,7 @@ export const NavTop = (props) => {
 
 const NavTopContent = ({seriesData, generalInfo}) => {
     const {setStartPosition} = useAnimatedNavTop()
+    const {setStoredValue} = useStore()
     const [phrasesPercent, setPhrasesPercent] = useState(0)
     const percentRef = useRef(0)
 
@@ -34,11 +36,12 @@ const NavTopContent = ({seriesData, generalInfo}) => {
             <View style={globalCss.navTabUser}
                   onLayout={event => {
                       setStartPosition(event.nativeEvent.layout.height)
+                      setStoredValue("heightNav", event.nativeEvent.layout.height)
                   }}>
 
                 <NavTopItemLanguage/>
                 <NavTopItem
-                    text={generalInfo.coursesCompleted}
+                    text={generalInfo.coursesCompleted ? generalInfo.coursesCompleted.length : 0}
                     id={"general"}
                     image={require("../../images/other_images/nav-top/mortarboard.png")}
                 />
@@ -62,7 +65,7 @@ const NavTopContent = ({seriesData, generalInfo}) => {
 
                                 <View style={navDropdown.cardMiddleProcenteCourse}>
                                     <View style={navDropdown.cardMiddleProcenteRow}>
-                                        <Text style={navDropdown.textProcenteCourse}>{generalInfo.coursesCompleted ? calculatePercentage(generalInfo.coursesCompleted, generalInfo.courses, true) : 0}</Text>
+                                        <Text style={navDropdown.textProcenteCourse}>{generalInfo.coursesCompleted ? calculatePercentage(generalInfo.coursesCompleted.length, generalInfo.courses, true) : 0}</Text>
                                         <Text style={navDropdown.textProcenteCourse1}>%</Text>
                                     </View>
                                 </View>
@@ -85,7 +88,7 @@ const NavTopContent = ({seriesData, generalInfo}) => {
 
                             <View style={navDropdown.sectionSheet2}>
                                 <Text style={navDropdown.header}>ВСЕГО УРОКОВ</Text>
-                                <Text style={navDropdown.numberSheetTxt}>{generalInfo.courses ? `${generalInfo.coursesCompleted}/${generalInfo.courses}` : "0/0"}</Text>
+                                <Text style={navDropdown.numberSheetTxt}>{generalInfo.courses ? `${generalInfo.coursesCompleted ? generalInfo.coursesCompleted.length : 0}/${generalInfo.courses}` : "0/0"}</Text>
                             </View>
 
                             <View style={navDropdown.sectionSheetBorder}>
