@@ -11,32 +11,80 @@ const StoreContext = createContext("store context doesnt exists");
 
 let stored = {}
 
-// const STORED_ASYNC_LIFETIME = 7 * 86400 // 7 days is seconds
-const STORED_ASYNC_LIFETIME = 1
+const STORED_ASYNC_LIFETIME = 7 * 86400 // 7 days in seconds
+const STORED_ASYNC_PREFIX = "stored_"
 
 export const StoreProvider = ({children}) => {
     const {isReady} = useAuth()
     const [loading, setLoading] = useState(true)
+    const loadingRef = useRef(true)
     const requestCourseData = useRef(true)
+    const firstRequestData = useRef(true)
 
-    const setStoredCourseData = useCallback(async (withLoading, callback) => {
+    const initFirstData = useCallback(async (withLoading = false, reNew = false, callback = null) => {
         if (withLoading) setTimeout(() => setLoading(true), 1)
 
         requestCourseData.current = true
 
         try {
-            const data = await sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories_copy.php`,
-                {},
-                null,
-                {success: false}
-            )
+            let sendRequest = true
+            let courseData = await getStoredValueAsync("courseData")
 
-            await setStoredValueAsync("courseData", {
-                data: data.data,
-                seriesData: data.seriesData,
-                generalInfo: data.generalInfo,
-                categoriesData: data.categoriesData
-            })
+            if (!reNew && courseData) sendRequest = false
+
+            if (sendRequest) {
+                const data = await sendDefaultRequest(`${SERVER_AJAX_URL}/course/get_categories_copy.php`,
+                    {},
+                    null,
+                    {success: false}
+                )
+
+                courseData = {
+                    data: data.data,
+                    seriesData: data.seriesData,
+                    generalInfo: data.generalInfo,
+                    categoriesData: data.categoriesData
+                }
+
+                await setStoredValueAsync("courseData", courseData)
+            }
+
+            const booksData = await getStoredValueAsync("books_books")
+            const poetryData = await getStoredValueAsync("books_poetry")
+            const dialoguesData = await getStoredValueAsync("books_dialogues")
+            const flashcardsData = await getStoredValueAsync("flashcardsData")
+
+            if (courseData) setStoredValue(`${STORED_ASYNC_PREFIX}courseData`, courseData)
+            if (booksData) setStoredValue(`${STORED_ASYNC_PREFIX}books_books`, booksData)
+            if (poetryData) setStoredValue(`${STORED_ASYNC_PREFIX}books_poetry`, poetryData)
+            if (dialoguesData) setStoredValue(`${STORED_ASYNC_PREFIX}books_dialogues`, dialoguesData)
+            if (flashcardsData) setStoredValue(`${STORED_ASYNC_PREFIX}flashcardsData`, flashcardsData)
+
+            if (firstRequestData.current && !sendRequest && courseData) {
+                const initData = await sendDefaultRequest(`${SERVER_AJAX_URL}/get_init_data.php`,
+                    {
+                        // requestCourseData: !sendRequest,
+                        // requestBooksData: !!booksData,
+                        // requestPoetryData: !!poetryData,
+                        // requestDialoguesData: !!dialoguesData,
+                        requestCourseData: false,
+                        requestBooksData: false,
+                        requestPoetryData: false,
+                        requestDialoguesData: false,
+                        requestFlashcardsData: false,
+                        requestSeriesData: true,
+                    },
+                    null,
+                    {success: false}
+                )
+
+                if (initData.data.courseData) await setStoredValueAsync("courseData", {...courseData, ...initData.data.courseData})
+                if (initData.data.booksData) await setStoredValueAsync("books_books", {...booksData, ...initData.data.booksData})
+                if (initData.data.poetryData) await setStoredValueAsync("books_poetry", {...poetryData, ...initData.data.poetryData})
+                if (initData.data.dialoguesData) await setStoredValueAsync("books_poetry", {...dialoguesData, ...initData.data.dialoguesData})
+                if (initData.data.flashcardsData) await setStoredValueAsync("flashcardsData", {...flashcardsData, ...initData.data.flashcardsData})
+                if (initData.data.seriesData) await setStoredValueAsync("courseData", {...courseData, seriesData: initData.data.seriesData})
+            }
 
             if (callback) callback()
 
@@ -44,11 +92,14 @@ export const StoreProvider = ({children}) => {
         } catch (err) {
             return Promise.reject()
         } finally {
-            if (withLoading) {
-                setTimeout(() => setLoading(false), 500)
-            }
+            setTimeout(() => {
+                requestCourseData.current = false
+                loadingRef.current = false
+                setLoading(false)
+            }, 500)
 
-            requestCourseData.current = false
+
+            firstRequestData.current = false
         }
     }, [])
 
@@ -56,35 +107,37 @@ export const StoreProvider = ({children}) => {
         if (!isReady) return
 
         if (!isAuthenticated()) {
+            loadingRef.current = false
             setLoading(false)
         } else {
-            getStoredValueAsync("courseData")
-                .then(data => {
-                    if (data) setTimeout(() => setLoading(false), 3000)
-                    else throw new Error()
-                })
-                .catch(() => {
-                    if (!requestCourseData.current) {
-                        console.log("request")
-                        setStoredCourseData(true)
-                    }
-                })
+            let interval = setInterval(() => {
+                if (!requestCourseData.current && loadingRef.current) {
+                    clearInterval(interval)
+                    setLoading(false)
+                }
+            }, 1000)
         }
     }, [isReady]);
 
     const setStoredValue = (key, value) => stored[key] = value
 
     const setStoredValueAsync = (key, value) => {
-        return AsyncStorage.setItem(`stored__${key}`, JSON.stringify({
+        setStoredValue(key, value)
+
+        return AsyncStorage.setItem(`${STORED_ASYNC_PREFIX}${key}`, JSON.stringify({
             expired: Date.now() + (STORED_ASYNC_LIFETIME * 1000),
             data: value
         }))
     }
 
-    const getStoredValue = (key) => stored[key] !== undefined ? stored[key] : null
+    const getStoredValue = (key, isAsyncStored = false) => {
+        if (isAsyncStored) key = `${STORED_ASYNC_PREFIX}${key}`
+
+        return stored[key] !== undefined ? stored[key] : null
+    }
 
     const getStoredValueAsync = async (key) => {
-        key = `stored__${key}`
+        key = `${STORED_ASYNC_PREFIX}${key}`
 
         try {
             const value = await AsyncStorage.getItem(key);
@@ -111,7 +164,7 @@ export const StoreProvider = ({children}) => {
         if (stored[key] !== undefined) delete stored[key]
     }
 
-    const deleteStoredValueAsync = (key) => AsyncStorage.removeItem(`stored__${key}`);
+    const deleteStoredValueAsync = (key) => AsyncStorage.removeItem(`${STORED_ASYNC_PREFIX}${key}`);
 
     return (
         <StoreContext.Provider
@@ -124,8 +177,8 @@ export const StoreProvider = ({children}) => {
                 getStoredValueAsync,
                 deleteStoredValueAsync,
 
-                // Load courses
-                setStoredCourseData
+                // Load first data
+                initFirstData
             }}
         >
             <>

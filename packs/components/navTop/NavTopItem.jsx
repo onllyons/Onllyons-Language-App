@@ -3,8 +3,8 @@ import {Image, Text, TouchableOpacity, View} from "react-native";
 import {AnimatedNavTopArrow, useAnimatedNavTop} from "./AnimatedNavTopMenu";
 import {stylesnav_dropdown as navDropdown} from "../../css/navDropDownTop.styles";
 import React, {useEffect, useState} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import ContentLoader from "react-native-easy-content-loader";
+import {useStore} from "../../providers/StoreProvider";
 
 export const NavTopItem = ({
     text,
@@ -59,19 +59,16 @@ export const NavTopItemLanguage = ({loading = false}) => {
 }
 
 export const NavTopItemSeries = React.memo(({text, loading = false}) => {
+    const {getStoredValue} = useStore()
     const [currentSeries, setCurrentSeries] = useState(0)
 
     useEffect(() => {
         if (text) {
             setCurrentSeries(text)
         } else {
-            AsyncStorage.getItem("seriesData")
-                .then(textData => {
-                    if (textData === null) return
+            const courseData = getStoredValue("courseData", true)
 
-                    const parsedData = JSON.parse(textData)
-                    setCurrentSeries(parsedData && parsedData.currentSeries ? parsedData.currentSeries : 0)
-                })
+            if (courseData && courseData.seriesData) setCurrentSeries(courseData.seriesData.currentSeries)
         }
     }, [text]);
 

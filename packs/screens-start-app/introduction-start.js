@@ -21,7 +21,7 @@ const ProgressBar = ({currentIndex, totalCount}) => {
 };
 
 export default function IntroductionScreen({navigation}) {
-    const {setStoredCourseData} = useAuth()
+    const {initFirstData} = useAuth()
     const swiperRef = useRef(null);
     const [index, setIndex] = useState(0);
     const [isLastSlide, setIsLastSlide] = useState(false);
@@ -79,9 +79,9 @@ export default function IntroductionScreen({navigation}) {
                     setLoader(false)
                     await new Promise(resolve => setTimeout(resolve, 350))
 
-                    setStoredCourseData(true, () => {
-                        navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
-                    })
+                    await initFirstData(true, true)
+
+                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
                 })
                 .catch(() => {
                     setTimeout(() => setLoader(false), 1)
@@ -193,6 +193,8 @@ export default function IntroductionScreen({navigation}) {
                             <TextInput
                                 placeholder="Полное имя и фамилия"
                                 placeholderTextColor="#373737"
+                                autoComplete={"name"}
+                                textContentType={"name"}
                                 style={globalCss.input}
                                 value={userData.name}
                                 onChangeText={val => setUserData(prev => ({...prev, name: val}))}
@@ -212,6 +214,9 @@ export default function IntroductionScreen({navigation}) {
                             <TextInput
                                 placeholder="Минимум 5 букв в логине"
                                 placeholderTextColor="#373737"
+                                autoComplete={"username"}
+                                textContentType={"username"}
+                                autoCapitalize="none"
                                 style={globalCss.input}
                                 value={userData.username}
                                 onChangeText={val => setUserData(prev => ({...prev, username: val}))}
@@ -231,6 +236,9 @@ export default function IntroductionScreen({navigation}) {
                             <TextInput
                                 placeholder="Не забудьте подтвердить его позже"
                                 placeholderTextColor="#373737"
+                                autoComplete={"email"}
+                                textContentType={"emailAddress"}
+                                autoCapitalize="none"
                                 style={globalCss.input}
                                 value={userData.email}
                                 onChangeText={val => setUserData(prev => ({...prev, email: val}))}
@@ -250,6 +258,10 @@ export default function IntroductionScreen({navigation}) {
                             <TextInput
                                 placeholder="Создайте пароль для регистрации"
                                 placeholderTextColor="#373737"
+                                autoComplete={"password"}
+                                textContentType={"password"}
+                                autoCapitalize="none"
+                                secureTextEntry={true}
                                 style={globalCss.input}
                                 value={userData.password}
                                 onChangeText={val => setUserData(prev => ({...prev, password: val}))}

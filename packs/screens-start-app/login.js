@@ -35,7 +35,7 @@ const useGoogleAuth = () => {
 };
 
 export default function LoginScreen({navigation}) {
-    const {setStoredCourseData} = useStore()
+    const {initFirstData} = useStore()
     const [showPassword, setShowPassword] = useState(false);
     const [userData, setUserData] = useState({username: "", password: ""})
     const [loader, setLoader] = useState(false)
@@ -90,10 +90,10 @@ export default function LoginScreen({navigation}) {
 
                 await new Promise(resolve => setTimeout(resolve, 350))
 
-                setStoredCourseData(true, () => {
-                    googleAuthProcess.current = false
-                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
-                })
+                await initFirstData(true, true)
+
+                googleAuthProcess.current = false
+                navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
             })
             .catch(() => {
                 setTimeout(() => setLoader(false), 1)
@@ -150,9 +150,9 @@ export default function LoginScreen({navigation}) {
                     setLoader(false)
                     await new Promise(resolve => setTimeout(resolve, 350))
 
-                    setStoredCourseData(true, () => {
-                        navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
-                    })
+                    await initFirstData(true, true)
+
+                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
                 })
                 .catch(() => {
                     setTimeout(() => setLoader(false), 1)
@@ -182,6 +182,7 @@ export default function LoginScreen({navigation}) {
                     autoComplete={"password"}
                     textContentType={"password"}
                     placeholderTextColor="#a5a5a5"
+                    autoCapitalize="none"
                     style={[globalCss.input, styles.inputPassword]}
                     secureTextEntry={!showPassword}
                     onChangeText={val => setUserData(prev => ({...prev, password: val}))}

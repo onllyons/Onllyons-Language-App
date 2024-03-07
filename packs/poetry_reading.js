@@ -12,7 +12,7 @@ import {
 import {useRoute} from "@react-navigation/native";
 
 // Importuri pentru gestionarea audio
-import {Audio} from "expo-av";
+import {Audio, InterruptionModeAndroid, InterruptionModeIOS} from "expo-av";
 
 // Import pentru gestionarea gesturilor
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -28,7 +28,7 @@ import {Header} from "./components/books/reading/Header";
 import Loader from "./components/Loader";
 
 export default function PoetryReading({navigation}) {
-    const {setStoredValue} = useStore();
+    const {setStoredValue, getStoredValue, setStoredValueAsync} = useStore();
     const route = useRoute();
     const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -138,7 +138,7 @@ export default function PoetryReading({navigation}) {
             .catch(() => {
             });
 
-        if (item) item.saved = !saved;
+        item.saved = !saved;
 
         const indexSaved = info.saved.indexOf(id);
 
@@ -153,6 +153,20 @@ export default function PoetryReading({navigation}) {
                 info.saved.splice(indexSaved, 1);
             }
         }
+
+        const newData = getStoredValue("books_poetry", true)
+        newData.navTopData = info
+
+        for (let i = 0; i < newData.data.length; i++) {
+            if (newData.data[i].id !== item.id) continue
+
+            newData.data[i] = item
+            break
+        }
+
+        setStoredValueAsync("books_poetry", newData)
+            .then(() => {})
+            .catch(() => {})
 
         setSaved(!saved);
     }, [saved])
@@ -169,7 +183,7 @@ export default function PoetryReading({navigation}) {
             .catch(() => {
             });
 
-        if (item) item.finished = !finished;
+        item.finished = !finished;
 
         const indexFinish = info.finished.indexOf(id);
 
@@ -179,6 +193,20 @@ export default function PoetryReading({navigation}) {
                 info.finished.push(id);
             }
         }
+
+        const newData = getStoredValue("books_poetry", true)
+        newData.navTopData = info
+
+        for (let i = 0; i < newData.data.length; i++) {
+            if (newData.data[i].id !== item.id) continue
+
+            newData.data[i] = item
+            break
+        }
+
+        setStoredValueAsync("books_poetry", newData)
+            .then(() => {})
+            .catch(() => {})
 
         setStoredValue("needToUpdateBooksCategory", true);
 
@@ -215,6 +243,12 @@ export default function PoetryReading({navigation}) {
                     await sound.unloadAsync()
                     setSound(null)
                 }
+
+                await Audio.setAudioModeAsync({
+                    interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+                    playsInSilentModeIOS: true,
+                    interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+                });
 
                 Audio.Sound.createAsync(
                     {uri: `${SERVER_URL}/ru/ru-en/packs/assest/books/read-poetry/audio/${data.data.audio_file}`}

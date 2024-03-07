@@ -6,7 +6,7 @@ import React, {useEffect, useState} from "react";
 import {formatDayWord} from "../../utils/Utls";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faFire} from "@fortawesome/free-solid-svg-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useStore} from "../../providers/StoreProvider";
 
 export const NavTopItemLanguageMenu = () => {
     const handleButtonPress = () => {
@@ -51,20 +51,16 @@ export const NavTopItemLanguageMenu = () => {
 }
 
 export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
+    const {getStoredValue} = useStore()
     const [seriesData, setSeriesData] = useState(data ? data : {})
 
     useEffect(() => {
         if (data && data["daysVisited"]) {
-            AsyncStorage.setItem("seriesData", JSON.stringify(data));
             setSeriesData(data)
         } else {
-            AsyncStorage.getItem("seriesData")
-                .then(textData => {
-                    if (textData === null) return
+            const courseData = getStoredValue("courseData", true)
 
-                    const parsedData = JSON.parse(textData)
-                    setSeriesData(parsedData && parsedData["daysVisited"] ? parsedData : {})
-                })
+            if (courseData && courseData.seriesData) setSeriesData(courseData.seriesData)
         }
     }, [data]);
 

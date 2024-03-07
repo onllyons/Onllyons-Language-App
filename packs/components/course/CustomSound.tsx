@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useEffect, useState} from "react";
 import {Text} from "react-native";
-import {AVPlaybackStatus, Audio} from "expo-av";
+import {AVPlaybackStatus, Audio, InterruptionModeIOS, InterruptionModeAndroid} from "expo-av";
 
 // icons
 import {faCirclePause} from "@fortawesome/free-solid-svg-icons";
@@ -35,12 +35,13 @@ export const CustomSound: FunctionComponent<SoundCustomProps> = React.memo(({
     };
 
     const playSound = async (name: string) => {
-        await Audio.setAudioModeAsync({
-            allowsRecordingIOS: false,
-            playsInSilentModeIOS: true,
-        });
-
         if (!sound) {
+            await Audio.setAudioModeAsync({
+                interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+                playsInSilentModeIOS: true,
+                interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+            });
+
             const {sound} = await Audio.Sound.createAsync(
                 {
                     uri: url

@@ -19,7 +19,7 @@ import Loader from "./components/Loader";
 const {width} = Dimensions.get("window");
 
 export default function FlashCardsLearning({route, navigation}) {
-    const {setStoredValue} = useStore()
+    const {setStoredValue, getStoredValue, setStoredValueAsync} = useStore()
     const [combinedData, setCombinedData] = useState([]);
     const [index, setIndex] = useState(0);
     const totalSlides = combinedData.length;
@@ -273,6 +273,20 @@ export default function FlashCardsLearning({route, navigation}) {
 
                     setStoredValue("needToUpdateFlashcardsCategory", true)
                     setStoredValue("needToUpdateFlashcards", true)
+
+                    const newData = getStoredValue("flashcardsData", true)
+                    newData.navTopData = generalInfo
+
+                    for (let i = 0; i < newData.data.length; i++) {
+                        if (newData.data[i].id !== item.id) continue
+
+                        newData.data[i] = item
+                        break
+                    }
+
+                    setStoredValueAsync("flashcardsData", newData)
+                        .then(() => {})
+                        .catch(() => {})
                 }
             })
             .catch(() => {})

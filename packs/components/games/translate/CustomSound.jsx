@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {StyleSheet, Text} from "react-native";
-import {Audio} from "expo-av";
+import {Audio, InterruptionModeAndroid, InterruptionModeIOS} from "expo-av";
 
 // icons
 import {faCirclePause} from "@fortawesome/free-solid-svg-icons";
@@ -33,8 +33,6 @@ export const CustomSound = React.memo(({uri, onLoad}) => {
 
             audioIsLoaded.current = false
 
-            console.log("destroy")
-
             setTimeout(() => {
                 if (audioIsLoaded.current) return
 
@@ -42,7 +40,11 @@ export const CustomSound = React.memo(({uri, onLoad}) => {
             }, 200)
         }
 
-        console.log("new")
+        await Audio.setAudioModeAsync({
+            interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+            playsInSilentModeIOS: true,
+            interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+        });
 
         const {sound: newSound} = await Audio.Sound.createAsync({uri: uri});
         await newSound.setVolumeAsync(1);
@@ -53,7 +55,11 @@ export const CustomSound = React.memo(({uri, onLoad}) => {
         setSound(newSound);
         setIsLoading(true)
 
-        if (onLoad) setTimeout(() => onLoad(), 300)
+        if (onLoad) setTimeout(async () => {
+            setIsPlaying(true)
+            newSound.playAsync()
+            onLoad()
+        }, 300)
     }
 
     const onPlaybackStatusUpdate = (status) => {

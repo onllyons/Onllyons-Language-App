@@ -14,7 +14,7 @@ import {
 import {useRoute} from "@react-navigation/native";
 
 // Importuri pentru gestionarea audio
-import {Audio} from "expo-av";
+import {Audio, InterruptionModeAndroid, InterruptionModeIOS} from "expo-av";
 
 // Import pentru gestionarea gesturilor
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -29,7 +29,7 @@ import {Header} from "./components/books/reading/Header";
 import Loader from "./components/Loader";
 
 export default function BooksScreen({navigation}) {
-    const {setStoredValue} = useStore();
+    const {setStoredValue, getStoredValue, setStoredValueAsync} = useStore();
     const route = useRoute();
     const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -188,6 +188,12 @@ export default function BooksScreen({navigation}) {
                     setSound(null)
                 }
 
+                await Audio.setAudioModeAsync({
+                    interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+                    playsInSilentModeIOS: true,
+                    interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+                });
+
                 Audio.Sound.createAsync(
                     {uri: `${SERVER_URL}/ru/ru-en/packs/assest/books/read-books/audio/${data.data.audio_file}`}
                 )
@@ -265,7 +271,7 @@ export default function BooksScreen({navigation}) {
             .catch(() => {
             });
 
-        if (item) item.saved = !saved;
+        item.saved = !saved;
 
         const indexSaved = info.saved.indexOf(bookId);
 
@@ -280,6 +286,20 @@ export default function BooksScreen({navigation}) {
                 info.saved.splice(indexSaved, 1);
             }
         }
+
+        const newData = getStoredValue("books_books", true)
+        newData.navTopData = info
+
+        for (let i = 0; i < newData.data.length; i++) {
+            if (newData.data[i].id !== item.id) continue
+
+            newData.data[i] = item
+            break
+        }
+
+        setStoredValueAsync("books_books", newData)
+            .then(() => {})
+            .catch(() => {})
 
         setSaved(!saved);
     }, [saved])
@@ -296,16 +316,29 @@ export default function BooksScreen({navigation}) {
             .catch(() => {
             });
 
-        if (item) item.finished = !finished;
-
         const indexFinish = info.finished.indexOf(bookId);
 
         if (!finished) {
             if (indexFinish === -1) {
+                item.finished = !finished;
                 setStoredValue("needToUpdateBooks", true);
                 info.finished.push(bookId);
             }
         }
+
+        const newData = getStoredValue("books_books", true)
+        newData.navTopData = info
+
+        for (let i = 0; i < newData.data.length; i++) {
+            if (newData.data[i].id !== item.id) continue
+
+            newData.data[i] = item
+            break
+        }
+
+        setStoredValueAsync("books_books", newData)
+            .then(() => {})
+            .catch(() => {})
 
         setStoredValue("needToUpdateBooksCategory", true);
 

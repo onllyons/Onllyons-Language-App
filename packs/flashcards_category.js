@@ -87,7 +87,7 @@ export default function FlashCardsCategory({route, navigation}) {
             .finally(() => {
                 setTimeout(() => {
                     setLoading(false);
-                }, 0);
+                }, 300);
             })
     }, [codeName]); // Dependența pentru useEffect
 
@@ -132,7 +132,6 @@ export default function FlashCardsCategory({route, navigation}) {
                     {data.map((item, index) => (
                         <View style={styles.cardLesson} key={item.id}>
                             <AnimatedButtonShadow
-                                shadowDisplayAnimate={"slide"}
                                 styleButton={[
                                     styles.item,
                                     {
@@ -169,7 +168,6 @@ export default function FlashCardsCategory({route, navigation}) {
 
                 <AnimatedButtonShadow
                     disable={true}
-                    shadowDisplayAnimate={"slide"}
                     styleButton={[styles.containerMessage,  globalCss.buttonGry1]}
                     shadowColor={"grayWhite"}
                     shadowBorderRadius={14}

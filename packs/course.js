@@ -1,10 +1,10 @@
-import React, {useState, useRef, useEffect, useCallback} from "react";
+import React, {useState, useRef, useEffect, useCallback, useMemo} from "react";
 import {
     View,
     Text,
     Image,
     ScrollView,
-    Animated, Dimensions, FlatList, TouchableOpacity, RefreshControl
+    Animated, Dimensions, FlatList, RefreshControl
 } from "react-native";
 
 // fonts
@@ -32,10 +32,10 @@ import * as Haptics from "expo-haptics";
 import {NavTop} from "./components/course/NavTop";
 import {useStore} from "./providers/StoreProvider";
 
-export default function CourseScreen({navigation}) {
+export default function CourseScreen() {
     const [data, setData] = useState({});
     const [updateState, setUpdateState] = useState(false)
-    const {getStoredValue, getStoredValueAsync, setStoredCourseData, deleteStoredValue} = useStore()
+    const {getStoredValue, setStoredValueAsync, initFirstData, deleteStoredValue} = useStore()
     const [currentCategory, setCurrentCategory] = useState({
         name: "",
         url: "",
@@ -64,7 +64,7 @@ export default function CourseScreen({navigation}) {
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
 
-        setStoredCourseData()
+        initFirstData(false, true)
             .then(() => {
             })
             .catch(() => {
@@ -146,25 +146,33 @@ export default function CourseScreen({navigation}) {
                 generalInfo.current.coursesCompletedHours += lastFinishCourse.timeLesson / 60 / 60
                 deleteStoredValue("lastFinishCourse")
 
+                const oldData = getStoredValue("courseData", true)
+
+                setStoredValueAsync("courseData", {
+                    ...oldData,
+                    generalInfo: generalInfo.current
+                })
+                    .then(() => {})
+                    .catch(() => {})
+
                 setUpdateState(prev => !prev)
             }
         }, [data])
     );
 
+    useMemo(() => {
+        initFirstData(true, false)
+            .then(() => {})
+            .catch(() => {})
+            .finally(() => setUpdateState(prev => !prev))
+    }, [])
 
     useEffect(() => {
         if (refreshing) return
 
-        getCourseData()
-    }, [refreshing, updateState]);
+        const data = getStoredValue("courseData", true)
 
-    const getCourseData = useCallback(async () => {
-        const data = await getStoredValueAsync("courseData")
-
-        if (!data) {
-            setStoredCourseData(true, () => setUpdateState(prev => !prev))
-            return;
-        }
+        if (!data) return;
 
         const groupedData = groupByCategory(data.data);
         const firstCategory = Object.keys(groupedData)[0];
@@ -184,7 +192,7 @@ export default function CourseScreen({navigation}) {
         setCurrentCategory(currentCategoryRef.current);
         setCategories(categories)
         setData(groupedData);
-    }, [updateState])
+    }, [refreshing, updateState]);
 
     const [subscriptionModalVisible, setSubscriptionVisible] = useState(false);
 

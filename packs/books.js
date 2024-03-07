@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useRef, useCallback} from 'react';
+import React, {useState, useMemo, useRef, useCallback, useEffect} from 'react';
 import {
     View,
     StyleSheet,
@@ -16,7 +16,7 @@ import {CarouselMenu} from "./components/books/CarouselMenu";
 import {Category} from "./components/books/Category";
 
 export default function BooksScreen({navigation}) {
-    const {deleteStoredValue, getStoredValue, getStoredValueAsync, setStoredValueAsync} = useStore()
+    const {deleteStoredValue, getStoredValue, setStoredValueAsync} = useStore()
     const [data, setData] = useState({
         books: [],
         poetry: [],
@@ -28,7 +28,7 @@ export default function BooksScreen({navigation}) {
         poetry: [],
         dialogues: []
     });
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [updateState, setUpdateState] = useState(false)
     const [refreshing, setRefreshing] = useState(false);
 
@@ -61,19 +61,38 @@ export default function BooksScreen({navigation}) {
         }, [])
     );
 
-    const getBooksData = useCallback(async () => {
-        const savedData = await getStoredValueAsync(`books_${currentActive}`)
+    useMemo(() => {
+        const booksData = getStoredValue("books_books", true)
+        const poetryData = getStoredValue("books_poetry", true)
+        const dialoguesData = getStoredValue("books_dialogues", true)
 
-        if (savedData && !refreshing) {
-            navTopData.current[currentActive] = savedData.navTopData
-            setData(prev => ({...prev, [currentActive]: savedData.data}));
+        const newData = data
+        const newCategories = categories
 
-            const uniqueCategories = [...new Set(savedData.data.map(item => item.type_category))];
-            setCategories(prev => ({...prev, [currentActive]: uniqueCategories}));
-
-            setLoading(false)
-            return
+        if (booksData) {
+            navTopData.current.books = booksData.navTopData
+            newData.books = booksData.data
+            newCategories.books = booksData.uniqueCategories
         }
+        if (poetryData) {
+            navTopData.current.poetry = poetryData.navTopData
+            newData.poetry = poetryData.data
+            newCategories.poetry = poetryData.uniqueCategories
+        }
+        if (dialoguesData) {
+            navTopData.current.dialogues = dialoguesData.navTopData
+            newData.dialogues = dialoguesData.data
+            newCategories.dialogues = dialoguesData.uniqueCategories
+        }
+
+        setCategories(newCategories)
+        setData(newData)
+    }, []);
+
+    useEffect(() => {
+        if (!refreshing && data[currentActive].length !== 0) return;
+
+        setLoading(true)
 
         let url = "books/get_books.php"
 
@@ -89,16 +108,16 @@ export default function BooksScreen({navigation}) {
                 navTopData.current[currentActive] = data.navTopData
 
                 setData(prev => ({...prev, [currentActive]: data.data}));
+                const uniqueCategories = [...new Set(data.data.map(item => item.type_category))];
+                setCategories(prev => ({...prev, [currentActive]: uniqueCategories}));
 
                 setStoredValueAsync(`books_${currentActive}`, {
                     data: data.data,
-                    navTopData: data.navTopData
+                    navTopData: data.navTopData,
+                    uniqueCategories: uniqueCategories
                 })
                     .then(() => {})
                     .catch(() => {})
-
-                const uniqueCategories = [...new Set(data.data.map(item => item.type_category))];
-                setCategories(prev => ({...prev, [currentActive]: uniqueCategories}));
             })
             .catch(() => {})
             .finally(() => {
@@ -107,14 +126,6 @@ export default function BooksScreen({navigation}) {
                     setLoading(false)
                 }, 300)
             }); // Dezactivează Loader-ul
-    }, [refreshing, currentActive])
-
-    useMemo(() => {
-        if (!refreshing && data[currentActive].length !== 0) return;
-
-        getBooksData()
-            .then(() => {})
-            .catch(() => {})
     }, [refreshing, currentActive]);
 
     const handlePressMenu = useCallback(value => {

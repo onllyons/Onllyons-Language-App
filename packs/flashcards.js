@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo, useCallback} from 'react';
+import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
 import {View, Text, StyleSheet, ScrollView, RefreshControl} from 'react-native';
 
 // styles
@@ -17,9 +17,9 @@ import {useFocusEffect} from "@react-navigation/native";
 import {useStore} from "./providers/StoreProvider";
 
 const FlashCardWords = ({navigation}) => {
-    const {deleteStoredValue, getStoredValue} = useStore()
+    const {deleteStoredValue, setStoredValueAsync, getStoredValue} = useStore()
     const [data, setData] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [updateState, setUpdateState] = useState(false)
 
@@ -42,7 +42,18 @@ const FlashCardWords = ({navigation}) => {
     );
 
     useMemo(() => {
-        if (!isLoading && !refreshing) return
+        const data = getStoredValue("flashcardsData", true)
+
+        if (data) {
+            navTopData.current = data.navTopData
+            setData(data.data)
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!refreshing && data.length !== 0) return;
+
+        setIsLoading(true)
 
         sendDefaultRequest(`${SERVER_AJAX_URL}/flashcards/flashcard_words.php`,
             {},
@@ -53,13 +64,21 @@ const FlashCardWords = ({navigation}) => {
                 navTopData.current = data.cardsInfo
 
                 setData(data.data);
+
+                setStoredValueAsync(`flashcardsData`, {
+                    data: data.data,
+                    navTopData: data.cardsInfo
+                })
+                    .then(() => {})
+                    .catch(() => {})
             })
+            .catch(() => {})
             .finally(() => {
                 setTimeout(() => {
-                    setIsLoading(false)
                     setRefreshing(false)
-                }, 1)
-            })
+                    setIsLoading(false)
+                }, 300)
+            }); // Dezactivează Loader-ul
     }, [refreshing]);
 
     return (
