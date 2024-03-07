@@ -12,7 +12,7 @@ const StoreContext = createContext("store context doesnt exists");
 let stored = {}
 
 const STORED_ASYNC_LIFETIME = 7 * 86400 // 7 days in seconds
-const STORED_ASYNC_PREFIX = "stored_"
+const STORED_ASYNC_PREFIX = "stored-"
 
 export const StoreProvider = ({children}) => {
     const {isReady} = useAuth()
@@ -60,7 +60,7 @@ export const StoreProvider = ({children}) => {
             if (dialoguesData) setStoredValue(`${STORED_ASYNC_PREFIX}books_dialogues`, dialoguesData)
             if (flashcardsData) setStoredValue(`${STORED_ASYNC_PREFIX}flashcardsData`, flashcardsData)
 
-            if (firstRequestData.current && !sendRequest && courseData) {
+            if (firstRequestData.current) {
                 const initData = await sendDefaultRequest(`${SERVER_AJAX_URL}/get_init_data.php`,
                     {
                         // requestCourseData: !sendRequest,
@@ -72,7 +72,7 @@ export const StoreProvider = ({children}) => {
                         requestPoetryData: false,
                         requestDialoguesData: false,
                         requestFlashcardsData: false,
-                        requestSeriesData: true,
+                        requestSeriesData: !sendRequest && courseData ? (Date.now() / 1000 - courseData.seriesData.lastUpdate > 60) : false,
                     },
                     null,
                     {success: false}
