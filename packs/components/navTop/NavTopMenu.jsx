@@ -93,19 +93,6 @@ export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
             ],
         }
 
-        switch (seriesData["syllableGroup"]) {
-            case 3:
-                return (
-                <>
-                    <Text style={navDropdown.titleh7}>You're smashing it!</Text>
-                    <Text style={navDropdown.titleh7}>Outstanding performance!</Text>
-                    <Text style={navDropdown.titleh7}>You're killing it!</Text>
-                    <Text style={navDropdown.titleh7}>Keep it up!</Text>
-                </>
-                )
-
-        }
-
         const messages = messagesByGroup[seriesData["syllableGroup"]] ? messagesByGroup[seriesData["syllableGroup"]] : messagesByGroup[1]
 
         return <Text style={navDropdown.titleh7}>{messages[Math.floor(Math.random() * messages.length)]}</Text>;
