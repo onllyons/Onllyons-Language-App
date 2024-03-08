@@ -74,22 +74,33 @@ export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
     const SyllableGroup = () => {
         const messagesByGroup = {
             1: [
-                "You're smashing it!",
-                "Outstanding performance!",
-                "You're killing it!",
-                "Keep it up!"
+                "Вы отлично справляетесь!",
+                "Вы преуспеваете!",
+                "Продолжайте в том же духе!",
+                "Вы прекрасно начали!",
+                "Вы на верном пути!",
+                "Не останавливайтесь!",
+                "Отличная работа!",
+                "Отличные результаты",
+                "Так держать!"
             ],
             2: [
-                "Great job!",
-                "Keep on shining!",
-                "Fantastic!",
-                "Brilliant execution!"
+                "Выдающееся выполнение!",
+                "Фантастически!",
+                "Продолжайте сиять!",
+                "Блестящее исполнение!",
+                "Вы делаете это замечательно!",
+                "Просто восхитительно!",
+                "Вы блестяще справляетесь!"
             ],
             3: [
-                "You're smashing it!",
-                "Outstanding performance!",
-                "You're killing it!",
-                "Keep it up!"
+                "Ваше упорство является примером!",
+                "Вы установили высокую планку!",
+                "Вы разрушаете все барьеры!",
+                "Выдающаяся работа!",
+                "Вы превосходите всех!",
+                "Светите ярче всех!",
+                "Вы невероятны!"
             ],
         }
 
@@ -173,7 +184,7 @@ export const NavTopItemSeriesMenu = React.memo(({seriesData: data}) => {
                     </View>
                 </View>
                 <View style={navDropdown.groupStatusVis}>
-                    <FontAwesomeIcon  style={{color: 'orange', marginRight: 7}} icon={faFire} size={20}/>
+                    <FontAwesomeIcon  style={{color: 'orange', marginRight: 7, marginTop: 6, alignSelf: "flex-start"}} icon={faFire} size={20}/>
                     <SyllableGroup />
                 </View>
 
