@@ -3,7 +3,7 @@ import React, {
     useContext, useEffect, useRef, useState,
 } from "react";
 import {Welcome} from "../components/Welcome";
-import {getUser, isAuthenticated, useAuth} from "./AuthProvider";
+import {isAuthenticated, useAuth} from "./AuthProvider";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
