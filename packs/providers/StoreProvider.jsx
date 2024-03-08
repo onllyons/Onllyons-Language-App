@@ -3,7 +3,7 @@ import React, {
     useContext, useEffect, useRef, useState,
 } from "react";
 import {Welcome} from "../components/Welcome";
-import {isAuthenticated, useAuth} from "./AuthProvider";
+import {getUser, isAuthenticated, useAuth} from "./AuthProvider";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -41,9 +41,9 @@ export const StoreProvider = ({children}) => {
 
                 courseData = {
                     data: data.data,
-                    seriesData: data.seriesData,
                     generalInfo: data.generalInfo,
-                    categoriesData: data.categoriesData
+                    categoriesData: data.categoriesData,
+                    seriesData: {}
                 }
 
                 await setStoredValueAsync("courseData", courseData)
@@ -72,7 +72,7 @@ export const StoreProvider = ({children}) => {
                         requestPoetryData: false,
                         requestDialoguesData: false,
                         requestFlashcardsData: false,
-                        requestSeriesData: !sendRequest && courseData ? (Date.now() / 1000 - courseData.seriesData.lastUpdate > 60) : false,
+                        requestSeriesData: courseData.seriesData && courseData.seriesData.lastUpdate ? Date.now() / 1000 - courseData.seriesData.lastUpdate > 3000 : true
                     },
                     null,
                     {success: false}
@@ -114,6 +114,8 @@ export const StoreProvider = ({children}) => {
                 if (!requestCourseData.current && loadingRef.current) {
                     clearInterval(interval)
                     setLoading(false)
+                } else if (!requestCourseData.current && !loadingRef.current) {
+                    clearInterval(interval)
                 }
             }, 1000)
         }
@@ -122,7 +124,7 @@ export const StoreProvider = ({children}) => {
     const setStoredValue = (key, value) => stored[key] = value
 
     const setStoredValueAsync = (key, value) => {
-        setStoredValue(key, value)
+        setStoredValue(`${STORED_ASYNC_PREFIX}${key}`, value)
 
         return AsyncStorage.setItem(`${STORED_ASYNC_PREFIX}${key}`, JSON.stringify({
             expired: Date.now() + (STORED_ASYNC_LIFETIME * 1000),
