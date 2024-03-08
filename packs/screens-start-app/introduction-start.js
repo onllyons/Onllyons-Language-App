@@ -1,5 +1,5 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Platform} from 'react-native';
 import Swiper from 'react-native-swiper';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons';
@@ -76,8 +76,11 @@ export default function IntroductionScreen({navigation}) {
                 .then(async data => {
                     await login(data.userData, data.tokens)
 
-                    setLoader(false)
-                    await new Promise(resolve => setTimeout(resolve, 350))
+                    if (Platform.OS === "ios") {
+                        setLoader(false)
+                    } else {
+                        setTimeout(() => setLoader(false), 50)
+                    }
 
                     await initFirstData(true, true)
 

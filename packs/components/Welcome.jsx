@@ -3,14 +3,34 @@ import {DotIndicator} from "react-native-indicators";
 
 export const Welcome = ({visible}) => {
     return (
-        <Modal
-            animationType="none"
-            transparent={true}
-            visible={visible}
-            statusBarTranslucent={true}
-        >
-            <WelcomeContent key={"welcome-1"}/>
-        </Modal>
+        <>
+            <Modal
+                animationType="none"
+                transparent={true}
+                visible={visible}
+                statusBarTranslucent={true}
+            >
+                <WelcomeContent key={"welcome-1"}/>
+            </Modal>
+
+            {/* Bug on IOS - navigation flicker. This View is overlaps navigation */}
+            {visible && (
+                <View
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 999,
+                        backgroundColor: "#fff"
+                    }}
+                >
+                    <WelcomeContent key={"welcome-2"}/>
+                </View>
+            )}
+        </>
+
     );
 };
 

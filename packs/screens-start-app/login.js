@@ -86,9 +86,11 @@ export default function LoginScreen({navigation}) {
             .then(async data => {
                 await login(data.userData, data.tokens)
 
-                setLoader(false)
-
-                await new Promise(resolve => setTimeout(resolve, 350))
+                if (Platform.OS === "ios") {
+                    setLoader(false)
+                } else {
+                    setTimeout(() => setLoader(false), 50)
+                }
 
                 await initFirstData(true, true)
 
@@ -147,8 +149,12 @@ export default function LoginScreen({navigation}) {
             )
                 .then(async data => {
                     await login(data.userData, data.tokens)
-                    setLoader(false)
-                    await new Promise(resolve => setTimeout(resolve, 350))
+
+                    if (Platform.OS === "ios") {
+                        setLoader(false)
+                    } else {
+                        setTimeout(() => setLoader(false), 50)
+                    }
 
                     await initFirstData(true, true)
 

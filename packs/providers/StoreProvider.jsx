@@ -22,7 +22,7 @@ export const StoreProvider = ({children}) => {
     const firstRequestData = useRef(true)
 
     const initFirstData = useCallback(async (withLoading = false, reNew = false, callback = null) => {
-        if (withLoading) setTimeout(() => setLoading(true), 1)
+        if (withLoading) setLoading(true)
 
         requestCourseData.current = true
 
@@ -60,7 +60,7 @@ export const StoreProvider = ({children}) => {
             if (dialoguesData) setStoredValue(`${STORED_ASYNC_PREFIX}books_dialogues`, dialoguesData)
             if (flashcardsData) setStoredValue(`${STORED_ASYNC_PREFIX}flashcardsData`, flashcardsData)
 
-            if (firstRequestData.current) {
+            if (firstRequestData.current || reNew) {
                 const initData = await sendDefaultRequest(`${SERVER_AJAX_URL}/get_init_data.php`,
                     {
                         // requestCourseData: !sendRequest,
@@ -72,7 +72,7 @@ export const StoreProvider = ({children}) => {
                         requestPoetryData: false,
                         requestDialoguesData: false,
                         requestFlashcardsData: false,
-                        requestSeriesData: courseData.seriesData && courseData.seriesData.lastUpdate ? Date.now() / 1000 - courseData.seriesData.lastUpdate > 3000 : true
+                        requestSeriesData: !reNew && courseData.seriesData && courseData.seriesData.lastUpdate ? Date.now() / 1000 - courseData.seriesData.lastUpdate > 3000 : true
                     },
                     null,
                     {success: false}
