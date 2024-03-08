@@ -1,21 +1,15 @@
-import {Dimensions, Image, StyleSheet, Text, View} from "react-native";
+import {Dimensions, Image, StyleSheet, Text, View, Modal} from "react-native";
 import {DotIndicator} from "react-native-indicators";
 import {LinearGradient} from "expo-linear-gradient";
 import React from "react";
-import Modal from "react-native-modal";
 
 export const Loader = ({visible}) => {
     return (
         <Modal
-            isVisible={visible}
-            animationInTiming={1}
-            animationOutTiming={1}
-            animationIn={"fadeIn"}
-            animationOut={"fadeOut"}
-            statusBarTranslucent
-            useNativeDriver={true}
-            hasBackdrop={false}
-            style={{margin: 0}}
+            animationType="none"
+            transparent={true}
+            visible={visible}
+            statusBarTranslucent={true}
         >
             <LinearGradient
                 colors={["#8f69cc", "#8f69cc"]}

@@ -178,7 +178,7 @@ function MainTabNavigator() {
                 tabBarInactiveTintColor: "#7b7b7b",
                 tabBarStyle: {
                     shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
+                    shadowOffset: {width: 0, height: 2},
                     shadowOpacity: 0.1,
                     shadowRadius: 3.84,
                     elevation: 5,
@@ -502,7 +502,7 @@ export default function App() {
                 config={toastConfig}
                 onPress={() => Toast.hide()}
             />
-                <FadeNavMenu/>
+            <FadeNavMenu/>
         </SafeAreaProvider>
     );
 }

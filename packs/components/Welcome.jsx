@@ -1,42 +1,16 @@
-import {Image, StyleSheet, View} from "react-native";
+import {Image, StyleSheet, View, Modal} from "react-native";
 import {DotIndicator} from "react-native-indicators";
-import Modal from "react-native-modal";
 
 export const Welcome = ({visible}) => {
     return (
-        <>
-            <Modal
-                isVisible={visible}
-                animationInTiming={0.1}
-                animationOutTiming={0.1}
-                animationIn={"fadeIn"}
-                animationOut={"fadeOut"}
-                statusBarTranslucent
-                useNativeDriver={true}
-                hasBackdrop={false}
-                style={{margin: 0}}
-            >
-                <WelcomeContent key={"welcome-1"}/>
-            </Modal>
-
-            {/* Bug on IOS - navigation flicker. This View is overlaps navigation */}
-            {visible && (
-                <View
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 999,
-                        backgroundColor: "#fff"
-                    }}
-                >
-                    <WelcomeContent key={"welcome-2"}/>
-                </View>
-            )}
-        </>
-
+        <Modal
+            animationType="none"
+            transparent={true}
+            visible={visible}
+            statusBarTranslucent={true}
+        >
+            <WelcomeContent key={"welcome-1"}/>
+        </Modal>
     );
 };
 

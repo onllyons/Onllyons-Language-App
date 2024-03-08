@@ -12,7 +12,7 @@ const StoreContext = createContext("store context doesnt exists");
 let stored = {}
 
 const STORED_ASYNC_LIFETIME = 7 * 86400 // 7 days in seconds
-const STORED_ASYNC_PREFIX = "stored-"
+const STORED_ASYNC_PREFIX = "stored--"
 
 export const StoreProvider = ({children}) => {
     const {isReady} = useAuth()
