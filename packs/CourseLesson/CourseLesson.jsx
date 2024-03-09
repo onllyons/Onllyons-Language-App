@@ -36,6 +36,7 @@ import {SubscribeModal} from "../components/SubscribeModal";
 import {WordConstruct} from "../components/course/WordConstruct";
 import {useStore} from "../providers/StoreProvider";
 import Loader from "../components/Loader";
+import PagerView from "react-native-pager-view";
 
 const {width} = Dimensions.get("window");
 
@@ -48,12 +49,13 @@ export const CourseLesson = ({navigation}) => {
     const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
     const [totalSlides, setTotalSlides] = useState(0);
     const [index, setIndex] = useState(0);
-    const [dataFull, setDataFull] = useState(null);
+    const [dataFull, setDataFull] = useState([]);
     const [check, setCheck] = useState({});
     const currentCheck = useRef({});
     const swiperRef = useRef(null);
     const issetSeriesNext = useRef(true);
     const startQuizIndex = useRef(0);
+    const currentKey = useRef("");
 
     const [loading, setLoading] = useState(true)
 
@@ -111,8 +113,8 @@ export const CourseLesson = ({navigation}) => {
     };
 
     const handleRightButtonPress = useCallback(() => {
-        swiperRef.current?.snapToNext();
-    }, []);
+        if (index + 1 < totalSlides) swiperRef.current?.setPage(index + 1);
+    }, [index, totalSlides]);
 
     function saveProgress() {
         const answersCalculate = calculateCorrectPercentage()
@@ -137,16 +139,22 @@ export const CourseLesson = ({navigation}) => {
     }
 
     const updateProgressBar = (newIndex) => {
-        // TODO tester NOW
-        if (quizActive && dataFull[newIndex].type === "carousel") {
-            setQuizActive(false);
-            quizActiveRef.current = false
-        } else if (!quizActive && dataFull[newIndex].type === "questions") {
-            setQuizActive(true);
-            quizActiveRef.current = true
+        currentKey.current = getKeyForIndex(newIndex)
 
-            // Perhaps the user was scrolling too quickly
-            swiperRef.current?.snapToItem(startQuizIndex.current, false);
+        console.log(currentKey.current)
+        if (dataFull[newIndex]) {
+            if (quizActive && dataFull[newIndex].type === "carousel") {
+                setQuizActive(false);
+                quizActiveRef.current = false
+            } else if (!quizActive && dataFull[newIndex].type === "questions") {
+                setQuizActive(true);
+                quizActiveRef.current = true
+            } else if (quizActive) {
+                // Perhaps the user was scrolling too quickly
+                if (startQuizIndex.current < newIndex && !check[getKeyForIndex(newIndex - 1)]) {
+                    swiperRef.current?.setPage(newIndex - 1);
+                }
+            }
         }
 
         debouncedSaveProgress.current()
@@ -160,9 +168,9 @@ export const CourseLesson = ({navigation}) => {
 
     const updateSlider = (series) => {
         currentSeries.current = series;
+        swiperRef.current?.setPageWithoutAnimation(0);
         setLoading(true)
         setIndex(0)
-        swiperRef.current?.snapToItem(0, false);
 
         sendDefaultRequest(
             `${SERVER_AJAX_URL}/course/get_carousel_and_test.php`,
@@ -222,7 +230,7 @@ export const CourseLesson = ({navigation}) => {
                 checkAllowCourse()
             })
             .finally(() => {
-                setLoading(false)
+                setTimeout(() => setLoading(false), 300)
             })
     };
 
@@ -259,7 +267,7 @@ export const CourseLesson = ({navigation}) => {
     }
 
     function restartQuiz() {
-        swiperRef.current?.snapToItem(startQuizIndex.current, false);
+        swiperRef.current?.setPageWithoutAnimation(startQuizIndex.current);
 
         setTimeout(() => {
             Object.keys(currentCheck.current).forEach(key => {
@@ -382,7 +390,7 @@ export const CourseLesson = ({navigation}) => {
     }, [])
 
     const drawCarouselTest = (dataItem, indexItem) => {
-        const key = `${dataItem.type}${indexItem}${dataItem.id}`;
+        const key = getKeyForIndex(indexItem);
         const currentQuest = dataItem[`v${dataItem.correct}`] || "";
 
         if (!dataItem) return null;
@@ -655,12 +663,14 @@ export const CourseLesson = ({navigation}) => {
     };
 
     const checkDisabledSwipeButtons = () => {
-        const currentKey = `${dataFull?.[index]?.type}${index}${dataFull?.[index]?.id}`
+        if (!currentCheck.current[currentKey.current]) return false
 
-        if (!currentCheck.current[currentKey]) return false
-
-        return currentCheck.current[currentKey].disableSwipe
+        return currentCheck.current[currentKey.current].disableSwipe
     }
+
+    const getKeyForIndex = useCallback(i => {
+        return `${dataFull?.[i]?.type}${i}${dataFull?.[i]?.id}`
+    }, [dataFull])
 
     useEffect(() => {
         updateSlider(currentSeries.current);
@@ -686,28 +696,44 @@ export const CourseLesson = ({navigation}) => {
                     <ProgressBar currentIndex={index} totalCount={totalSlides}/>
                 </View>
 
-                <View style={styles.carousel}>
-                    <Carousel 
-                        decelerationRate={'fast'} // Ajustează această valoare pentru a controla viteza de decelerare
-                        enableMomentum={false}
-                        activeSlideAlignment="center" // Asigură-te că slide-ul activ este mereu centrat
-                        scrollEnabled={!quizActive}
+                {/*<View style={styles.carousel}>*/}
+                    {/*<Carousel */}
+                    {/*    decelerationRate={'fast'} // Ajustează această valoare pentru a controla viteza de decelerare*/}
+                    {/*    enableMomentum={false}*/}
+                    {/*    activeSlideAlignment="center" // Asigură-te că slide-ul activ este mereu centrat*/}
+                    {/*    scrollEnabled={!quizActive}*/}
+                    {/*    ref={swiperRef}*/}
+                    {/*    data={dataFull || []}*/}
+                    {/*    sliderWidth={width}*/}
+                    {/*    itemWidth={width}*/}
+                    {/*    layout="default"*/}
+                    {/*    loop={false}*/}
+                    {/*    onSnapToItem={updateProgressBar} // Actualizează bara de progres la scroll*/}
+                    {/*    renderItem={({item, index}) => (*/}
+                    {/*        <View style={styles.slideBox}>*/}
+                    {/*            <View style={[styles.slide, {width: width}]}>*/}
+                    {/*                {drawCarouselTest(item, index)}*/}
+                    {/*            </View>*/}
+                    {/*        </View>*/}
+                    {/*    )}*/}
+                    {/*/>*/}
+                    <Text>asdasd</Text>
+                    <PagerView
                         ref={swiperRef}
-                        data={dataFull || []}
-                        sliderWidth={width}
-                        itemWidth={width}
-                        layout="default"
-                        loop={false}
-                        onSnapToItem={updateProgressBar} // Actualizează bara de progres la scroll
-                        renderItem={({item, index}) => (
-                            <View style={styles.slideBox}>
+                        style={{flex: 1}}
+                        initialPage={index}
+                        scrollEnabled={!quizActive}
+                        onPageSelected={e => updateProgressBar(e.nativeEvent.position)}
+                    >
+                        {(dataFull || []).map((item, index) => (
+                            <View style={styles.slideBox} key={`slide-${index}`}>
                                 <View style={[styles.slide, {width: width}]}>
                                     {drawCarouselTest(item, index)}
                                 </View>
                             </View>
-                        )}
-                    />
-                </View>
+                        ))}
+                    </PagerView>
+                {/*</View>*/}
                 <SwiperButtonsContainer
                     isDisabled={checkDisabledSwipeButtons()}
                     onRightPress={handleRightButtonPress}
