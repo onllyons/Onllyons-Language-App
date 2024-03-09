@@ -230,7 +230,7 @@ export const CourseLesson = ({navigation}) => {
                 checkAllowCourse()
             })
             .finally(() => {
-                setTimeout(() => setLoading(false), 300)
+                setTimeout(() => setLoading(false), 500)
             })
     };
 
@@ -255,8 +255,9 @@ export const CourseLesson = ({navigation}) => {
             })
             .catch(() => navigation.goBack())
             .finally(() => {
-                setLoading(false)
                 setShowCongratulationsModal(false)
+
+                setTimeout(() => setLoading(false), 500)
             })
     };
 

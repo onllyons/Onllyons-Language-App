@@ -21,7 +21,7 @@ export const CustomVideo = React.memo(({url, isFocused, isQuiz}) => {
 
     const checkFocus = useCallback(async () => {
         if (!isFocused) {
-            await video.current.replayAsync()
+            await video.current.setPositionAsync(0)
             await video.current.pauseAsync()
         } else if (isFocused && !isPlaying) {
             await video.current.playAsync()
@@ -64,7 +64,7 @@ const VideoControls = ({video, isMuted, isPlaying, didJustFinish}) => {
 
     useEffect(() => {
         if (didJustFinish) showControls()
-        if (isPlaying && hidden.current) hideControls()
+        if (isPlaying && !hidden.current) hideControls()
     }, [isPlaying, didJustFinish]);
 
     const playPauseVideo = async () => {
