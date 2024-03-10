@@ -53,7 +53,12 @@ export const sendDefaultRequest = async (url, dataObj, navigation = null, showOp
                 if (data.tokensError !== undefined && data.tokensError) {
                     await logout();
 
-                    if (navigation) navigation.navigate("StartPageScreen");
+                    if (navigation) {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'StartPageScreen' }],
+                        })
+                    }
                 }
 
                 if (showOptions.error && data.message) {

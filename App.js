@@ -56,6 +56,7 @@ import GamesTranslate from "./packs/games_translate";
 import GamesTranslateAudio from "./packs/game_translate_audio";
 import GamesTrueFalse from "./packs/games_true_false";
 import {SafeAreaProvider, useSafeAreaInsets} from "react-native-safe-area-context";
+import {useEffect} from "react";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -467,6 +468,24 @@ const toastConfig = {
 };
 
 export default function App() {
+    // Deep linking
+    useEffect(() => {
+        const subscription = Linking.addEventListener("url", ({url}) => handleUrl(url))
+
+        const handleUrl = url => {
+            const parsed = Linking.parse(url)
+
+            if (parsed.path === "message" || parsed.hostname === "message") {
+                Toast.show({
+                    type: parsed.queryParams.type,
+                    text1: parsed.queryParams.message
+                });
+            }
+        }
+
+        return () => subscription.remove();
+    }, []);
+
     LogBox.ignoreLogs(["Require cycle"]);
 
     const prefix = Linking.createURL("/");

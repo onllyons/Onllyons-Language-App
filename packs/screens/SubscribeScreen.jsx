@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {
     View,
     Text,
@@ -11,6 +11,7 @@ import {
 import globalCss from "../css/globalCss";
 import Toast from "react-native-toast-message";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
+import * as Linking from "expo-linking";
 
 // fonts
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -46,6 +47,22 @@ export default function SubscribeScreen({navigation}) {
                 })
         }, [])
     );
+
+    // Deep linking
+    useEffect(() => {
+        const subscription = Linking.addEventListener("url", ({url}) => handleUrl(url))
+
+        const handleUrl = url => {
+            const parsed = Linking.parse(url)
+
+            if (parsed.path === "congratulations" || parsed.hostname === "congratulations") {
+                navigation.navigate("Congratulations")
+            }
+        }
+
+        // Отписка от событий
+        return () => subscription.remove();
+    }, []);
 
     // Initialize payment from server
     const initializePaymentSheet = async () => {
@@ -270,8 +287,6 @@ export default function SubscribeScreen({navigation}) {
 
 
     const renderItem = (item, index) => {
-        console.log(item)
-
         return (
             <View style={styles.slide} key={`slide-${index}`}>
                 <ButtonSubscription
@@ -327,24 +342,13 @@ export default function SubscribeScreen({navigation}) {
                 </View>
             </View>
 
-            {/*<View style={styles.containerCarousel}>*/}
-                {/*<Carousel*/}
-                {/*    itemWidth={width - 70}*/}
-                {/*    sliderWidth={width}*/}
-                {/*    data={data}*/}
-                {/*    renderItem={renderItem}*/}
-                {/*    onSnapToItem={onSnapToItem}*/}
-                {/*    layout={"default"}*/}
-                {/*    enableSnap={!disableSwiper}*/}
-                {/*    loop={false}*/}
-                {/*/>*/}
-                <PagerView
-                    style={{height: "70%", width: "100%"}}
-                    initialPage={0}
-                    onPageSelected={e => onSnapToItem(e.nativeEvent.position)}
-                >
-                    {data.map((item, i) => renderItem(item, i))}
-                </PagerView>
+            <PagerView
+                style={{flex: 1}}
+                initialPage={0}
+                onPageSelected={e => onSnapToItem(e.nativeEvent.position)}
+            >
+                {data.map((item, i) => renderItem(item, i))}
+            </PagerView>
 
             <View style={styles.buttonBuy}>
                 <AnimatedButtonShadow
@@ -443,6 +447,7 @@ const styles = StyleSheet.create({
         width: "85%",
         alignSelf: "center",
         marginTop: "7%",
+        paddingBottom: "8%",
     },
     slide: {
         backgroundColor: "#f4f4f4",

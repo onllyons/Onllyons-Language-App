@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Platform} from 'react-native';
 import Swiper from 'react-native-swiper';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -10,6 +10,7 @@ import Loader from "../components/Loader";
 import Toast from "react-native-toast-message";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
+import {useFocusEffect} from "@react-navigation/native";
 
 const ProgressBar = ({currentIndex, totalCount}) => {
     const progress = (currentIndex + 1) / totalCount;
@@ -29,9 +30,16 @@ export default function IntroductionScreen({navigation}) {
 
     const [loader, setLoader] = useState(false)
 
-    useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            if (isAuthenticated()) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabNavigator' }],
+                })
+            }
+        }, [])
+    );
 
     const [userData, setUserData] = useState({
         selectedLevel: 0,
@@ -64,7 +72,10 @@ export default function IntroductionScreen({navigation}) {
                 text1: "Вы уже авторизированы"
             });
 
-            navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'MainTabNavigator' }],
+            })
         } else {
             setLoader(true)
 
@@ -84,7 +95,10 @@ export default function IntroductionScreen({navigation}) {
 
                     await initFirstData(true, true)
 
-                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'MainTabNavigator' }],
+                    })
                 })
                 .catch(() => {
                     setTimeout(() => setLoader(false), 1)

@@ -1,13 +1,21 @@
-import React, {useEffect} from "react";
+import React, {useCallback} from "react";
 import globalCss from '../css/globalCss';
 import {View, Text, StyleSheet} from "react-native";
 import {isAuthenticated} from "../providers/AuthProvider";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function StartPageScreen({navigation}) {
-    useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            if (isAuthenticated()) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabNavigator' }],
+                });
+            }
+        }, [])
+    );
 
     return (
         <View style={styles.container}>

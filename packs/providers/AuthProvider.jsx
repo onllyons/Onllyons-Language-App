@@ -157,14 +157,19 @@ export const AuthProvider = ({children}) => {
                         try {
                             await logout();
                             setIsReady(true);
-                            navigation.navigate("StartPageScreen")
-
+                            navigation.reset({
+                                index: 0,
+                                routes: [{ name: 'StartPageScreen' }],
+                            })
                         } catch (err) {
                             return Promise.reject()
                         }
                     } else if (data.data.userAvailable && data.data.user) {
                         setIsReady(true);
-                        navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'MainTabNavigator' }],
+                        });
                         return login(data.data.user, data.data.tokens)
                     } else {
                         setIsReady(true);

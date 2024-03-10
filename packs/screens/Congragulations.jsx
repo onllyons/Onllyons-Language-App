@@ -110,7 +110,12 @@ export const Congratulations = ({ navigation }) => {
             <AnimatedButtonShadow
                 styleButton={[globalCss.button, globalCss.buttonGreen]}
                 shadowColor={"green"}
-                onPress={() => navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})}
+                onPress={() => {
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'MainTabNavigator' }],
+                    })
+                }}
             >
                 <Text style={globalCss.buttonText}>НАЧАТЬ</Text>
             </AnimatedButtonShadow>

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Keyboard} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,7 @@ import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 import * as AuthSession from 'expo-auth-session';
 import {useStore} from "../providers/StoreProvider";
 import * as Linking from "expo-linking";
+import {useFocusEffect} from "@react-navigation/native";
 
 const CLIENT_ID = '975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu.apps.googleusercontent.com';
 const REDIRECT_URI = "https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user/google_login.php"
@@ -61,9 +62,16 @@ export default function LoginScreen({navigation}) {
         return () => subscription.remove();
     }, []);
 
-    useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            if (isAuthenticated()) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabNavigator' }],
+                })
+            }
+        }, [])
+    );
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -95,7 +103,10 @@ export default function LoginScreen({navigation}) {
                 await initFirstData(true, true)
 
                 googleAuthProcess.current = false
-                navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabNavigator' }],
+                });
             })
             .catch(() => {
                 setTimeout(() => setLoader(false), 1)
@@ -136,7 +147,10 @@ export default function LoginScreen({navigation}) {
                 text1: "Вы уже авторизированы"
             });
 
-            navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'MainTabNavigator' }],
+            });
         } else {
             Keyboard.dismiss()
 
@@ -158,7 +172,10 @@ export default function LoginScreen({navigation}) {
 
                     await initFirstData(true, true)
 
-                    navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"})
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'MainTabNavigator' }],
+                    });
                 })
                 .catch(() => {
                     setTimeout(() => setLoader(false), 1)
@@ -182,14 +199,14 @@ export default function LoginScreen({navigation}) {
                     value={userData.username}
                 />
             </View>
-            <View style={[styles.inputView, styles.inputContainer2]}>
+            <View style={[styles.inputView, styles.inputContainer1, styles.inputContainer2]}>
                 <TextInput
                     placeholder="password"
                     autoComplete={"password"}
                     textContentType={"password"}
                     placeholderTextColor="#a5a5a5"
                     autoCapitalize="none"
-                    style={[globalCss.input, styles.inputPassword]}
+                    style={globalCss.input}
                     secureTextEntry={!showPassword}
                     onChangeText={val => setUserData(prev => ({...prev, password: val}))}
                     value={userData.password}
@@ -267,14 +284,13 @@ const styles = StyleSheet.create({
         paddingRight: 12,
     },
     inputContainer2: {
+        borderTopWidth: 0,
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
         borderBottomLeftRadius: 14,
         borderBottomRightRadius: 14,
         marginBottom: 20,
-    },
-    inputPassword: {
-        paddingTop: 17,
-        paddingBottom: 17,
-        paddingRight: 0,
+        paddingRight: 5,
     },
     termsText: {
         color: '#636363',

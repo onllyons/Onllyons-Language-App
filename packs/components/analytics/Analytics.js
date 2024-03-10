@@ -48,6 +48,8 @@ export const Analytics = () => {
             analyticsInfo.current.currentAnalyticId = -1
         }
 
+        if (!nameRoute) return;
+
         analyticsInfo.current.screen = nameRoute
         sendAnalytics()
         analyticsInfo.current.lastScreen = nameRoute

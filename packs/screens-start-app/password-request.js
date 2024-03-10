@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useState} from "react";
 import {
     StyleSheet,
     Text,
@@ -13,15 +13,23 @@ import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function PasswordScreen({navigation}) {
     const [email, setEmail] = useState("");
 
     const [loader, setLoader] = useState(false)
 
-    useEffect(() => {
-        if (isAuthenticated()) navigation.navigate("MainTabNavigator", {screen: "MenuCourseLesson"})
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            if (isAuthenticated()) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'MainTabNavigator' }],
+                })
+            }
+        }, [])
+    );
 
     const handleRequestPassword = () => {
         setLoader(true)

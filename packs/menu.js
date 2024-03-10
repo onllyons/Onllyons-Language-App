@@ -188,7 +188,10 @@ export default function MenuScreen({navigation}) {
                         onPress={() => {
                             logout()
                                 .then(() => {
-                                    navigation.navigate('StartPageScreen');
+                                    navigation.reset({
+                                        index: 0,
+                                        routes: [{ name: 'StartPageScreen' }],
+                                    });
                                 })
                                 .catch(() => {
                                     Toast.show({

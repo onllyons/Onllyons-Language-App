@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {
     View,
     Text,
@@ -8,7 +8,7 @@ import {
     ScrollView,
     RefreshControl,
     TouchableOpacity,
-    Pressable,
+    Pressable, AppState,
 } from "react-native";
 import {useNavigation} from "@react-navigation/native";
 
@@ -27,6 +27,7 @@ import Toast from "react-native-toast-message";
 
 const Profile = () => {
     let user = getUser();
+    const [appState, setAppState] = useState(AppState.currentState);
     const navigation = useNavigation();
     const [data, setData] = useState({
         name: user.name,
@@ -45,14 +46,31 @@ const Profile = () => {
     const setUserData = useCallback((userData) => {
         user = userData;
 
-        setData({
+        setData(prev => ({
+            ...prev,
             name: user.name,
             surname: user.surname,
             email: user.email,
             username: user.username,
             bio: user.bio,
-        });
+        }));
     }, []);
+
+    // The effect of returning the user to the application
+    useEffect(() => {
+        const subscription = AppState.addEventListener("change", nextAppState => {
+            if (appState.match(/inactive|background/) && nextAppState === "active") {
+                updateUser(navigation)
+                    .then(user => setUserData(user))
+                    .catch(() => {})
+            }
+            setAppState(nextAppState);
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, [appState]);
 
     const handleSave = useCallback(() => {
         setLoader(true);
@@ -90,7 +108,15 @@ const Profile = () => {
             navigation
         )
             .then(() => {})
-            .catch(() => {})
+            .catch(err => {
+                if (typeof err === "object") {
+                    if (!err.tokensError && err.verified) {
+                        updateUser(navigation)
+                            .then(user => setUserData(user))
+                            .catch(() => {})
+                    }
+                }
+            })
             .finally(() => setTimeout(() => setLoader(false), 1));
     }, []);
 
@@ -150,7 +176,7 @@ const Profile = () => {
 
             <ScrollView
                 style={styles.containerScroll}
-                contentContainerStyle={{paddingBottom: 150}}
+                contentContainerStyle={{paddingBottom: 50}}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
                 }

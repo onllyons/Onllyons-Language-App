@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard} from 'react-native';
 
 import globalCss from '../css/globalCss';
-import {isAuthenticated} from "../providers/AuthProvider";
 import Loader from "../components/Loader";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
@@ -22,10 +21,6 @@ export default function ChangePasswordScreen({navigation}) {
         confirm_password: ""
     })
 
-    useEffect(() => {
-        if (!isAuthenticated()) navigation.navigate("StartPageScreen")
-    }, []);
-
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
@@ -41,7 +36,7 @@ export default function ChangePasswordScreen({navigation}) {
             {...data},
             navigation
         )
-            .then(() => navigation.navigate('MainTabNavigator', {screen: "MenuCourseLesson"}))
+            .then(() => {})
             .catch(() => {
             })
             .finally(() => setTimeout(() => setLoader(false), 1))
