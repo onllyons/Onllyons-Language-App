@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Onllyons Language",
-    "slug": "onllyons-language",
+    "name": "Language",
+    "slug": "language",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,10 +17,9 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "language",
+      "bundleIdentifier": "com.onllyons.language",
       "supportsTablet": true,
       "infoPlist": {
-        "bundleIdentifier": "language",
         "UIBackgroundModes": [
           "audio"
         ],
