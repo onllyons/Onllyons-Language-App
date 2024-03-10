@@ -3,7 +3,6 @@ import {
     View,
     Text,
     Image,
-    Dimensions,
     ScrollView,
     TouchableOpacity,
     StyleSheet,
@@ -12,8 +11,6 @@ import {
 import globalCss from "../css/globalCss";
 import Toast from "react-native-toast-message";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
-
-import Carousel from "react-native-new-snap-carousel";
 
 // fonts
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
@@ -25,8 +22,7 @@ import {sendDefaultRequest, SERVER_AJAX_URL, updateUser} from "../utils/Requests
 import {getUser} from "../providers/AuthProvider";
 import {useFocusEffect} from "@react-navigation/native";
 import {useStore} from "../providers/StoreProvider";
-
-const {width} = Dimensions.get("window");
+import PagerView from "react-native-pager-view";
 
 export default function SubscribeScreen({navigation}) {
     const {deleteStoredValue} = useStore()
@@ -46,7 +42,8 @@ export default function SubscribeScreen({navigation}) {
         useCallback(() => {
             updateUser(navigation)
                 .then(user => setUser(user))
-                .catch(() => {})
+                .catch(() => {
+                })
         }, [])
     );
 
@@ -63,7 +60,7 @@ export default function SubscribeScreen({navigation}) {
                 navigation
             )
 
-            const { error } = await initPaymentSheet({
+            const {error} = await initPaymentSheet({
                 paymentIntentClientSecret: response.session.latest_invoice.payment_intent.client_secret,
                 merchantDisplayName: "Onllyons",
                 returnURL: 'language://congratulations'
@@ -153,7 +150,7 @@ export default function SubscribeScreen({navigation}) {
             "Игра: Расшифруйте аудио",
             "Игра: Переведите аудио",
             "Игра: Верно - Не верно",
-            "Кники (субтитры)",
+            "Книги (субтитры)",
         ],
         2: [
             "Уроки английского",
@@ -163,7 +160,7 @@ export default function SubscribeScreen({navigation}) {
             "Игра: Расшифруйте аудио",
             "Игра: Переведите аудио",
             "Игра: Верно - Не верно",
-            "Кники (субтитры)",
+            "Книги (субтитры)",
         ],
         // Default list for other ids
         default: [
@@ -174,7 +171,7 @@ export default function SubscribeScreen({navigation}) {
             "Игра: Расшифруйте аудио",
             "Игра: Переведите аудио",
             "Игра: Верно - Не верно",
-            "Кники (субтитры)",
+            "Книги (субтитры)",
 
         ]
     };
@@ -247,34 +244,36 @@ export default function SubscribeScreen({navigation}) {
         ]
     };
 
-const renderPoints = (id) => {
-  let points = [];
-  let descriptions = descriptionsMap[id] || descriptionsMap.default;
-  let supplementaryDescriptions = descriptionsPunct[id] || descriptionsPunct.default;
-  let colors = descriptionsPunctColor[id] || descriptionsPunctColor.default;
-  let maxLength = Math.max(descriptions.length, supplementaryDescriptions.length);
+    const renderPoints = (id) => {
+        let points = [];
+        let descriptions = descriptionsMap[id] || descriptionsMap.default;
+        let supplementaryDescriptions = descriptionsPunct[id] || descriptionsPunct.default;
+        let colors = descriptionsPunctColor[id] || descriptionsPunctColor.default;
+        let maxLength = Math.max(descriptions.length, supplementaryDescriptions.length);
 
-  for (let i = 0; i < maxLength; i++) {
-    // Creează un obiect de stil pentru text care include culoarea din descriptionsPunctColor
-    const textStyleWithColor = { color: colors[i], ...styles.supplementaryDescriptionsText };
+        for (let i = 0; i < maxLength; i++) {
+            // Creează un obiect de stil pentru text care include culoarea din descriptionsPunctColor
+            const textStyleWithColor = {color: colors[i], ...styles.supplementaryDescriptionsText};
 
-    points.push(
-      <View key={i} style={[styles.btnMenuProfile, styles.btnBTR, i === maxLength - 1 ? styles.btnBBR : styles.btnBB]}>
-        <Text style={styles.btnText}>{descriptions[i]}</Text>
-        {/* Aplică stilul cu culoarea specifică pentru descrierea suplimentară */}
-        <Text style={textStyleWithColor}>{supplementaryDescriptions[i]}</Text>
-      </View>
-    );
-  }
+            points.push(
+                <View key={i}
+                      style={[styles.btnMenuProfile, styles.btnBTR, i === maxLength - 1 ? styles.btnBBR : styles.btnBB]}>
+                    <Text style={styles.btnText}>{descriptions[i]}</Text>
+                    {/* Aplică stilul cu culoarea specifică pentru descrierea suplimentară */}
+                    <Text style={textStyleWithColor}>{supplementaryDescriptions[i]}</Text>
+                </View>
+            );
+        }
 
-  return points;
-};
+        return points;
+    };
 
 
+    const renderItem = (item, index) => {
+        console.log(item)
 
-    const renderItem = ({item}) => {
         return (
-            <View style={styles.slide}>
+            <View style={styles.slide} key={`slide-${index}`}>
                 <ButtonSubscription
                     subscriptionId={item.id}
                     disable={item.id === user.subscribe}
@@ -295,7 +294,8 @@ const renderPoints = (id) => {
                 />
 
                 <View style={styles.sectionScroll}>
-                    <ScrollView contentContainerStyle={{paddingTop: 0, paddingLeft: 0, paddingRight: 0, paddingBottom: 20}}>
+                    <ScrollView
+                        contentContainerStyle={{paddingTop: 0, paddingLeft: 0, paddingRight: 0, paddingBottom: 20}}>
 
                         <Text>{item.description}</Text>
 
@@ -307,7 +307,6 @@ const renderPoints = (id) => {
             </View>
         )
     };
-
 
     return (
         <View style={styles.container}>
@@ -328,18 +327,24 @@ const renderPoints = (id) => {
                 </View>
             </View>
 
-            <View style={styles.containerCarousel}>
-                <Carousel
-                    itemWidth={width - 70}
-                    sliderWidth={width}
-                    data={data}
-                    renderItem={renderItem}
-                    onSnapToItem={onSnapToItem}
-                    layout={"default"}
-                    enableSnap={!disableSwiper}
-                    loop={false}
-                />
-            </View>
+            {/*<View style={styles.containerCarousel}>*/}
+                {/*<Carousel*/}
+                {/*    itemWidth={width - 70}*/}
+                {/*    sliderWidth={width}*/}
+                {/*    data={data}*/}
+                {/*    renderItem={renderItem}*/}
+                {/*    onSnapToItem={onSnapToItem}*/}
+                {/*    layout={"default"}*/}
+                {/*    enableSnap={!disableSwiper}*/}
+                {/*    loop={false}*/}
+                {/*/>*/}
+                <PagerView
+                    style={{height: "70%", width: "100%"}}
+                    initialPage={0}
+                    onPageSelected={e => onSnapToItem(e.nativeEvent.position)}
+                >
+                    {data.map((item, i) => renderItem(item, i))}
+                </PagerView>
 
             <View style={styles.buttonBuy}>
                 <AnimatedButtonShadow
@@ -351,7 +356,8 @@ const renderPoints = (id) => {
                     permanentlyActiveOpacity={.5}
                     size={"full"}
                 >
-                    <Text style={globalCss.buttonText}>{selectedSubscription === user.subscribe ? "Активно" : "Приобрести"}</Text>
+                    <Text
+                        style={globalCss.buttonText}>{selectedSubscription === user.subscribe ? "Активно" : "Приобрести"}</Text>
                 </AnimatedButtonShadow>
             </View>
         </View>
@@ -387,7 +393,8 @@ const ButtonSubscription = ({
                 {subscriptionId === 0 ? (
                     <Text style={styles.price}>Бесплатно</Text>
                 ) : (
-                    <Text style={styles.price}>€ {costs[period[subscriptionId]].toFixed(2)} в {period[subscriptionId] === "month" ? "месяц" : "год"}</Text>
+                    <Text
+                        style={styles.price}>€ {costs[period[subscriptionId]].toFixed(2)} в {period[subscriptionId] === "month" ? "месяц" : "год"}</Text>
                 )}
             </View>
         </AnimatedButtonShadow>
@@ -428,7 +435,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "white",
     },
-    sectionScroll:{
+    sectionScroll: {
         marginTop: "5%",
         flex: 1,
     },
@@ -437,16 +444,12 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginTop: "7%",
     },
-    containerCarousel: {
-        justifyContent: "center",
-        alignItems: "center",
-        height: "70%",
-    },
     slide: {
         backgroundColor: "#f4f4f4",
         height: "100%",
         borderRadius: 12,
         padding: "5%",
+        marginHorizontal: 35
     },
     buttonPeriod: {
         paddingVertical: 12,
@@ -508,7 +511,7 @@ const styles = StyleSheet.create({
     section: {
         marginVertical: 10,
     },
-    sectionTitle: { 
+    sectionTitle: {
         fontSize: 18,
         fontWeight: "600",
         color: "grey",

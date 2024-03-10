@@ -11,12 +11,6 @@ export const stylesCourse_lesson = StyleSheet.create({
         borderRadius: 12,
         resizeMode: "cover",
     },
-    carousel: {
-        height: "70%",
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-    },
     gradient: {
         flex: 1,
     },

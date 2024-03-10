@@ -8,7 +8,6 @@ import {
     TextInput,
     Modal,
 } from "react-native";
-import Carousel from "react-native-new-snap-carousel";
 import {useRoute} from "@react-navigation/native";
 import {LinearGradient} from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
@@ -128,20 +127,21 @@ export const CourseLesson = ({navigation}) => {
                     slideIndex: indexRef.current >= startQuizIndex.current ? startQuizIndex.current : indexRef.current,
                     sliderQuiz: quizActiveRef.current,
                     correctAnswers: answersCalculate.correctCount,
-                    currentQuestion: indexRef.current >= startQuizIndex.current ? indexRef.current - startQuizIndex.current  : 0
+                    currentQuestion: indexRef.current >= startQuizIndex.current ? indexRef.current - startQuizIndex.current : 0
                 }
             },
             navigation,
             {success: false, error: false}
         )
-            .then(() => {})
-            .catch(() => {})
+            .then(() => {
+            })
+            .catch(() => {
+            })
     }
 
     const updateProgressBar = (newIndex) => {
         currentKey.current = getKeyForIndex(newIndex)
 
-        console.log(currentKey.current)
         if (dataFull[newIndex]) {
             if (quizActive && dataFull[newIndex].type === "carousel") {
                 setQuizActive(false);
@@ -308,7 +308,10 @@ export const CourseLesson = ({navigation}) => {
                 ...state,
                 [key]: {
                     text: word,
-                    indexesPressed: {...(state[key] ? state[key].indexesPressed : {}), 0: {show: true, correct: true, changeBg: true}},
+                    indexesPressed: {
+                        ...(state[key] ? state[key].indexesPressed : {}),
+                        0: {show: true, correct: true, changeBg: true}
+                    },
                     lastCorrectIndex: indexWord,
                     complete: isLast
                 },
@@ -318,7 +321,10 @@ export const CourseLesson = ({navigation}) => {
                 ...state,
                 [key]: {
                     text: `${state[key].text} ${word}`,
-                    indexesPressed: {...state[key].indexesPressed, [indexWord]: {show: true, correct: true, changeBg: true}},
+                    indexesPressed: {
+                        ...state[key].indexesPressed,
+                        [indexWord]: {show: true, correct: true, changeBg: true}
+                    },
                     lastCorrectIndex: indexWord,
                     complete: isLast
                 },
@@ -328,7 +334,10 @@ export const CourseLesson = ({navigation}) => {
                 ...state,
                 [key]: {
                     text: state[key] ? state[key].text : "",
-                    indexesPressed: {...(state[key] ? state[key].indexesPressed : {}), [indexWord]: {show: true, correct: false, changeBg: true}},
+                    indexesPressed: {
+                        ...(state[key] ? state[key].indexesPressed : {}),
+                        [indexWord]: {show: true, correct: false, changeBg: true}
+                    },
                     lastCorrectIndex: state[key] ? state[key].lastCorrectIndex : -1,
                     complete: false
                 },
@@ -346,7 +355,7 @@ export const CourseLesson = ({navigation}) => {
                 }
 
                 if (!state[key].indexesPressed[indexWord]) {
-                    state[key].indexesPressed[indexWord] = { show: false, correct: false, changeBg: false };
+                    state[key].indexesPressed[indexWord] = {show: false, correct: false, changeBg: false};
                 }
 
                 return {
@@ -390,11 +399,11 @@ export const CourseLesson = ({navigation}) => {
         }
     }, [])
 
-    const drawCarouselTest = (dataItem, indexItem) => {
+    const drawCarouselTest = useCallback((dataItem, indexItem, isFocused) => {
+        if (!dataItem) return null;
+
         const key = getKeyForIndex(indexItem);
         const currentQuest = dataItem[`v${dataItem.correct}`] || "";
-
-        if (!dataItem) return null;
         const keyStr = `carousel-${dataItem.series}-${indexItem}`;
 
         if (dataItem.type === "carousel") {
@@ -408,12 +417,12 @@ export const CourseLesson = ({navigation}) => {
                         <CustomSound
                             name={dataItem.file_path}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/audio-lessons/${dataItem.file_path}`}
-                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
+                            isFocused={isFocused}
                         />
                     ) : (
                         <CustomVideo
                             isQuiz={false}
-                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
+                            isFocused={isFocused}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/video-lessons/${dataItem.file_path}`}
                         />
                     )}
@@ -444,7 +453,7 @@ export const CourseLesson = ({navigation}) => {
                         <CustomVideo
                             isQuiz={true}
                             url={`${SERVER_URL}/ru/ru-en/packs/assest/course/content/videos/${dataItem.file_path}`}
-                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
+                            isFocused={isFocused}
                         />
 
                         <ContainerButtons
@@ -462,7 +471,7 @@ export const CourseLesson = ({navigation}) => {
                 );
             case "i":
                 return (
-                    <View key={`test-${dataItem.series}-${key}`} style={styles.slideIn}>
+                    <View key={`test-${key}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description}</Text>
                         </View>
@@ -487,13 +496,13 @@ export const CourseLesson = ({navigation}) => {
                 );
             case "a":
                 return (
-                    <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
+                    <View key={`test-${key}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description}</Text>
                         </View>
                         <CustomSound
                             name={dataItem.file_path}
-                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
+                            isFocused={isFocused}
                         />
                         <ContainerButtons
                             disabled={Boolean(check[key])}
@@ -512,13 +521,13 @@ export const CourseLesson = ({navigation}) => {
                 const wordsCa = getSortedWordsConstruct(indexItem, dataItem.v1, dataItem.v2)
 
                 return (
-                    <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
+                    <View key={`test-${key}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description}</Text>
                         </View>
                         <CustomSound
                             name={dataItem.file_path}
-                            isFocused={!showCongratulationsModal && !loading && allowCourse.current && indexItem === index}
+                            isFocused={isFocused}
                         />
                         <View style={[styles.inputView, styles.inputContainer1]}>
                             <TextInput
@@ -533,7 +542,9 @@ export const CourseLesson = ({navigation}) => {
                         <View style={styles.groupQuizBtn}>
                             {wordsCa.map((word) => {
                                 return !isUsedWordConstruct(word[1], check[key]) && (
-                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]} keyItem={key}/>
+                                    <WordConstruct key={word[1]} word={word}
+                                                   setValueWordConstruct={setValueWordConstruct} indexItem={indexItem}
+                                                   check={check[key]} keyItem={key}/>
                                 );
                             })}
                         </View>
@@ -543,7 +554,7 @@ export const CourseLesson = ({navigation}) => {
                 const wordsCt = getSortedWordsConstruct(indexItem, dataItem.v1, dataItem.v2)
 
                 return (
-                    <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
+                    <View key={`test-${key}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description}</Text>
                         </View>
@@ -560,7 +571,9 @@ export const CourseLesson = ({navigation}) => {
                         <View style={styles.groupQuizBtn}>
                             {wordsCt.map((word) => {
                                 return !isUsedWordConstruct(word[1], check[key]) && (
-                                    <WordConstruct key={word[1]} word={word} setValueWordConstruct={setValueWordConstruct} indexItem={indexItem} check={check[key]} keyItem={key}/>
+                                    <WordConstruct key={word[1]} word={word}
+                                                   setValueWordConstruct={setValueWordConstruct} indexItem={indexItem}
+                                                   check={check[key]} keyItem={key}/>
                                 );
                             })}
                         </View>
@@ -569,7 +582,7 @@ export const CourseLesson = ({navigation}) => {
                 );
             case "k":
                 return (
-                    <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
+                    <View key={`test-${key}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description_text}</Text>
                             <Text style={globalCss.bold700}>{dataItem.description}</Text>
@@ -627,7 +640,7 @@ export const CourseLesson = ({navigation}) => {
                 );
             case "t":
                 return (
-                    <View key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
+                    <View key={`test-${key}`} style={styles.slideIn}>
                         <View style={styles.videoContainerGroup}>
                             <Text style={styles.base_title}>{dataItem.description_text}</Text>
                         </View>
@@ -656,12 +669,12 @@ export const CourseLesson = ({navigation}) => {
                 );
             default:
                 return (
-                    <Text key={`test-${dataItem.series}-${index}`} style={styles.slideIn}>
+                    <Text key={`test-${key}`} style={styles.slideIn}>
                         ...
                     </Text>
                 );
         }
-    };
+    }, [check, dataFull])
 
     const checkDisabledSwipeButtons = () => {
         if (!currentCheck.current[currentKey.current]) return false
@@ -679,7 +692,6 @@ export const CourseLesson = ({navigation}) => {
 
     return (
         <>
-            {/*<Loader visible={loading} overlayColor={"white"}/> fully white */}
             <Loader visible={loading}/>
 
             <SubscribeModal visible={subscribeModalVisible} setVisible={setSubscribeModalVisible}/>
@@ -696,45 +708,23 @@ export const CourseLesson = ({navigation}) => {
                     </TouchableOpacity>
                     <ProgressBar currentIndex={index} totalCount={totalSlides}/>
                 </View>
-
-                {/*<View style={styles.carousel}>*/}
-                    {/*<Carousel */}
-                    {/*    decelerationRate={'fast'} // Ajustează această valoare pentru a controla viteza de decelerare*/}
-                    {/*    enableMomentum={false}*/}
-                    {/*    activeSlideAlignment="center" // Asigură-te că slide-ul activ este mereu centrat*/}
-                    {/*    scrollEnabled={!quizActive}*/}
-                    {/*    ref={swiperRef}*/}
-                    {/*    data={dataFull || []}*/}
-                    {/*    sliderWidth={width}*/}
-                    {/*    itemWidth={width}*/}
-                    {/*    layout="default"*/}
-                    {/*    loop={false}*/}
-                    {/*    onSnapToItem={updateProgressBar} // Actualizează bara de progres la scroll*/}
-                    {/*    renderItem={({item, index}) => (*/}
-                    {/*        <View style={styles.slideBox}>*/}
-                    {/*            <View style={[styles.slide, {width: width}]}>*/}
-                    {/*                {drawCarouselTest(item, index)}*/}
-                    {/*            </View>*/}
-                    {/*        </View>*/}
-                    {/*    )}*/}
-                    {/*/>*/}
-                    <Text>asdasd</Text>
-                    <PagerView
-                        ref={swiperRef}
-                        style={{flex: 1}}
-                        initialPage={index}
-                        scrollEnabled={!quizActive}
-                        onPageSelected={e => updateProgressBar(e.nativeEvent.position)}
-                    >
-                        {(dataFull || []).map((item, index) => (
-                            <View style={styles.slideBox} key={`slide-${index}`}>
-                                <View style={[styles.slide, {width: width}]}>
-                                    {drawCarouselTest(item, index)}
-                                </View>
-                            </View>
-                        ))}
-                    </PagerView>
-                {/*</View>*/}
+                <PagerView
+                    ref={swiperRef}
+                    style={{flex: 1}}
+                    initialPage={index}
+                    scrollEnabled={!quizActive}
+                    onPageSelected={e => updateProgressBar(e.nativeEvent.position)}
+                >
+                    {(dataFull || []).map((item, i) => (
+                       <CarouselItem
+                           isFocused={!showCongratulationsModal && !loading && allowCourse.current && i === index}
+                           key={`slide-${i}`}
+                           drawCarouselTest={drawCarouselTest}
+                           item={item}
+                           index={i}
+                       />
+                    ))}
+                </PagerView>
                 <SwiperButtonsContainer
                     isDisabled={checkDisabledSwipeButtons()}
                     onRightPress={handleRightButtonPress}
@@ -853,6 +843,21 @@ export const CourseLesson = ({navigation}) => {
     );
 };
 
+const CarouselItem = React.memo(({
+    isFocused,
+    drawCarouselTest,
+    item,
+    index
+}) => {
+    return (
+        <View style={styles.slideBox}>
+            <View style={[styles.slide, {width: width}]}>
+                {drawCarouselTest(item, index, isFocused)}
+            </View>
+        </View>
+    )
+})
+
 const checkTexts = (oldText, newText, partiallyCoincidesMax = 3, allowWordDiff = 3, callback = null) => {
     const arrOldText = oldText.trim().toLowerCase().split(/[\s\n\r]+/)
     const arrNewText = newText.trim().toLowerCase().split(/[\s\n\r]+/)
@@ -943,13 +948,13 @@ const ProgressBar = ({currentIndex, totalCount}) => {
 };
 
 const SwiperButtonsContainer = ({
-        isDisabled,
-        onRightPress,
-        showQuizResult,
-        index,
-        totalSlides,
-        allowCourse,
-        setSubscribeModalVisible
+    isDisabled,
+    onRightPress,
+    showQuizResult,
+    index,
+    totalSlides,
+    allowCourse,
+    setSubscribeModalVisible
 }) => (
     <View style={styles.swiperButtonsContainer}>
         <AnimatedButtonShadow

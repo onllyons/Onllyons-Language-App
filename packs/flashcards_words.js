@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef, useMemo, useCallback,} from "react";
-import {View, Text, Modal, Image, TouchableOpacity, Dimensions, Switch, StyleSheet,} from "react-native";
+import {View, Text, Modal, Image, TouchableOpacity, Switch, StyleSheet,} from "react-native";
 import * as Haptics from "expo-haptics";
-import Carousel from "react-native-new-snap-carousel";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faTimes, faRotateLeft, faGear} from "@fortawesome/free-solid-svg-icons";
@@ -15,8 +14,7 @@ import {AudioComponent} from "./components/flashcards/AudioComponent";
 import {SubscribeModal} from "./components/SubscribeModal";
 import {useStore} from "./providers/StoreProvider";
 import Loader from "./components/Loader";
-
-const {width} = Dimensions.get("window");
+import PagerView from "react-native-pager-view";
 
 export default function FlashCardsLearning({route, navigation}) {
     const {setStoredValue, getStoredValue, setStoredValueAsync} = useStore()
@@ -140,12 +138,12 @@ export default function FlashCardsLearning({route, navigation}) {
             setIndex(0)
             setCombinedData(data); // Setează datele combinării cu datele quizului
             setShowModal(false);
-            swiperRef.current?.snapToItem(0); // Navigați explicit la primul slide
+            swiperRef.current?.setPageWithoutAnimation(0); // Navigați explicit la primul slide
         } catch (error) {
             console.error("Error:", error);
             setCombinedData([]);
         } finally {
-            setIsLoading(false);
+            setTimeout(() => setIsLoading(false), 300)
         }
     };
 
@@ -161,7 +159,7 @@ export default function FlashCardsLearning({route, navigation}) {
         setSelectedAnswers({})
         setQuizIndex(0)
         setIndex(0)
-        swiperRef.current?.snapToItem(0);
+        swiperRef.current?.setPageWithoutAnimation(0);
 
         setTimeout(() => {
             setAnswersCorrectness({})
@@ -334,7 +332,6 @@ export default function FlashCardsLearning({route, navigation}) {
     };
 
     const handleRightButtonPress = () => {
-        console.log("handleRightButtonPress")
         if (blocked) {
             setSubscribeModalVisible(true)
             return
@@ -345,7 +342,7 @@ export default function FlashCardsLearning({route, navigation}) {
             setShowModal(true);
         } else if (index < totalSlides - 1) {
             // Altfel, avansează la următorul slide
-            swiperRef.current?.snapToNext();
+            swiperRef.current?.setPage(index + 1);
         }
     };
 
@@ -398,10 +395,10 @@ export default function FlashCardsLearning({route, navigation}) {
         return (correctCount / quizData.length) * 100;
     };
 
-    const renderItem = ({item, index: currentIndex}) => {
+    const renderItem = (item, currentIndex) => {
         if (showQuiz) {
             return (
-                <View style={styles.slide}>
+                <View style={[styles.slide, {marginHorizontal: 0}]} key={`slide-quiz-${currentIndex}`}>
                     <View style={styles.groupBtnQuiz}>
                         <Text style={styles.headerText}>{item.question}</Text>
                         {randomOrders[item.id].map((answerIndex) => (
@@ -435,7 +432,7 @@ export default function FlashCardsLearning({route, navigation}) {
         } else {
             // Afișați slide-urile Carousel asdf
             return (
-                <View style={styles.slide}>
+                <View style={styles.slide} key={`slide-carousel-${currentIndex}`}>
                     <View style={styles.groupEng}>
                         <Text style={styles.word_en}>{item.word_en}</Text>
                         <Text
@@ -500,26 +497,15 @@ export default function FlashCardsLearning({route, navigation}) {
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.carousel}>
-                    <Carousel
-                        decelerationRate={'fast'} // Ajustează această valoare pentru a controla viteza de decelerare
-                        enableMomentum={false}
-                        activeSlideAlignment="center" // Asigură-te că slide-ul activ este mereu centrat
-                        key={showQuiz ? "quizCarousel" : "learningCarousel"}
-                        data={showQuiz ? quizData : carouselData}
-                        ref={swiperRef}
-                        sliderWidth={width}
-                        itemWidth={showQuiz ? width : width - 70}
-                        paginationStyle={styles.pagination}
-                        contentContainerCustomStyle={styles.carouselContainer}
-                        layout={"default"}
-                        loop={false}
-                        onSnapToItem={handleSlideChange}
-                        renderItem={renderItem}
-                        firstItem={showQuiz ? quizIndex : carouselIndex}
-                        scrollEnabled={!showQuiz} // Dezactivează scroll-ul când showQuiz este adevărat
-                    /> 
-                </View>
+                <PagerView
+                    ref={swiperRef}
+                    style={styles.carousel}
+                    initialPage={showQuiz ? quizIndex : carouselIndex}
+                    scrollEnabled={!showQuiz}
+                    onPageSelected={e => handleSlideChange(e.nativeEvent.position)}
+                >
+                    {(showQuiz ? quizData : carouselData).map((item, i) => renderItem(item, i))}
+                </PagerView>
 
                 <SwiperButtonsContainer
                     onRightPress={handleRightButtonPress}
@@ -766,11 +752,9 @@ const SwiperButtonsContainer = ({
 
 const styles = StyleSheet.create({
     carousel: {
-        height: "75%",
+        flex: 1,
         justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        paddingTop: "12%",
+        alignItems: "center"
     },
     gradient: {
         flex: 1,
@@ -791,6 +775,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 10,
         height: "90%",
+        marginTop: "6%",
+        marginHorizontal: 35
     },
     swiperContent: {
         height: "100%",
@@ -838,6 +824,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "flex-end",
         paddingHorizontal: "9%",
+        paddingBottom: "8%",
     },
     button: {
         paddingHorizontal: 20,

@@ -52,7 +52,7 @@ export const Category = React.memo(({data, type, navTopInfo}) => {
 
             <View style={globalCss.mb11}>
                 <Carousel
-                    data={data.slice(0, 7)}
+                    data={data.slice(0, 6)}
                     renderItem={({item}) => (
                         <View style={styles.cell}>
                             <AnimatedButtonShadow
