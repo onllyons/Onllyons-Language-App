@@ -7,7 +7,7 @@ import {
     ScrollView,
     StyleSheet,
     TouchableOpacity,
-    Animated, SafeAreaView
+    Animated, SafeAreaView, Dimensions
 } from "react-native";
 
 // Importuri pentru navigare
@@ -412,14 +412,7 @@ const Word = React.memo(({
 }) => {
     // Dacă elementul este o imagine
     if (word.text === "IMAGE") {
-        return (
-            <View style={styles.imageContainer}>
-                <Image
-                    source={{uri: word.src}}
-                    style={styles.sourceImgBook}
-                />
-            </View>
-        );
+        return (<ImageWord src={word.src}/>);
     }
 
     // Pentru elementele cu timp asociat, afișăm ca butoane
@@ -457,6 +450,26 @@ const Word = React.memo(({
     );
 })
 
+const ImageWord = React.memo(({src}) => {
+    const [imageHeight, setImageHeight] = useState(null)
+
+    if (!src) return null
+
+    if (!imageHeight) {
+        Image.getSize(src, (width, height) => {
+            const screenWidth = Dimensions.get("screen").width - 40;
+            setImageHeight((screenWidth / width) * height)
+        });
+    }
+
+    return (
+        <Image
+            source={{uri: src}}
+            style={[styles.sourceImgBook, imageHeight && {height: imageHeight}]}
+        />
+    )
+})
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -464,13 +477,10 @@ const styles = StyleSheet.create({
         paddingTop: "12%",
         backgroundColor: '#f7f7f7',
     },
-    imageContainer: {
-        width: "100%",
-    },
     sourceImgBook: {
-        width: 300,
+        width: Dimensions.get("screen").width - 40,
         height: 300,
-        resizeMode: "cover",
+        resizeMode: "contain",
         alignSelf: "center",
         marginTop: "8%",
         marginBottom: "8%",
