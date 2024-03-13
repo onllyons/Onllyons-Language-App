@@ -92,10 +92,13 @@ const globalCss = StyleSheet.create({
         color: "#636363",
         fontSize: 17,
         flex: 1,
+        paddingVertical: '5%',
+        
     },
     bigInput: {
         fontSize: 17,
         height: 150,
+        paddingVertical: '5%',
         width: "100%",
         textAlignVertical: 'top', // Выравнивание текста сверху
     },

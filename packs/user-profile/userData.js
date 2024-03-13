@@ -273,7 +273,6 @@ const Profile = () => {
                         style={[
                             styles.inputView,
                             styles.inputContainer1,
-                            styles.bigInputContainer,
                         ]}
                     >
                         <TextInput
@@ -407,14 +406,8 @@ const styles = StyleSheet.create({
     inputContainer1: {
         borderTopWidth: 2.1,
         borderRadius: 14,
-        paddingBottom: 17,
-        paddingTop: 17,
         paddingRight: 12,
         marginBottom: 12,
-    },
-    bigInputContainer: {
-        paddingBottom: 12,
-        paddingTop: 12,
     },
 });
 

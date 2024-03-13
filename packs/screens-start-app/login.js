@@ -197,8 +197,6 @@ export default function LoginScreen({navigation}) {
               </View>
             </View>
 
-
-
             <View style={styles.itemFullContents}>
                 <View style={[styles.inputView, styles.inputContainer1]}>
                     <TextInput
@@ -210,7 +208,7 @@ export default function LoginScreen({navigation}) {
                         style={globalCss.input}
                         onChangeText={val => setUserData(prev => ({...prev, username: val}))}
                         value={userData.username}
-                    />
+                    /> 
                 </View>
                 <View style={[styles.inputView, styles.inputContainer1, styles.inputContainer2]}>
                     <TextInput
@@ -327,8 +325,6 @@ const styles = StyleSheet.create({
         borderTopWidth: 2.1,
         borderTopLeftRadius: 14,
         borderTopRightRadius: 14,
-        paddingBottom: 17,
-        paddingTop: 17,
         paddingRight: 12,
     },
     inputContainer2: {

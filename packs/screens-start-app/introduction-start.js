@@ -138,10 +138,10 @@ export default function IntroductionScreen({navigation}) {
                     />
                 </View>
                 <View style={styles.slideLevel}>
-                    <ScrollView style={styles.slideFormInp} contentContainerStyle={{paddingTop: 25, paddingBottom: 100}}>
+                    <ScrollView style={styles.slideFormInp} contentContainerStyle={{paddingTop: 0, paddingBottom: 100}}>
                         <Image
                             source={require('../images/El/regIm.png')}
-                            style={styles.imageReg}
+                            style={styles.imageSetLevelchose}
                         />
 
                         <View>
@@ -332,11 +332,7 @@ const styles = StyleSheet.create({
     gradient: {
         flex: 1,
     },
-    row: {
-        flexDirection: 'row',
-        marginTop: '20%',
-        height: '3%',
-    },
+
     swiperContent: {
         height: '100%',
         paddingBottom: '10%',
@@ -354,33 +350,52 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#212121',
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
         textAlign: 'center'
     },
+
+    row: {
+        flexDirection: "row",
+        marginTop: "14%",
+        height: "7%",
+    },
+    backBtn: {
+
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "center",
+        width: "14%",
+        height: "100%",
+        paddingLeft: "2%",
+        paddingRight: "1%",
+        paddingTop: "1%",
+        textAlign: "center", 
+    },
     progressBarContainer: {
         flex: 1,
-        backgroundColor: '#3a464e',
+        backgroundColor: "#3a464e",
         borderRadius: 10,
-        marginRight: '5%'
+        marginRight: "5%",
+        alignSelf: "center",
+        height: "40%",
     },
     progressBar: {
         flex: 1,
         backgroundColor: '#ffeb3b',
         borderRadius: 10,
     },
-    backBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '14%',
-        paddingLeft: '2%',
-        paddingRight: '1%',
-        textAlign: 'center',
-        alignSelf: 'center'
-    },
+
+
+
+
+
+
+
+
     image: {
-        width: '90%',
+        width: '85%',
         height: '60%',
         marginTop: 20,
         alignSelf: 'center',
@@ -406,8 +421,6 @@ const styles = StyleSheet.create({
         paddingLeft: 12,
         borderTopWidth: 2.1,
         borderRadius: 14,
-        paddingBottom: 17,
-        paddingTop: 17,
     },
     imageRegInp: {
         width: '90%',
@@ -426,10 +439,18 @@ const styles = StyleSheet.create({
     imageReg: {
         width: '97%',
         height: '27%',
-        marginTop: 10,
+        marginTop: '3%',
         marginBottom: 40,
         resizeMode: 'contain'
     },
+    imageSetLevelchose: {
+        width: '100%',
+        height: '31%',
+        marginTop: '3%',
+        marginBottom: 40,
+        resizeMode: 'contain',
+    },
+    
     button: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -467,7 +488,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     regFinish: {
-        width: '100%',
+        width: '85%',
         height: '70%',
         resizeMode: 'contain'
     },

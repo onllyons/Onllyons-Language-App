@@ -36,7 +36,6 @@ import FlashCardsWords from "./packs/flashcards_words";
 
 import MenuScreen from "./packs/menu";
 import UserData from "./packs/user-profile/userData";
-import UserSettings from "./packs/user-profile/userSettings";
 import SubscribeScreen from "./packs/screens/SubscribeScreen";
 import UserSubscriptionManage from "./packs/user-profile/userSubscriptionManage";
 
@@ -73,12 +72,6 @@ function UserProfileMenu() {
                 name="MenuScreen"
                 component={MenuScreen}
                 options={{headerShown: false}}
-            />
-
-            <Stack.Screen
-                name="UserSettings"
-                component={UserSettings}
-                options={{title: "Настройки", headerBackTitle: "Назад"}}
             />
 
         </Stack.Navigator>
