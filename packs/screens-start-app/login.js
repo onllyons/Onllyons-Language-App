@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Keyboard} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
+import {faEye, faArrowLeft, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
 
 import globalCss from '../css/globalCss';
 import {isAuthenticated, login} from "../providers/AuthProvider";
@@ -185,88 +185,102 @@ export default function LoginScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Loader visible={loader}/>
+                <Loader visible={loader}/>
 
-            <View style={[styles.inputView, styles.inputContainer1]}>
-                <TextInput
-                    placeholder="Электронный адрес или имя пользователя"
-                    placeholderTextColor="#a5a5a5"
-                    autoComplete={"username"}
-                    textContentType={"username"}
-                    autoCapitalize="none"
-                    style={globalCss.input}
-                    onChangeText={val => setUserData(prev => ({...prev, username: val}))}
-                    value={userData.username}
-                />
+            <View style={globalCss.navTabUser}>
+              <TouchableOpacity style={globalCss.itemNavTabUserBtnBack}
+                                onPress={() => navigation.goBack()}>
+                  <FontAwesomeIcon icon={faArrowLeft} size={30} style={globalCss.blue}/>
+              </TouchableOpacity>
+              <View style={globalCss.itemNavTabUserTitleCat}>
+                  <Text style={globalCss.dataCategoryTitle}>Введите данные</Text>
+              </View>
             </View>
-            <View style={[styles.inputView, styles.inputContainer1, styles.inputContainer2]}>
-                <TextInput
-                    placeholder="Пароль"
-                    autoComplete={"password"}
-                    textContentType={"password"}
-                    placeholderTextColor="#a5a5a5"
-                    autoCapitalize="none"
-                    style={globalCss.input}
-                    secureTextEntry={!showPassword}
-                    onChangeText={val => setUserData(prev => ({...prev, password: val}))}
-                    value={userData.password}
-                />
-                <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={togglePasswordVisibility}>
-                    <Text style={styles.buttonText}>
-                        {showPassword
-                            ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
-                            : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
-                    </Text>
+
+
+
+            <View style={styles.itemFullContents}>
+                <View style={[styles.inputView, styles.inputContainer1]}>
+                    <TextInput
+                        placeholder="Электронный адрес или имя пользователя"
+                        placeholderTextColor="#a5a5a5"
+                        autoComplete={"username"}
+                        textContentType={"username"}
+                        autoCapitalize="none"
+                        style={globalCss.input}
+                        onChangeText={val => setUserData(prev => ({...prev, username: val}))}
+                        value={userData.username}
+                    />
+                </View>
+                <View style={[styles.inputView, styles.inputContainer1, styles.inputContainer2]}>
+                    <TextInput
+                        placeholder="Пароль"
+                        autoComplete={"password"}
+                        textContentType={"password"}
+                        placeholderTextColor="#a5a5a5"
+                        autoCapitalize="none"
+                        style={globalCss.input}
+                        secureTextEntry={!showPassword}
+                        onChangeText={val => setUserData(prev => ({...prev, password: val}))}
+                        value={userData.password}
+                    />
+                    <TouchableOpacity style={styles.faEyefaEyeSlash} onPress={togglePasswordVisibility}>
+                        <Text style={styles.buttonText}>
+                            {showPassword
+                                ? <FontAwesomeIcon icon={faEye} size={20} style={globalCss.link}/>
+                                : <FontAwesomeIcon icon={faEyeSlash} size={20} style={globalCss.link}/>}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <AnimatedButtonShadow
+                    styleButton={[globalCss.button, globalCss.buttonGreen]}
+                    shadowColor={"green"}
+                    size={"full"}
+                    onPress={handleLogin}
+                >
+                    <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Войти</Text>
+                </AnimatedButtonShadow>
+                <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("PasswordScreen")}>
+                    <Text style={[globalCss.link, globalCss.bold]}>ЗАБЫЛИ ПАРОЛЬ?</Text>
                 </TouchableOpacity>
-            </View>
-            <AnimatedButtonShadow
-                styleButton={[globalCss.button, globalCss.buttonGreen]}
-                shadowColor={"green"}
-                size={"full"}
-                onPress={handleLogin}
-            >
-                <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Войти</Text>
-            </AnimatedButtonShadow>
-            <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("PasswordScreen")}>
-                <Text style={[globalCss.link, globalCss.bold]}>ЗАБЫЛИ ПАРОЛЬ?</Text>
-            </TouchableOpacity>
 
-            <View style={styles.fixedBottom}>
-                <View style={styles.fullBottomFixed}>
-                    <AnimatedButtonShadow
-                        styleButton={[
-                            styles.buttonSignIn,
-                            globalCss.buttonWhite,
-                        ]}
-                        onPress={handleGoogleLogin}
-                        size={"full"}
-                        shadowColor={"#e0e0e0"}
-                    >
-                        <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
-                    </AnimatedButtonShadow>
+                <View style={styles.fixedBottom}>
+                    <View style={styles.fullBottomFixed}>
+                        <AnimatedButtonShadow
+                            styleButton={[
+                                styles.buttonSignIn,
+                                globalCss.buttonWhite,
+                            ]}
+                            onPress={handleGoogleLogin}
+                            size={"full"}
+                            shadowColor={"#e0e0e0"}
+                        >
+                            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
+                        </AnimatedButtonShadow>
 
-                    <AnimatedButtonShadow
-                        styleButton={[
-                            styles.buttonSignIn,
-                            globalCss.buttonWhite,
-                        ]}
-                        size={"full"}
-                        shadowColor={"#e0e0e0"}
-                    >
-                        <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ APPLE</Text>
-                    </AnimatedButtonShadow>
+                        <AnimatedButtonShadow
+                            styleButton={[
+                                styles.buttonSignIn,
+                                globalCss.buttonWhite,
+                            ]}
+                            size={"full"}
+                            shadowColor={"#e0e0e0"}
+                        >
+                            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ APPLE</Text>
+                        </AnimatedButtonShadow>
 
 
-                    <View style={{flexDirection: 'column'}}>
-                      <Text style={styles.termsText}>
-                        Выполняя вход в аккаунт Onllyons Language, вы соглашаетесь с нашими
-                      </Text>
-                      <Text style={[styles.termsText, styles.link]} onPress={() => Linking.openURL('https://www.language.onllyons.com/term/')}>
-                         Условия использования и
-                      </Text>
-                      <Text style={[styles.termsText, styles.link]} onPress={() => Linking.openURL('https://www.language.onllyons.com/privacy/')}>
-                        Политика использования данных.
-                      </Text>
+                        <View style={{flexDirection: 'column'}}>
+                          <Text style={styles.termsText}>
+                            Выполняя вход в аккаунт Onllyons Language, вы соглашаетесь с нашими
+                          </Text>
+                          <Text style={[styles.termsText, styles.link]} onPress={() => Linking.openURL('https://www.language.onllyons.com/term/')}>
+                             Условия использования и
+                          </Text>
+                          <Text style={[styles.termsText, styles.link]} onPress={() => Linking.openURL('https://www.language.onllyons.com/privacy/')}>
+                            Политика использования данных.
+                          </Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -279,6 +293,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
+        alignItems: 'center',
+    },
+    itemFullContents:{
+        width: '100%',
+        flex: 1,
         alignItems: 'center',
         padding: 20,
     },

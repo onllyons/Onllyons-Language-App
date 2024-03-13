@@ -285,10 +285,7 @@ function AppStack() {
             <Stack.Screen
                 name="LoginScreen"
                 component={LoginScreen}
-                options={{
-                    title: "Введите данные",
-                    headerStyle: {backgroundColor: "#ffffff"},
-                }}
+                options={{headerShown: false}}
             />
             <Stack.Screen
                 name="IntroductionScreen"
