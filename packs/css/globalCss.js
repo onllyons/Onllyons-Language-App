@@ -138,7 +138,7 @@ const globalCss = StyleSheet.create({
         alignItems: "center",
         borderRadius: 14,
         marginBottom: "6%"
-    },
+    }, 
     buttonPressed: {
         transform: [{translateY: 4}],
     },
@@ -192,6 +192,11 @@ const globalCss = StyleSheet.create({
     },
     buttonTextBlack: {
         color: "#000",
+        fontSize: 15,
+        fontWeight: "600",
+    },
+    buttonTextGray: {
+        color: "gray",
         fontSize: 15,
         fontWeight: "600",
     },

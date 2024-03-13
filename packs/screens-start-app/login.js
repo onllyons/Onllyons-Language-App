@@ -189,7 +189,7 @@ export default function LoginScreen({navigation}) {
 
             <View style={[styles.inputView, styles.inputContainer1]}>
                 <TextInput
-                    placeholder="login"
+                    placeholder="Электронный адрес или имя пользователя"
                     placeholderTextColor="#a5a5a5"
                     autoComplete={"username"}
                     textContentType={"username"}
@@ -201,7 +201,7 @@ export default function LoginScreen({navigation}) {
             </View>
             <View style={[styles.inputView, styles.inputContainer1, styles.inputContainer2]}>
                 <TextInput
-                    placeholder="password"
+                    placeholder="Пароль"
                     autoComplete={"password"}
                     textContentType={"password"}
                     placeholderTextColor="#a5a5a5"
@@ -225,27 +225,52 @@ export default function LoginScreen({navigation}) {
                 size={"full"}
                 onPress={handleLogin}
             >
-                <Text style={[globalCss.buttonText, globalCss.bold]}>ВХОД</Text>
+                <Text style={[globalCss.buttonText, globalCss.bold, globalCss.textUpercase]}>Войти</Text>
             </AnimatedButtonShadow>
             <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("PasswordScreen")}>
                 <Text style={[globalCss.link, globalCss.bold]}>ЗАБЫЛИ ПАРОЛЬ?</Text>
             </TouchableOpacity>
-            <AnimatedButtonShadow
-                styleButton={[
-                    globalCss.button,
-                    globalCss.buttonBlue,
-                ]}
-                onPress={handleGoogleLogin}
-                size={"full"}
-                shadowColor={"blue"}
-            >
-                <Text style={[globalCss.buttonText, globalCss.bold]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
-            </AnimatedButtonShadow>
-            <Text style={styles.termsText}>
-                Выполняя вход в аккаунт Onllyons Language, вы соглашаетесь с
-                нашими <Text style={globalCss.bold}>Условиями</Text> и
-                <Text style={globalCss.bold}> Политикой конфиденциальности</Text>.
-            </Text>
+
+            <View style={styles.fixedBottom}>
+                <View style={styles.fullBottomFixed}>
+                    <AnimatedButtonShadow
+                        styleButton={[
+                            styles.buttonSignIn,
+                            globalCss.buttonWhite,
+                        ]}
+                        onPress={handleGoogleLogin}
+                        size={"full"}
+                        shadowColor={"#e0e0e0"}
+                    >
+                        <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
+                    </AnimatedButtonShadow>
+
+                    <AnimatedButtonShadow
+                        styleButton={[
+                            styles.buttonSignIn,
+                            globalCss.buttonWhite,
+                        ]}
+                        size={"full"}
+                        shadowColor={"#e0e0e0"}
+                    >
+                        <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ APPLE</Text>
+                    </AnimatedButtonShadow>
+
+
+                    <View style={{flexDirection: 'column'}}>
+                      <Text style={styles.termsText}>
+                        Выполняя вход в аккаунт Onllyons Language, вы соглашаетесь с нашими
+                      </Text>
+                      <Text style={[styles.termsText, styles.link]} onPress={() => Linking.openURL('https://www.language.onllyons.com/term/')}>
+                         Условия использования и
+                      </Text>
+                      <Text style={[styles.termsText, styles.link]} onPress={() => Linking.openURL('https://www.language.onllyons.com/privacy/')}>
+                        Политика использования данных.
+                      </Text>
+                    </View>
+                </View>
+            </View>
+
         </View>
     );
 }
@@ -266,6 +291,10 @@ const styles = StyleSheet.create({
     },
     forgotPassword: {
         marginBottom: '3%'
+    },
+    link:{
+        fontWeight: '700',
+        color: "#3ca6ff",
     },
     inputView: {
         borderBottomWidth: 2.1,
@@ -295,7 +324,41 @@ const styles = StyleSheet.create({
     termsText: {
         color: '#636363',
         textAlign: 'center',
-        marginTop: '2%',
         fontSize: 16,
     },
+    buttonSignIn:{
+        width: "100%",
+        paddingVertical: "4%",
+        alignItems: "center",
+        borderRadius: 13,
+        marginBottom: "4.4%",
+        borderColor: '#e0e0e0',
+        borderTopWidth: 2.1,
+        borderLeftWidth: 2.1,
+        borderRightWidth: 2.1,
+        borderBottomWidth: 2.1,
+    },
+    fixedBottom:{
+        width: '100%',
+        flex: 1,
+        alignSelf: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        alignContent: 'flex-end',
+        paddingBottom: '12%',
+    },
+    fullBottomFixed:{
+        width: '100%',
+    },
 });
+
+
+
+
+
+
+
+
+
+

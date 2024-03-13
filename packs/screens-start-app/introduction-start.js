@@ -148,7 +148,7 @@ export default function IntroductionScreen({navigation}) {
                             <AnimatedButtonShadow
                                 styleButton={[
                                     globalCss.buttonRow,
-                                    globalCss.buttonGry1,
+                                    globalCss.buttonWhite, 
                                     userData.selectedLevel === 0 && styles.selectedButton
                                 ]}
                                 permanentlyActive={userData.selectedLevel === 0}
@@ -164,7 +164,7 @@ export default function IntroductionScreen({navigation}) {
                             <AnimatedButtonShadow
                                 styleButton={[
                                     globalCss.buttonRow,
-                                    globalCss.buttonGry1,
+                                    globalCss.buttonWhite,
                                     userData.selectedLevel === 1 && styles.selectedButton
                                 ]}
                                 permanentlyActive={userData.selectedLevel === 1}
@@ -180,7 +180,7 @@ export default function IntroductionScreen({navigation}) {
                             <AnimatedButtonShadow
                                 styleButton={[
                                     globalCss.buttonRow,
-                                    globalCss.buttonGry1,
+                                    globalCss.buttonWhite,
                                     userData.selectedLevel === 2 && styles.selectedButton
                                 ]}
                                 permanentlyActive={userData.selectedLevel === 2}
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
         borderColor: '#e0e0e0',
         flexDirection: 'row',
         borderLeftWidth: 2.1,
-        backgroundColor: '#f3f3f3',
+        backgroundColor: 'white',
         borderRightWidth: 2.1,
         paddingLeft: 12,
         borderTopWidth: 2.1,
@@ -441,7 +441,9 @@ const styles = StyleSheet.create({
         borderRadius: 14,
     },
     selectedButton: {
-        backgroundColor: '#d6d6d6',
+        backgroundColor: '#e6e6e6',
+        borderWidth: 1,
+        borderColor: '#bdbdbd',
     },
     buttonText: {
         width: '80%',
