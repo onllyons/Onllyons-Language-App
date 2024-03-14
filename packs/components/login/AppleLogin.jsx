@@ -1,4 +1,4 @@
-import {Platform, StyleSheet} from "react-native";
+import {Platform, StyleSheet, Text} from "react-native";
 import React, {useRef} from "react";
 import * as AppleAuthentication from "expo-apple-authentication";
 import Toast from "react-native-toast-message";
@@ -79,36 +79,23 @@ export const AppleLogin = ({setLoader}) => {
             shadowColor={"#e0e0e0"}
             onPress={handleAppleAuth}
         >
-            <AppleAuthentication.AppleAuthenticationButton
-                buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
-                style={styles.buttonApple}
-                cornerRadius={0}
-                onPress={null}
-            />
+            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ APPLE</Text>
         </AnimatedButtonShadow>
 
     )
 }
 
 const styles = StyleSheet.create({
-    buttonSignIn: {
+    buttonSignIn:{
         width: "100%",
-        paddingVertical: "1%",
-        paddingHorizontal: 0,
+        paddingVertical: "4%",
         alignItems: "center",
         borderRadius: 13,
-        overflow: "hidden",
         marginBottom: "4.4%",
         borderColor: '#e0e0e0',
         borderTopWidth: 2.1,
         borderLeftWidth: 2.1,
         borderRightWidth: 2.1,
         borderBottomWidth: 2.1,
-    },
-    buttonApple: {
-        width: "100%",
-        height: 35,
-        pointerEvents: "none"
-    },
+    }
 })
