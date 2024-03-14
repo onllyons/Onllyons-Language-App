@@ -54,6 +54,7 @@ export const sendDefaultRequest = async (url, dataObj, navigation = null, showOp
                     await logout();
 
                     if (navigation) {
+                        console.log("yayaya")
                         navigation.reset({
                             index: 0,
                             routes: [{ name: 'StartPageScreen' }],

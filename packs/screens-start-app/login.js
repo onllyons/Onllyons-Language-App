@@ -10,57 +10,19 @@ import Toast from "react-native-toast-message";
 import {sendDefaultRequest, SERVER_AJAX_URL} from "../utils/Requests";
 import {AnimatedButtonShadow} from "../components/buttons/AnimatedButtonShadow";
 
-import * as AuthSession from 'expo-auth-session';
 import {useStore} from "../providers/StoreProvider";
 import * as Linking from "expo-linking";
 import {useFocusEffect} from "@react-navigation/native";
-
-const CLIENT_ID = '975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu.apps.googleusercontent.com';
-const REDIRECT_URI = "https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user/google_login.php"
-
-const useGoogleAuth = () => {
-    const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
-
-    const [request, response, promptAsync] = AuthSession.useAuthRequest({
-        clientId: CLIENT_ID,
-        redirectUri: REDIRECT_URI,
-        responseType: AuthSession.ResponseType.Code,
-        prompt: AuthSession.Prompt.Login,
-        scopes: [
-            "email",
-            "profile"
-        ],
-    }, discovery);
-
-    return {request, response, promptAsync};
-};
+import {GoogleLogin} from "../components/login/GoogleLogin";
+import {AppleLogin} from "../components/login/AppleLogin";
+import {Welcome} from "../components/Welcome";
 
 export default function LoginScreen({navigation}) {
     const {initFirstData} = useStore()
     const [showPassword, setShowPassword] = useState(false);
     const [userData, setUserData] = useState({username: "", password: ""})
     const [loader, setLoader] = useState(false)
-    const {promptAsync, request} = useGoogleAuth();
-    const codeVerifier = useRef(0)
-    const googleAuthProcess = useRef(false)
-
-    if (request && request.codeVerifier) codeVerifier.current = request.codeVerifier
-
-    // Deep linking
-    useEffect(() => {
-        const subscription = Linking.addEventListener("url", ({url}) => handleUrl(url))
-
-        const handleUrl = url => {
-            const parsed = Linking.parse(url)
-
-            if (parsed.path === "google-login" || parsed.hostname === "google-login") {
-                googleAuth(parsed.queryParams.code)
-            }
-        }
-
-        // Отписка от событий
-        return () => subscription.remove();
-    }, []);
+    const [welcomeLoader, setWelcomeLoader] = useState(false)
 
     useFocusEffect(
         useCallback(() => {
@@ -76,69 +38,6 @@ export default function LoginScreen({navigation}) {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-
-    const googleAuth = (code) => {
-        if (googleAuthProcess.current) return
-
-        setLoader(true)
-        googleAuthProcess.current = true
-
-        sendDefaultRequest(`${SERVER_AJAX_URL}/user/google_auth_user.php`,
-            {
-                code: code,
-                codeVerifier: codeVerifier.current
-            },
-            navigation,
-            {success: false}
-        )
-            .then(async data => {
-                await login(data.userData, data.tokens)
-
-                if (Platform.OS === "ios") {
-                    setLoader(false)
-                } else {
-                    setTimeout(() => setLoader(false), 50)
-                }
-
-                await initFirstData(true, true)
-
-                googleAuthProcess.current = false
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'MainTabNavigator' }],
-                });
-            })
-            .catch(() => {
-                setTimeout(() => setLoader(false), 1)
-                googleAuthProcess.current = false
-
-                Toast.show({
-                    type: "error",
-                    text1: "Ошибка авторизации"
-                })
-            })
-    }
-
-    const handleGoogleLogin = () => {
-        promptAsync()
-            .then(data => {
-                if (!data.params.code) {
-                    if (Platform.OS === "ios") throw new Error()
-                    return
-                }
-
-                googleAuth(data.params.code)
-            })
-            .catch(() => {
-
-                if (Platform.OS !== "ios") return
-
-                Toast.show({
-                    type: "error",
-                    text1: "Ошибка авторизации"
-                })
-            })
-    }
 
     const handleLogin = () => {
         if (isAuthenticated()) {
@@ -185,7 +84,8 @@ export default function LoginScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-                <Loader visible={loader}/>
+            <Loader visible={loader}/>
+            <Welcome visible={welcomeLoader} key={`welcome-${Date.now()}`}/>
 
             <View style={globalCss.navTabUser}>
               <TouchableOpacity style={globalCss.itemNavTabUserBtnBack}
@@ -244,29 +144,9 @@ export default function LoginScreen({navigation}) {
 
                 <View style={styles.fixedBottom}>
                     <View style={styles.fullBottomFixed}>
-                        <AnimatedButtonShadow
-                            styleButton={[
-                                styles.buttonSignIn,
-                                globalCss.buttonWhite,
-                            ]}
-                            onPress={handleGoogleLogin}
-                            size={"full"}
-                            shadowColor={"#e0e0e0"}
-                        >
-                            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
-                        </AnimatedButtonShadow>
+                        <GoogleLogin setLoader={setWelcomeLoader}/>
 
-                        <AnimatedButtonShadow
-                            styleButton={[
-                                styles.buttonSignIn,
-                                globalCss.buttonWhite,
-                            ]}
-                            size={"full"}
-                            shadowColor={"#e0e0e0"}
-                        >
-                            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ APPLE</Text>
-                        </AnimatedButtonShadow>
-
+                        {Platform.OS === "ios" && <AppleLogin setLoader={setWelcomeLoader}/>}
 
                         <View style={{flexDirection: 'column'}}>
                           <Text style={styles.termsText}>
@@ -340,18 +220,6 @@ const styles = StyleSheet.create({
         color: '#636363',
         textAlign: 'center',
         fontSize: 16,
-    },
-    buttonSignIn:{
-        width: "100%",
-        paddingVertical: "4%",
-        alignItems: "center",
-        borderRadius: 13,
-        marginBottom: "4.4%",
-        borderColor: '#e0e0e0',
-        borderTopWidth: 2.1,
-        borderLeftWidth: 2.1,
-        borderRightWidth: 2.1,
-        borderBottomWidth: 2.1,
     },
     fixedBottom:{
         width: '100%',

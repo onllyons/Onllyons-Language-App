@@ -95,9 +95,9 @@ export const StoreProvider = ({children}) => {
             setTimeout(() => {
                 requestCourseData.current = false
                 loadingRef.current = false
-                setLoading(false)
-            }, 500)
 
+                if (withLoading) setLoading(false)
+            }, withLoading ? 500 : 1)
 
             firstRequestData.current = false
         }
@@ -184,7 +184,7 @@ export const StoreProvider = ({children}) => {
             }}
         >
             <>
-                <Welcome visible={loading}/>
+                <Welcome key={`welcome-${Date.now()}`} visible={loading}/>
                 {children}
             </>
         </StoreContext.Provider>
