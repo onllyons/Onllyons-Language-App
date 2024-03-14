@@ -1,5 +1,5 @@
 import globalCss from "../../css/globalCss";
-import {Platform, StyleSheet, Text} from "react-native";
+import {Platform, StyleSheet, Text, Image} from "react-native";
 import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
 import React, {useEffect, useRef} from "react";
 import Toast from "react-native-toast-message";
@@ -132,7 +132,11 @@ export const GoogleLogin = ({setLoader}) => {
             size={"full"}
             shadowColor={"#e0e0e0"}
         >
-            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
+            <Image
+                source={require('../../images/icon/google-logo.png')}
+                style={styles.logoAuth}
+            />
+            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase, styles.textCenter]}>ВОЙТИ ЧЕРЕЗ GOOGLE</Text>
         </AnimatedButtonShadow>
     )
 }
@@ -140,14 +144,27 @@ export const GoogleLogin = ({setLoader}) => {
 const styles = StyleSheet.create({
     buttonSignIn:{
         width: "100%",
-        paddingVertical: "4%",
+        paddingVertical: "3%",
         alignItems: "center",
         borderRadius: 13,
         marginBottom: "4.4%",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         borderColor: '#e0e0e0',
         borderTopWidth: 2.1,
         borderLeftWidth: 2.1,
         borderRightWidth: 2.1,
         borderBottomWidth: 2.1,
+    },
+    logoAuth:{
+        width: 24,
+        height: 24,
+        marginRight: '2%',
+        resizeMode: 'contain'
+    },
+    textCenter:{
+        
     },
 })

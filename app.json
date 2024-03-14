@@ -7,7 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
-    "plugins": ["expo-apple-authentication"],
+    "plugins": [
+      "expo-apple-authentication"
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -40,6 +42,11 @@
       "package": "com.onllyons.language",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "335787f2-f3e4-48dd-a64f-f4b1c9f20f6e"
       }
     }
   }

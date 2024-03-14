@@ -1,4 +1,4 @@
-import {Platform, StyleSheet, Text} from "react-native";
+import {Platform, StyleSheet, Text, Image} from "react-native";
 import React, {useRef} from "react";
 import * as AppleAuthentication from "expo-apple-authentication";
 import Toast from "react-native-toast-message";
@@ -39,7 +39,7 @@ export const AppleLogin = ({setLoader}) => {
             } else {
                 setTimeout(() => setLoader(false), 50)
             }
-
+ 
             try {
                 await initFirstData(true, true)
 
@@ -79,7 +79,11 @@ export const AppleLogin = ({setLoader}) => {
             shadowColor={"#e0e0e0"}
             onPress={handleAppleAuth}
         >
-            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase]}>ВОЙТИ ЧЕРЕЗ APPLE</Text>
+            <Image
+                source={require('../../images/icon/apple-logo.png')}
+                style={styles.logoAuth}
+            />
+            <Text style={[globalCss.buttonTextGray, globalCss.textUpercase, styles.textCenter]}>ВОЙТИ ЧЕРЕЗ APPLE</Text>
         </AnimatedButtonShadow>
 
     )
@@ -88,14 +92,27 @@ export const AppleLogin = ({setLoader}) => {
 const styles = StyleSheet.create({
     buttonSignIn:{
         width: "100%",
-        paddingVertical: "4%",
+        paddingVertical: "3%",
         alignItems: "center",
         borderRadius: 13,
         marginBottom: "4.4%",
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
         borderColor: '#e0e0e0',
         borderTopWidth: 2.1,
         borderLeftWidth: 2.1,
         borderRightWidth: 2.1,
         borderBottomWidth: 2.1,
-    }
+    },
+    logoAuth:{
+        width: 27,
+        height: 27,
+        marginRight: '2%',
+        resizeMode: 'contain'
+    },
+    textCenter:{
+
+    },
 })
