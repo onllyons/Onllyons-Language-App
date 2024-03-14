@@ -23,6 +23,7 @@
     "ios": {
       "bundleIdentifier": "com.onllyons.language",
       "supportsTablet": true,
+      "buildNumber": "2", // increment manual
       "usesAppleSignIn": true,
       "infoPlist": {
         "UIBackgroundModes": [
@@ -47,7 +48,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "ae454bab-7504-400e-a2e4-96b3a8e6ca60"
+        "projectId": "335787f2-f3e4-48dd-a64f-f4b1c9f20f6e"
       }
     }
   }
