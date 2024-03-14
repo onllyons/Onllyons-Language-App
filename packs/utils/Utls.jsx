@@ -202,7 +202,7 @@ export function getDeviceInfo() {
     return {
         deviceName: Device.deviceName,
         osVersion: Device.osVersion,
-        operatingSystem: Platform.OS,
+        operatingSystem: Platform.OS === "ios" ? "IOS" : "Android",
         windowWidth: Dimensions.get("window").width,
         language: "ru",
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
