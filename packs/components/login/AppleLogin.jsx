@@ -94,7 +94,7 @@ export const AppleLogin = ({setLoader}) => {
 const styles = StyleSheet.create({
     buttonSignIn: {
         width: "100%",
-        paddingVertical: 0,
+        paddingVertical: "1%",
         paddingHorizontal: 0,
         alignItems: "center",
         borderRadius: 13,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     },
     buttonApple: {
         width: "100%",
-        height: 38,
+        height: 35,
         pointerEvents: "none"
     },
 })
