@@ -8,6 +8,7 @@ import {useStore} from "../../providers/StoreProvider";
 import {login} from "../../providers/AuthProvider";
 import {AnimatedButtonShadow} from "../buttons/AnimatedButtonShadow";
 import globalCss from "../../css/globalCss";
+import {getDeviceInfo} from "../../utils/Utls";
 
 export const AppleLogin = ({setLoader}) => {
     const {initFirstData} = useStore()
@@ -26,7 +27,7 @@ export const AppleLogin = ({setLoader}) => {
             setLoader(true)
 
             const data = await sendDefaultRequest(`${SERVER_AJAX_URL}/user/apple_auth_user.php`,
-                credential,
+                {...credential, dataIp: getDeviceInfo()},
                 navigation,
                 {success: false}
             )

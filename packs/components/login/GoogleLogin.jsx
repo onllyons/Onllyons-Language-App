@@ -9,6 +9,7 @@ import {useStore} from "../../providers/StoreProvider";
 import * as AuthSession from "expo-auth-session";
 import * as Linking from "expo-linking";
 import {useNavigation} from "@react-navigation/native";
+import {getDeviceInfo} from "../../utils/Utls";
 
 const CLIENT_ID = '975364175854-m47vlh1uomkpscbuhq9776f97ei3bshu.apps.googleusercontent.com';
 const REDIRECT_URI = "https://language.onllyons.com/ru/ru-en/backend/mobile_app/ajax/user/google_login.php"
@@ -64,7 +65,8 @@ export const GoogleLogin = ({setLoader}) => {
         sendDefaultRequest(`${SERVER_AJAX_URL}/user/google_auth_user.php`,
             {
                 code: code,
-                codeVerifier: codeVerifier.current
+                codeVerifier: codeVerifier.current,
+                dataIp: getDeviceInfo()
             },
             navigation,
             {success: false}

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useState} from "react";
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Keyboard} from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faEye, faArrowLeft, faEyeSlash} from '@fortawesome/free-solid-svg-icons';
@@ -16,6 +16,7 @@ import {useFocusEffect} from "@react-navigation/native";
 import {GoogleLogin} from "../components/login/GoogleLogin";
 import {AppleLogin} from "../components/login/AppleLogin";
 import {Welcome} from "../components/Welcome";
+import {getDeviceInfo} from "../utils/Utls";
 
 export default function LoginScreen({navigation}) {
     const {initFirstData} = useStore()
@@ -56,7 +57,7 @@ export default function LoginScreen({navigation}) {
             setLoader(true)
 
             sendDefaultRequest(`${SERVER_AJAX_URL}/user/user_login.php`,
-                {...userData},
+                {...userData, dataIp: getDeviceInfo()},
                 navigation,
                 {success: false}
             )

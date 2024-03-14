@@ -1,10 +1,9 @@
 import {useNavigation} from "@react-navigation/native";
 import {useCallback, useEffect, useRef} from "react";
-import * as Device from "expo-device";
-import {Dimensions} from "react-native";
 import axios from "axios";
 import {getTokens, getUser} from "../../providers/AuthProvider";
 import {SERVER_AJAX_URL} from "../../utils/Requests";
+import {getDeviceInfo} from "../../utils/Utls";
 
 export const Analytics = () => {
     const DELAY_SEND_ANALYTICS = 10 // Seconds
@@ -16,14 +15,10 @@ export const Analytics = () => {
 
     const analyticsInfo = useRef({
         currentAnalyticId: -1,
-        deviceName: Device.deviceName,
-        osVersion: Device.osVersion,
-        operatingSystem: Device.osName,
-        windowWidth: Dimensions.get("window").width,
-        language: "ru",
         lastScreen: "",
         lengthStayOnScreen: 0,
-        screen: ""
+        screen: "",
+        ...getDeviceInfo()
     })
 
     useEffect(() => {

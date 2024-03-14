@@ -1,3 +1,6 @@
+import * as Device from "expo-device";
+import {Dimensions, Platform} from "react-native";
+
 export function debounce(func, wait) {
     let timeout
 
@@ -182,6 +185,28 @@ export function calculatePercentage(value, total, withFloat = false) {
         return percentage.toFixed(1)
     } else {
         return Math.floor(percentage)
+    }
+}
+
+export function getDeviceInfo() {
+    const dNow = new Date();
+    const day = ('0' + (dNow.getDate() + 1)).slice(-2);
+    const month = ('0' + (dNow.getMonth() + 1)).slice(-2);
+    const year = dNow.getFullYear();
+    const hours = ('0' + dNow.getHours()).slice(-2);
+    const minutes = ('0' + dNow.getMinutes()).slice(-2);
+    const seconds = ('0' + dNow.getSeconds()).slice(-2);
+
+    const localDate = day + '-' + month + '-' + year + ' ' + hours + ':' + minutes + ':' + seconds;
+
+    return {
+        deviceName: Device.deviceName,
+        osVersion: Device.osVersion,
+        operatingSystem: Platform.OS,
+        windowWidth: Dimensions.get("window").width,
+        language: "ru",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        localDate: localDate
     }
 }
 
