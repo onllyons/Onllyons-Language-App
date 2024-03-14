@@ -8,7 +8,8 @@
     "userInterfaceStyle": "light",
     "jsEngine": "hermes",
     "plugins": [
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-build-properties"
     ],
     "splash": {
       "image": "./assets/splash.png",
@@ -46,7 +47,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "335787f2-f3e4-48dd-a64f-f4b1c9f20f6e"
+        "projectId": "ae454bab-7504-400e-a2e4-96b3a8e6ca60"
       }
     }
   }
